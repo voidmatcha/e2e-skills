@@ -52,14 +52,28 @@ def main() -> None:
         except AssertionError:
             continue
         raise AssertionError("entrypoint trust routing mutation survived")
-    require(
-        scanner_workflow,
-        (
-            "The same two-part gate applies to a documented project lint command and Tier 1",
-            "Target-controlled package scripts, local binaries, plugins, parsers, and configs",
-        ),
-        SCANNER_WORKFLOW,
+    scanner_execution = (
+        "documented project lint command may instead run separately under the same trust gate",
+        "--project-eslint --trust-project",
+        "configuration code has host access",
+        "does not install dependencies or provide a sandbox",
+        "Target-controlled package scripts, local binaries, plugins, parsers, and configs",
+        *shared,
     )
+    require(scanner_workflow, scanner_execution, SCANNER_WORKFLOW)
+    for before, after in (
+        ("--project-eslint --trust-project", "--project-eslint"),
+        ("explicitly trusted the checkout", "found the checkout"),
+        ("exact command, including its environment and flags", "similar command"),
+        ("does not install dependencies or provide a sandbox", "installs dependencies"),
+    ):
+        mutated = scanner_workflow.replace(before, after)
+        assert mutated != scanner_workflow
+        try:
+            require(mutated, scanner_execution, SCANNER_WORKFLOW)
+        except AssertionError:
+            continue
+        raise AssertionError(f"scanner execution trust mutation survived: {before}")
     require(
         rules,
         (

@@ -22,6 +22,7 @@ pointing the scanner at such a repository waits indefinitely.
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 import subprocess
 import tempfile
@@ -66,23 +67,22 @@ class VendoredBundleTests(unittest.TestCase):
             tree_with_vendored_bundle(tmp)
             started = time.monotonic()
             result = subprocess.run(
-                ["/bin/bash", "-p", str(SCAN), str(tmp)],
+                ["/bin/bash", "-p", str(SCAN), str(tmp), "--format", "json"],
                 capture_output=True,
                 text=True,
                 timeout=BUDGET_SECONDS,
-                env={**os.environ, "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1"},
+                env={key: value for key, value in os.environ.items() if not key.startswith("E2E_SMELL_")},
             )
             elapsed = time.monotonic() - started
 
         out = result.stdout + result.stderr
-        self.assertRegex(
-            out, r"(?m)^Summary",
-            "the scan must produce a Summary rather than stalling on vendored code",
-        )
-        self.assertIn(
-            "#7", out,
-            "the real focused-test finding in tests/ must still be reported",
-        )
+        self.assertEqual(result.returncode, 1, out)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["schema"], "e2e-skills-node-scan-v1")
+        self.assertEqual(report["status"], "COMPLETE")
+        self.assertIs(report["execution"]["complete"], True)
+        self.assertEqual(report["execution"]["diagnostics"], [])
+        self.assertEqual([(hit["patternId"], hit["line"]) for hit in report["findings"]], [("#7", 3)])
         self.assertLess(
             elapsed, BUDGET_SECONDS,
             "a vendored bundle must not dominate the scan's runtime",
@@ -93,13 +93,18 @@ class VendoredBundleTests(unittest.TestCase):
             tmp = Path(raw)
             tree_with_vendored_bundle(tmp)
             result = subprocess.run(
-                ["/bin/bash", "-p", str(SCAN), str(tmp)],
+                ["/bin/bash", "-p", str(SCAN), str(tmp), "--format", "json"],
                 capture_output=True,
                 text=True,
                 timeout=BUDGET_SECONDS,
-                env={**os.environ, "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1"},
+                env={key: value for key, value in os.environ.items() if not key.startswith("E2E_SMELL_")},
             )
         out = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 1, out)
+        report = json.loads(result.stdout)
+        self.assertIs(report["execution"]["complete"], True)
+        self.assertEqual(report["execution"]["diagnostics"], [])
+        self.assertEqual(report["files"], 1, "the vendored bundle must be excluded from inventory")
         self.assertNotIn(
             "yarn-4.8.1.cjs", out,
             "a vendored package-manager bundle is not the project's test code",

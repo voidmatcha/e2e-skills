@@ -444,6 +444,42 @@ def test_load_protocol_rejects_product_input_mismatches() -> None:
             raise AssertionError("collector accepted a mismatched pattern-reference digest")
 
 
+def test_frozen_collection_rejects_node_producer_without_changing_reachability() -> None:
+    module = collector_module()
+    with tempfile.TemporaryDirectory() as temporary:
+        scanner = Path(temporary) / "scan.sh"
+        scanner.write_text("#!/bin/bash\nexit 97\n")
+        protocol = {"protocol_id": "reviewer-specificity-v4",
+                    "corpus": {"frozen_adjudication_inputs": {
+                        "scanner_sha256": module.digest(scanner.read_bytes())}},
+                    "adjudication": {"required_pattern_ids": ["#1", "#4", "#15"]}}
+        with mock.patch.object(module, "SCANNER", scanner):
+            for operation in (
+                lambda: module.validate_candidate_pool_feasibility(protocol),
+                lambda: module.scanner_result(
+                    SimpleNamespace(recorded_scanner_dir=None), "repository", "case", Path(temporary), {}),
+            ):
+                with mock.patch.object(module.subprocess, "run") as execute:
+                    try:
+                        operation()
+                    except ValueError as exc:
+                        assert "UNSUPPORTED_SCANNER_COLLECTION_CONTRACT" in str(exc), str(exc)
+                    else:
+                        raise AssertionError("historical collector accepted an unpinned Node producer contract")
+                    execute.assert_not_called()
+            scanner.write_text("run_check P0 '#4a' fixture\nrun_check P1 '#15' fixture\n")
+            protocol["corpus"]["frozen_adjudication_inputs"]["scanner_sha256"] = module.digest(scanner.read_bytes())
+            assert module.frozen_scanner_principal_ids() == {"#4", "#15"}
+            try:
+                module.validate_candidate_pool_feasibility(protocol)
+            except ValueError as exc:
+                assert "INFEASIBLE_SELECTION_CONTRACT" in str(exc) and "#1" in str(exc), str(exc)
+            else:
+                raise AssertionError("label taxonomy was mistaken for emitted scanner coverage")
+            protocol["adjudication"]["required_pattern_ids"] = ["#4", "#15"]
+            module.validate_candidate_pool_feasibility(protocol)
+
+
 def test_wrapped_base64_blob_and_licence_payloads() -> None:
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)
@@ -927,6 +963,7 @@ def main() -> None:
     test_verify_and_extract_requests_share_retry_helper()
     test_authenticated_requests_and_missing_token_failure()
     test_load_protocol_rejects_product_input_mismatches()
+    test_frozen_collection_rejects_node_producer_without_changing_reachability()
     test_wrapped_base64_blob_and_licence_payloads()
     test_manifest_git_threshold_and_per_path_api_fallback()
     test_closure_ignores_comments_and_node_builtins()

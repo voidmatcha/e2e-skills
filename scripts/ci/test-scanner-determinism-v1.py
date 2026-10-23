@@ -25,10 +25,12 @@ single-file fixture cannot reorder and would pass even against the defect.
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -55,23 +57,36 @@ def build_tree(tmp: Path) -> None:
         )
 
 
-def scan(tree: Path) -> str:
+def scan(tree: Path) -> tuple[str, dict]:
+    env = {key: value for key, value in os.environ.items() if not key.startswith("E2E_SMELL_")}
     result = subprocess.run(
-        ["/bin/bash", "-p", str(SCAN), str(tree)],
-        capture_output=True,
-        text=True,
-        timeout=300,
-        env={**os.environ, "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1"},
+        ["/bin/bash", "-p", str(SCAN), str(tree), "--format", "json", "--fail-on", "none"],
+        capture_output=True, text=True, timeout=300, env=env,
     )
-    return result.stdout + result.stderr
+    if result.returncode != 0 or result.stderr:
+        raise AssertionError(f"scan did not complete: {result.returncode}\n{result.stdout}\n{result.stderr}")
+    report = json.loads(result.stdout)
+    if (report.get("schema") != "e2e-skills-node-scan-v1" or report.get("status") != "COMPLETE"
+            or report.get("execution", {}).get("complete") is not True
+            or report["execution"].get("diagnostics") != [] or not report.get("findings")):
+        raise AssertionError(f"an error/empty report cannot prove finding determinism: {report}")
+    return result.stdout, report
 
 
 class DeterminismTests(unittest.TestCase):
+    def test_identical_failures_cannot_pass_as_deterministic_scans(self) -> None:
+        failure = subprocess.CompletedProcess([], 2, "", "INCOMPLETE: unavailable runtime")
+        with patch("subprocess.run", return_value=failure):
+            for _ in range(RUNS):
+                with self.assertRaisesRegex(AssertionError, "scan did not complete"):
+                    scan(Path("unused"))
+
+
     def test_repeated_scans_are_byte_identical(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             tree = Path(raw)
             build_tree(tree)
-            outputs = [scan(tree) for _ in range(RUNS)]
+            outputs = [scan(tree)[0] for _ in range(RUNS)]
 
         # Fail with something a reader can act on: which lines moved.
         first = outputs[0].splitlines()
@@ -91,15 +106,15 @@ class DeterminismTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as raw:
             tree = Path(raw)
             build_tree(tree)
-            out = scan(tree)
+            _, report = scan(tree)
 
+        hits = [hit for hit in report["findings"] if hit["patternId"] == "#9"]
+        self.assertEqual(len(hits), FILE_COUNT * 12)
+        self.assertTrue(all(hit["origin"] == "ast" for hit in hits))
         files = []
-        for line in out.splitlines():
-            stripped = line.strip()
-            if stripped.startswith("/") and ".spec.ts:" in stripped:
-                path = stripped.split(":", 1)[0]
-                if not files or files[-1] != path:
-                    files.append(path)
+        for hit in hits:
+            if not files or files[-1] != hit["file"]:
+                files.append(hit["file"])
         self.assertGreater(len(files), 1, "the fixture must produce multi-file output")
         # Each file's block appears once, and blocks ascend by path.
         self.assertEqual(
@@ -113,11 +128,11 @@ AST_FILE_COUNT = 8
 
 
 def build_ast_tree(tmp: Path) -> None:
-    """A tree whose hits come from Tier 2, not Tier 3.
+    """Original count-assertion fixture, now checked through the canonical AST report.
 
-    ast-grep searches in parallel too, and its JSON stream carries whatever
-    order the workers finished in. The Tier 3 fixture above cannot show that:
-    it produces no AST hits, so a Tier 2 ordering race would pass unnoticed.
+    The old ast-grep stream could reorder these hits. The current parser must
+    retain all 16 count-read candidates in repeatable canonical order without
+    an optional-tool skip or accepting identical error outputs.
     """
     for index in range(AST_FILE_COUNT):
         spec = tmp / f"tests/ast_{index:02d}.spec.ts"
@@ -131,24 +146,26 @@ def build_ast_tree(tmp: Path) -> None:
         )
 
 
-class Tier2DeterminismTests(unittest.TestCase):
+class ASTDeterminismTests(unittest.TestCase):
     def test_ast_hits_are_reported_in_a_stable_order(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             tree = Path(raw)
             build_ast_tree(tree)
-            outputs = [scan(tree) for _ in range(RUNS)]
+            outputs = [scan(tree)[0] for _ in range(RUNS)]
 
-        if "ast-grep total: 0 hit(s)" in outputs[0] or "Tier 2" not in outputs[0]:
-            self.skipTest("ast-grep unavailable or produced no hits on this host")
+        first_report = json.loads(outputs[0])
+        count_hits = [hit for hit in first_report["findings"] if hit["patternId"] == "#4c-4e"]
+        self.assertEqual(len(count_hits), AST_FILE_COUNT * 2)
+        self.assertTrue(all(hit["origin"] == "ast" for hit in count_hits))
 
         for index, other in enumerate(outputs[1:], start=2):
             self.assertEqual(
                 sorted(outputs[0].splitlines()), sorted(other.splitlines()),
-                "Tier 2 runs disagree on the set of output lines",
+                "AST runs disagree on the set of output lines",
             )
             self.assertEqual(
                 outputs[0].splitlines(), other.splitlines(),
-                f"Tier 2 run 1 and run {index} report the same hits in a "
+                f"AST run 1 and run {index} report the same hits in a "
                 "different order",
             )
 

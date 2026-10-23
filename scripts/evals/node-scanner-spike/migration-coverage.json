@@ -1,0 +1,2747 @@
+{
+  "schema": "node-scanner-migration-coverage-v1",
+  "purpose": "Development inventory only; not imported by product runtime or a release acceptance gate.",
+  "observed_utc": "2026-10-21T13:14:58.936895+00:00",
+  "coverage_claim": "incomplete",
+  "legacy_call_count": 69,
+  "counts_are_call_variants_not_taxonomy_ids": true,
+  "no_rule_family_is_marked_fully_ported": true,
+  "fresh_tests_run": false,
+  "review_method": "Bounded static source review; existing test files are anchors, not newly executed evidence.",
+  "source_snapshot": {
+    "atomic": false,
+    "note": "Per-file observed bytes are hashed. Other workers may change these paths; refresh before using this inventory as current.",
+    "files": [
+      {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "sha256": "fc0cfb1d0f6b30d467fab7d3bbfe433ccbc16108da10f40b0ac33815fd0e9e70"
+      },
+      {
+        "path": "packages/scanner/src/accessible-names.mjs",
+        "sha256": "88ae06c1abd314407018d2065c0a6ca80b080d1625b2a4b31a01c119de47608e"
+      },
+      {
+        "path": "packages/scanner/src/actions.mjs",
+        "sha256": "ff8c808e1372b1a01411c23744e9504ab1cd78f0a2ca43e6d7c56ac7e83f394f"
+      },
+      {
+        "path": "packages/scanner/src/assertions.mjs",
+        "sha256": "395962ce9638e99ba3051db84617fc3d69ee1be8422f34cc989f2e1442cc4c07"
+      },
+      {
+        "path": "packages/scanner/src/catch-handlers.mjs",
+        "sha256": "5eeebc154e211923aa65c2dcaf88a5f6b3c8689f996e07370730a910750bd591"
+      },
+      {
+        "path": "packages/scanner/src/check-candidates.mjs",
+        "sha256": "7515de085aa1e39e8ff193810fc694475c2cd97c223a21e1b47050df15f122c2"
+      },
+      {
+        "path": "packages/scanner/src/check-cli.mjs",
+        "sha256": "3281c86286d4d773d85bf3cb8919965cb4586c1108ece559d3a2ec4986da5d49"
+      },
+      {
+        "path": "packages/scanner/src/cli.mjs",
+        "sha256": "7af446f0d53cd4b60d647e68b81a432c84f8cb6b7ced752bef370315eaa8904f"
+      },
+      {
+        "path": "packages/scanner/src/collections.mjs",
+        "sha256": "06fcfba9b554648c6773c2b476f5af6b80a18730ee06038f2467ad78a9850a0f"
+      },
+      {
+        "path": "packages/scanner/src/conditional-assertions.mjs",
+        "sha256": "cbd64d1dd5343ed7276af7be7a9149f4cc9dd555047f3757786c8972e2aa1c87"
+      },
+      {
+        "path": "packages/scanner/src/control-flow.mjs",
+        "sha256": "66e308aeb5411927ce2c1a764bee133ccc6ceab03e72fce350384b6023de7f42"
+      },
+      {
+        "path": "packages/scanner/src/credentials.mjs",
+        "sha256": "cb11ceef24539434a7eb6a8e7e7f9367a423a11b85110111fb18a4721b9d6c5a"
+      },
+      {
+        "path": "packages/scanner/src/cypress-assignment.mjs",
+        "sha256": "22c5da4932aab156e146c934bb8d443ba545148032349ca7334e20f166261afb"
+      },
+      {
+        "path": "packages/scanner/src/cypress-callbacks.mjs",
+        "sha256": "306bf85d3d6defbd86499aa3902c90a62811de19f3b3b03536acf510603ec8b4"
+      },
+      {
+        "path": "packages/scanner/src/dedupe.mjs",
+        "sha256": "41c8191bb7934889510c8bd5d6ff76af472f3fa5f9ee2257d0bc48d9b8c4b45f"
+      },
+      {
+        "path": "packages/scanner/src/dom-queries.mjs",
+        "sha256": "efbacec049c7e8a786373be7d0af1b9e02da0c99b80452c37e937fd431a2e056"
+      },
+      {
+        "path": "packages/scanner/src/focused-tests.mjs",
+        "sha256": "b4b1680f511c477c0ffb0c565ee8cf37647d84c4b5da5f092a2626b908fe83b5"
+      },
+      {
+        "path": "packages/scanner/src/inventory.mjs",
+        "sha256": "2b5b8134befb0c4835e0e08df3549d1691143c2a334844138880b6357d21c301"
+      },
+      {
+        "path": "packages/scanner/src/justified.mjs",
+        "sha256": "5c4932cc71ef85cc9d8d0e04caa4e5fdddaa7ea477315385d6fc85e5542eb46e"
+      },
+      {
+        "path": "packages/scanner/src/networkidle.mjs",
+        "sha256": "11f41930e7ab8f1d36feb91be3055e691a05239a935c1d907ec944abb520ca5c"
+      },
+      {
+        "path": "packages/scanner/src/page-reads.mjs",
+        "sha256": "9494d6318af455989fb0b7eb2393a09baaea00ca0aa509bd4eedcfae9404562a"
+      },
+      {
+        "path": "packages/scanner/src/pinned-project-context.mjs",
+        "sha256": "47d57846a13d872e206af5d5752574a7b66eab33d312ac70e075deba639b5d98"
+      },
+      {
+        "path": "packages/scanner/src/project-context.mjs",
+        "sha256": "55f5fc5c8b742f12a563cb8e43c16764fd9119a248d813496f4c04f0db72ab36"
+      },
+      {
+        "path": "packages/scanner/src/promises.mjs",
+        "sha256": "f18b74e075ba941d846f60653fa4819a763a19229a52618f3982469a756eeead"
+      },
+      {
+        "path": "packages/scanner/src/read-candidate.mjs",
+        "sha256": "d92237a0b5ab1824e344c53134cfa2d10f8addca3b53396f99a93ef62deb7a96"
+      },
+      {
+        "path": "packages/scanner/src/receivers.mjs",
+        "sha256": "a2e74b5cfdede02a4e071d8387af4723dd53f25203565d708e3b60d3a126a15d"
+      },
+      {
+        "path": "packages/scanner/src/report.mjs",
+        "sha256": "55a06f24d5ac40a25640dadf58c15fffc41083128e0384be44bee74850b335e4"
+      },
+      {
+        "path": "packages/scanner/src/scope.mjs",
+        "sha256": "b2d1ca665b9dee62fb25713c3aa72397f762b2294142d4116ad320309a9ee5f2"
+      },
+      {
+        "path": "packages/scanner/src/soft-assertions.mjs",
+        "sha256": "dae22ea55424855948e28544897b1b6bd8b3c8773b562a915d73a2a98de7b657"
+      },
+      {
+        "path": "packages/scanner/src/source.mjs",
+        "sha256": "1f34ecf830038c1b19714c213247175e578e67f54a11695aaf0c2fa298b27f3c"
+      },
+      {
+        "path": "packages/scanner/src/state-reads.mjs",
+        "sha256": "fa15e93f879a3029aba5c84da5f1023f992c4840f33ee391ccdb522eedc61b93"
+      },
+      {
+        "path": "packages/scanner/src/suite-data.mjs",
+        "sha256": "6c19a961f1c67d80af6c0998e2c7d94c2a996aa22b1a328cc0e805cf2bc36597"
+      },
+      {
+        "path": "packages/scanner/src/timeout-zero.mjs",
+        "sha256": "7f2369d39ee788b935d774630f0dacf09a218d26cf1f7c06c76bb465d8f4c752"
+      },
+      {
+        "path": "packages/scanner/src/waits.mjs",
+        "sha256": "6b9dda233156b8ae913681a71a7d028271db53804cadfca4be159936fbfe602c"
+      },
+      {
+        "path": "packages/scanner/src/project-eslint.mjs",
+        "sha256": "a72c9359430272149affd0500e0c1363f82b86e44628dffaea080bea6c9ba814"
+      }
+    ],
+    "hashes_refreshed_utc": "2026-10-21T07:46:37.534062+00:00"
+  },
+  "status_definitions": {
+    "partial": "A bounded corresponding detector exists; remaining variants or shared gates prevent parity claims.",
+    "diagnostic_only": "Relevant shapes can be reported incomplete but do not produce the legacy finding variant.",
+    "not_ported": "No corresponding finding-emission variant is present.",
+    "incomplete": "Cross-cutting release contract remains incomplete."
+  },
+  "counts_by_status": {
+    "partial": 57,
+    "diagnostic_only": 8,
+    "not_ported": 4
+  },
+  "legacy_raw_disposition_note": "Derived from each call triage flag before JUSTIFIED, scope-dependent fallback, cross-tier dedupe and reporting. These stages can change visible accounting.",
+  "calls": [
+    {
+      "call_index": 1,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7028,
+        "call": "run_check P0 '#3' 'Possible best-effort setup, teardown, or cleanup empty catch' '\\.catch([^A-Za-z0-9_$]|$)' \"$ALL_CODE_GLOB\" 'e2e,triage,empty-catch-best-effort'",
+        "pattern_id": "#3",
+        "title": "Possible best-effort setup, teardown, or cleanup empty catch",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "empty-catch-best-effort"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/catch-handlers.mjs",
+            "line": 99,
+            "needle": "const variant ="
+          }
+        ],
+        "implemented_subset": "Inline zero-parameter empty catch callbacks in proven E2E files are P0 candidates.",
+        "remaining": [
+          "Separate best-effort versus unresolved-outcome classification is not retained.",
+          "Cleanup exclusion and 12-line syntax limit are bounded; this is not catch propagation analysis."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 2,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7029,
+        "call": "run_check P0 '#3' 'Possible empty catch with unresolved test-outcome impact' '\\.catch([^A-Za-z0-9_$]|$)' \"$ALL_CODE_GLOB\" 'e2e,triage,empty-catch-unresolved-outcome'",
+        "pattern_id": "#3",
+        "title": "Possible empty catch with unresolved test-outcome impact",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "empty-catch-unresolved-outcome"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/catch-handlers.mjs",
+            "line": 99,
+            "needle": "const variant ="
+          }
+        ],
+        "implemented_subset": "Inline zero-parameter empty catch callbacks in proven E2E files are P0 candidates.",
+        "remaining": [
+          "Separate best-effort versus unresolved-outcome classification is not retained.",
+          "Cleanup exclusion and 12-line syntax limit are bounded; this is not catch propagation analysis."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 3,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7030,
+        "call": "run_check P0 '#3' 'Possible error swallowing in unresolved test-fixture source' '\\.catch([^A-Za-z0-9_$]|$)' \"$ALL_CODE_GLOB\" 'triage,empty-catch-any,unresolved-test-source'",
+        "pattern_id": "#3",
+        "title": "Possible error swallowing in unresolved test-fixture source",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage",
+          "empty-catch-any",
+          "unresolved-test-source"
+        ]
+      },
+      "node": {
+        "status": "diagnostic_only",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/catch-handlers.mjs",
+            "line": 12,
+            "needle": "if (!framework.complete)"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Unresolved fixture membership returns diagnostics, not the legacy empty-catch candidate."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 4,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7033,
+        "call": "run_check P0 '#3' 'Possible error swallowing via catch fallback' '\\.catch([^A-Za-z0-9_$]|$)' \"$ALL_CODE_GLOB\" 'e2e,triage,catch-fallback'",
+        "pattern_id": "#3",
+        "title": "Possible error swallowing via catch fallback",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "catch-fallback"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/catch-handlers.mjs",
+            "line": 99,
+            "needle": "const variant ="
+          }
+        ],
+        "implemented_subset": "Inline zero-parameter nonempty catch callbacks produce fallback candidates.",
+        "remaining": [
+          "Non-inline, unsupported parameter layouts, computed/optional and oversized callback shapes remain diagnostics.",
+          "No claim that fallback swallows an assertion; cleanup exclusions remain bounded."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 5,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7034,
+        "call": "run_check P0 '#3' 'Possible parameterized catch swallowing' '\\.catch([^A-Za-z0-9_$]|$)' \"$ALL_CODE_GLOB\" 'e2e,triage,catch-parameterized'",
+        "pattern_id": "#3",
+        "title": "Possible parameterized catch swallowing",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "catch-parameterized"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/catch-handlers.mjs",
+            "line": 86,
+            "needle": "const parameterized ="
+          }
+        ],
+        "implemented_subset": "Inline arrow/function catch callbacks with one simple identifier parameter produce P0 candidates unless bounded lexical analysis proves every path throws.",
+        "remaining": [
+          "Promise.reject propagation, complex control flow, destructured/default/rest parameters, non-inline/optional/computed handlers and callbacks over the legacy window remain gaps or diagnostics.",
+          "No Promise receiver semantics are inferred. Cleanup exclusions remain bounded; this does not cover try/catch, allSettled or finally propagation."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 6,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7035,
+        "call": "run_check P0 '#3' 'Possible assertion failure swallowed by Promise.allSettled' 'Promise[.]allSettled[[:space:]]*\\(' \"$ALL_CODE_GLOB\" 'e2e,triage,swallowed-all-settled'",
+        "pattern_id": "#3",
+        "title": "Possible assertion failure swallowed by Promise.allSettled",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "swallowed-all-settled"
+        ]
+      },
+      "node": {
+        "status": "diagnostic_only",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/catch-handlers.mjs",
+            "line": 64,
+            "needle": "access?.name === 'allSettled'"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Promise.allSettled assertion-loss candidate is not implemented."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 7,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7036,
+        "call": "run_check P0 '#3' 'Possible assertion failure masked by finally return' '\\bfinally\\b' \"$ALL_CODE_GLOB\" 'e2e,triage,swallowed-finally-return'",
+        "pattern_id": "#3",
+        "title": "Possible assertion failure masked by finally return",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "swallowed-finally-return"
+        ]
+      },
+      "node": {
+        "status": "diagnostic_only",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/catch-handlers.mjs",
+            "line": 61,
+            "needle": "node.finallyBlock"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Finally-return assertion masking candidate is not implemented."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 8,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7037,
+        "call": "run_check P0 '#3' 'Possible dependent gate or assertion swallowed by try/catch' '(^|[^A-Za-z0-9_$.])catch[[:space:]]*[({]' \"$ALL_CODE_GLOB\" 'e2e,triage,swallowed-try-catch'",
+        "pattern_id": "#3",
+        "title": "Possible dependent gate or assertion swallowed by try/catch",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "swallowed-try-catch"
+        ]
+      },
+      "node": {
+        "status": "diagnostic_only",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/catch-handlers.mjs",
+            "line": 60,
+            "needle": "ts.isCatchClause(node)"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Try/catch dependent-gate propagation candidate is not implemented."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 9,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7050,
+        "call": "run_check P0 '#7' 'Focused test committed' '(\\.[^;\\n]{0,80}\\bonly|[A-Za-z0-9_$)][[:space:]]*\\[[^]\\n]{0,80}\\][[:space:]]*\\()' \"$ALL_CODE_GLOB\" 'e2e,focused-call'",
+        "pattern_id": "#7",
+        "title": "Focused test committed",
+        "severity": "P0",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "focused-call"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/focused-tests.mjs",
+            "line": 6,
+            "needle": "export function focusedTests"
+          }
+        ],
+        "implemented_subset": "Proven imported/re-exported Playwright tests, Cypress globals and bounded immutable focused aliases.",
+        "remaining": [
+          "Dynamic or unresolved factories, full framework graph and all legacy computed-call variations are not proven equivalent.",
+          "Shared file-scope and cross-tier accounting gates remain incomplete."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 10,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7051,
+        "call": "run_check P0 '#7' 'Focused test alias committed' \"$FOCUSED_ALIAS_CALL_PATTERN\" \"$ALL_CODE_GLOB\" 'e2e,focused-alias-call'",
+        "pattern_id": "#7",
+        "title": "Focused test alias committed",
+        "severity": "P0",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "focused-alias-call"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/focused-tests.mjs",
+            "line": 6,
+            "needle": "export function focusedTests"
+          }
+        ],
+        "implemented_subset": "Proven imported/re-exported Playwright tests, Cypress globals and bounded immutable focused aliases.",
+        "remaining": [
+          "Dynamic or unresolved factories, full framework graph and all legacy computed-call variations are not proven equivalent.",
+          "Shared file-scope and cross-tier accounting gates remain incomplete."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 11,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7052,
+        "call": "run_check P1 '#9' 'Playwright hard-coded sleep' 'waitForTimeout' \"$ALL_CODE_GLOB\" 'e2e,playwright-wait-timeout,playwright-only'",
+        "pattern_id": "#9",
+        "title": "Playwright hard-coded sleep",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "playwright-wait-timeout",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/waits.mjs",
+            "line": 23,
+            "needle": "access.name === 'waitForTimeout'"
+          }
+        ],
+        "implemented_subset": "Runtime Page receiver waitForTimeout calls.",
+        "remaining": [
+          "Legacy typed Page/POM lineage is not covered; type annotations are not runtime proof."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 12,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7053,
+        "call": "run_check P1 '#9b' 'Cypress hard-coded sleep' 'cy\\.wait\\(' \"$ALL_CODE_GLOB\" 'cypress-numeric-wait'",
+        "pattern_id": "#9b",
+        "title": "Cypress hard-coded sleep",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "cypress-numeric-wait"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/waits.mjs",
+            "line": 30,
+            "needle": "ts.isNumericLiteral(value)"
+          }
+        ],
+        "implemented_subset": "Proven global cy.wait with numeric first argument.",
+        "remaining": [
+          "Literal spelling, multiline discovery bounds and complete Cypress provenance require parity adjudication."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 13,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7054,
+        "call": "run_check P1 '#9b' 'Possible variable Cypress wait' 'cy\\.wait\\([[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\\)' \"$ALL_CODE_GLOB\" 'e2e,triage,cypress-only,executable-line'",
+        "pattern_id": "#9b",
+        "title": "Possible variable Cypress wait",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "cypress-only",
+          "executable-line"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/waits.mjs",
+            "line": 31,
+            "needle": "ts.isIdentifier(value)"
+          }
+        ],
+        "implemented_subset": "Proven global cy.wait with one identifier argument remains candidate.",
+        "remaining": [
+          "No alias lifetime or dynamic expression coverage; rule/file applicability parity remains incomplete."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 14,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7055,
+        "call": "run_check P1 '#6' 'Raw DOM query inside test code' 'document\\.(querySelector(?:All)?|getElementById)' \"$ALL_CODE_GLOB\" 'e2e,triage,executable-line'",
+        "pattern_id": "#6",
+        "title": "Raw DOM query inside test code",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "executable-line"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/dom-queries.mjs",
+            "line": 89,
+            "needle": "record('#6'"
+          }
+        ],
+        "implemented_subset": "Unshadowed direct document querySelector/querySelectorAll/getElementById in proven E2E files.",
+        "remaining": [
+          "Document properties/aliases, optional/computed calls and mutation become gaps or diagnostics.",
+          "Legacy lexical false positives are not automatically parity requirements."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 15,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7057,
+        "call": "run_check P0 '#4a' 'Always-true numeric assertion' 'toBeGreaterThanOrEqual\\(0\\)' \"$ALL_CODE_GLOB\" 'e2e,triage'",
+        "pattern_id": "#4a",
+        "title": "Always-true numeric assertion",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 214,
+            "needle": "function matcherCandidate"
+          }
+        ],
+        "implemented_subset": "Proven Playwright expect toBeGreaterThanOrEqual(0) remains P0 candidate, including negative subjects/modifiers.",
+        "remaining": [
+          "Foreign/Cypress-like generic expect forms admitted by legacy broad grep are not implemented.",
+          "Whitespace normalization and shadow exclusions are deliberate AST differences; numeric semantics are not inferred."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 16,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7061,
+        "call": "run_check P1 '#4b' 'Vacuous toBeAttached assertion (positive form only; Phase 2 confirms destructive-action context)' '\\btoBeAttached\\b' \"$ALL_CODE_GLOB\" 'e2e,triage,positive-attached'",
+        "pattern_id": "#4b",
+        "title": "Vacuous toBeAttached assertion (positive form only; Phase 2 confirms destructive-action context)",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "positive-attached"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 214,
+            "needle": "function matcherCandidate"
+          }
+        ],
+        "implemented_subset": "Positive invoked toBeAttached with proven Playwright expect, including soft calls, is P1 candidate; not is excluded.",
+        "remaining": [
+          "Generic matcher receivers and unresolved expect are not mapped as candidates.",
+          "Destructive-action context remains semantic review, not a scanner confirmation."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 17,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7067,
+        "call": "run_check P1 '#4c-4e' 'One-shot Playwright state/content assertion' 'expect\\((?:[!(\\s+-]|[A-Za-z_$][\\w$.]*\\()*await\\b.*\\.(isVisible|isDisabled|isEnabled|isChecked|isHidden|isEditable|textContent|innerText|getAttribute|inputValue|allTextContents|allInnerTexts|count)\\([^)]*\\)\\)' \"$ALL_CODE_GLOB\" 'triage,playwright-only'",
+        "pattern_id": "#4c-4e",
+        "title": "One-shot Playwright state/content assertion",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/state-reads.mjs",
+            "line": 14,
+            "needle": "export function stateReads"
+          }
+        ],
+        "implemented_subset": "Direct awaited supported state/content reads on runtime-proven Page/Locator subjects of proven expect remain P1 candidates outside proven retry callbacks.",
+        "remaining": [
+          "Wrapped awaited reads, type-only/POM/unproven receivers and arbitrary factory provenance are diagnostic or outside this direct-value slice.",
+          "13 read method spellings do not establish full #4 coverage; no stable-value defect or general wrapper semantics are inferred.",
+          "AST retry exclusions and broader syntax recognition need explicit differential accounting rather than a whole-rule parity claim."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 18,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7068,
+        "call": "run_check P0 '#4f' 'Locator always-true assertion (truthy/defined/not-null)' \"$EXPECT_CALL_PATTERN\" \"$ALL_CODE_GLOB\" 'e2e,locator-assertion'",
+        "pattern_id": "#4f",
+        "title": "Locator always-true assertion (truthy/defined/not-null)",
+        "severity": "P0",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "locator-assertion"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 119,
+            "needle": "function truthiness(node)"
+          }
+        ],
+        "implemented_subset": "Proven runtime Locator truthy/defined/not-null shapes with proven Playwright expect.",
+        "remaining": [
+          "Type-only, POM fields and generic/unresolved subject fallback branches are not covered.",
+          "Expression-statement and supported matcher shape boundaries remain narrower than complete family coverage."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 19,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7069,
+        "call": "run_check P0 '#4f' 'Possible wrapped Locator truthiness assertion' \"$EXPECT_CALL_PATTERN\" \"$ALL_CODE_GLOB\" 'e2e,triage,wrapped-locator-assertion'",
+        "pattern_id": "#4f",
+        "title": "Possible wrapped Locator truthiness assertion",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "wrapped-locator-assertion"
+        ]
+      },
+      "node": {
+        "status": "not_ported",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 119,
+            "needle": "function truthiness(node)"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Wrapped Locator truthiness candidate is absent."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 20,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7070,
+        "call": "run_check P0 '#4f' 'Possible Locator truthiness in unresolved test-fixture source' \"$EXPECT_CALL_PATTERN\" \"$ALL_CODE_GLOB\" 'triage,unresolved-locator-assertion,unresolved-test-source'",
+        "pattern_id": "#4f",
+        "title": "Possible Locator truthiness in unresolved test-fixture source",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage",
+          "unresolved-locator-assertion",
+          "unresolved-test-source"
+        ]
+      },
+      "node": {
+        "status": "not_ported",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 119,
+            "needle": "function truthiness(node)"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Unresolved fixture-source Locator candidate is absent; unknown provenance is diagnostic."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 21,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7071,
+        "call": "run_check P0 '#4f' 'Possible generic getBy/query truthiness assertion' \"$EXPECT_CALL_PATTERN\" \"$ALL_CODE_GLOB\" 'e2e,triage,generic-getby-assertion'",
+        "pattern_id": "#4f",
+        "title": "Possible generic getBy/query truthiness assertion",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "generic-getby-assertion"
+        ]
+      },
+      "node": {
+        "status": "not_ported",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 119,
+            "needle": "function truthiness(node)"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Generic getBy/query candidate is absent."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 22,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7072,
+        "call": "run_check P0 '#4f' 'Possible Locator/POM identifier truthiness assertion' \"$EXPECT_CALL_PATTERN\" \"$ALL_CODE_GLOB\" 'e2e,triage,identifier-locator-assertion'",
+        "pattern_id": "#4f",
+        "title": "Possible Locator/POM identifier truthiness assertion",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "identifier-locator-assertion"
+        ]
+      },
+      "node": {
+        "status": "not_ported",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 119,
+            "needle": "function truthiness(node)"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Locator/POM identifier fallback candidate is absent; a proven runtime alias can instead match the separate confirmed slice."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 23,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7073,
+        "call": "run_check P0 '#4f' 'Possible Locator/POM member truthiness assertion' \"$EXPECT_CALL_PATTERN\" \"$ALL_CODE_GLOB\" 'e2e,triage,member-locator-assertion'",
+        "pattern_id": "#4f",
+        "title": "Possible Locator/POM member truthiness assertion",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "member-locator-assertion"
+        ]
+      },
+      "node": {
+        "status": "diagnostic_only",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 119,
+            "needle": "function truthiness(node)"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Bounded const *Page constructor instances and same-file *Page class member-handle truthiness produce unsupported-provenance diagnostics, not legacy fallback findings; full member lineage remains unsupported."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 24,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7074,
+        "call": "run_check P0 '#4f' 'Possible optional/computed Locator truthiness assertion' '(?:expect[[:space:]]*(?:\\?\\.[[:space:]]*\\(|\\[[[:space:]]*['\"'\"'\\\"](?:call|expect)['\"'\"'\\\"][[:space:]]*\\][[:space:]]*\\())[^;\\n]*(?:toBeTruthy|toBeDefined|toBeNull|toBeUndefined)' \"$ALL_CODE_GLOB\" 'e2e,triage,playwright-only'",
+        "pattern_id": "#4f",
+        "title": "Possible optional/computed Locator truthiness assertion",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 56,
+            "needle": "function truthinessCandidate"
+          }
+        ],
+        "implemented_subset": "Optional direct expect/matcher invocation with proven Playwright expect and runtime Locator subject emits P0 candidates, never confirmed.",
+        "remaining": [
+          "Computed expect dispatch via call/expect properties, wrappers, POM/type-only/unresolved subjects and non-expression-statement contexts remain unsupported.",
+          "Optional matcher invocation intentionally discovers a shape missed by the legacy matcher regex; this is not exact parity."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 25,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7075,
+        "call": "run_check P0 '#4f' 'Possible constant-computed truthiness matcher' 'expect[[:space:]]*\\([^;\\n]*\\)[[:space:]]*\\[[[:space:]]*['\"'\"'\\\"](?:toBeTruthy|toBeDefined)['\"'\"'\\\"][[:space:]]*\\]' \"$ALL_CODE_GLOB\" 'e2e,triage'",
+        "pattern_id": "#4f",
+        "title": "Possible constant-computed truthiness matcher",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 39,
+            "needle": "const literal = literalString(key)"
+          }
+        ],
+        "implemented_subset": "Called constant-computed truthiness matchers on proven runtime Locator subjects emit P0 candidates.",
+        "remaining": [
+          "Uncalled matcher references, generic/unresolved subjects, unsupported wrappers and full legacy lexical layouts are not covered.",
+          "Constant expression normalization is AST-based and is not a claim of all legacy discovery equivalence."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 26,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7076,
+        "call": "run_check P0 '#4f' 'Possible immutable computed truthiness matcher' 'expect[[:space:]]*\\([^;\\n]*\\)[[:space:]]*\\[[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\\][[:space:]]*\\(' \"$ALL_CODE_GLOB\" 'e2e,triage,immutable-computed-truthy'",
+        "pattern_id": "#4f",
+        "title": "Possible immutable computed truthiness matcher",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "immutable-computed-truthy"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 37,
+            "needle": "function computedMatcher"
+          }
+        ],
+        "implemented_subset": "Called immutable local const matcher keys with literal-resolvable initializers and no detected writes emit P0 candidates on proven Locator subjects.",
+        "remaining": [
+          "Mutable/dynamic/reassigned/imported/transitive matcher keys and unproven subjects remain diagnostics or unsupported.",
+          "The unchanged CJS legacy fixture with an unbound Page remains an explicit coverage gap, not a false-positive adjudication."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 27,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7077,
+        "call": "run_check P0 '#4f' 'Cypress jQuery object always-exists assertion' 'expect[[:space:]]*\\([[:space:]]*Cypress[.]\\$[[:space:]]*\\([^;\\n]*\\)[[:space:]]*\\)[[:space:]]*[.](?:to[.]exist|to[.]be[.]ok|toBeTruthy[[:space:]]*\\()' \"$ALL_CODE_GLOB\" 'e2e,executable-line'",
+        "pattern_id": "#4f",
+        "title": "Cypress jQuery object always-exists assertion",
+        "severity": "P0",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "executable-line"
+        ]
+      },
+      "node": {
+        "status": "diagnostic_only",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 238,
+            "needle": "function cypressJqueryGap(node)"
+          }
+        ],
+        "implemented_subset": "Direct unbound ambient expect(Cypress.$(...)) truthiness is an unsupported-provenance diagnostic; bounded CLI exits 2, not a finding.",
+        "remaining": [
+          "Ambient Chai expect runtime provenance and the confirmed legacy finding are not ported."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 28,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7078,
+        "call": "run_check P1 '#4g' 'Zero-timeout retry/deadline hazard' '(?:timeout|[\"'\"'\"']timeout[\"'\"'\"'])\\s*:\\s*0' \"$ALL_CODE_GLOB\" 'e2e,zero-timeout'",
+        "pattern_id": "#4g",
+        "title": "Zero-timeout retry/deadline hazard",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "zero-timeout"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/timeout-zero.mjs",
+            "line": 11,
+            "needle": "const MATCHERS"
+          }
+        ],
+        "implemented_subset": "Literal timeout:0 on bounded proven Page/Locator matcher/action/navigation signatures; P1 confirmed.",
+        "remaining": [
+          "Typed/POM receivers, retry assertions, unsupported signatures, dynamic/spread/duplicate/computed options and lookback limits remain diagnostic or outside slice.",
+          "Cypress timeout-zero semantics stay excluded as the legacy contract requires; no immediate-check or always-pass claim."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 29,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7079,
+        "call": "run_check P1 '#4h' 'One-shot page.url assertion' '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\\.[[:space:]]*expect)?[[:space:]]*\\([^;\\n]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\\.[[:space:]]*url[[:space:]]*\\(' \"$ALL_CODE_GLOB\" 'playwright-only,one-shot-page-url'",
+        "pattern_id": "#4h",
+        "title": "One-shot page.url assertion",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "playwright-only",
+          "one-shot-page-url"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/page-reads.mjs",
+            "line": 70,
+            "needle": "function urlAssertion"
+          }
+        ],
+        "implemented_subset": "Called matcher around runtime Page.url outside proven toPass/poll callbacks.",
+        "remaining": [
+          "Typed/POM Page proof and broader expression contexts are not implemented.",
+          "Long and aliased retry callbacks deliberately fix separately recorded legacy false positives."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 30,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7089,
+        "call": "run_check P1 '#4i' 'Absence assertion never proven able to match' '\\.not\\.toBeVisible\\(|\\.not\\.toBeAttached\\(|(?<!\\.not)\\.toBeHidden\\(|(?<!\\.not)\\.toHaveCount\\(\\s*0\\s*\\)|\\.should\\(.[^)]*not\\.(exist|be\\.visible)' \"$ALL_CODE_GLOB\" 'triage'",
+        "pattern_id": "#4i",
+        "title": "Absence assertion never proven able to match",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/collections.mjs",
+            "line": 45,
+            "needle": "function absence"
+          }
+        ],
+        "implemented_subset": "Proven Locator negative visible/attached, positive hidden/count-zero and proven Cypress should(not.exist/not.be.visible) calls remain P1 candidates.",
+        "remaining": [
+          "Type-only/POM subjects, soft/configured/aliased assertion factories, optional/computed forms and other absence predicates are outside this slice.",
+          "Selector matchability and prior positive proof remain semantic adjudication; a raw candidate does not establish a broken selector."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 31,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7099,
+        "call": "run_check P1 '#4k' 'Assertion loop over an unproven collection' 'for\\s*\\(.*\\bof\\s+await\\s+.*\\.all\\(\\s*\\)|cy\\s*\\.[^;]*\\.each\\(|\\)\\s*\\.each\\(\\s*\\(' \"$ALL_CODE_GLOB\" 'triage'",
+        "pattern_id": "#4k",
+        "title": "Assertion loop over an unproven collection",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/collections.mjs",
+            "line": 68,
+            "needle": "ts.isForOfStatement(node)"
+          }
+        ],
+        "implemented_subset": "Direct for-of await proven Locator.all() and direct cy-rooted each() shapes remain P1 candidates.",
+        "remaining": [
+          "Saved or aliased collections, callback/helper-returned collections and broader Cypress chain aliases are not covered.",
+          "Collection cardinality and presence of a meaningful assertion are not proven by this shape detector."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 32,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7106,
+        "call": "run_check P2 '#11c' 'Skip without a reason or an expiry' '^\\s*(?:test|it|describe|suite)\\s*\\.\\s*(?:skip|fixme)\\s*\\(|^\\s*x(?:it|describe)\\s*\\(' \"$ALL_CODE_GLOB\" 'triage'",
+        "pattern_id": "#11c",
+        "title": "Skip without a reason or an expiry",
+        "severity": "P2",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/control-flow.mjs",
+            "line": 52,
+            "needle": "['skip', 'fixme']"
+          }
+        ],
+        "implemented_subset": "Proven direct skip/fixme and Cypress xit/xdescribe remain P2 candidates, including reasoned/conditional calls.",
+        "remaining": [
+          "Method aliases, optional/computed variants and unresolved bindings are outside the direct slice.",
+          "Reason and expiry semantics are not newly adjudicated."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 33,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7110,
+        "call": "run_check P0 '#5a' 'Conditional assertion bypass' 'if.*(isVisible\\(|is\\(.*:visible.*\\))' \"$ALL_CODE_GLOB\" 'triage'",
+        "pattern_id": "#5a",
+        "title": "Conditional assertion bypass",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/conditional-assertions.mjs",
+            "line": 88,
+            "needle": "record(statement, 'inline-visibility-condition')"
+          }
+        ],
+        "implemented_subset": "Same-line isVisible conditions on proven runtime Page/Locator receivers remain P0 candidates, including optional cleanup branches.",
+        "remaining": [
+          "Cypress/jQuery is(:visible), type-only/POM receivers and transitive condition dataflow are not covered.",
+          "Candidate shape does not establish whether a required postcondition was bypassed; lexical shadow exclusions are deliberate differences."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 34,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7111,
+        "call": "run_check P0 '#5a' 'Conditional assertion bypass' '^\\s*await .*\\.(isVisible|isEnabled|isChecked|isDisabled|isEditable|isHidden)\\([^)]*\\)\\s*;?\\s*(//.*)?$' \"$ALL_CODE_GLOB\" 'e2e,triage,boolean-if'",
+        "pattern_id": "#5a",
+        "title": "Conditional assertion bypass",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "boolean-if"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/conditional-assertions.mjs",
+            "line": 97,
+            "needle": "record(parent, 'multiline-boolean-condition')"
+          }
+        ],
+        "implemented_subset": "Direct standalone awaited six-method Page/Locator boolean reads in multiline if conditions retain the read-line candidate anchor.",
+        "remaining": [
+          "Composite/wrapped conditions and assignment/dataflow consumers are outside the direct multiline slice.",
+          "Legacy prefix-window and all spelling variants are not proven equivalent."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 35,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7112,
+        "call": "run_check P0 '#5a' 'Conditional branch contains assertion' '^[[:space:]]*if\\b' \"$ALL_CODE_GLOB\" 'e2e,triage,conditional-assertion'",
+        "pattern_id": "#5a",
+        "title": "Conditional branch contains assertion",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "conditional-assertion"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/conditional-assertions.mjs",
+            "line": 115,
+            "needle": "record(node, 'conditional-assertion')"
+          }
+        ],
+        "implemented_subset": "Direct if bodies containing proven Playwright expect calls or Cypress cy.should chains emit P0 candidates.",
+        "remaining": [
+          "Generic assert/assertion, deferred helpers/callbacks, expect modifiers and separately written else-body mappings remain diagnostic gaps.",
+          "AST containment differs from the legacy bounded lexical window; candidate emission is not semantic adjudication."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 36,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7113,
+        "call": "run_check P0 '#5a' 'Logical/ternary conditional assertion candidate' '(&&|\\?)[^;\\n]*(expect|assert|\\.should)\\s*[\\.(]' \"$ALL_CODE_GLOB\" 'e2e,triage,executable-line'",
+        "pattern_id": "#5a",
+        "title": "Logical/ternary conditional assertion candidate",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "executable-line"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/conditional-assertions.mjs",
+            "line": 120,
+            "needle": "record(node, 'logical-assertion')"
+          },
+          {
+            "path": "packages/scanner/src/conditional-assertions.mjs",
+            "line": 123,
+            "needle": "record(node, 'ternary-assertion')"
+          }
+        ],
+        "implemented_subset": "Logical && right operands and ternary branches containing direct proven assertions emit P0 candidates.",
+        "remaining": [
+          "Generic assertion identities, callbacks, helper dataflow and modifier provenance are incomplete.",
+          "AST shape and lexical line/window differences require explicit adjudication; raw duplicate candidates are not global dedupe."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 37,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7114,
+        "call": "run_check P1 '#5b' 'Forced actionability bypass' '(?:force|[\"'\"'\"']force[\"'\"'\"'])\\s*:\\s*true' \"$ALL_CODE_GLOB\" 'e2e,force-action'",
+        "pattern_id": "#5b",
+        "title": "Forced actionability bypass",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "force-action"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/actions.mjs",
+            "line": 12,
+            "needle": "export function actions"
+          }
+        ],
+        "implemented_subset": "Literal force:true on bounded proven Playwright and Cypress action calls.",
+        "remaining": [
+          "POM/dynamic options, spreads, duplicates, computed properties and full supported-action signature parity remain incomplete."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 38,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7120,
+        "call": "run_check P0 '#8a' 'Dangling Playwright locator statement' '^\\s*(await\\s+)?page\\.(locator|getBy[A-Za-z]+)\\(([^()]|\\([^()]*\\))*\\)\\s*;?\\s*(//.*)?$' \"$ALL_CODE_GLOB\" 'triage,cont,playwright-only'",
+        "pattern_id": "#8a",
+        "title": "Dangling Playwright locator statement",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage",
+          "cont",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 202,
+            "needle": "function discarded"
+          }
+        ],
+        "implemented_subset": "Discarded direct proven Page locator/getBy calls remain P0 candidates.",
+        "remaining": [
+          "Not full chain/factory/POM provenance; lexical shadow differences are explicitly retained."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 39,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7121,
+        "call": "run_check P0 '#8b' 'Boolean state result discarded' '^\\s*await .*\\.(isVisible|isEnabled|isChecked|isDisabled|isEditable|isHidden)\\([^)]*\\)\\s*;?\\s*(//.*)?$' \"$ALL_CODE_GLOB\" 'e2e,triage,boolean-consumed,playwright-only'",
+        "pattern_id": "#8b",
+        "title": "Boolean state result discarded",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "boolean-consumed",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 8,
+            "needle": "BOOLEAN_STATE"
+          }
+        ],
+        "implemented_subset": "Discarded awaited six-state calls on proven Page/Locator or direct imported type annotations remain P0 candidates.",
+        "remaining": [
+          "POM and type-reexport lineage remain absent; consumed results are excluded by AST shape."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 40,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7128,
+        "call": "run_check P0 '#8c' 'Matcher never invoked' '^\\s*(?:await\\s+)?[A-Za-z_$][A-Za-z0-9_$]*(?:\\s*\\.\\s*(?:expect|soft))*\\s*\\((?:[^()\\n]|\\([^()\\n]*\\))*\\)(?:\\s*\\.\\s*(?:not|resolves|rejects))*\\s*\\.\\s*to[A-Z][A-Za-z0-9_$]*\\s*;?\\s*(//.*)?$' \"$ALL_CODE_GLOB\" 'e2e,playwright-only,uncalled-matcher'",
+        "pattern_id": "#8c",
+        "title": "Matcher never invoked",
+        "severity": "P0",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "playwright-only",
+          "uncalled-matcher"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 108,
+            "needle": "function uncalled"
+          }
+        ],
+        "implemented_subset": "Discarded proven Playwright expect or uncalled matcher statements, with supported soft/modifier chains.",
+        "remaining": [
+          "Full namespace/wrapper and legacy line-shaped discovery equivalence is not established."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 41,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7129,
+        "call": "run_check P0 '#8c' 'Bare expect() without matcher' '^\\s*(?:await\\s+)?(?:[A-Za-z_$][A-Za-z0-9_$]*\\s*\\.\\s*)?expect(?:\\s*\\.\\s*soft)?\\s*\\((?:[^()\\n]|\\([^()\\n]*\\))*\\)\\s*;?\\s*(//.*)?$' \"$ALL_CODE_GLOB\" 'e2e,playwright-only,uncalled-matcher'",
+        "pattern_id": "#8c",
+        "title": "Bare expect() without matcher",
+        "severity": "P0",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "playwright-only",
+          "uncalled-matcher"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/assertions.mjs",
+            "line": 108,
+            "needle": "function uncalled"
+          }
+        ],
+        "implemented_subset": "Discarded proven Playwright expect or uncalled matcher statements, with supported soft/modifier chains.",
+        "remaining": [
+          "Full namespace/wrapper and legacy line-shaped discovery equivalence is not established."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 42,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7130,
+        "call": "run_check P1 '#10a' 'Positional selector' '\\.(nth\\(|first\\(\\)|last\\(\\))' \"$ALL_CODE_GLOB\" 'triage'",
+        "pattern_id": "#10a",
+        "title": "Positional selector",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/dom-queries.mjs",
+            "line": 102,
+            "needle": "record('#10a'"
+          }
+        ],
+        "implemented_subset": "Positional candidate on proven Locator/type annotation or bounded Cypress DOM chain.",
+        "remaining": [
+          "Generic collection/POM and arbitrary Cypress subject chains admitted by legacy grep are not covered."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 43,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7131,
+        "call": "run_check P1 '#10b' 'Serial Playwright suite' '\\.describe\\.serial\\(' \"$ALL_CODE_GLOB\" 'playwright-only,executable-line'",
+        "pattern_id": "#10b",
+        "title": "Serial Playwright suite",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "playwright-only",
+          "executable-line"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/suite-data.mjs",
+            "line": 17,
+            "needle": "function playwrightRoot"
+          }
+        ],
+        "implemented_subset": "Proven Playwright describe.serial or literal configure mode:serial; retained legacy lexical/lookahead boundaries.",
+        "remaining": [
+          "Dynamic/spread/duplicate options and full imported test graph remain unresolved; not full serial configuration inference."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 44,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7132,
+        "call": "run_check P1 '#10b' 'Serial Playwright suite' '\\.describe[[:space:]]*\\.configure[[:space:]]*\\(' \"$ALL_CODE_GLOB\" 'playwright-only,serial-configure'",
+        "pattern_id": "#10b",
+        "title": "Serial Playwright suite",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "playwright-only",
+          "serial-configure"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/suite-data.mjs",
+            "line": 17,
+            "needle": "function playwrightRoot"
+          }
+        ],
+        "implemented_subset": "Proven Playwright describe.serial or literal configure mode:serial; retained legacy lexical/lookahead boundaries.",
+        "remaining": [
+          "Dynamic/spread/duplicate options and full imported test graph remain unresolved; not full serial configuration inference."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 45,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7137,
+        "call": "run_check P1 '#10c' 'Unscoped accessible-name substring match' '(?<![.\\w])page\\.(getByRole|getByLabel|getByPlaceholder)\\((?:(?!exact:)[^)])*name:(?:(?!exact:)[^)])*\\)' \"$ALL_CODE_GLOB\" 'e2e,triage,playwright-only'",
+        "pattern_id": "#10c",
+        "title": "Unscoped accessible-name substring match",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/accessible-names.mjs",
+            "line": 46,
+            "needle": "if(pw&&exact.length)"
+          }
+        ],
+        "implemented_subset": "Runtime-proven direct page.getByRole/getByLabel/getByPlaceholder with same-line literal name options and no explicit exact property produce P1 candidates.",
+        "remaining": [
+          "Aliases, type-only/POM receivers, dynamic/spread/computed options and multiline calls are outside the slice.",
+          "Legacy spelling constraints and exclusion of explicit exact:false are preserved; no collision or container-scope inference."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 46,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7140,
+        "call": "run_check P1 '#10c' 'Cypress accessible-name substring match' '\\bcy\\.findByRole\\([^\\n)]*\\bname\\s*:\\s*/(?!\\^)[^/\\n]+/[a-z]*\\s*[,}]' \"$ALL_CODE_GLOB\" 'e2e,triage,cypress-only,cypress-role-name'",
+        "pattern_id": "#10c",
+        "title": "Cypress accessible-name substring match",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "cypress-only",
+          "cypress-role-name"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/accessible-names.mjs",
+            "line": 51,
+            "needle": "if(cy){"
+          }
+        ],
+        "implemented_subset": "Proven direct cy.findByRole with legacy-shaped same-line regex names lacking a leading ^ produces P1 candidates.",
+        "remaining": [
+          "String names are not promoted to substring candidates; escaped-slash/parenthesis regexes, dynamic options and aliases remain unsupported.",
+          "Framework, line/spelling and all Cypress Testing Library variants are not proven equivalent."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 47,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7141,
+        "call": "run_check P1 '#10d' 'Cypress async callback mixes promises with queued commands' '(?:(?:it|test|specify)\\s*\\([^;\\n]*,\\s*async\\s*(?:function\\b\\s*(?:[A-Za-z_$][\\w$]*)?\\s*\\([^)]*\\)|(?:\\([^)]*\\)|[A-Za-z_$][\\w$]*)\\s*=>)|(?:before|beforeEach|after|afterEach)\\s*\\(\\s*(?:[^,;\\n]+,\\s*)?async\\s*(?:function\\b\\s*(?:[A-Za-z_$][\\w$]*)?\\s*\\([^)]*\\)|(?:\\([^)]*\\)|[A-Za-z_$][\\w$]*)\\s*=>))' \"$ALL_CODE_GLOB\" 'triage'",
+        "pattern_id": "#10d",
+        "title": "Cypress async callback mixes promises with queued commands",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/cypress-callbacks.mjs",
+            "line": 46,
+            "needle": "function queuesCommand"
+          }
+        ],
+        "implemented_subset": "Proven direct Cypress global test/hook async callbacks containing direct queued cy calls produce P1 candidates.",
+        "remaining": [
+          "Callback aliases, helper execution, nested function bodies, optional/computed calls and aliased chains are not modeled.",
+          "Raw AST callback discovery has explicit source-shape differences from the legacy regex; it is not full callback or promise-flow analysis."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 48,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7142,
+        "call": "run_check P1 '#10e' 'Cypress return value assigned outside the command chain' '\\b(const|let|var)\\s+[A-Za-z_$][\\w$]*(?:\\s*:[^=;\\n]+)?\\s*=\\s*cy\\.(?!spy\\(|stub\\()' \"$ALL_CODE_GLOB\"",
+        "pattern_id": "#10e",
+        "title": "Cypress return value assigned outside the command chain",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": []
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/cypress-assignment.mjs",
+            "line": 5,
+            "needle": "export function cypressAssignment"
+          }
+        ],
+        "implemented_subset": "Same-line simple const/let/var assignment of proven global Cypress chain, excluding spy/stub.",
+        "remaining": [
+          "Multiline/destructured/subsequent declarations and alias-mediated chains remain gaps or diagnostics."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 49,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7145,
+        "call": "run_check P1 '#10f' 'Cypress action followed by an unsafe continued chain' '\\.(click|type|check|uncheck|select|selectFile|trigger|scrollIntoView)[[:space:]]*\\(' \"$ALL_CODE_GLOB\" 'triage,cypress-action-chain'",
+        "pattern_id": "#10f",
+        "title": "Cypress action followed by an unsafe continued chain",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage",
+          "cypress-action-chain"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/cypress-callbacks.mjs",
+            "line": 11,
+            "needle": "const CONTINUATIONS"
+          }
+        ],
+        "implemented_subset": "Proven direct cy-rooted action calls followed by one supported immediately invoked continuation produce P1 candidates.",
+        "remaining": [
+          "Only listed action and continuation sets are covered; saved/aliased chains and optional/computed calls are not modeled.",
+          "Subject stability and whether the continuation is actually unsafe remain semantic review."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 50,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7146,
+        "call": "run_check P1 '#14' 'Hardcoded credential candidate' '(?i)(?:(?:password|passwd|secret|credential|token|username|email|auth|validUser|testAdmin|adminUser)[A-Za-z0-9_$-]*[[:space:]]*[:=][[:space:]]*['\"'\"'\"`]|[.](?:fill|type)[[:space:]]*\\([^;\\n]*['\"'\"'\"`]|(?:^|[^A-Za-z0-9_$])(?:login|signIn)[[:space:]]*\\()' \"$ALL_CODE_GLOB\" 'triage,credential-candidate'",
+        "pattern_id": "#14",
+        "title": "Hardcoded credential candidate",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage",
+          "credential-candidate"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/credentials.mjs",
+            "line": 18,
+            "needle": "export function credentials"
+          }
+        ],
+        "implemented_subset": "Name-based literal form/auth-helper/API-field/positive-fixture shapes produce location-only P1 candidates without semantic authentication proof.",
+        "remaining": [
+          "Interpolated/concatenated values, aliases, multiline auth fields and dynamic operation shapes remain bounded gaps or diagnostics.",
+          "Environment-source exclusions and legacy lexical differences require wider differential adjudication; exported location-only candidates are not secret validation.",
+          "CLI strips JUSTIFIED reason text and reports fixed analyzer/offset diagnostics; end-to-end output compatibility and all evidence surfaces remain release gates."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 51,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7151,
+        "call": "run_check P1 '#15' 'Missing await on Playwright expect' '^[[:space:]]*\\(?[[:space:]]*(?:[0-9]+[[:space:]]*,[[:space:]]*)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\\.[[:space:]]*expect)?(?:[[:space:]]|/\\*.*?\\*/)*\\(' \"$ALL_CODE_GLOB\" 'e2e,missing-expect,playwright-only'",
+        "pattern_id": "#15",
+        "title": "Missing await on Playwright expect",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "missing-expect",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 69,
+            "needle": "function expectation"
+          }
+        ],
+        "implemented_subset": "Supported async matcher calls through imported expect; direct discarded calls confirmed, uncertain consumption candidate.",
+        "remaining": [
+          "Namespace expect, retry matchers and full saved-promise lifetime remain absent.",
+          "Source anchors and AST consumed-context differences require exact variant accounting."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 52,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7154,
+        "call": "run_check P1 '#15' 'Missing await on Playwright expect' '^[^;\\n]{0,300}\\{[[:space:]]*(?:[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*[.][[:space:]]*)?expect[[:space:]]*\\(' \"$ALL_CODE_GLOB\" 'e2e,missing-expect,playwright-only'",
+        "pattern_id": "#15",
+        "title": "Missing await on Playwright expect",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "missing-expect",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 69,
+            "needle": "function expectation"
+          }
+        ],
+        "implemented_subset": "Supported async matcher calls through imported expect; direct discarded calls confirmed, uncertain consumption candidate.",
+        "remaining": [
+          "Namespace expect, retry matchers and full saved-promise lifetime remain absent.",
+          "Source anchors and AST consumed-context differences require exact variant accounting."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 53,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7155,
+        "call": "run_check P1 '#15' 'Possible missing await on expect from unresolved test-fixture source' \"^[[:space:]]*expect[[:space:]]*\\\\([^;\\\\n]*\\\\)[[:space:]]*[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*\\\\(\" \"$ALL_CODE_GLOB\" 'triage,playwright-only,unresolved-test-source'",
+        "pattern_id": "#15",
+        "title": "Possible missing await on expect from unresolved test-fixture source",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage",
+          "playwright-only",
+          "unresolved-test-source"
+        ]
+      },
+      "node": {
+        "status": "diagnostic_only",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 21,
+            "needle": "function receiver"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "Unresolved expect provenance gives diagnostics, not legacy unresolved-source candidate."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 54,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7156,
+        "call": "run_check P1 '#15' 'Missing await on Playwright retry assertion' '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*(?:[.][[:space:]]*poll[[:space:]]*[(]|[(])' \"$ALL_CODE_GLOB\" 'e2e,retry-expect,playwright-only'",
+        "pattern_id": "#15",
+        "title": "Missing await on Playwright retry assertion",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "retry-expect",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "diagnostic_only",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 103,
+            "needle": "retry assertion promise analysis"
+          }
+        ],
+        "implemented_subset": null,
+        "remaining": [
+          "expect.poll/toPass missing-await detection is not implemented."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 55,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7162,
+        "call": "run_check P1 '#15' 'Missing await on Playwright expect (awaited locator)' \"^\\\\s*(?:[A-Za-z_$][A-Za-z0-9_$]*\\\\s*\\\\.\\\\s*)?expect\\\\(\\\\s*await\\\\b.*\\\\)\\\\.(${PLAYWRIGHT_ASYNC_MATCHERS})\\\\(\" \"$ALL_CODE_GLOB\" 'e2e,playwright-only'",
+        "pattern_id": "#15",
+        "title": "Missing await on Playwright expect (awaited locator)",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 69,
+            "needle": "function expectation"
+          }
+        ],
+        "implemented_subset": "Supported async matcher calls through imported expect; direct discarded calls confirmed, uncertain consumption candidate.",
+        "remaining": [
+          "Namespace expect, retry matchers and full saved-promise lifetime remain absent.",
+          "Source anchors and AST consumed-context differences require exact variant accounting."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 56,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7163,
+        "call": "run_check P1 '#15' 'Possible deferred/discarded Playwright expect promise' \"^\\\\s*(?:(?:const|let|var)\\\\s+[A-Za-z_$][\\\\w$]*\\\\s*=\\\\s*|void\\\\s+)(?:[A-Za-z_$][A-Za-z0-9_$]*\\\\s*\\\\.\\\\s*)?expect\\\\(.*\\\\)\\\\.(${PLAYWRIGHT_ASYNC_MATCHERS})\\\\(\" \"$ALL_CODE_GLOB\" 'e2e,triage,playwright-only'",
+        "pattern_id": "#15",
+        "title": "Possible deferred/discarded Playwright expect promise",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 55,
+            "needle": "function context"
+          }
+        ],
+        "implemented_subset": "Saved/void/otherwise unproven expect promise consumption remains candidate.",
+        "remaining": [
+          "No full later-await or saved-array lifetime analysis; namespace factories remain unsupported."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 57,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7164,
+        "call": "run_check P1 '#15' 'Possible optional/computed Playwright expect promise' \"(?:expect[[:space:]]*\\\\?[[:space:]]*\\\\.[[:space:]]*\\\\(|expect[[:space:]]*\\\\[[[:space:]]*['\\\"]call['\\\"][[:space:]]*\\\\][[:space:]]*\\\\()[^;\\\\n]*[.](${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*[(]\" \"$ALL_CODE_GLOB\" 'e2e,triage,playwright-only'",
+        "pattern_id": "#15",
+        "title": "Possible optional/computed Playwright expect promise",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 86,
+            "needle": "const uncertain"
+          }
+        ],
+        "implemented_subset": "Optional/computed matcher access and optional direct imported expect calls can be candidates.",
+        "remaining": [
+          "Computed expect[call] callable provenance is not generally implemented; full optional/computed legacy variant equivalence is pending."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 58,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7165,
+        "call": "run_check P1 '#16' 'Possible deferred/discarded Playwright action promise' '\\.(click|dblclick|tap|fill|clear|type|press|pressSequentially|check|uncheck|setChecked|selectOption|setInputFiles|hover|focus|blur|dragTo|drop|dispatchEvent|scrollIntoViewIfNeeded|selectText|screenshot|waitFor|goto|reload|waitForURL|waitForNavigation|goBack|goForward)(?:[[:space:]]|/\\*.*?\\*/)*\\(' \"$ALL_CODE_GLOB\" 'e2e,triage,promise-array,action-deferred,playwright-only'",
+        "pattern_id": "#16",
+        "title": "Possible deferred/discarded Playwright action promise",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "promise-array",
+          "action-deferred",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 115,
+            "needle": "hit = { patternId: '#16'"
+          }
+        ],
+        "implemented_subset": "Bounded Page/Locator action proof with discarded/direct confirmed and deferred/typed/aliased/optional/computed candidates; direct consumed aggregates excluded.",
+        "remaining": [
+          "POM fields and arbitrary factory/wrapper provenance remain absent.",
+          "Saved promise/array lifetime is unresolved; exact direct versus variable legacy disposition must remain independently checked."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 59,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7166,
+        "call": "run_check P1 '#16' 'Possible optional Playwright action promise' '\\.(click|dblclick|tap|fill|clear|type|press|pressSequentially|check|uncheck|setChecked|selectOption|setInputFiles|hover|focus|blur|dragTo|drop|dispatchEvent|scrollIntoViewIfNeeded|selectText|screenshot)[[:space:]]*\\?\\.[[:space:]]*\\(' \"$ALL_CODE_GLOB\" 'e2e,triage,playwright-only'",
+        "pattern_id": "#16",
+        "title": "Possible optional Playwright action promise",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 115,
+            "needle": "hit = { patternId: '#16'"
+          }
+        ],
+        "implemented_subset": "Bounded Page/Locator action proof with discarded/direct confirmed and deferred/typed/aliased/optional/computed candidates; direct consumed aggregates excluded.",
+        "remaining": [
+          "POM fields and arbitrary factory/wrapper provenance remain absent.",
+          "Saved promise/array lifetime is unresolved; exact direct versus variable legacy disposition must remain independently checked."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 60,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7167,
+        "call": "run_check P1 '#16' 'Possible constant-computed Playwright action promise' '\\[[[:space:]]*['\"'\"'\\\"](?:click|fill|press|check|waitFor)['\"'\"'\\\"][[:space:]]*\\][[:space:]]*\\(' \"$ALL_CODE_GLOB\" 'e2e,triage,playwright-only'",
+        "pattern_id": "#16",
+        "title": "Possible constant-computed Playwright action promise",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 115,
+            "needle": "hit = { patternId: '#16'"
+          }
+        ],
+        "implemented_subset": "Bounded Page/Locator action proof with discarded/direct confirmed and deferred/typed/aliased/optional/computed candidates; direct consumed aggregates excluded.",
+        "remaining": [
+          "POM fields and arbitrary factory/wrapper provenance remain absent.",
+          "Saved promise/array lifetime is unresolved; exact direct versus variable legacy disposition must remain independently checked."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 61,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7168,
+        "call": "run_check P1 '#16' 'Missing await on Playwright action' '\\.(click|dblclick|tap|fill|clear|type|press|pressSequentially|check|uncheck|setChecked|selectOption|setInputFiles|hover|focus|blur|dragTo|drop|dispatchEvent|scrollIntoViewIfNeeded|selectText|screenshot|waitFor|goto|reload|waitForURL|waitForNavigation|goBack|goForward)(?:[[:space:]]|/\\*.*?\\*/)*\\(' \"$ALL_CODE_GLOB\" 'e2e,promise-array,action-direct,playwright-only'",
+        "pattern_id": "#16",
+        "title": "Missing await on Playwright action",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "promise-array",
+          "action-direct",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 115,
+            "needle": "hit = { patternId: '#16'"
+          }
+        ],
+        "implemented_subset": "Bounded Page/Locator action proof with discarded/direct confirmed and deferred/typed/aliased/optional/computed candidates; direct consumed aggregates excluded.",
+        "remaining": [
+          "POM fields and arbitrary factory/wrapper provenance remain absent.",
+          "Saved promise/array lifetime is unresolved; exact direct versus variable legacy disposition must remain independently checked."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 62,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7172,
+        "call": "run_check P1 '#16' 'Possible missing await on Locator/POM action' '\\.(click|dblclick|tap|fill|clear|type|press|pressSequentially|check|uncheck|setChecked|selectOption|setInputFiles|hover|focus|blur|dragTo|drop|dispatchEvent|scrollIntoViewIfNeeded|selectText|screenshot|waitFor|goto|reload|waitForURL|waitForNavigation|goBack|goForward)(?:[[:space:]]|/\\*.*?\\*/)*\\(' \"$ALL_CODE_GLOB\" 'e2e,triage,promise-array,action-variable,playwright-only'",
+        "pattern_id": "#16",
+        "title": "Possible missing await on Locator/POM action",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "promise-array",
+          "action-variable",
+          "playwright-only"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/promises.mjs",
+            "line": 115,
+            "needle": "hit = { patternId: '#16'"
+          }
+        ],
+        "implemented_subset": "Bounded Page/Locator action proof with discarded/direct confirmed and deferred/typed/aliased/optional/computed candidates; direct consumed aggregates excluded.",
+        "remaining": [
+          "POM fields and arbitrary factory/wrapper provenance remain absent.",
+          "Saved promise/array lifetime is unresolved; exact direct versus variable legacy disposition must remain independently checked."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 63,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7173,
+        "call": "run_check P1 '#17' 'Discouraged direct Page selector API' '(?<![\\w$])page\\.(click|dblclick|tap|fill|type|press|check|uncheck|setChecked|selectOption|setInputFiles|hover|focus|dispatchEvent|dragAndDrop)\\(\\s*[\"'\"'\"'`]' \"$ALL_CODE_GLOB\" 'e2e,playwright-only,direct-page-api'",
+        "pattern_id": "#17",
+        "title": "Discouraged direct Page selector API",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "playwright-only",
+          "direct-page-api"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/page-reads.mjs",
+            "line": 94,
+            "needle": "function selectorCall"
+          }
+        ],
+        "implemented_subset": "Proven runtime receiver spelled page with a quoted/template selector on 15 direct APIs remains P1 confirmed.",
+        "remaining": [
+          "Type-only/POM receivers and optional/computed calls are outside this runtime slice.",
+          "Nonliteral identifier selectors and immutable aliases use separate candidate mappings; other selector expressions remain diagnostic."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 64,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7177,
+        "call": "run_check P1 '#17' 'Possible discouraged selector-based Page API on POM/aliased receiver' '(?<![\\w$.])(?:this\\.)?[A-Za-z_$][\\w$]*\\.(click|dblclick|tap|fill|type|press|check|uncheck|setChecked|selectOption|setInputFiles|hover|focus|dispatchEvent|dragAndDrop)\\(\\s*[\"'\"'\"'`]' \"$ALL_CODE_GLOB\" 'e2e,triage,playwright-only,triage-page-api'",
+        "pattern_id": "#17",
+        "title": "Possible discouraged selector-based Page API on POM/aliased receiver",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "playwright-only",
+          "triage-page-api"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/page-reads.mjs",
+            "line": 118,
+            "needle": "record('#17', node, node.end, direct"
+          }
+        ],
+        "implemented_subset": "Proven immutable Page aliases with literal/template selectors emit P1 candidates; spelling or type annotation alone does not prove a receiver.",
+        "remaining": [
+          "POM/member/constructor lineage, type-only or unresolved receivers and optional/computed APIs remain unsupported.",
+          "Aliases without a Page annotation/name suffix intentionally add candidates missed by legacy."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 65,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7178,
+        "call": "run_check P1 '#17' 'Possible variable selector passed to Page API' '(?<![\\w$.])(?:this\\.)?[A-Za-z_$][\\w$]*\\.(click|dblclick|tap|fill|type|press|check|uncheck|setChecked|selectOption|setInputFiles|hover|focus|dispatchEvent|dragAndDrop)\\(\\s*[A-Za-z_$][\\w$]*' \"$ALL_CODE_GLOB\" 'e2e,triage,playwright-only,triage-page-api'",
+        "pattern_id": "#17",
+        "title": "Possible variable selector passed to Page API",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "e2e",
+          "triage",
+          "playwright-only",
+          "triage-page-api"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/page-reads.mjs",
+            "line": 114,
+            "needle": "if (!literal && !ts.isIdentifier(selector))"
+          }
+        ],
+        "implemented_subset": "Identifier selectors on direct or proven immutable aliased Page receivers emit P1 candidates without inferring selector value/type.",
+        "remaining": [
+          "Bounded const *Page instances and unresolved *Page names with identifier selectors produce unsupported-provenance diagnostics in proven test callbacks; full POM lineage, type-only receivers and arbitrary selector expressions remain unsupported.",
+          "Direct Page identifier-selector detection intentionally exceeds the legacy triage guard; candidate only, never confirmed."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 66,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7179,
+        "call": "run_check P1 '#9c' 'Network-idle readiness check' '(waitForLoadState\\(\\s*[\\x27\\\"]networkidle[\\x27\\\"]|waitUntil:\\s*[\\x27\\\"]networkidle[\\x27\\\"])' \"$ALL_CODE_GLOB\" 'e2e,playwright-only,executable-line'",
+        "pattern_id": "#9c",
+        "title": "Network-idle readiness check",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "playwright-only",
+          "executable-line"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/networkidle.mjs",
+            "line": 10,
+            "needle": "const OPTIONS_INDEX"
+          }
+        ],
+        "implemented_subset": "Known Page navigation and waitForLoadState calls with literal networkidle options.",
+        "remaining": [
+          "Configuration objects, dynamic state/options, template/concatenation, optional/computed/spread/duplicate forms and nonruntime Page lineage are not equivalent coverage.",
+          "Historical receipt differential is opt-in and can skip without NETWORKIDLE_EVIDENCE."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 67,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7180,
+        "call": "run_check P1 '#18' 'Soft assertion dependency candidate' '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\\.[[:space:]]*expect)?[[:space:]]*\\.[[:space:]]*soft[[:space:]]*\\(' \"$ALL_CODE_GLOB\" 'triage,playwright-only,soft-expect'",
+        "pattern_id": "#18",
+        "title": "Soft assertion dependency candidate",
+        "severity": "P1",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage",
+          "playwright-only",
+          "soft-expect"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/soft-assertions.mjs",
+            "line": 11,
+            "needle": "export function softAssertions"
+          }
+        ],
+        "implemented_subset": "Proven direct soft expect calls at the legacy unawaited physical-line-start boundary remain P1 candidates.",
+        "remaining": [
+          "Awaited, returned, inline and multiline proven calls remain gap diagnostics; configured expect, optional/computed access and extracted soft aliases are outside the slice.",
+          "Critical prerequisite/dependent-work relationships are not inferred from call counts; awaited-form expansion requires an explicit migration decision."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 68,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7185,
+        "call": "run_check P0 '#3b' 'Cypress uncaught exception suppression (Phase 2 confirms blanket vs scoped)' '(cy|Cypress)\\.on\\(' \"$ALL_CODE_GLOB\" triage",
+        "pattern_id": "#3b",
+        "title": "Cypress uncaught exception suppression (Phase 2 confirms blanket vs scoped)",
+        "severity": "P0",
+        "raw_disposition": "candidate",
+        "flags": [
+          "triage"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/control-flow.mjs",
+            "line": 49,
+            "needle": "event !== 'uncaught:exception'"
+          }
+        ],
+        "implemented_subset": "Proven cy/Cypress.on literal uncaught:exception stays P0 candidate for scoped and blanket handlers.",
+        "remaining": [
+          "Dynamic event is diagnostic; unrelated events are explicit legacy false-positive differences; no blanket-vs-scoped semantic promotion."
+        ]
+      },
+      "parity_proven": false
+    },
+    {
+      "call_index": 69,
+      "legacy": {
+        "path": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 7186,
+        "call": "run_check P1 '#19' 'Module-level mutable state in test code' '^(?:export\\s+)?let\\s+' \"$ALL_CODE_GLOB\" 'e2e,initialized-module-state'",
+        "pattern_id": "#19",
+        "title": "Module-level mutable state in test code",
+        "severity": "P1",
+        "raw_disposition": "confirmed",
+        "flags": [
+          "e2e",
+          "initialized-module-state"
+        ]
+      },
+      "node": {
+        "status": "partial",
+        "source_anchors": [
+          {
+            "path": "packages/scanner/src/suite-data.mjs",
+            "line": 64,
+            "needle": "for (const statement of source.statements)"
+          }
+        ],
+        "implemented_subset": "Column-zero first initialized simple let/export let declaration in proven E2E files.",
+        "remaining": [
+          "Destructuring, indented/module blocks and broader mutable-state semantics are not ported; no var/const-mutation expansion."
+        ]
+      },
+      "parity_proven": false
+    }
+  ],
+  "cross_cutting_gaps": [
+    {
+      "gap_id": "inventory-project-boundaries",
+      "status": "partial",
+      "source_anchors": [
+        {
+          "path": "packages/scanner/src/project-context.mjs",
+          "line": 49,
+          "needle": "export function discoverProjectContext"
+        },
+        {
+          "path": "packages/scanner/src/project-context.mjs",
+          "line": 96,
+          "needle": "export function revalidateProjectContext"
+        },
+        {
+          "path": "packages/scanner/src/inventory.mjs",
+          "line": 74,
+          "needle": "const selfExclude ="
+        }
+      ],
+      "remaining": [
+        "Custom testMatch/support/POM membership, config semantics and complete exclusion compatibility remain incomplete; marker discovery is not E2E applicability.",
+        "Like legacy, a whole self-repository scan applies fixture exclusions across descendants; nested marker exceptions apply when that nested scope is requested, not by per-descendant reclassification."
+      ],
+      "implemented_subset": "Nearest Git/project marker discovery pins regular marker bytes and absence without parsing/executing configuration. Inventory integrates context revalidation and scanned-project self fingerprint exclusions with direct-fixture and requested nested-project overrides."
+    },
+    {
+      "gap_id": "scope-and-receivers",
+      "status": "partial",
+      "source_anchors": [
+        {
+          "path": "packages/scanner/src/scope.mjs",
+          "line": 70,
+          "needle": "unsupported package/path alias"
+        },
+        {
+          "path": "packages/scanner/src/receivers.mjs",
+          "line": 18,
+          "needle": "function annotation"
+        },
+        {
+          "path": "packages/scanner/src/source.mjs",
+          "line": 81,
+          "needle": "function propertyAliases"
+        },
+        {
+          "path": "packages/scanner/src/source.mjs",
+          "line": 122,
+          "needle": "export function objectMutationTarget"
+        }
+      ],
+      "remaining": [
+        "Pinned relative imports/reexports and bounded CommonJS exist; package/path aliases, dynamic factories, ambiguous/mutable graphs and full POM lineage are incomplete.",
+        "Direct imported Page/Locator annotations are distinct type-only evidence and cannot silently become runtime confirmed proof.",
+        "Arbitrary call effects, inferred return aliases and unrestricted transitive mutation/dataflow are not proven by these bounded invalidation guards."
+      ],
+      "implemented_subset": "Shared source proof invalidates declaration/simple-assignment aliases on property mutation and explicit Object/Reflect mutation shapes; alias rebinding alone does not invalidate the original object."
+    },
+    {
+      "gap_id": "configuration-and-cli",
+      "status": "partial",
+      "source_anchors": [
+        {
+          "path": "packages/scanner/src/cli.mjs",
+          "line": 55,
+          "needle": "function argumentsFor"
+        },
+        {
+          "path": "packages/scanner/src/project-eslint.mjs",
+          "line": 147,
+          "needle": "export async function projectEslint"
+        }
+      ],
+      "remaining": [
+        "The bounded CLI supports fail-on policy, E2E_SMELL_FAIL_ON and paired local ESLint trust flags; complete legacy option/config precedence remains absent.",
+        "AGENTS is pinned as a self fingerprint marker, not interpreted as policy. General instruction/config semantics discovery remains outside these 69 detector calls."
+      ],
+      "implemented_subset": "Preview exposes pinned opaque project metadata without execution. Bounded mode can explicitly run existing root ESLint config with paired trust flags, watchdog limits and mapped findings; imported config has host access and its dependency graph is not frozen."
+    },
+    {
+      "gap_id": "justified-and-dedupe",
+      "status": "partial",
+      "source_anchors": [
+        {
+          "path": "packages/scanner/src/justified.mjs",
+          "line": 97,
+          "needle": "export function applyJustified"
+        },
+        {
+          "path": "packages/scanner/src/dedupe.mjs",
+          "line": 14,
+          "needle": "export function dedupeFindings"
+        },
+        {
+          "path": "packages/scanner/src/cli.mjs",
+          "line": 173,
+          "needle": "const deduplicated ="
+        }
+      ],
+      "remaining": [
+        "Complete all-detector suppression/chain/browser-callback interactions still need release differential evidence.",
+        "The pure accounting transform supports tier labels but the Node product does not yet produce the complete legacy ESLint/ast-grep/fallback streams.",
+        "Additional detector variants and unmapped classes must preserve their original counting semantics; module-level dedupe alone is not family parity."
+      ],
+      "implemented_subset": "CLI applies shared exact file/line/rule-class accounting after JUSTIFIED, then summarizes retained findings. The dedupe module retains legacy tier ordering, unproven AST #4f/#15 exceptions and unique P0 justified-review records; duplicate references are redacted for public JSON."
+    },
+    {
+      "gap_id": "backend-and-output-contract",
+      "status": "partial",
+      "source_anchors": [
+        {
+          "path": "skills/e2e-reviewer/scripts/scan.sh",
+          "line": 2712,
+          "needle": "dedupe_class_for_pattern()"
+        },
+        {
+          "path": "packages/scanner/src/cli.mjs",
+          "line": 182,
+          "needle": "schema: 'e2e-skills-node-preview-v1'"
+        },
+        {
+          "path": "packages/scanner/src/cli.mjs",
+          "line": 84,
+          "needle": "function diagnosticLocation"
+        }
+      ],
+      "remaining": [
+        "Legacy Tier 1 ESLint/Tier 2 ast-grep/Tier 3 origins, fallback/infrastructure failure and exact accounting are not equivalent to one AST backend.",
+        "Deliberate backend changes need a documented acceptance decision and original-byte differential receipts; do not claim plugin/rule parity.",
+        "Preview JSON/count schema, all output surfaces and final exit semantics are not proven release-compatible by the bounded public diagnostic redaction."
+      ],
+      "implemented_subset": "Public findings omit JUSTIFIED reason values; analyzer diagnostics expose fixed detector text and source offsets rather than parser/provenance message values. Public JSON also exposes bounded project metadata and a redacted duplicate ledger; summary consumes retained findings."
+    },
+    {
+      "gap_id": "runtime-release",
+      "status": "incomplete",
+      "source_anchors": [
+        {
+          "path": "packages/scanner/src/cli.mjs",
+          "line": 100,
+          "needle": "development preview: full scanner rules"
+        }
+      ],
+      "remaining": [
+        "CLI deliberately exits 2 for every preview; no release-ready verdict is implied by implementedPatterns.",
+        "The check runner still uses bundled Python; a pure-Node scan claim does not imply a pure-Node check runtime.",
+        "Tarball installation, supported-platform CI, configuration non-execution and unchanged-source checks remain release gates, not satisfied by this inventory."
+      ]
+    }
+  ],
+  "next_priorities": [
+    {
+      "rank": 1,
+      "lane": "P0 candidate gaps",
+      "targets": [
+        "#3 allSettled/finally/try-catch and unsupported parameterized propagation",
+        "#4f unresolved/generic/wrapped/POM/Cypress variants",
+        "#5a generic assertion and deferred/dataflow gaps"
+      ],
+      "reason": "Existing implementedPatterns can conceal missing silent-pass discovery variants. Reuse shared scope and preserve candidate dispositions; add exact variant differential controls."
+    },
+    {
+      "rank": 2,
+      "lane": "Shared source and accounting contract",
+      "targets": [
+        "configuration precedence and test/support/POM membership",
+        "POM/type provenance decisions",
+        "full detector/backend suppression and dedupe equivalence"
+      ],
+      "reason": "Marker discovery, opt-in root ESLint and shared dedupe are integrated bounded slices. Default scans never execute project config. Full config semantics and provenance/backend equivalence remain unproven."
+    },
+    {
+      "rank": 3,
+      "lane": "Remaining candidate variants and evidence protection",
+      "targets": [
+        "#15 retry assertions",
+        "#4c-4e/#4i/#4k/#18 remaining variants",
+        "#10c/#14 dynamic and multiline exclusions plus output-protection controls"
+      ],
+      "reason": "Recent accessible-name, conditional-assertion and credential modules add bounded candidates. Finish remaining discovery/provenance variants and preserve evidence sanitization without converting partial IDs into family-coverage claims."
+    }
+  ],
+  "verification_sources": [
+    "packages/scanner/test/accessible-names.differential.test.mjs",
+    "packages/scanner/test/accessible-names.test.mjs",
+    "packages/scanner/test/actions-differential.test.mjs",
+    "packages/scanner/test/assertions-candidates-differential.test.mjs",
+    "packages/scanner/test/assertions-differential.test.mjs",
+    "packages/scanner/test/assertions-discarded-differential.test.mjs",
+    "packages/scanner/test/assertions.differential.test.mjs",
+    "packages/scanner/test/catch-handlers-differential.test.mjs",
+    "packages/scanner/test/cli.test.mjs",
+    "packages/scanner/test/collections-differential.test.mjs",
+    "packages/scanner/test/conditional-assertions-differential.test.mjs",
+    "packages/scanner/test/conditional-assertions.test.mjs",
+    "packages/scanner/test/control-flow-differential.test.mjs",
+    "packages/scanner/test/credentials-differential.test.mjs",
+    "packages/scanner/test/credentials.test.mjs",
+    "packages/scanner/test/cypress-assignment-differential.test.mjs",
+    "packages/scanner/test/cypress-callbacks-differential.test.mjs",
+    "packages/scanner/test/dedupe.test.mjs",
+    "packages/scanner/test/dom-queries-differential.test.mjs",
+    "packages/scanner/test/focused-tests-differential.test.mjs",
+    "packages/scanner/test/inventory.test.mjs",
+    "packages/scanner/test/justified-differential.test.mjs",
+    "packages/scanner/test/networkidle.differential.test.mjs",
+    "packages/scanner/test/page-reads-differential.test.mjs",
+    "packages/scanner/test/page-reads.differential.test.mjs",
+    "packages/scanner/test/project-context.test.mjs",
+    "packages/scanner/test/promises-differential.test.mjs",
+    "packages/scanner/test/receivers.test.mjs",
+    "packages/scanner/test/scope-differential.test.mjs",
+    "packages/scanner/test/scope.test.mjs",
+    "packages/scanner/test/soft-assertions.test.mjs",
+    "packages/scanner/test/source.test.mjs",
+    "packages/scanner/test/state-reads-differential.test.mjs",
+    "packages/scanner/test/suite-data-differential.test.mjs",
+    "packages/scanner/test/timeout-zero.differential.test.mjs",
+    "packages/scanner/test/waits-differential.test.mjs",
+    "scripts/ci/test-reviewer-scanner.py"
+  ],
+  "cli_partial_pattern_ids": {
+    "count": 33,
+    "ids": [
+      "#7",
+      "#9",
+      "#9b",
+      "#8c",
+      "#4f",
+      "#10b",
+      "#19",
+      "#3b",
+      "#11c",
+      "#9c",
+      "#5b",
+      "#8a",
+      "#8b",
+      "#4a",
+      "#4b",
+      "#15",
+      "#16",
+      "#4h",
+      "#17",
+      "#10e",
+      "#6",
+      "#10a",
+      "#3",
+      "#4g",
+      "#18",
+      "#10d",
+      "#10f",
+      "#4c-4e",
+      "#4i",
+      "#4k",
+      "#10c",
+      "#5a",
+      "#14"
+    ],
+    "taxonomy_coverage": null,
+    "note": "These 33 partial detector IDs include sub-IDs and a compound ID. They are not 33 complete rules and do not prove coverage of the 24-entry taxonomy."
+  },
+  "intentional_differences": [
+    {
+      "classification": "known_legacy_false_positive",
+      "pattern_id": "#3",
+      "cases": [
+        "rethrow.spec.ts:2",
+        "rethrow.spec.ts:3"
+      ],
+      "description": "Parameterized callbacks with proven all-path throws are excluded from swallowing candidates.",
+      "test_source": "packages/scanner/test/catch-handlers-differential.test.mjs"
+    },
+    {
+      "classification": "known_legacy_false_negative",
+      "pattern_id": "#4f",
+      "cases": [
+        "variants.spec.ts:7"
+      ],
+      "description": "Optional matcher invocation on a proven Locator produces a candidate although legacy matcher discovery misses it.",
+      "test_source": "packages/scanner/test/assertions.differential.test.mjs"
+    },
+    {
+      "classification": "known_legacy_false_negative",
+      "pattern_id": "#17",
+      "cases": [
+        "aliases.spec.ts:8",
+        "aliases.spec.ts:10",
+        "aliases.spec.ts:11"
+      ],
+      "description": "Direct identifier selectors and proven immutable aliases without legacy Page naming/type hints produce candidates.",
+      "test_source": "packages/scanner/test/page-reads.differential.test.mjs"
+    },
+    {
+      "classification": "known_legacy_false_positive",
+      "pattern_id": "#17",
+      "cases": [
+        "foreign.spec.ts:3",
+        "foreign.spec.ts:5"
+      ],
+      "description": "Foreign and lexically shadowed Page spellings cannot borrow runtime receiver proof.",
+      "test_source": "packages/scanner/test/page-reads.differential.test.mjs"
+    },
+    {
+      "classification": "explicit_coverage_gap",
+      "pattern_id": "#3",
+      "cases": [
+        "rethrow.spec.ts:4"
+      ],
+      "description": "Promise.reject propagation remains diagnostic pending independent global/mutation proof; not categorized as a legacy false positive.",
+      "test_source": "packages/scanner/test/catch-handlers-differential.test.mjs"
+    },
+    {
+      "classification": "explicit_coverage_gap",
+      "pattern_id": "#4f",
+      "cases": [
+        "computed-cjs.spec.ts:5"
+      ],
+      "description": "Unbound Page in the unchanged legacy fixture is not runtime proof; no candidate emitted.",
+      "test_source": "packages/scanner/test/assertions.differential.test.mjs"
+    }
+  ],
+  "intentional_differences_note": "Selected newly changed variant differences asserted by checked-in tests, not an exhaustive difference ledger or freshly executed evidence. Matched fixture subsets do not establish full variant parity.",
+  "bounded_cli_contract": {
+    "mode": "--bounded-static",
+    "schema": "e2e-skills-node-bounded-v1",
+    "status": "PARTIAL",
+    "execution_and_coverage_are_separate": true,
+    "coverage_complete": false,
+    "existing_preview_remains_exit_2": true,
+    "all_analysis_diagnostics_remain_execution_incomplete": true,
+    "no_new_legacy_rule_variants_ported": true,
+    "test_source": "packages/scanner/test/cli.test.mjs",
+    "final_rc_execution_evidence": "external receipts required; source references alone are not execution evidence"
+  },
+  "targeted_followup": {
+    "date": "2026-10-21",
+    "coverage": "All 69 legacy calls reproduced with one authored positive shape each and one negative guard each; full syntax coverage and parity remain unproven.",
+    "pom_call_23": "Unsupported member-handle provenance now produces a diagnostic instead of silent clean.",
+    "pom_call_65": "Bounded constructor instances and unresolved *Page names with identifier selectors are diagnosed, with exact legacy-shaped regression controls.",
+    "project_eslint": "Explicit paired trust opt-in loads existing root config; local ESLint8/9/10 with mapped Playwright/Cypress rules verified separately. No project config runs in default comparison.",
+    "policy": "E2E_SMELL_FAIL_ON honored with explicit --fail-on precedence.",
+    "remaining": "Diagnostic-only variants do not provide legacy-equivalent findings. One synthetic shape per call does not cover all supported syntax.",
+    "evidence": "External legacy-69-current-20261021-v3 and v4 retain pre-unbound-call65-fix results; fresh successor results are recorded separately."
+  }
+}

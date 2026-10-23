@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Necessary #5a discovery, lexical parity and fail-closed identity tests."""
+"""Discovery helper tests with frozen legacy shell lexical/classifier oracles."""
 import hashlib
 import importlib.util
 import os
@@ -15,12 +15,16 @@ import tempfile
 import unittest
 from unittest import mock
 
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.legacy_scanner_oracle import legacy_scanner_file
+
 ROOT = Path(__file__).resolve().parents[2]
 HELPER = ROOT / 'skills/e2e-reviewer/scripts/conditional-discovery.py'
 SPEC = importlib.util.spec_from_file_location('conditional_discovery', HELPER)
 helper = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(helper)
-SOURCE = (ROOT / 'skills/e2e-reviewer/scripts/scan.sh').read_text()
+SOURCE = legacy_scanner_file().read_text()
 
 
 def function(source, name):

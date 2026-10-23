@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright,cypress
   testing-types: e2e
   languages: typescript,javascript
-  version: "3.0.1"
+  version: "3.1.0"
 ---
 
 # E2E Test Scenario Quality Review
@@ -42,15 +42,15 @@ An **in-scope E2E artifact** is a Playwright/Cypress spec, POM, support file, fi
 
 ## Phase 1: Mechanical Scan
 
-Before running the scanner, read `references/scanner-workflow.md`. The scanner command lines are in its § Phase 1: Mechanical Scan and nowhere else, and that file holds every prerequisite, tier, fail-closed, suppression, provenance, and recovery rule the run depends on. Run the bundled scanner once per required scan root.
+Before running the scanner, read `references/scanner-workflow.md`. The scanner command lines are in its § Phase 1: Mechanical Scan and nowhere else, and that file holds every prerequisite, output policy, fail-closed, suppression, provenance, and recovery rule the run depends on. Run the bundled scanner once per required scan root.
 
-**Scan scope and output size:** when the request names specific files, use each named in-scope E2E artifact as its own scan root instead of the whole test directory. A directory scan of a real suite can print hundreds of hits (over 100 KB), more than some hosts show in one tool result. For a directory root, use the `--report-file <new-file>` form of the command in `references/scanner-workflow.md`, with `<new-file>` a path that does not exist yet in a scratch location. The scanner writes every hit to that file and prints only the tier and rule headers, the hit count per file, and the `Summary:` line. Read the hits for the files under review from the report file in slices of about 30 KB. Run the scanner in the foreground and wait for its `Summary:` line; never leave it running in the background. Run the scanner command on its own, with no `;`, `&&`, `||`, or pipe added: its output already ends with the `Summary:` line and the host reports its exit status, and a host that allowlists only the scanner command rejects a compound command.
+**Scan scope and output size:** when the request names specific files, use each named in-scope E2E artifact as its own scan root instead of the whole test directory. A directory scan of a real suite can print hundreds of hits (over 100 KB), more than some hosts show in one tool result. For a directory root, use the `--report-file <new-file>` form of the command in `references/scanner-workflow.md`, with `<new-file>` a path that does not exist yet in a scratch location. The scanner writes every hit to that file and prints a bounded digest with finding counts and the Summary. Read the hits for the files under review from the report file in slices of about 30 KB. Run the scanner in the foreground and wait for its `Summary:` line; never leave it running in the background. Run the scanner command on its own, with no `;`, `&&`, `||`, or pipe added: its output already ends with the `Summary:` line and the host reports its exit status, and a host that allowlists only the scanner command rejects a compound command.
 
 Resolve `<skill-base>` using `references/scanner-workflow.md` before invoking any bundled tool; never guess the loaded copy.
 
 Apply the target-execution trust gate in `references/scanner-workflow.md`: explicit checkout trust and approval of the exact command, environment, and flags are both required; otherwise record `recommended/unexecuted`. Repository documentation is not approval.
 
-A scanner `INCOMPLETE` result or exit 2 is never clean: apply the exact bounded recovery in `references/scanner-workflow.md`, keep uncovered roots explicit, and do not report a Summary the scanner did not emit. Deduplicate equivalent tier results, state which tiers actually ran, and treat scanner hits as mechanical signals that still require Phase 2 wherever the rule calls for context.
+A scanner `INCOMPLETE` result or exit 2 is never clean: apply the exact bounded recovery in `references/scanner-workflow.md`, keep uncovered roots explicit, and do not report a Summary the scanner did not emit. Deduplicate equivalent results and state which bundled checks and optional project ESLint actually ran. Resolve retained candidates and review obligations in Phase 2 even after completed execution with P0=0; execution completion is not review completion.
 
 ---
 
@@ -58,9 +58,9 @@ A scanner `INCOMPLETE` result or exit 2 is never clean: apply the exact bounded 
 
 Before resolving any candidate, read `references/semantic-review.md` (in a tool call of its own when you fetch it) and apply every matching confirmation, false-positive exclusion, mandatory sweep row, consolidation rule, and primary-line anchor. Also read the matching `references/patterns/<id>.md`, as § Pattern Reference below directs, whenever a pattern's exact contract or a hit is ambiguous; the Quick Reference alone is not a verdict source.
 
-**Zero-P0 floor (MANDATORY):** Phase 1 reporting 0 P0 does NOT end the review. The LLM-only checks (#1 Name-Assertion, #2 Missing Then, #3 try/catch shapes, #12 Missing Auth, and the #20–#23 write-path checks above) run regardless of mechanical hit counts — multi-line shapes the regexes miss (e.g. blanket multi-line `cy.on('uncaught:exception')` suppressors) have carried a suite's entire P0 surface.
+**Zero-P0 floor (MANDATORY):** Phase 1 reporting 0 P0 does NOT end the review. The LLM-only checks (#1 Name-Assertion, #2 Missing Then, #3 try/catch shapes, #12 Missing Auth, and the #20–#23 write-path checks above) run regardless of mechanical hit counts — unsupported shapes and unresolved context can hide a suite's entire P0 surface.
 
-**LLM-only write-path checks (#20–#23) run on EVERY review.** They have no grep signal; execute all four procedures in `references/semantic-review.md` regardless of scanner hit counts.
+**LLM-only write-path checks (#20–#23) run on EVERY review.** Do not rely on a scanner signal; execute all four procedures in `references/semantic-review.md` regardless of scanner hit counts.
 
 **Bounded opening-token sweep is MANDATORY.** Run exactly every row in `references/semantic-review.md` § Bounded opening-token sweep on every review, no more and no less, and deduplicate lines already reported by Phase 1.
 

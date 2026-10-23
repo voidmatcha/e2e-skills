@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=76503bbf91d620041574636da32ee71c8fd11b92e67c9d202350c81f1284f638; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=c9e98e916806420513ea4e729eea693287b94128bbd84d8a6add47165c6f3cc1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディング agent が Playwright/Cypress の E2E テストを生成し、レビューし、失敗を診断するための 4 つの skill です。skill は agent が作業時に従う指示の集まりです。
 
@@ -216,7 +216,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 実際のアプリケーションと E2E suite を補完するために使ってください。レビューと診断は Playwright/Cypress、生成は Playwright のみを対象とします。
 
-同梱のシェルスクリプトとアーティファクトリーダーは、`/bin/bash` と、ランチャーが要求する固定のシステム実行ファイルパスを使う一般的な macOS/Linux 構成を対象としています。Windows ユーザーには互換性のある WSL ディストリビューションと、WSL ファイルシステム内のアーティファクトが必要で、ネイティブ Windows はサポートしていません。NixOS や、Nix・pyenv・Conda・nvm だけで導入したツールは、すべてが自動検出されるわけではありません。レビュアーのスキャナーは、検証済みの絶対パスによる `E2E_SMELL_*_BIN` の上書きに対応していますが、デバッガーのランチャーに同じ上書きがあるという意味ではありません。信頼できるツールが見つからない場合は、該当の操作が停止します。環境の `PATH` を探索してこの境界を回避しないでください。スキルのリソースは、推測したホームディレクトリではなく、プラグインキャッシュやカスタムインストールを含め、ホストが実際に提供するスキルの場所から解決してください。
+同梱のシェルスクリプトとアーティファクトリーダーは、`/bin/bash` と、ランチャーが要求する固定のシステム実行ファイルパスを使う一般的な macOS/Linux 構成を対象としています。Windows ユーザーには互換性のある WSL ディストリビューションと、WSL ファイルシステム内のアーティファクトが必要で、ネイティブ Windows はサポートしていません。NixOS や、Nix・pyenv・Conda・nvm だけで導入したツールは、すべてが自動検出されるわけではありません。信頼できるツールが見つからない場合は、該当の操作が停止します。環境の `PATH` を探索してこの境界を回避しないでください。スキルのリソースは、推測したホームディレクトリではなく、プラグインキャッシュやカスタムインストールを含め、ホストが実際に提供するスキルの場所から解決してください。
 
 generator は `thin-rules.md` と安全指示を公式 planner と generator に付けて委譲し、reviewer scanner と新しいテストを実行します。何もインストールせず、agent・MCP 設定を変更せず、CLI fallback や healer を使いません。設定がなければ手順を案内します。
 
@@ -355,12 +355,18 @@ AI agent に依頼せず、コードスキャナーだけを直接実行でき�
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-Python 3 と PCRE2 対応の ripgrep (`rg`) が必要です。デフォルトでは対象プロジェクトの ESLint コードを実行せず、ツールもダウンロードしません。必要なツールや読み取り可能なファイルがなければ、問題なしではなくエラーを報告します。
+Node.js 22 以降が必要で、TypeScript パーサーは同梱されています。ランチャーはデフォルトで静的検査を実行し、テキストを出力します。テスト実行、ツールのダウンロード、プロジェクト設定の実行は行いません。構造化された出力には `--format json`、レポートの保存には `--report-file <new-file>` を使います。既存ファイルは上書きしません。
+
+scanner は reviewer に同梱され、npm のインストールなしでオフラインで動作します。単独で使う場合は、次のバージョン固定 npm コマンドを実行します。scan だけでは assertion mutation や fault injection は実行されません。これらの検査には Python 3.10+ と、信頼でき準備済みのプロジェクトが必要です。[CLI と probe のガイド](packages/scanner/README.md)を参照してください。
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests
+```
 
 <details>
 <summary>スキャナーの詳細設定とファイル読み取り範囲</summary>
 
-スキャナーには PCRE2 対応の `rg` と Python 3 が必要です。Python が NUL-safe な candidate identity records を作成・検証するため、candidate drift や不正な record は fail closed になります。この必須の bookkeeping は optional な Tier 2 AST tooling とは別です。デフォルトでは、target-controlled な ESLint binaries、plugins、parsers、configuration を実行せず、tools も download しません。`E2E_SMELL_ALLOW_PROJECT_ESLINT=1` は trusted checkout で project ESLint execution を opt in します。`E2E_SMELL_NO_ESLINT_DOWNLOAD=0` と `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` は、それぞれ pinned downloads を opt in します。portability check で preinstalled host binaries を無視する必要がある場合は、`E2E_SMELL_DISABLE_AST_GREP=1` を設定してください。
+インストール済みのプロジェクト ESLint と設定を実行するには、checkout を明示的に信頼し、正確なコマンドを承認してから `--project-eslint --trust-project` を追加します。プロジェクト管理のコードが host 権限で動作し、sandbox や依存関係のインストールは提供しません。同梱検査にはこの指定は不要です。
 
 > **読み取り範囲。**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
@@ -371,7 +377,7 @@ Python 3 と PCRE2 対応の ripgrep (`rg`) が必要です。デフォルトで
 同梱 checks は `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` の source を読み取ります。
 <!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
-Tier 3 は同梱 fallback です。optional ESLint と ast-grep tiers は精度を高めますが、semantic review を置き換えるものではありません。scanner は infrastructure または filesystem errors では false clean result を報告せず、exit 2 で終了します。trust と network boundary については [SECURITY.md](SECURITY.md) を参照してください。
+デフォルトの `p0` ポリシーは機械的に確認された P0 があれば exit 1 を返します。P0 候補も対象にするには `--fail-on p0-candidate` を指定します。`any` は確認済みの全指摘を対象とし、`none` は件数による終了判定を行いません。exit 0 は選んだ基準に達しなかったことだけを示します。実行完了かつ P0=0 でも、残る候補と追加確認事項のレビューが必要です。入力不足、ソースの整合性や解析の失敗は INCOMPLETE と exit 2 を返します。すべての意味的な検証を完了したことは保証しません。実行とネットワークの境界は [SECURITY.md](SECURITY.md) を参照してください。
 
 </details>
 

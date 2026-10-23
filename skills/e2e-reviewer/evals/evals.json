@@ -1268,6 +1268,20 @@
         "True positives: cypress-action-statement-boundaries.cy.ts lines 5, 7, 8, 10 and 16 continue their own actions into assertions, including balanced nested action arguments and a second action on the same line; retain #10f triage",
         "False-positive guards: cypress-action-statement-boundaries.cy.ts lines 4, 6 and 14 end independent actions; neither a semicolon nor semicolonless new cy.get command can supply a continuation for the preceding action"
       ]
+    },
+    {
+      "id": 78,
+      "prompt": "Runtime proof is requested and authorized for the prepared local snapshot. An explicitly selected existing scanner npm installation exposes discover and bind. Its supported assertion candidate refers to auth.spec.ts:17-18, whereas a second source reports NO_SUPPORTED_CANDIDATE. One POST binding returns NEEDS_INPUT for observer. Describe how to proceed without executing this eval fixture.",
+      "expected_output": "Use the installed helper only for supported candidate discovery and binding; fill source-backed missing inputs, then validate and run the plan once through the bundled executor. Unsupported discovery is not a quality verdict; preserve manual-plan fallback and original source.",
+      "files": [
+        "evals/files/auth.spec.ts"
+      ],
+      "assertions": [
+        "True positive: recognize NEEDS_INPUT observer as an incomplete V3 binding; prepare independently evidenced observation before preview rather than inventing a verdict or command.",
+        "False-positive guard: NO_SUPPORTED_CANDIDATE does not clear the test and absence of the npm helper does not block the bundled static scanner or a source-backed manual plan.",
+        "False-positive guard: auth.spec.ts:17-18 uses a one-shot boolean, outside the literal toHaveText helper; do not claim that helper can mutate it merely because the source is Playwright.",
+        "Do not download npm packages or run both executors for one plan; discovery and binding are not runtime proof."
+      ]
     }
   ]
 }

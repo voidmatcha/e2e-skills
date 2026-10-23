@@ -1,0 +1,2 @@
+# Preserve upstream vendor bytes: runtime and license integrity is hash-pinned.
+skills/e2e-reviewer/scripts/scanner/vendor/typescript/* -text -whitespace

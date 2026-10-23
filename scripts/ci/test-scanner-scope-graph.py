@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Scope metadata must preserve path-sensitive DFS and reject stale provenance."""
+"""Scope helper regressions; shell-wrapper checks use the frozen legacy oracle."""
 import importlib.util
 from pathlib import Path
 import tempfile
@@ -8,6 +8,10 @@ import shutil
 import subprocess
 import sys
 import unittest
+
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.legacy_scanner_oracle import legacy_scanner_file
 
 SCRIPT = Path(__file__).resolve().parents[2] / 'skills/e2e-reviewer/scripts/scope-graph.py'
 spec = importlib.util.spec_from_file_location('scope_graph', SCRIPT)
@@ -77,7 +81,7 @@ class ScopeGraphTests(unittest.TestCase):
             with self.assertRaises(module.ScopeError): witnesses.validate()
 
     def test_shell_wrapper_distinguishes_negative_from_interpreter_crash(self):
-        scanner = SCRIPT.with_name('scan.sh').read_text()
+        scanner = legacy_scanner_file().read_text()
         start = scanner.index('scope_graph_call() {')
         end = scanner.index('\n}\n', start) + 3
         function = scanner[start:end]
@@ -96,7 +100,7 @@ class ScopeGraphTests(unittest.TestCase):
                 self.assertEqual((base / 'scope-errors').exists(), error_marker)
 
     def test_unwritable_error_marker_aborts_parent_despite_later_validation_success(self):
-        scanner = SCRIPT.with_name('scan.sh').read_text()
+        scanner = legacy_scanner_file().read_text()
         def function(name):
             start = scanner.index(name + '() {')
             end = scanner.index('\n}\n', start) + 3

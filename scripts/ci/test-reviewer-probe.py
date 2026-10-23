@@ -4,10 +4,13 @@
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 RUNNER = Path(__file__).resolve().parents[2] / 'skills/e2e-reviewer/scripts/run-probe.py'
@@ -53,6 +56,109 @@ class Probe(unittest.TestCase):
     def test_survived(self):self.assertEqual(self.run_probe()['verdict'],'SURVIVED')
     def test_detected(self):
         (self.source/'policy.txt').write_text('detected');self.assertEqual(self.run_probe()['verdict'],'DETECTED')
+    def boundary_mode(self, mode):
+        self.plan['mode'] = mode
+        (self.source/'policy.txt').write_text('detected')
+        if mode == 'assertion-mutation':
+            self.plan['edits'] = [{'path':'test.spec.ts','before':'assert transfer','after':'assert impossible','sha256':sha(b'assert transfer'),'kind':'test'}]
+            self.native(NATIVE.replace("fault=(p/'app.txt').read_text()=='BROKEN'", "fault=(p/'test.spec.ts').read_text()=='assert impossible'"))
+    def boundary_result(self):
+        before = {p.relative_to(self.source).as_posix(): (p.read_bytes(), p.stat().st_mode) for p in self.source.rglob('*') if p.is_file()}
+        preview,_ = self.invoke()
+        self.assertEqual(preview['verdict'], 'PREVIEW')
+        result,out = self.invoke(True, preview['approval_sha256'])
+        after = {p.relative_to(self.source).as_posix(): (p.read_bytes(), p.stat().st_mode) for p in self.source.rglob('*') if p.is_file()}
+        self.assertEqual(after, before)
+        self.assertTrue(result['original_source_unchanged'])
+        self.assertEqual(result['source_before_sha256'], result['source_after_sha256'])
+        self.assertEqual(result['verdict'], 'CANNOT_VERIFY')
+        self.assertFalse(result['behavior_proof'])
+        return result,out
+    def test_native_command_startup_failure_preserves_original(self):
+        for mode in ('behavior-fault', 'assertion-mutation'):
+            with self.subTest(mode=mode):
+                self.boundary_mode(mode)
+                self.plan['test']['argv'] = [str(self.root/'missing-python'), 'native.py']
+                result,out = self.boundary_result()
+                self.assertEqual(result['phases'], {})
+                self.assertIn('No such file', result['error'])
+                self.assertFalse((out/'fault').exists())
+    def test_native_nonzero_cannot_use_valid_report_as_detection(self):
+        for mode in ('behavior-fault', 'assertion-mutation'):
+            with self.subTest(mode=mode):
+                self.boundary_mode(mode)
+                script = (self.source/'native.py').read_text().replace('raise SystemExit(1 if failed else 0)', "raise SystemExit(7 if phase=='fault' else 0)")
+                self.native(script)
+                result,out = self.boundary_result()
+                self.assertEqual(result['error'], 'native exit/report mismatch')
+                report = json.loads((out/'fault/project/native-report.json').read_text())
+                self.assertEqual(report['suites'][0]['specs'][0]['tests'][0]['results'][0]['status'], 'failed')
+                self.assertEqual(json.loads((out/'fault/test/command.json').read_text())['exit_code'], 7)
+    def test_native_timeout_cannot_use_valid_report_as_detection(self):
+        for mode in ('behavior-fault', 'assertion-mutation'):
+            with self.subTest(mode=mode):
+                self.boundary_mode(mode)
+                script = (self.source/'native.py').read_text().replace('raise SystemExit(1 if failed else 0)', "if phase=='fault':\n import time;time.sleep(30)\nraise SystemExit(1 if failed else 0)")
+                self.native(script)
+                self.plan['test']['timeout_seconds'] = 1
+                result,out = self.boundary_result()
+                self.assertEqual(result['error'], 'native exit/report mismatch')
+                receipt = json.loads((out/'fault/test/command.json').read_text())
+                self.assertTrue(receipt['timeout'])
+                self.assertIsNone(receipt['exit_code'])
+                self.assertTrue((out/'fault/project/native-report.json').is_file())
+    def test_failed_observer_cannot_use_valid_stdout_as_detection(self):
+        for mode in ('behavior-fault', 'assertion-mutation'):
+            self.boundary_mode(mode)
+            for phase in ('normal', 'fault', 'restored'):
+                with self.subTest(mode=mode, phase=phase):
+                    # Emit otherwise valid observations before failing. Even a late
+                    # observer failure must invalidate the entire three-phase proof.
+                    script = OBSERVER + "\nimport os\nraise SystemExit(7 if os.environ['E2E_PROBE_PHASE']==" + repr(phase) + " else 0)\n"
+                    (self.source/'observer.py').write_text(script)
+                    self.plan['observer']['source']['sha256'] = sha(script.encode())
+                    result,out = self.boundary_result()
+                    self.assertEqual(result['error'], 'observer command failed')
+                    command_dir = out/phase/'observer'
+                    self.assertEqual(json.loads((command_dir/'command.json').read_text())['exit_code'], 7)
+                    self.assertIn('evidence', json.loads((command_dir/'stdout.txt').read_text()))
+    @unittest.skipUnless(os.name == 'posix', 'process groups require POSIX')
+    def test_timeout_kills_owned_child_process_group(self):
+        spec = importlib.util.spec_from_file_location('probe_timeout', RUNNER)
+        module = importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        output = self.root/'command';output.mkdir()
+        child_pid = self.root/'child.pid'
+        child_code = 'import time;time.sleep(30)'
+        parent_code = "import pathlib,subprocess,sys,time;p=subprocess.Popen([sys.executable,'-c'," + repr(child_code) + "]);pathlib.Path(" + repr(str(child_pid)) + ").write_text(str(p.pid));time.sleep(30)"
+        def alive(pid):
+            # A reparented zombie has stopped executing; Linux container PID 1
+            # need not reap it immediately, so kill(pid, 0) alone is insufficient.
+            if sys.platform.startswith('linux'):
+                try:
+                    status = (Path('/proc')/str(pid)/'stat').read_text()
+                except FileNotFoundError:
+                    return False
+                # The parenthesized command name may contain spaces or ')'.
+                # State is the first token after its final closing parenthesis.
+                state = status.rsplit(')', 1)[1].split()[0]
+                return state not in ('Z', 'X')
+            status = subprocess.run(['/bin/ps','-o','stat=','-p',str(pid)], capture_output=True, text=True, timeout=2)
+            return bool(status.stdout.strip()) and not status.stdout.strip().startswith('Z')
+        try:
+            receipt = module.run_command({'argv':[sys.executable,'-c',parent_code], '_selector':'copies content', 'timeout_seconds':1}, self.source, 'fault', self.root/'unused-report.json', output)
+            self.assertTrue(child_pid.is_file(), 'child must start before timeout')
+            pid = int(child_pid.read_text())
+            self.assertTrue(receipt['timeout'])
+            self.assertIsNone(receipt['exit_code'])
+            self.assertIs(receipt['owned_process_group_cleanup'], True)
+            deadline = time.monotonic() + 3
+            while alive(pid) and time.monotonic() < deadline:time.sleep(0.05)
+            self.assertFalse(alive(pid), 'owned child survived process-group cleanup')
+            self.assertEqual(json.loads((output/'command.json').read_text()), receipt)
+        finally:
+            if child_pid.exists():
+                try:os.kill(int(child_pid.read_text()), signal.SIGKILL)
+                except ProcessLookupError:pass
     def seed_observer(self, create_seed):
         # Synthetic state-machine regression, not browser or model evidence.
         script = """import hashlib,json,pathlib

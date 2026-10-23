@@ -41,6 +41,9 @@ if [ "${PREFLIGHT_TEST_SCAN_MALFORMED:-0}" = 1 ]; then
   echo "scanner exited zero without a parseable summary"
   exit 0
 fi
+triage=0
+candidate=0
+p1p2=0
 if [ "${PREFLIGHT_TEST_SCAN_ZERO:-0}" = 1 ]; then
   total=0
   p0=0
@@ -63,8 +66,34 @@ else
   esac
   ast=0
 fi
-echo "  ast-grep total: $ast hit(s)"
-echo "Summary: $total total hit(s), $p0 P0, 0 P1, 0 P2"
+if [ "${PREFLIGHT_TEST_SCAN_CANDIDATE:-0}" = 1 ]; then
+  triage=$total
+  candidate=$total
+  p0=0
+fi
+if [ "${PREFLIGHT_TEST_SCAN_CANDIDATE_INCREASE:-0}" = 1 ]; then
+  p0=0
+  case "$1" in
+    *baseline*) total=2; p1p2=2 ;;
+    *) total=1; triage=1; candidate=1 ;;
+  esac
+fi
+echo "Node source scan (canonical report view)"
+echo "Coverage: BOUNDED; discovery: COMPLETE."
+if [ "$p0" -gt 0 ]; then echo "[P0][CONFIRMED] #7 Static finding ($p0 hit)"; fi
+if [ "$p1p2" -gt 0 ]; then echo "[P1][CONFIRMED] #9 Static finding ($p1p2 hits)"; fi
+if [ "$candidate" -gt 0 ]; then echo "[P0?][LLM-TRIAGE] #3 Static candidate ($candidate hit)"; fi
+echo "AST-origin total: $ast hit(s); retained findings, not ast-grep execution."
+summary="Summary: $total total hit(s), $p0 P0, $p1p2 P1/P2 heuristic, $triage LLM-triage, $candidate P0 candidate; $ast AST-origin hit(s), canonical retained findings."
+echo "$summary"
+case "${PREFLIGHT_TEST_SCAN_INVALID:-}" in
+  duplicate) echo "$summary" ;;
+  incomplete) echo "INCOMPLETE: parser failed" ;;
+  error) echo "error: scanner failed" ;;
+  hidden-p0) echo "[P0][CONFIRMED] #7 Static finding (1 hit)" ;;
+  hidden-candidate) echo "[P0?][LLM-TRIAGE] #3 Static candidate (1 hit)" ;;
+  ast-mismatch) echo "AST-origin total: 999 hit(s); retained findings, not ast-grep execution." ;;
+esac
 """,
         )
         self.repo.mkdir()
@@ -354,6 +383,32 @@ class PreflightFailClosedTests(unittest.TestCase):
         self.assertIn("smell-delta    SKIP", result.stdout)
         self.assertIn("semantic-only", result.stdout)
         self.assertIn("PREFLIGHT 0 fail(s)", result.stdout)
+
+    def test_incomplete_duplicate_and_hidden_findings_fail_closed(self) -> None:
+        spec = self.harness.prepare_playwright_repo()
+        for mode in ("duplicate", "incomplete", "error", "hidden-p0", "hidden-candidate", "ast-mismatch"):
+            with self.subTest(mode=mode):
+                result = self.harness.run(spec, extra_env={
+                    "PREFLIGHT_RUN_SPECS": "0", "PREFLIGHT_SEMANTIC_ONLY": "1",
+                    "PREFLIGHT_TEST_SCAN_ZERO": "1", "PREFLIGHT_TEST_SCAN_INVALID": mode,
+                })
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertIn("scanner infrastructure/output failed", result.stdout)
+
+    def test_candidate_delta_is_separate_from_confirmed_p0(self) -> None:
+        spec = self.harness.prepare_playwright_repo()
+        result = self.harness.run(spec, extra_env={
+            "PREFLIGHT_RUN_SPECS": "0", "PREFLIGHT_SEMANTIC_ONLY": "1",
+            "PREFLIGHT_TEST_SCAN_CANDIDATE": "1",
+        })
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("p0 0->0, p0-candidate 1->0", result.stdout)
+        increased = self.harness.run(spec, extra_env={
+            "PREFLIGHT_RUN_SPECS": "0", "PREFLIGHT_SEMANTIC_ONLY": "1",
+            "PREFLIGHT_TEST_SCAN_CANDIDATE_INCREASE": "1",
+        })
+        self.assertEqual(increased.returncode, 1, increased.stdout + increased.stderr)
+        self.assertIn("p0-candidate 0->1", increased.stdout)
 
     def test_unchanged_nonzero_smell_delta_still_fails(self) -> None:
         spec = self.harness.prepare_playwright_repo()

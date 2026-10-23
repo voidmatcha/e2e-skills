@@ -142,9 +142,16 @@ assert report["runner_identity"].endswith("/fake-runner")
 assert report["runner_executable"].endswith("/fake-runner")
 assert report["model"] == "fake-model"
 assert report["reasoning_effort"] is None
-assert len(report["git_revision"]) == 40
-assert isinstance(report["git_dirty"], bool)
-assert len(report["git_dirty_sha256"]) == 64
+# A source-only CI export has no Git provenance. Do not invent revision or
+# dirty-tree evidence there; all evaluated-input digests below remain required.
+if (pathlib.Path(sys.argv[2]) / ".git").exists():
+    assert isinstance(report["git_revision"], str) and len(report["git_revision"]) == 40
+    assert isinstance(report["git_dirty"], bool)
+    assert isinstance(report["git_dirty_sha256"], str) and len(report["git_dirty_sha256"]) == 64
+else:
+    assert report["git_revision"] is None
+    assert report["git_dirty"] is None
+    assert report["git_dirty_sha256"] is None
 assert len(report["evaluator_sha256"]) == 64
 assert len(report["prompt_set_sha256"]) == 64
 assert len(report["skill_sha256"]) == 64
@@ -1024,6 +1031,9 @@ with tempfile.TemporaryDirectory() as workspace_dir:
         (skill / "references" / name).write_text(f"{name} contract\n", encoding="utf-8")
     (skill / "references/pattern-reference.md").write_text(
         "Pattern contract\n", encoding="utf-8"
+    )
+    (skill / "references/grep-patterns.md").write_text(
+        "Pattern ID lookup contract\n", encoding="utf-8"
     )
     (skill / "references/verification-rules.md").write_text(
         "Verification contract\n", encoding="utf-8"

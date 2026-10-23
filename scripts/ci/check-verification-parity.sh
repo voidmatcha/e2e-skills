@@ -176,7 +176,17 @@ def debugger_handoff(label, text):
                 file=sys.stderr,
             )
             raise SystemExit(1)
-    for clause in ("recommended", "use `CANNOT_VERIFY` with the exact missing evidence", "Do not install a verifier", "never dispatches a reviewer", "never quotes or invents a verdict", "exit 0 means P0=0"):
+    for clause in (
+        "recommended",
+        "use `CANNOT_VERIFY` with the exact missing evidence",
+        "Do not install a verifier",
+        "never dispatches a reviewer",
+        "never quotes or invents a verdict",
+        "exit 0 means no confirmed P0",
+        "exit 1 with a Summary means confirmed P0",
+        "Retained candidates and review obligations still need source review even at exit 0.",
+        "Reserve `CANNOT_VERIFY` for exit 2, INCOMPLETE or a missing Summary.",
+    ):
         if clause not in text:
             print(
                 f"verification parity: {label} missing proof boundary {clause}",

@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import copy
 import os
 from pathlib import Path
 import shutil
@@ -25,7 +27,7 @@ class ViewTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="self-scan-view-tests-")
         self.addCleanup(self.temp.cleanup)
-        self.base = Path(self.temp.name)
+        self.base = Path(self.temp.name).resolve()
         self.source = self.base / "source"
         self.source.mkdir()
         self.fixture = self.source / HELPER.FROZEN_PATH
@@ -140,18 +142,173 @@ class ViewTests(unittest.TestCase):
                 with self.assertRaises(HELPER.ViewError):
                     HELPER.create_view(self.source, destination)
 
+    def control_report(self):
+        file = str(self.fixture)
+        gaps = [("actions", "import-unpinned", None), ("pageReads", "import-unpinned", 1517),
+                ("accessibleNames", "import-unpinned", 543),
+                ("conditionalAssertions", "provenance-unsupported", 1801),
+                ("conditionalAssertions", "import-unpinned", 1920),
+                ("conditionalAssertions", "import-unpinned", 2115)]
+        return {
+            "schema": "e2e-skills-node-scan-v1", "status": "INCOMPLETE", "scope": "static-review",
+            "failOn": "p0-candidate", "files": 1, "coverage": {"complete": False},
+            "compatibility": {"contract": "source-review-v1", "status": "development", "referenceLegacyCallVariants": 69},
+            "review": {"required": True, "candidates": 2, "obligations": []},
+            "execution": {"complete": False, "exitCode": 2,
+                          "incomplete": [f"analysis incomplete: {file}: {detector} could not establish its contract"
+                                         + (f" at offset {start}" if start is not None else "")
+                                         for detector, _, start in gaps],
+                          "diagnostics": [{"code": code, "detector": detector, "file": file,
+                                           **({"start": start} if start is not None else {})}
+                                          for detector, code, start in gaps]},
+            "counts": {"total": 2, "p0": 0, "p1p2": 0, "triage": 2, "p0Candidate": 2, "ast": 2, "confirmed": 0},
+            "findings": [{"patternId": pattern, "severity": "P0", "disposition": "candidate", "origin": "ast",
+                          "file": file, "line": line, "column": column, "start": start, "end": end,
+                          "evidence": {"kind": "unresolved-fixture",
+                                       "requirements": ["verify-runtime-binding", "verify-required-test-outcome"]}}
+                         for pattern, line, column, start, end in [("#5a", 25, 5, 1655, 2185), ("#3", 35, 34, 2233, 2270)]],
+            "suppressed": [], "duplicates": [], "projectEslint": {"requested": False, "executed": False},
+            "configurationAnalysis": {
+                "schema": "node-configuration-context-v1", "status": "UNAVAILABLE",
+                "projectRoot": str(self.source), "effectiveConfiguration": False,
+                "runnerSelectionApplied": False, "configurations": [],
+                "unknowns": [{"code": "CONFIG_ROOT_NOT_FOUND"}],
+                "ruleComparison": {
+                    "relationship": "OVERLAPPING_SLICES_NOT_EQUIVALENT_COVERAGE",
+                    "mappedRules": [], "scannerSlicesWithoutMappedEslintRule": [],
+                    "scannerRulesDisabled": False,
+                    "effectiveRuleStates": "projectEslint.effectiveConfiguration.files",
+                },
+            },
+        }
+
     def test_unknown_original_scan_outcomes_fail_closed(self):
-        valid = ("[P0?][LLM-TRIAGE] #3 Catch fallback (1 hit)\n"
-                 "[P0?][LLM-TRIAGE] #5a Conditional assertion (1 hit)\n"
-                 "Summary: 2 total hit(s), 0 P0, 0 P1/P2 heuristic, 2 LLM-triage, 2 P0 candidate; 0 AST-origin hit(s)\n")
-        HELPER.verify_original_candidates(subprocess.CompletedProcess([], 1, valid))
-        for code, output in ((0, valid), (2, valid), (1, ""),
-                             (1, valid.replace("2 P0 candidate", "1 P0 candidate")),
-                             (1, valid + "INCOMPLETE: unknown\n"),
-                             (1, valid.replace("#5a", "#4g"))):
+        valid = self.control_report()
+        verify = lambda report, code=2: HELPER.verify_original_candidates(
+            self.source, subprocess.CompletedProcess([], code, json.dumps(report)))
+        verify(valid)
+        mutations = [
+            ("schema", "e2e-skills-node-bounded-v1"), ("status", "COMPLETE"), ("files", 2),
+            ("files", True), ("failOn", "none"), ("coverage", {"complete": True}),
+            ("review", {"required": False, "candidates": 2, "obligations": []}),
+            ("projectEslint", {"requested": True, "executed": True}),
+            ("suppressed", [valid["findings"][0]]), ("findings", valid["findings"][:1]),
+            ("errors", ["scanner failure"]),
+        ]
+        for field, value in mutations:
+            changed = copy.deepcopy(valid)
+            changed[field] = value
+            with self.subTest(field=field, value=value), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        for field, value in [("file", str(self.fixture.with_name("copied-notepad.spec.cjs"))),
+                             ("line", 26), ("start", 1656), ("end", 2186), ("patternId", "#7"),
+                             ("severity", "P1"), ("disposition", "confirmed"), ("evidence", {})]:
+            changed = copy.deepcopy(valid)
+            changed["findings"][0][field] = value
+            with self.subTest(finding=field), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        for field, value in [("code", "parse-invalid"), ("code", "scope-incomplete"),
+                             ("file", str(self.fixture.with_name("other.spec.ts"))),
+                             ("detector", "other"), ("start", 123)]:
+            changed = copy.deepcopy(valid)
+            changed["execution"]["diagnostics"][0][field] = value
+            with self.subTest(diagnostic=field), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        for change in ("missing-gap", "extra-gap", "complete", "exit", "empty-reasons", "fake-count"):
+            changed = copy.deepcopy(valid)
+            if change == "missing-gap": changed["execution"]["diagnostics"].pop()
+            elif change == "extra-gap": changed["execution"]["diagnostics"].append({"code": "parse-invalid"})
+            elif change == "complete": changed["execution"]["complete"] = True
+            elif change == "exit": changed["execution"]["exitCode"] = 0
+            elif change == "empty-reasons": changed["execution"]["incomplete"] = []
+            else: changed["counts"]["p0"] = 1
+            with self.subTest(change=change), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        for code in (0, 1, -9):
+            with self.subTest(code=code), self.assertRaises(HELPER.ViewError):
+                verify(valid, code)
+        for field, value in [
+            ("schema", "unknown"), ("status", "COMPLETE"), ("projectRoot", "/other"),
+            ("effectiveConfiguration", True), ("effectiveConfiguration", 0),
+            ("runnerSelectionApplied", True), ("runnerSelectionApplied", 0),
+            ("configurations", {}), ("configurations", [None]),
+            ("unknowns", None), ("unknowns", ["unstructured"]), ("ruleComparison", None),
+        ]:
+            changed = copy.deepcopy(valid)
+            changed["configurationAnalysis"][field] = value
+            with self.subTest(configuration=field, value=value), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        for field, value in [
+            ("scannerRulesDisabled", True), ("scannerRulesDisabled", 0),
+            ("relationship", "EQUIVALENT"), ("effectiveRuleStates", "guessed"),
+            ("mappedRules", None), ("mappedRules", [False]),
+            ("scannerSlicesWithoutMappedEslintRule", {}),
+            ("scannerSlicesWithoutMappedEslintRule", [None]),
+        ]:
+            changed = copy.deepcopy(valid)
+            changed["configurationAnalysis"]["ruleComparison"][field] = value
+            with self.subTest(comparison=field, value=value), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        for value in (None, [], False):
+            changed = copy.deepcopy(valid)
+            changed["configurationAnalysis"] = value
+            with self.subTest(configuration=value), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        changed = copy.deepcopy(valid)
+        del changed["configurationAnalysis"]
+        with self.assertRaises(HELPER.ViewError):
+            verify(changed)
+        for output in ("", "null", "[]", "{}", json.dumps(valid) + "error: failed",
+                       json.dumps(valid) + json.dumps(valid), '{"files":1,"files":1}',
+                       '{"files":NaN}'):
+            with self.subTest(output=output), self.assertRaises(HELPER.ViewError):
+                HELPER.verify_original_candidates(self.source, subprocess.CompletedProcess([], 2, output))
+
+    def test_negative_control_rechecks_original_bytes_mode_and_exact_path(self):
+        report = subprocess.CompletedProcess([], 2, json.dumps(self.control_report()))
+        original = self.fixture.read_bytes()
+        identity = HELPER.describe_file(self.fixture)
+        with patch.object(HELPER, "describe_file", side_effect=[identity, {**identity, "mode": 0o600}]):
+            with self.assertRaisesRegex(HELPER.ViewError, "changed during report validation"):
+                HELPER.verify_original_candidates(self.source, report)
+        self.fixture.write_bytes(original + b"\n")
+        with self.assertRaises(HELPER.ViewError):
+            HELPER.verify_original_candidates(self.source, report)
+        self.fixture.write_bytes(original)
+        self.fixture.chmod(0o600)
+        with self.assertRaises(HELPER.ViewError):
+            HELPER.verify_original_candidates(self.source, report)
+        self.fixture.chmod(0o644)
+        copied = self.fixture.with_name("copied-notepad.spec.cjs")
+        self.fixture.rename(copied)
+        with self.assertRaises(OSError):
+            HELPER.verify_original_candidates(self.source, report)
+        self.fixture.symlink_to(copied)
+        with self.assertRaises(OSError):
+            HELPER.verify_original_candidates(self.source, report)
+
+    def test_only_pinned_negative_control_requests_json(self):
+        with patch.object(HELPER.subprocess, "run") as invoke:
+            HELPER.scan(self.source, HELPER.FROZEN_PATH, capture=True, json_report=True)
+            self.assertEqual(invoke.call_args.args[0], ["/bin/bash", "-p", str(self.source / HELPER.SCANNER),
+                                                       HELPER.FROZEN_PATH, "--format", "json"])
+            HELPER.scan(self.source, "scripts", capture=True)
+            self.assertEqual(invoke.call_args.args[0], ["/bin/bash", "-p", str(self.source / HELPER.SCANNER), "scripts"])
+
+    def test_clean_gate_requires_complete_consistent_summary_and_no_hidden_p0(self):
+        clean = ("Node source scan (canonical report view)\n"
+                 "Coverage: BOUNDED; discovery: COMPLETE.\n"
+                 "AST-origin total: 0 hit(s); retained findings, not ast-grep execution.\n"
+                 "Summary: 0 total hit(s), 0 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 0 AST-origin hit(s), canonical retained findings.\n")
+        self.assertEqual(HELPER.verified_counts(subprocess.CompletedProcess([], 0, clean)), (0, 0, 0, 0, 0, 0))
+        for code, output in ((2, clean), (0, ""), (0, clean + clean),
+                             (0, clean.replace("discovery: COMPLETE", "discovery: INCOMPLETE")),
+                             (0, clean + "[P0][CONFIRMED] #7 Static finding (1 hit)\n"),
+                             (0, clean + "[P0?][LLM-TRIAGE] #3 Static candidate (1 hit)\n"),
+                             (0, clean.replace("AST-origin total", "ast-grep total"))):
             with self.subTest(code=code, output=output):
                 with self.assertRaises(HELPER.ViewError):
-                    HELPER.verify_original_candidates(subprocess.CompletedProcess([], code, output))
+                    HELPER.verified_counts(subprocess.CompletedProcess([], code, output))
 
     def test_actual_scanner_keeps_original_candidates_other_path_and_new_same_parent_p0(self):
         # Exercise actual product scanner, not a stub. Root Git-boundary identity
@@ -170,21 +327,24 @@ class ViewTests(unittest.TestCase):
         result = subprocess.run(
             [sys.executable, "-I", "-B", str(HELPER_PATH), str(self.source)],
             capture_output=True, text=True, timeout=180,
-            env={**os.environ, "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1"},
+            env=os.environ.copy(),
         )
         output = result.stdout + result.stderr
-        self.assertEqual(result.returncode, 1, output)
-        self.assertIn("original fixture scanner exit=1", output)
+        self.assertEqual(result.returncode, 2, output)
+        self.assertIn("original fixture scanner exit=2", output)
+        self.assertIn("expected INCOMPLETE negative control verified", output)
         original_log, view_log = output.split("complete source identity verified;", 1)
         self.assertIn("#3", original_log)
         self.assertIn("#5a", original_log)
-        self.assertIn("2 P0 candidate", original_log)
-        self.assertIn("copied-notepad.spec.cjs:35:", view_log)
-        self.assertIn("copied-notepad.spec.cjs:25:", view_log)
-        self.assertIn("new.spec.ts:2:", view_log)
+        self.assertIn('"p0Candidate": 2', original_log)
+        self.assertIn('"code": "import-unpinned"', original_log)
+        self.assertIn('copied-notepad.spec.cjs":35:', view_log)
+        self.assertIn('copied-notepad.spec.cjs":25:', view_log)
+        self.assertIn('new.spec.ts":2:', view_log)
         self.assertIn("#7", view_log)
-        self.assertNotIn("intentional.spec.ts:", view_log)
-        self.assertNotIn("INCOMPLETE", output)
+        self.assertNotIn('intentional.spec.ts":', view_log)
+        self.assertIn("discovery: INCOMPLETE", view_log)
+        self.assertIn("self-scan-view: INCOMPLETE:", view_log)
         self.assertEqual(HELPER.inventory(self.source), original,
                          "product and frozen source bytes/modes must remain unchanged")
 

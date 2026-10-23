@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Check conditional discovery at the actual scanner/worker boundary."""
+"""Frozen legacy shell conditional-discovery/worker mechanism verification."""
 from __future__ import annotations
 
 import importlib.util

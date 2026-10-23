@@ -101,25 +101,13 @@ def assert_custom_skill_taxonomy_controls_labels(temp: Path) -> None:
 
     skill_path = custom_skill / "SKILL.md"
     skill_text = skill_path.read_text(encoding="utf-8")
+    assert skill_text.count("| 15 | Missing await on expect | P1 |") == 1
     skill_text = skill_text.replace(
-        "| 15 | Missing await on expect | P0 |",
+        "| 15 | Missing await on expect | P1 |",
         "| 15 | Missing await on expect | P2 |",
         1,
     )
-    skill_text = skill_text.replace(
-        "Flag P0 only when the subject is a Locator/Page.",
-        "Flag P2 only when the subject is a Locator/Page.",
-        1,
-    )
     skill_path.write_text(skill_text, encoding="utf-8")
-
-    scanner_path = custom_skill / "scripts/scan.sh"
-    scanner_text = scanner_path.read_text(encoding="utf-8")
-    scanner_text = scanner_text.replace(
-        "run_check P1 '#15'",
-        "run_check P2 '#15'",
-    )
-    scanner_path.write_text(scanner_text, encoding="utf-8")
 
     assert RUNNER.canonical_severities(custom_skill)["#15"] == "P2"
     wrapper = make_isolation_wrapper(temp)
@@ -595,13 +583,20 @@ def main() -> None:
             "bash",
             str(SCANNER_PATH),
             str(ROOT / "scripts/evals/files/holdout-v3/cy-contract-runtime"),
+            "--format", "json", "--fail-on", "p0",
         ]
     )
     assert scanner_result.returncode == 0, scanner_result.stdout
-    assert "#3b Cypress uncaught exception suppression" in scanner_result.stdout
-    assert "cypress/support/e2e.ts:1:Cypress.on(" in scanner_result.stdout
-    assert "cypress/support/e2e.ts:9:Cypress.on(" in scanner_result.stdout
-    assert "[P0?][LLM-TRIAGE] #3b" in scanner_result.stdout
+    scanner_report = json.loads(scanner_result.stdout)
+    assert scanner_report["schema"] == "e2e-skills-node-scan-v1"
+    assert scanner_report["execution"] == {"complete": True, "exitCode": 0, "incomplete": [], "diagnostics": []}
+    fail_handlers = [item for item in scanner_report["findings"] if item["patternId"] == "#3b"]
+    assert [(item["line"], item["severity"], item["disposition"]) for item in fail_handlers] == [
+        (1, "P0", "candidate"), (9, "P0", "candidate")]
+    for item in fail_handlers:
+        assert item["file"].endswith("/cypress/support/e2e.ts")
+        source = Path(item["file"]).read_text(encoding="utf-8")
+        assert source[item["start"]:item["end"]].startswith("Cypress.on(")
 
     with tempfile.TemporaryDirectory(prefix="reviewer-v3-ci-") as temp_name:
         temp = Path(temp_name)

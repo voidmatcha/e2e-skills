@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Exercise catch/finally discovery with production helpers, without scan tiers."""
+"""Frozen legacy shell catch/finally mechanism verification, not Node coverage."""
 
 from __future__ import annotations
 
@@ -10,11 +10,16 @@ import re
 import shlex
 import subprocess
 import tempfile
+import sys
 import unittest
 
 
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.legacy_scanner_oracle import legacy_scanner_file
+
 ROOT = Path(__file__).resolve().parents[2]
-SCANNER = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
+SCANNER = legacy_scanner_file()
 ENV = {
     **os.environ,
     "LC_ALL": "C",

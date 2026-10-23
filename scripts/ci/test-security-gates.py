@@ -89,7 +89,75 @@ def run(
     )
 
 
+def assert_pinned_typescript_vendor_scanning() -> None:
+    """The one larger read remains pinned and scans through the final byte."""
+    import importlib.util
+    from unittest.mock import patch
+
+    spec = importlib.util.spec_from_file_location('secret_vendor_guard', SCANNER)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    original = (ROOT / module.TYPESCRIPT_VENDOR_PATH).read_bytes()
+    assert len(original) == module.TYPESCRIPT_VENDOR_BYTES
+    with tempfile.TemporaryDirectory(prefix='security-vendor-') as temporary:
+        root = Path(temporary)
+        vendor = root / module.TYPESCRIPT_VENDOR_PATH
+        vendor.parent.mkdir(parents=True)
+        vendor.write_bytes(original)
+
+        def scan(relative):
+            with patch.object(module, 'enumerate_files', return_value=[relative]):
+                return module.scan(root)
+
+        def rejects(relative, message):
+            try:
+                scan(relative)
+            except RuntimeError as error:
+                assert message in str(error), str(error)
+            else:
+                raise AssertionError('expected fail-closed rejection')
+
+        assert scan(module.TYPESCRIPT_VENDOR_PATH) == []
+        # An injected matcher observes the actual artifact's last nonempty line;
+        # a vendor skip or an 8 MiB prefix-only scan cannot satisfy this check.
+        lines = original.decode('utf-8').splitlines()
+        last = max(index for index, line in enumerate(lines, 1) if line)
+        with patch.object(module, 'PATTERNS', (('tail proof', re.compile(re.escape(lines[last - 1]))),)):
+            assert f'{module.TYPESCRIPT_VENDOR_PATH}:{last}: tail proof' in scan(module.TYPESCRIPT_VENDOR_PATH)
+
+        other = Path('public/typescript.cjs')
+        (root / other).parent.mkdir()
+        (root / other).write_bytes(original)
+        rejects(other, '8388608-byte limit')
+        (root / other).write_bytes(b'x' * (module.MAX_TEXT_BYTES + 1))
+        rejects(other, '8388608-byte limit')
+
+        token = ('ghp_' + 'A' * 36).encode()
+        vendor.write_bytes(token + original[len(token):])
+        rejects(module.TYPESCRIPT_VENDOR_PATH, 'vendor identity mismatch')
+        vendor.write_bytes(original + b'\n')
+        rejects(module.TYPESCRIPT_VENDOR_PATH, '9144216-byte limit')
+        vendor.write_bytes(b'// truncated')
+        rejects(module.TYPESCRIPT_VENDOR_PATH, 'vendor identity mismatch')
+
+        (root / other).write_bytes(token)
+        assert scan(other) == [f'{other}:1: GitHub personal access token']
+        vendor.unlink()
+        with patch.object(module, 'read_index_blob', return_value=original):
+            assert scan(module.TYPESCRIPT_VENDOR_PATH) == []
+        with patch.object(module, 'read_index_blob', return_value=token):
+            rejects(module.TYPESCRIPT_VENDOR_PATH, 'vendor identity mismatch')
+
+        outside = root / 'redirected'
+        outside.mkdir()
+        (outside / vendor.name).write_bytes(original)
+        vendor.parent.rmdir()
+        vendor.parent.symlink_to(outside, target_is_directory=True)
+        rejects(module.TYPESCRIPT_VENDOR_PATH, 'vendor path is not canonical')
+
+
 def main() -> None:
+    assert_pinned_typescript_vendor_scanning()
     ci_local = CI_LOCAL.read_text(encoding="utf-8")
     early_checks = (
         "run_python scripts/ci/test-current-docs.py",
@@ -103,19 +171,17 @@ def main() -> None:
         assert historical not in ci_local, "historical evidence belongs in ci-evidence.sh"
 
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    assert workflow.count("@ast-grep/cli-linux-x64-gnu@0.39.7") == 1
-    assert (
-        "npm pack '@ast-grep/cli-linux-x64-gnu@0.39.7' --ignore-scripts" in workflow
-    )
-    assert (
-        "expected='sha512-S+h5eUR5084y79njxn6NH9RpDpPU2TjdEdUUR+1ncb6j1Rk1pe19ozXEgN0Px81hKK9EOoA2dvYItlOv8kbpwA=='"
-        in workflow
-    )
+    # The bundled Node scanner rejects retired backend overrides. Hosted jobs
+    # must not install the old backend or inject settings that make selfscan
+    # incomplete before the selected policy can run.
+    assert "@ast-grep/" not in workflow
+    for retired in ("E2E_SMELL_AST_GREP_BIN", "E2E_SMELL_DISABLE_AST_GREP",
+                    "E2E_SMELL_NO_AST_GREP_DOWNLOAD"):
+        assert retired not in workflow, f"hosted CI injects retired scanner setting: {retired}"
     assert "npm i -g" not in workflow
-    assert "@ast-grep/cli@" not in workflow
     assert workflow.count(
         "shell: /bin/bash --noprofile --norc -p -e -o pipefail {0}"
-    ) == 4
+    ) == 3
     assert 'hosted_node="$(command -v node)"' in workflow
     assert 'hosted_node="$(realpath "$hosted_node")"' in workflow
     assert 'if [[ "$hosted_node" != /usr/local/bin/node ]]; then' in workflow

@@ -17,9 +17,9 @@ for grep to decide.
 
 from __future__ import annotations
 
-import os
+import hashlib
+import json
 from pathlib import Path
-import re
 import subprocess
 import tempfile
 import unittest
@@ -28,24 +28,63 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 SCAN = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
 
+# Exact unsupported contexts in the unchanged legacy fixtures. These are
+# incomplete analyses, never successful negative classifications. Keep them
+# visible until propagation/provenance support is implemented and verified.
+UNSUPPORTED_CATCHES = {
+    "d.spec.ts": 180, "e.spec.ts": 178, "fn1-nested.spec.ts": 279,
+    "fp4-sleep-only.spec.ts": 164, "h.spec.ts": 263, "i.spec.ts": 233,
+    "k.spec.ts": 218, "comment-gate.spec.ts": 229,
+    "string-brace.spec.ts": 280, "regex-brace.spec.ts": 301,
+}
+
 
 def scan(files: dict[str, str]) -> tuple[int, int, str]:
-    """Return (#3 hit count, P0 count, raw output) for an isolated tree."""
+    """Preserve fixture assertions using the canonical current-product report.
+
+    The returned P0 count is confirmed P0, even for an explicitly incomplete
+    fixture. Candidate preservation and execution completeness are independent.
+    """
     with tempfile.TemporaryDirectory() as tmp:
         for name, content in files.items():
             path = Path(tmp) / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8")
+        before = {name: hashlib.sha256((Path(tmp) / name).read_bytes()).hexdigest()
+                  for name in files}
         result = subprocess.run(
-            ["/bin/bash", "-p", str(SCAN), tmp],
+            ["/bin/bash", "-p", str(SCAN), tmp, "--format", "json", "--fail-on", "p0"],
             capture_output=True,
             text=True,
-            env={**os.environ, "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1"},
+            env={"PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "LANG": "C", "LC_ALL": "C"},
+            timeout=60,
         )
+        assert before == {name: hashlib.sha256((Path(tmp) / name).read_bytes()).hexdigest()
+                          for name in files}, "scanner changed original fixture bytes"
+        report = json.loads(result.stdout)
+        assert report["schema"] == "e2e-skills-node-scan-v1", result.stdout
+        expected = sorted(("analysis-unknown", "catchHandlers", name, start)
+                          for name, start in UNSUPPORTED_CATCHES.items() if name in files)
+        actual = sorted((item["code"], item.get("detector"),
+                         str(Path(item["file"]).relative_to(Path(tmp).resolve())), item.get("start"))
+                        for item in report["execution"]["diagnostics"])
+        assert actual == expected, result.stdout
+        incomplete = bool(expected)
+        assert report["status"] == ("INCOMPLETE" if incomplete else "COMPLETE"), result.stdout
+        assert report["execution"]["complete"] is (not incomplete), result.stdout
+        assert result.returncode == report["execution"]["exitCode"] == (2 if incomplete else 0), result.stdout
+        assert bool(report["execution"]["incomplete"]) is incomplete, result.stdout
+        assert not report.get("errors"), result.stdout
+        findings = [item for item in report["findings"] if item["patternId"] == "#3"]
+        assert report["counts"]["p0"] == 0, result.stdout
+        assert all(item["disposition"] == "candidate" and item["severity"] == "P0"
+                   for item in findings), result.stdout
+        assert all(item["file"] in {str((Path(tmp) / name).resolve()) for name in files}
+                   for item in findings), result.stdout
+        assert all(0 <= item["start"] < item["end"] <= len(Path(item["file"]).read_text())
+                   for item in findings), result.stdout
     out = result.stdout
-    hits = len(re.findall(r"#3 ", out))
-    match = re.search(r"Summary: .*?(\d+) P0,", out)
-    return hits, (int(match.group(1)) if match else -1), out
+    return len(findings), report["counts"]["p0"], out
 
 
 SPEC_HEADER = "import { test, expect } from '@playwright/test';\n\n"

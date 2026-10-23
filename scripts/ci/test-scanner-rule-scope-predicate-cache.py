@@ -21,10 +21,16 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 import tempfile
+import sys
 import unittest
 
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.legacy_scanner_oracle import legacy_scanner_file
+
 ROOT = Path(__file__).resolve().parents[2]
-SCAN = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
+# Legacy shell mechanism verification only; not a current Node product gate.
+SCAN = legacy_scanner_file()
 
 
 def extract_function(source: str, name: str) -> str:

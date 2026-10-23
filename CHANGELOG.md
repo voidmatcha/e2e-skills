@@ -1,6 +1,32 @@
 # Changelog
 
-## [Unreleased]
+## [3.1.0] - 2026-10-23
+
+### Added
+
+- Source-linked AST observations of existing Playwright, Cypress and ESLint configuration, including TypeScript ESLint files, separately scoped nested declarations and bounded single-use const references, with explicit unknowns and a bounded rule-overlap report. Approved local ESLint runs resolve mapped rule states per file; existing scanner checks and requested scope remain unchanged.
+
+- Offline confusion-matrix reporting and an opt-in source-only Codex comparison harness. Fixed decision units distinguish TP/FP/FN/TN from missing decisions and errors; actual coordinator-run CLI evidence, immutable inputs and raw model events are retained. Standalone HTML exports show decision definitions, arm evidence, metric denominators and unavailable cells. Promptfoo displays recorded results without model grading.
+- A standalone Node CLI package under `packages/scanner` and a deterministic scanner runtime bundled with the reviewer, including its pinned parser and licenses. The standalone npm package is `@voidmatcha/e2e-skills-scanner@3.1.0`. The skill bundle version is `3.1.0` and does not require the npm package. The separate bounded mode retains `PARTIAL` coverage and experimental previews remain incomplete.
+- Explicit `e2e-skills-check` discovery, binding and approved probe execution for one literal text assertion mutation or standalone POST omission, including a separately named bounded Promise-chain omission that removes all chained callbacks. Missing top-level plan inputs are returned as structured requirements. Commands and observers are supplied, not inferred; normal/changed/restored controls preserve original source files. These operations do not establish general fault detection.
+- Opt-in local project ESLint integration for explicitly trusted static-review and bounded scans, using installed engines and root configuration without fixes or downloads. Mapped framework rules share the JUSTIFIED and deduplication pipeline; unsupported configuration and incomplete lint evidence remain diagnostic.
+- Optional Promptfoo report transport and portable local evidence bundles. The adapter preserves the source verdict, including inconclusive and negative results, and does not call an LLM grader or prove benchmark accuracy. No hosted publication is included.
+
+- Explicit POST discovery accepts one plain leading `<script>` block in a supplied `.svelte` file, retaining the existing awaited POST operator and full-file source pins. Ambiguous containers remain unsupported; directory scanning and assertion discovery are unchanged.
+
+### Changed
+
+- The reviewer `scan.sh` entry point uses the bundled Node static-review contract. It requires Node.js 22 or newer at a standard system or Homebrew path, verifies runtime integrity, and does not download tools or execute project configuration by default. Text and JSON reports distinguish confirmed findings from candidates requiring review; policy exits are 0/1/2, and unresolved required evidence remains incomplete. Static scans never start probes.
+- Scanner limits are fixed: 16 MiB per parsed source file, with relative-import expansion bounded to 128 new helper files, 16 MiB of helper bytes and 32 levels. Retired backend/executable/limit overrides are rejected. This cutover does not claim full JavaScript coverage or general accuracy.
+
+### Fixed
+
+- Bounded Node detector slices retain source-linked catch, conditional assertion, POM and unresolved-fixture review candidates without promoting uncertain bindings or runtime outcomes to confirmed findings. Parser, import, propagation and provenance diagnostics remain explicit; only exact candidate-linked reasons can become review obligations.
+- The Node scanner honors `E2E_SMELL_FAIL_ON` with explicit flag precedence. Unsupported analysis remains incomplete rather than a clean result; candidates and confirmed findings use distinct policy counts.
+
+### Bounded validation
+
+- Published `3.1.0-rc.0` registry-package checks passed 75 targeted tests and four static controls. Selected native probes returned V2 assertion sensitivity for TanStack, V3 detection for SvelteKit, and survival for an authored weak control, with nine native reports retained. These checks exercise the named package and cases; they do not establish general accuracy or replace final bundle release gates.
 
 ## [3.0.1] - 2026-10-21
 

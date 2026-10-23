@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright
   testing-types: e2e
   languages: typescript,javascript
-  version: "3.0.1"
+  version: "3.1.0"
 ---
 
 # playwright-test-generator
@@ -41,7 +41,7 @@ Read `setup-guide.md` for first-project setup, official agents/MCP and optional 
 
 ## 5. Origin, scanner gate, then run
 
-Inspect executable navigation/request destinations in specs, called helpers/hooks/config and generator output/redirects. Resolve relative URLs; compare scheme, hostname and effective port to the approved origin; API requests may also use separately approved loopback stack destinations. Other origins, including loopback aliases/ports: BLOCKED. Unknown/dynamic: unresolved, BLOCKED until proven. Inactive comments and href-only assertions do not block solely for URL strings. If `e2e-reviewer` is installed, scan each changed spec file separately: `E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <its skill dir>/scripts/scan.sh <one spec file>` (never a copy in the repo; set no other `E2E_SMELL_*`). Exit 0 = P0=0; exit 1 with a Summary = P0>0; exit 2, INCOMPLETE, or no Summary = not clean. Fix printed P0/P1, at most 3 passes; P0 or P1 left or scan not clean: report BLOCKED, never claim completion.
+Inspect executable navigation/request destinations in specs, called helpers/hooks/config and generator output/redirects. Resolve relative URLs; compare scheme, hostname and effective port to the approved origin; API requests may also use separately approved loopback stack destinations. Other origins, including loopback aliases/ports: BLOCKED. Unknown/dynamic: unresolved, BLOCKED until proven. Inactive comments and href-only assertions do not block solely for URL strings. If `e2e-reviewer` is installed, scan each changed spec file separately: `/bin/bash -p <its skill dir>/scripts/scan.sh --fail-on p0 <one spec file>` (use its loaded skill copy; no project ESLint opt-in). Use the default `p0` policy: exit 0 means no confirmed P0; exit 1 with a Summary means confirmed P0; exit 2, INCOMPLETE, or no Summary means not clean. Resolve retained P0/P1 candidates before proceeding; completed execution or P0=0 does not clear them. Fix printed P0/P1, at most 3 passes; P0 or P1 left or scan not clean: report BLOCKED, never claim completion.
 
 Confirm the effective `baseURL` (config plus env) is the approved origin; if not, do not run. Recheck section 1 whole-stack safety for drift. Reuse unchanged scoped evidence and approvals. Run the approved test command on new specs only against a disposable stack; specs may write data. Before rerunning writes, confirm test data can be reset or cleaned up.
 

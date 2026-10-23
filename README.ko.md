@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=76503bbf91d620041574636da32ee71c8fd11b92e67c9d202350c81f1284f638; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=c9e98e916806420513ea4e729eea693287b94128bbd84d8a6add47165c6f3cc1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI agent가 Playwright/Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 skill입니다.
 
@@ -216,7 +216,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 프로젝트의 E2E 테스트를 작성하고 리뷰하며, 실패 원인을 분석할 때 사용하세요. 리뷰와 실패 분석은 Playwright와 Cypress를, 생성은 Playwright만 지원합니다.
 
-함께 제공되는 shell script와 artifact 리더는 일반적인 macOS/Linux 환경을 지원하며, `/bin/bash`와 launcher에 지정된 시스템 실행 파일 경로를 사용합니다. Windows에서는 호환되는 WSL 배포판을 사용하고 artifact도 WSL 파일 시스템에 두세요. 네이티브 Windows는 지원하지 않습니다. NixOS, 그리고 Nix, pyenv, Conda, nvm으로만 설치한 tool은 모두 자동으로 찾을 수 있는 것은 아닙니다. reviewer scanner는 검증된 절대 경로의 `E2E_SMELL_*_BIN` override를 지원하지만, debugger launcher에도 같은 override가 있다는 뜻은 아닙니다. 신뢰할 수 있는 tool이 없으면 중단합니다. `PATH`에서 다른 실행 파일을 찾아 우회하지 마세요. skill 리소스는 추측한 홈 디렉터리가 아니라, plugin 캐시와 사용자 지정 설치를 포함해 host가 실제로 제공한 skill 위치에서 찾으세요.
+함께 제공되는 shell script와 artifact 리더는 일반적인 macOS/Linux 환경을 지원하며, `/bin/bash`와 launcher에 지정된 시스템 실행 파일 경로를 사용합니다. Windows에서는 호환되는 WSL 배포판을 사용하고 artifact도 WSL 파일 시스템에 두세요. 네이티브 Windows는 지원하지 않습니다. NixOS, 그리고 Nix, pyenv, Conda, nvm으로만 설치한 tool은 모두 자동으로 찾을 수 있는 것은 아닙니다. 신뢰할 수 있는 tool이 없으면 중단합니다. `PATH`에서 다른 실행 파일을 찾아 우회하지 마세요. skill 리소스는 추측한 홈 디렉터리가 아니라, plugin 캐시와 사용자 지정 설치를 포함해 host가 실제로 제공한 skill 위치에서 찾으세요.
 
 generator는 `thin-rules.md`와 작업 범위 및 실행 조건을 공식 planner와 generator에 전달한 뒤, reviewer scanner와 새 테스트를 실행합니다. 아무것도 설치하지 않고 agent와 MCP 설정을 바꾸지 않으며, CLI 대체 경로나 healer를 사용하지 않습니다. 설정이 없으면 필요한 설정을 안내합니다.
 
@@ -355,16 +355,18 @@ AI agent에 요청하지 않고 코드 scanner만 직접 실행할 수 있습니
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-Python 3와 PCRE2를 지원하는 ripgrep(`rg`)이 필요합니다. 기본 설정에서는 대상 프로젝트의 ESLint 코드를 실행하거나 tool을 내려받지 않습니다. 필수 tool이 없거나 파일을 읽지 못하면 문제가 없다고 보고하지 않고 오류로 알립니다.
+Node.js 22 이상이 필요하며 TypeScript 파서는 함께 제공됩니다. launcher는 기본적으로 static 검사를 실행하고 결과를 텍스트로 보여줍니다. 테스트를 실행하거나 tool을 내려받거나 프로젝트 설정 코드를 불러오지 않습니다. 구조화된 결과는 `--format json`으로 확인하고, 전체 보고서는 `--report-file <new-file>`로 저장하세요. 기존 파일은 덮어쓰지 않습니다.
+
+scanner는 reviewer에 포함되어 있으며 npm 설치 없이 오프라인으로 동작합니다. scanner만 따로 쓰려면 아래의 버전 고정 npm 명령을 실행하세요. scan만으로 assertion mutation이나 fault injection을 실행하지는 않습니다. 이 검사를 실행하려면 Python 3.10+와 신뢰하고 준비를 마친 프로젝트가 필요합니다. 자세한 내용은 [CLI와 probe 가이드](packages/scanner/README.md)를 참고해주세요.
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests
+```
 
 <details>
 <summary>scanner 고급 옵션과 파일 읽기 범위</summary>
 
-scanner에는 PCRE2를 지원하는 `rg`와 Python 3가 필요합니다. Python은 NUL-safe 후보 식별 레코드를 생성하고 검증합니다. 따라서 후보 drift나 손상된 레코드는 fail-closed로 처리됩니다. 이 필수 기록 작업은 optional Tier 2 AST tool과 별개입니다.
-
-기본적으로 대상 프로젝트가 제어하는 ESLint 실행 파일, plugin, 파서, 설정을 실행하지 않으며 tool도 내려받지 않습니다. 신뢰하는 체크아웃에서 프로젝트 ESLint를 실행하려면 `E2E_SMELL_ALLOW_PROJECT_ESLINT=1`을 설정합니다. 고정 버전 tool 다운로드는 `E2E_SMELL_NO_ESLINT_DOWNLOAD=0`과 `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0`으로 각각 명시적으로 허용합니다.
-
-이식성을 확인할 때 미리 설치된 host 실행 파일을 무시하려면 `E2E_SMELL_DISABLE_AST_GREP=1`을 설정합니다.
+설치된 프로젝트 ESLint와 해당 설정을 사용하려면 체크아웃을 신뢰하고 정확한 실행 명령을 승인한 뒤 `--project-eslint --trust-project`를 추가하세요. 프로젝트가 제어하는 코드를 host 권한으로 실행하며, sandbox나 의존성 설치는 제공하지 않습니다. 번들 검사는 이 옵션 없이 실행됩니다.
 
 > **읽기 범위.**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
@@ -375,7 +377,7 @@ scanner에는 PCRE2를 지원하는 `rg`와 Python 3가 필요합니다. Python�
 번들 검사는 `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` 소스를 읽습니다.
 <!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
-Tier 3는 기본으로 제공되는 대체 경로입니다. optional ESLint와 ast-grep 계층은 정밀도를 높이지만 테스트 의도와 주변 코드를 확인하는 리뷰를 대신하지 않습니다. 인프라 또는 파일시스템 오류가 발생하면 scanner는 문제가 없다고 잘못 보고하지 않고 종료 코드 2로 끝납니다. 어떤 코드를 신뢰하고 어떤 네트워크 접근을 허용하는지는 [SECURITY.md](SECURITY.md)를 참고해주세요.
+기본 `p0` 정책은 기계적으로 확인된 P0가 있으면 종료 코드 1을 반환합니다. P0 후보도 실행을 중단할 기준에 포함하려면 `--fail-on p0-candidate`를 사용하세요. `any`는 확인된 모든 문제를 기준으로 삼고, `none`은 문제 수와 관계없이 결과만 보여줍니다. 종료 코드 0은 선택한 기준에 걸리지 않았다는 뜻입니다. 실행이 완료되고 P0=0이어도 남은 후보와 추가 확인 항목은 리뷰해야 합니다. 입력이 없거나 소스 무결성 검사 또는 분석에 실패하면 INCOMPLETE와 종료 코드 2를 반환합니다. scanner가 모든 코드의 의미를 검증했다는 뜻은 아닙니다. 코드 실행과 네트워크 접근의 허용 범위는 [SECURITY.md](SECURITY.md)를 참고해주세요.
 
 </details>
 

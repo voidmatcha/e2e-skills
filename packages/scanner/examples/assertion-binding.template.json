@@ -1,0 +1,31 @@
+{
+  "source": "REPLACE_WITH_ABSOLUTE_PROJECT_ROOT",
+  "test_selector": "REPLACE_WITH_EXACT_NATIVE_TEST_TITLE",
+  "promise": {
+    "path": "REPLACE_WITH_RELATIVE_PROMISE_DOCUMENT",
+    "quote": "REPLACE_WITH_VERBATIM_BEHAVIOR_PROMISE",
+    "sha256": "REPLACE_WITH_PROMISE_FILE_SHA256"
+  },
+  "test": {
+    "argv": [
+      "REPLACE_WITH_ABSOLUTE_RUNTIME",
+      "{project}/REPLACE_WITH_RELATIVE_TEST_WRAPPER",
+      "{selector}",
+      "{report}"
+    ],
+    "timeout_seconds": 120,
+    "source": {
+      "path": "REPLACE_WITH_RELATIVE_TEST_WRAPPER",
+      "sha256": "REPLACE_WITH_TEST_WRAPPER_SHA256"
+    }
+  },
+  "report": {
+    "format": "playwright-json",
+    "path": "REPLACE_WITH_FRESH_RELATIVE_NATIVE_REPORT_PATH"
+  },
+  "expected_failure": {
+    "contains": "REPLACE_WITH_LINKED_ASSERTION_FAILURE_TEXT",
+    "location": "REPLACE_WITH_NATIVE_FAILURE_LOCATION"
+  },
+  "dependency_dirs": []
+}

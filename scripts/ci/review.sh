@@ -144,16 +144,15 @@ else
   rm -f "$security_log"
 fi
 
-ast_grep_workflow=".github/workflows/e2e-smell-scan.yml"
-if [ ! -f "$ast_grep_workflow" ]; then
-  err "missing ast-grep workflow: $ast_grep_workflow"
-elif grep -qF "npm pack '@ast-grep/cli-linux-x64-gnu@0.39.7' --ignore-scripts" "$ast_grep_workflow" &&
-     grep -qF "expected='sha512-S+h5eUR5084y79njxn6NH9RpDpPU2TjdEdUUR+1ncb6j1Rk1pe19ozXEgN0Px81hKK9EOoA2dvYItlOv8kbpwA=='" "$ast_grep_workflow" &&
-     [ "$(grep -cF "@ast-grep/cli" "$ast_grep_workflow")" -eq 2 ] &&
-     ! grep -qF "npm i -g" "$ast_grep_workflow"; then
-  ok "workflow installs ast-grep 0.39.7 from an integrity-pinned platform package without lifecycle scripts"
+scanner_workflow=".github/workflows/e2e-smell-scan.yml"
+if [ ! -f "$scanner_workflow" ]; then
+  err "missing scanner workflow: $scanner_workflow"
+elif grep -qE '@ast-grep/|E2E_SMELL_(AST_GREP_BIN|DISABLE_AST_GREP|NO_AST_GREP_DOWNLOAD)' "$scanner_workflow"; then
+  err "workflow injects a retired scanner backend or setting; use the bundled Node scanner"
+elif grep -qF "npm i -g" "$scanner_workflow"; then
+  err "workflow must not install global npm tools"
 else
-  err "workflow ast-grep install must pack @ast-grep/cli-linux-x64-gnu@0.39.7 with --ignore-scripts and check its pinned sha512"
+  ok "workflow uses the bundled scanner without retired backend settings"
 fi
 
 section "Public skill surface"
@@ -419,10 +418,30 @@ def matches_qr(s):
 # Check 1: every pattern id in subordinate sources must map back to a QR base id
 grep_ids = sorted(set(re.findall(r'\|\s*#(\d+[a-z]?(?:-\d+[a-z]?)?)', grep_text)))
 scan_ids = sorted(set(re.findall(r"run_check\s+P[012]\s+'#(\d+[a-z]?(?:-\d+[a-z]?)?)", scan_text)))
+# The Node analyzer declares the actual slices it reports. An empty extraction
+# must fail, rather than silently passing when scan.sh becomes a thin launcher.
+node_cli = pathlib.Path('packages/scanner/src/cli.mjs')
+node_ids = []
+if node_cli.is_file():
+    import ast
+    node_match = re.search(r'^const STATIC_RULE_SLICES = (\[[^\n]+\]);$', node_cli.read_text(encoding='utf-8'), re.M)
+    try:
+        slices = ast.literal_eval(node_match.group(1)) if node_match else None
+        if not isinstance(slices, list) or not slices or len(set(slices)) != len(slices):
+            raise ValueError('missing or duplicate slices')
+        for value in slices:
+            if not isinstance(value, str) or not re.fullmatch(r'#\d+[a-z]?(?:-\d+[a-z]?)?', value):
+                raise ValueError('invalid slice')
+        node_ids = [value[1:] for value in slices]
+    except (ValueError, TypeError, SyntaxError):
+        errors.append('Node scanner: missing or invalid STATIC_RULE_SLICES contract')
+if not scan_ids and not node_ids:
+    errors.append('Scanner: no rule IDs extracted from either runtime')
 docs_ids = sorted(set(re.findall(r'\|\s*#(\d+[a-z]?)\s*\|', docs_text)))
 for label, ids in (
     ('skills/e2e-reviewer/references/grep-patterns.md', grep_ids),
     ('skills/e2e-reviewer/scripts/scan.sh', scan_ids),
+    ('packages/scanner/src/cli.mjs', node_ids),
     ('docs/e2e-test-smells.md', docs_ids),
 ):
     for pid in ids:

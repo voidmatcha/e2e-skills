@@ -1,0 +1,44 @@
+// SPDX-License-Identifier: Apache-2.0
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {runLocalEslint} from './bridge.mjs';
+import {focusedTests} from '../../../../packages/scanner/src/focused-tests.mjs';
+const [depsArg,outArg]=process.argv.slice(2);
+if(!depsArg||!outArg) throw new Error('usage: node run.mjs EXTERNAL_DEPS NEW_EXTERNAL_OUTPUT');
+const deps=path.resolve(depsArg),out=path.resolve(outArg);
+if(fs.existsSync(out)) throw new Error('retain prior evidence; output must be new');
+fs.mkdirSync(out,{recursive:true});
+const fixture=path.join(out,'fixture');fs.mkdirSync(fixture);
+fs.writeFileSync(path.join(fixture,'package.json'),'{"private":true,"type":"module"}');
+fs.symlinkSync(path.join(deps,'node_modules'),path.join(fixture,'node_modules'),'dir');
+const source="import {test} from '@playwright/test';\ntest.only('case',async({page})=>{await page.waitForTimeout(1000);});\n";
+const file=path.join(fixture,'case.spec.ts');fs.writeFileSync(file,source);
+const marker=path.join(out,'config-executed.json');
+const config=path.join(fixture,'eslint.config.mjs');
+fs.writeFileSync(config,`import fs from 'node:fs';\nfs.writeFileSync(${JSON.stringify(marker)},JSON.stringify({envKeys:Object.keys(process.env),secretPresent:'LOCAL_ESLINT_CANARY_SECRET' in process.env}));\nexport default [{rules:{'playwright/no-focused-test':'off','playwright/no-wait-for-timeout':'off'}}];\n`);
+process.env.LOCAL_ESLINT_CANARY_SECRET='must-not-reach-child';
+const skipped=runLocalEslint({projectRoot:fixture,files:[file],workDir:path.join(out,'default')});
+assert.equal(skipped.executed,false);assert.equal(fs.existsSync(marker),false);assert.equal(fs.existsSync(path.join(out,'default')),false);
+// A nonexistent root also remains untouched before explicit authorization.
+assert.equal(runLocalEslint({projectRoot:'/not-present',workDir:null}).executed,false);
+const off=runLocalEslint({projectRoot:fixture,files:[file],workDir:path.join(out,'off'),trustProjectCode:true});
+assert.equal(off.status,'complete',off.stderr);assert.equal(off.messages.flatMap(item=>item.messages).filter(item=>['playwright/no-focused-test','playwright/no-wait-for-timeout'].includes(item.ruleId)).length,0);
+const configEvidence=JSON.parse(fs.readFileSync(marker));assert.equal(configEvidence.secretPresent,false);
+fs.writeFileSync(config,'export default [];\n');
+const baseline=runLocalEslint({projectRoot:fixture,files:[file],workDir:path.join(out,'baseline'),trustProjectCode:true});
+assert.equal(baseline.status,'complete',baseline.stderr);
+for(const rule of ['playwright/no-focused-test','playwright/no-wait-for-timeout']) assert.equal(baseline.messages.flatMap(item=>item.messages).filter(item=>item.ruleId===rule).length,1);
+const independent=focusedTests(Buffer.from(source),file);assert.equal(independent.findings.filter(item=>item.patternId==='#7').length,1);
+fs.writeFileSync(config,'while(true) {}\nexport default [];\n');
+const timeout=runLocalEslint({projectRoot:fixture,files:[file],workDir:path.join(out,'timeout'),trustProjectCode:true,timeoutMs:1000});
+assert.equal(timeout.status,'incomplete');assert.equal(timeout.signal,'SIGKILL');assert.match(timeout.error,/ETIMEDOUT/);
+fs.writeFileSync(config,"process.stderr.write('X'.repeat(65536));\nexport default [];\n");
+const outputLimit=runLocalEslint({projectRoot:fixture,files:[file],workDir:path.join(out,'output-limit'),trustProjectCode:true,maxOutputBytes:4096});
+assert.equal(outputLimit.status,'incomplete');assert.match(outputLimit.error,/ENOBUFS/);
+assert.ok(Buffer.byteLength(outputLimit.stderr)<=4096);
+assert.equal(fs.readFileSync(file,'utf8'),source);
+const report={schema:'local-eslint-canary-v1',node:process.version,skipped,off,baseline,timeout,outputLimit,configEvidence,
+  independentBundledFocused:independent,sourceUnchanged:true,complete:true};
+fs.writeFileSync(path.join(out,'result.json'),JSON.stringify(report,null,2));
+console.log(JSON.stringify({out,complete:true,defaultNoExecution:!skipped.executed,configOffRespected:true,baselineRules:2,bundledFocusedUnaffected:true,timeoutAndOutputLimit:true}));

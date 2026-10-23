@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Exercise the scanner's scope worker ownership and fail-closed integration."""
+"""Frozen legacy shell worker ownership and fail-closed mechanism verification."""
 
 from __future__ import annotations
 
@@ -17,8 +17,12 @@ import unittest
 from unittest import mock
 
 
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.legacy_scanner_oracle import legacy_scanner_file
+
 ROOT = Path(__file__).resolve().parents[2]
-SCANNER = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
+SCANNER = legacy_scanner_file()
 PYTHON = str(Path(sys.executable).resolve())
 
 
@@ -44,6 +48,7 @@ def process_exists(pid: int) -> bool:
 
 class ScannerWorkerIntegrationTests(unittest.TestCase):
     def setUp(self) -> None:
+        legacy_scanner_file()  # Revalidate the frozen scanner and all helpers.
         temporary = tempfile.TemporaryDirectory(prefix="scanner-worker-integration-")
         self.addCleanup(temporary.cleanup)
         self.directory = Path(temporary.name).resolve()

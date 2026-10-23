@@ -1,0 +1,974 @@
+{
+  "schema": "legacy-call-canaries-v1",
+  "license": "Apache-2.0",
+  "purpose": "One synthesized bounded positive and syntactic exclusion guard per legacy run_check call; not grammar completeness or independently labeled defect accuracy.",
+  "cases": [
+    {
+      "call_index": 1,
+      "positive": "import { test } from '@playwright/test';\ntest.afterEach(async ({ page }) => {\nawait page.close().catch(() => {});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('status')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 2,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.goto('/must-load').catch(() => {});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.goto('/must-load');\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 3,
+      "positive": "import {test} from '@workspace/fixtures';\nhelper().catch(()=>{});\n",
+      "negative": "import {test} from '@workspace/fixtures';\nhelper();\n",
+      "target_line": 2,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 4,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait helper().catch(() => fallback());\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait helper();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 5,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait helper().catch(error => {});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait helper();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 6,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait Promise.allSettled([expect(page.locator('x')).toBeVisible()]);\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait Promise.all([expect(page.locator('x')).toBeVisible()]);\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 7,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntry { await expect(page.locator('x')).toBeVisible(); } finally { return cleanup(); }\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntry { await expect(page.locator('x')).toBeVisible(); } finally { cleanup(); }\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 8,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntry { await expect(page.locator('x')).toBeVisible(); } catch {}\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntry { await expect(page.locator('x')).toBeVisible(); } catch (error) { throw error; }\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 9,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntest.only('focus', async () => {});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntest('normal', async () => {});\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 10,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst focus = test.only;\nfocus('focus', async () => {});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst normal = test;\nnormal('normal', async () => {});\n});\n",
+      "target_line": 4,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 11,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.waitForTimeout(1000);\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 12,
+      "positive": "describe('canary', () => {\nit('case', () => {\ncy.wait(1000);\n});\n});\n",
+      "negative": "describe('canary', () => {\nit('case', () => {\ncy.wait('@request');\n});\n});\n",
+      "target_line": 3,
+      "extension": ".cy.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 13,
+      "positive": "describe('canary', () => {\nit('case', () => {\nconst duration=1000;\ncy.wait(duration);\n});\n});\n",
+      "negative": "describe('canary', () => {\nit('case', () => {\ncy.wait('@request');\n});\n});\n",
+      "target_line": 4,
+      "extension": ".cy.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 14,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ndocument.querySelector('#status');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\npage.getByTestId('status');\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 15,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(await page.locator('x').count()).toBeGreaterThanOrEqual(0);\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(await page.locator('x').count()).toBe(1);\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 16,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeAttached();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).not.toBeAttached();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 17,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(await page.locator('x').isVisible()).toBe(true);\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 18,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(page.locator('x')).toBeTruthy();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 19,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(Boolean(page.locator('x'))).toBeTruthy();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 20,
+      "positive": "import {test,expect} from '@workspace/fixtures';\ntest('canary',async({page})=>{\nexpect(page.locator('x')).toBeTruthy();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('status')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 21,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(screen.getByRole('button')).toBeTruthy();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(true).toBeTruthy();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 22,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst saveLocator=createHandle();\nexpect(saveLocator).toBeTruthy();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(true).toBeTruthy();\n});\n",
+      "target_line": 4,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 23,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst settingsPage=new SettingsPage();\nexpect(settingsPage.submitButton).toBeTruthy();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(true).toBeTruthy();\n});\n",
+      "target_line": 4,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 24,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect?.(page.locator('x')).toBeTruthy();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 25,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(page.locator('x'))['toBeDefined']();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 26,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst matcher='toBeTruthy';\nexpect(page.locator('x'))[matcher]();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst matcher='toBeVisible';\nawait expect(page.locator('x'))[matcher]();\n});\n",
+      "target_line": 4,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 27,
+      "positive": "describe('canary', () => {\nit('case', () => {\nexpect(Cypress.$('.missing')).to.exist;\n});\n});\n",
+      "negative": "describe('canary', () => {\nit('case', () => {\nexpect(Cypress.$('.item').length).to.equal(1);\n});\n});\n",
+      "target_line": 3,
+      "extension": ".cy.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 28,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.locator('x').click({timeout:0});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.locator('x').click({timeout:1000});\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 29,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(page.url()).toBe('/done');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page).toHaveURL('/done');\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 30,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('missing')).toBeHidden();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('status')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 31,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nfor (const item of await page.locator('x').all()) { await expect(item).toBeVisible(); }\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toHaveCount(1);\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 32,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntest.skip('unexplained', async () => {});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntest('normal', async () => {});\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 33,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nif (await page.locator('x').isVisible()) { await expect(page.locator('x')).toBeVisible(); }\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 34,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nif (\nawait page.locator('x').isVisible()\n) { await expect(page.locator('x')).toBeVisible(); }\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 4,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 35,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nif (ready) { await expect(page.locator('x')).toBeVisible(); }\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 36,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nready && expect(page.locator('x')).toBeVisible();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 37,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.locator('x').click({force:true});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.locator('x').click();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 38,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\npage.locator('x');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.locator('x').click();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 39,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.locator('x').isVisible();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(await page.locator('x').isVisible()).toBe(true);\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 40,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(page.locator('x')).toBeVisible;\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 41,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(page.locator('x'));\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 42,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.locator('x').nth(1).click();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.getByTestId('x').click();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 43,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntest.describe.serial('serial', () => {});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntest.describe('normal', () => {});\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 44,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntest.describe.configure({mode:'serial'});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\ntest.describe.configure({mode:'parallel'});\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 45,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\npage.getByRole('button',{name:'Save'});\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\npage.getByRole('button',{name:'Save',exact:true});\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 46,
+      "positive": "describe('canary', () => {\nit('case', () => {\ncy.findByRole('button',{name:/save/});\n});\n});\n",
+      "negative": "describe('canary', () => {\nit('case', () => {\ncy.findByRole('button',{name:/^save$/});\n});\n});\n",
+      "target_line": 3,
+      "extension": ".cy.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 47,
+      "positive": "describe('canary',()=>{\nit('mix', async () => {\ncy.visit('/');\n});\n});\n",
+      "negative": "describe('canary',()=>{\nit('normal', () => {\ncy.visit('/');\n});\n});\n",
+      "target_line": 2,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 48,
+      "positive": "describe('canary', () => {\nit('case', () => {\nconst button=cy.get('button');\n});\n});\n",
+      "negative": "describe('canary', () => {\nit('case', () => {\ncy.get('button').then(button=>{ expect(button).to.exist; });\n});\n});\n",
+      "target_line": 3,
+      "extension": ".cy.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 49,
+      "positive": "describe('canary', () => {\nit('case', () => {\ncy.get('button').click().should('be.visible');\n});\n});\n",
+      "negative": "describe('canary', () => {\nit('case', () => {\ncy.get('button').click();\n});\n});\n",
+      "target_line": 3,
+      "extension": ".cy.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 50,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nlogin('fake-user','NOT_A_REAL_PASSWORD');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nlogin(process.env.USERNAME,process.env.PASSWORD);\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 51,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(page.locator('x')).toBeVisible();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 52,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nasync function helper() { expect(page.locator('x')).toBeVisible(); }\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nasync function helper() { await expect(page.locator('x')).toBeVisible(); }\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 53,
+      "positive": "import {test,expect} from '@workspace/fixtures';\ntest('canary',async({page})=>{\nexpect(page.locator('x')).toBeVisible();\n});\n",
+      "negative": "import {test,expect} from '@workspace/fixtures';\ntest('canary',async({page})=>{\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 54,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect.poll(()=>1).toBe(1);\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect.poll(()=>1).toBe(1);\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 55,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect(await page.locator('x')).toBeVisible();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 56,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nvoid expect(page.locator('x')).toBeVisible();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 57,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect?.(page.locator('x')).toBeVisible();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 58,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst action=page.click('button');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.click('button');\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 59,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\npage.click?.('button');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.click('button');\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 60,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\npage['click']('button');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page['click']('button');\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 61,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\npage.locator('x').click();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.locator('x').click();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py",
+          "scripts/ci/test-reviewer-scanner.py:1922-1952 assert_regex_literal_quotes_do_not_open_strings"
+        ]
+      }
+    },
+    {
+      "call_index": 62,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst button=page.locator('button');\nbutton.click();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst button=page.locator('button');\nawait button.click();\n});\n",
+      "target_line": 4,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 63,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.click('button');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.getByRole('button').click();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 64,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst settingsPage=createPageObject();\nawait settingsPage.click('button');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.getByRole('button').click();\n});\n",
+      "target_line": 4,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 65,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nconst selector='button';\nawait settingsPage.click(selector);\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.getByRole('button').click();\n});\n",
+      "target_line": 4,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 66,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.waitForLoadState('networkidle');\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait page.waitForLoadState('domcontentloaded');\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 67,
+      "positive": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nexpect.soft(page.locator('x')).toBeVisible();\n});\n",
+      "negative": "import { test, expect } from '@playwright/test';\ntest('canary', async ({ page }) => {\nawait expect(page.locator('x')).toBeVisible();\n});\n",
+      "target_line": 3,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 68,
+      "positive": "describe('canary', () => {\nit('case', () => {\nCypress.on('uncaught:exception',()=>false);\n});\n});\n",
+      "negative": "describe('canary', () => {\nit('case', () => {\nCypress.on('window:before:load',()=>{});\n});\n});\n",
+      "target_line": 3,
+      "extension": ".cy.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    },
+    {
+      "call_index": 69,
+      "positive": "import {test} from '@playwright/test';\nlet sharedCounter=0;\ntest('state',()=>{});\n",
+      "negative": "import {test} from '@playwright/test';\nlet sharedCounter;\ntest('state',()=>{});\n",
+      "target_line": 2,
+      "extension": ".spec.ts",
+      "provenance": {
+        "kind": "synthesized representative shape from legacy call and existing regression contracts",
+        "sources": [
+          "skills/e2e-reviewer/scripts/scan.sh",
+          "scripts/ci/test-reviewer-scanner.py"
+        ]
+      }
+    }
+  ]
+}

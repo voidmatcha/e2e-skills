@@ -5,7 +5,8 @@
 The product scanner and frozen evidence stay unchanged. Copy the entire source
 (including untracked files), except root Git internals, into an owned temporary
 view. Only the exact frozen control is absent there. Its original direct scan
-must still report the two known candidates. No cache or source directories are
+must retain two candidates while refusing the unpinned import with INCOMPLETE.
+This is an expected negative control, not a complete scan. No source directories are
 silently pruned; unsupported filesystem entries make this gate incomplete.
 """
 from __future__ import annotations
@@ -127,24 +128,153 @@ def create_view(source: Path, view: Path) -> dict[str, dict]:
     return original
 
 
-def scan(source: Path, target: str, *, capture: bool = False) -> subprocess.CompletedProcess:
+def scan(source: Path, target: str, *, capture: bool = False,
+         json_report: bool = False) -> subprocess.CompletedProcess:
+    command = ["/bin/bash", "-p", str(source / SCANNER), target]
+    if json_report:
+        command += ["--format", "json"]
     return subprocess.run(
-        ["/bin/bash", "-p", str(source / SCANNER), target], cwd=source,
-        env={**os.environ, "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
-             "E2E_SMELL_FAIL_ON": "p0-candidate"},
+        command, cwd=source,
+        env={**os.environ, "E2E_SMELL_FAIL_ON": "p0-candidate"},
         text=True, stdout=subprocess.PIPE if capture else None,
         stderr=subprocess.STDOUT if capture else None,
     )
 
 
-def verify_original_candidates(result: subprocess.CompletedProcess) -> None:
+def verified_counts(result: subprocess.CompletedProcess) -> tuple[int, ...]:
+    """Require the canonical Node view, consistent accounting and gate exit."""
     output = result.stdout or ""
-    summaries = re.findall(r"^Summary: .*?, (\d+) P0, .*?, (\d+) P0 candidate;", output, re.M)
-    candidates = re.findall(r"^\[P0\?\]\[LLM-TRIAGE\] (#\S+) .*? \((\d+) hit\)", output, re.M)
-    if (result.returncode != 1 or summaries != [("0", "2")]
-            or sorted(candidates) != [("#3", "1"), ("#5a", "1")]
-            or "INCOMPLETE" in output):
-        raise ViewError("original frozen-control scan did not retain exactly #3/#5a candidates")
+    summary_lines = re.findall(r"^Summary[^\n]*", output, re.M)
+    summary = re.fullmatch(
+        r"Summary: (\d+) total hit\(s\), (\d+) P0, (\d+) P1/P2 heuristic, "
+        r"(\d+) LLM-triage, (\d+) P0 candidate; (\d+) AST-origin hit\(s\), canonical retained findings\.",
+        summary_lines[0] if len(summary_lines) == 1 else "",
+    )
+    ast_lines = re.findall(r"^AST-origin[^\n]*", output, re.M)
+    ast = re.fullmatch(r"AST-origin total: (\d+) hit\(s\); retained findings, not ast-grep execution\.",
+                       ast_lines[0] if len(ast_lines) == 1 else "")
+    if (not summary or not ast or
+            output.splitlines().count("Node source scan (canonical report view)") != 1 or
+            output.splitlines().count("Coverage: BOUNDED; discovery: COMPLETE.") != 1 or
+            re.search(r"^\s*(?:INCOMPLETE|ERROR|Error|error)\b", output, re.M)):
+        raise ViewError("scanner output missing or invalid canonical Summary/AST-origin counts")
+    counts = tuple(int(value) for value in summary.groups())
+    total, p0, p1p2, triage, candidates, ast_count = counts
+    if (total != p0 + p1p2 + triage or candidates > triage or ast_count > total
+            or ast_count != int(ast[1]) or result.returncode != int(p0 + candidates > 0)):
+        raise ViewError("scanner accounting or p0-candidate exit is inconsistent")
+    grouped = [0, 0, 0, 0, 0]
+    for line in output.splitlines():
+        if not line.startswith("["):
+            continue
+        header = re.fullmatch(r"\[(P[012])(\?)?\]\[(CONFIRMED|LLM-TRIAGE|JUSTIFIED-REVIEW)\] "
+                              r"#\S+ Static (?:candidate|finding) \(([1-9]\d*) hits?\)", line)
+        if not header or bool(header[2]) != (header[3] != "CONFIRMED"):
+            raise ViewError("invalid canonical finding group")
+        count, candidate = int(header[4]), header[3] != "CONFIRMED"
+        grouped[0] += count
+        grouped[3 if candidate else 1 if header[1] == "P0" else 2] += count
+        if candidate and header[1] == "P0":
+            grouped[4] += count
+    if tuple(grouped) != counts[:5]:
+        raise ViewError("finding groups disagree with canonical Summary")
+    return counts
+
+
+def verify_original_candidates(source: Path, result: subprocess.CompletedProcess) -> None:
+    """Validate this exact frozen negative control, never a general incomplete scan."""
+    source = source.resolve(strict=True)
+    target = source / FROZEN_PATH
+    for parent in target.parents:
+        if parent == source:
+            break
+        if parent.is_symlink() or not parent.is_dir():
+            raise ViewError("unsafe frozen-control parent")
+    identity = describe_file(target)
+    if identity["sha256"] != FROZEN_SHA256 or identity["mode"] != FROZEN_MODE:
+        raise ViewError("missing or drifted frozen control")
+
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ViewError("duplicate frozen-control JSON field")
+            result[key] = value
+        return result
+
+    def invalid_constant(_value):
+        raise ViewError("invalid frozen-control JSON constant")
+
+    output = result.stdout or ""
+    if result.returncode != 2 or len(output) > 100_000:
+        raise ViewError("frozen control must remain INCOMPLETE with exit 2")
+    try:
+        report = json.loads(output, object_pairs_hook=unique_object, parse_constant=invalid_constant)
+    except (TypeError, ValueError) as error:
+        raise ViewError("invalid frozen-control JSON report") from error
+    if not isinstance(report, dict):
+        raise ViewError("frozen-control JSON report must be an object")
+    configuration = report.get("configurationAnalysis")
+    comparison = configuration.get("ruleComparison") if isinstance(configuration, dict) else None
+    if (not isinstance(configuration, dict) or
+            configuration.get("schema") != "node-configuration-context-v1" or
+            configuration.get("status") not in ("UNAVAILABLE", "NEEDS_REVIEW", "STATIC_OBSERVATIONS") or
+            configuration.get("effectiveConfiguration") is not False or
+            configuration.get("runnerSelectionApplied") is not False or
+            configuration.get("projectRoot") != str(source) or
+            not isinstance(configuration.get("configurations"), list) or
+            not all(isinstance(item, dict) for item in configuration["configurations"]) or
+            not isinstance(configuration.get("unknowns"), list) or
+            not all(isinstance(item, dict) for item in configuration["unknowns"]) or
+            not isinstance(comparison, dict) or
+            comparison.get("scannerRulesDisabled") is not False or
+            comparison.get("relationship") != "OVERLAPPING_SLICES_NOT_EQUIVALENT_COVERAGE" or
+            comparison.get("effectiveRuleStates") != "projectEslint.effectiveConfiguration.files" or
+            not isinstance(comparison.get("mappedRules"), list) or
+            not all(isinstance(item, dict) for item in comparison["mappedRules"]) or
+            not isinstance(comparison.get("scannerSlicesWithoutMappedEslintRule"), list) or
+            not all(isinstance(item, str) for item in comparison["scannerSlicesWithoutMappedEslintRule"])):
+        raise ViewError("frozen-control configuration analysis must preserve static-only invariants")
+    file = str(target)
+    expected_findings = [
+        {"patternId": pattern, "severity": "P0", "disposition": "candidate", "origin": "ast",
+         "file": file, "line": line, "column": column, "start": start, "end": end,
+         "evidence": {"kind": "unresolved-fixture",
+                      "requirements": ["verify-runtime-binding", "verify-required-test-outcome"]}}
+        for pattern, line, column, start, end in (("#5a", 25, 5, 1655, 2185), ("#3", 35, 34, 2233, 2270))
+    ]
+    # The pinned original has these six analyzer gaps. Any new or displaced
+    # diagnostic needs source review; parse/drift/tool failures never qualify.
+    diagnostic_specs = (("actions", "import-unpinned", None),
+                        ("pageReads", "import-unpinned", 1517),
+                        ("accessibleNames", "import-unpinned", 543),
+                        ("conditionalAssertions", "provenance-unsupported", 1801),
+                        ("conditionalAssertions", "import-unpinned", 1920),
+                        ("conditionalAssertions", "import-unpinned", 2115))
+    diagnostics = [{"code": code, "detector": detector, "file": file,
+                    **({"start": start} if start is not None else {})}
+                   for detector, code, start in diagnostic_specs]
+    incomplete = [f"analysis incomplete: {file}: {detector} could not establish its contract"
+                  + (f" at offset {start}" if start is not None else "")
+                  for detector, _code, start in diagnostic_specs]
+    expected = {
+        "schema": "e2e-skills-node-scan-v1", "status": "INCOMPLETE", "scope": "static-review",
+        "failOn": "p0-candidate", "files": 1,
+        "compatibility": {"contract": "source-review-v1", "status": "development", "referenceLegacyCallVariants": 69},
+        "review": {"required": True, "candidates": 2, "obligations": []},
+        "execution": {"complete": False, "exitCode": 2, "incomplete": incomplete, "diagnostics": diagnostics},
+        "counts": {"total": 2, "p0": 0, "p1p2": 0, "triage": 2, "p0Candidate": 2, "ast": 2, "confirmed": 0},
+        "findings": expected_findings, "suppressed": [], "duplicates": [],
+        "projectEslint": {"requested": False, "executed": False},
+    }
+    # JSON equality is type-exact (unlike Python's True == 1).
+    if (json.dumps({key: report.get(key) for key in expected}, sort_keys=True) !=
+            json.dumps(expected, sort_keys=True) or
+            set(report) - set(expected) - {"coverage", "project", "configurationAnalysis"} or
+            not isinstance(report.get("coverage"), dict) or report["coverage"].get("complete") is not False):
+        raise ViewError("frozen-control candidates, diagnostics or incomplete accounting changed")
+    if describe_file(target) != identity:
+        raise ViewError("frozen control changed during report validation")
 
 
 def run(source: Path) -> int:
@@ -154,20 +284,23 @@ def run(source: Path) -> int:
         original = create_view(source, view)
         print(f"self-scan-view: exact historical-control exception {FROZEN_PATH} "
               f"sha256={FROZEN_SHA256} mode=0644", flush=True)
-        print("self-scan-view: original fixture direct scan follows; expected exit 1, "
-              "0 P0 and 2 P0 candidates (#3/#5a), retained for review", flush=True)
-        direct = scan(source, FROZEN_PATH, capture=True)
+        print("self-scan-view: original fixture negative control follows; expected exit 2/INCOMPLETE, "
+              "0 confirmed P0 and 2 candidates (#3/#5a), with unpinned import diagnostics", flush=True)
+        direct = scan(source, FROZEN_PATH, capture=True, json_report=True)
         print(direct.stdout, end="", flush=True)
         print(f"self-scan-view: original fixture scanner exit={direct.returncode}", flush=True)
-        verify_original_candidates(direct)
+        verify_original_candidates(source, direct)
+        print("self-scan-view: expected INCOMPLETE negative control verified; not a complete scan", flush=True)
         verify_view(source, view, original)
         digest = hashlib.sha256(json.dumps(original, sort_keys=True).encode()).hexdigest()
         print(f"self-scan-view: complete source identity verified; "
               f"entries={len(original)} sha256={digest}; only root Git internals replaced", flush=True)
         for target in ("skills", "scripts"):
             print(f"self-scan-view: unchanged scanner p0-candidate gate for {target}", flush=True)
-            result = scan(view, target)
+            result = scan(view, target, capture=True)
+            print(result.stdout, end="", flush=True)
             verify_view(source, view, original)
+            verified_counts(result)
             if result.returncode:
                 return result.returncode if result.returncode > 0 else 128 - result.returncode
         return 0

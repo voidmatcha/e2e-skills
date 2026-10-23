@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Exercise the scanner's real Node resolver without installing dependencies."""
+"""Preserve the frozen shell backend's package-resolution mechanism tests.
+
+Current Node product trust and ESLint loading are checked separately by
+test-local-eslint-node.py and the scanner package tests. These tests do not
+establish current-product behavior.
+"""
 
 import argparse
 import json
@@ -11,6 +16,10 @@ import subprocess
 import tempfile
 import unittest
 from unittest import mock
+
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from legacy_scanner_oracle import legacy_scanner_file
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -41,7 +50,7 @@ def trusted_node_executable(override=None, repository=ROOT) -> Path:
 
 
 class ImportResolutionTests(unittest.TestCase):
-    scanner = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
+    scanner = legacy_scanner_file()
     node_override = None
 
     def setUp(self):
@@ -55,7 +64,7 @@ class ImportResolutionTests(unittest.TestCase):
         bodies = re.findall(
             r"<<'EOFRES'\n(.*?)\nEOFRES(?:\n|$)", self.scanner.read_text(), re.S
         )
-        self.assertEqual(len(bodies), 1, "Expected exactly one production resolver heredoc")
+        self.assertEqual(len(bodies), 1, "Expected exactly one frozen legacy resolver heredoc")
         self.resolver = self.base / "resolve.cjs"
         self.resolver.write_text(bodies[0] + "\n")
         self.node = trusted_node_executable(self.node_override)

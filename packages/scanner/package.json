@@ -1,0 +1,47 @@
+{
+  "name": "@voidmatcha/e2e-skills-scanner",
+  "version": "3.1.0",
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "e2e-skills-scan": "src/cli.mjs",
+    "e2e-skills-check": "src/check-cli.mjs"
+  },
+  "exports": {
+    "./check": "./src/check-candidates.mjs",
+    "./report": "./src/report.mjs",
+    "./inventory": "./src/inventory.mjs"
+  },
+  "files": [
+    "src/",
+    "scripts/run-probe.py",
+    "examples/",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "typescript": "6.0.3"
+  },
+  "description": "Static Playwright and Cypress test review, configuration context, and explicit evidence-backed probes.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voidmatcha/e2e-skills.git",
+    "directory": "packages/scanner"
+  },
+  "homepage": "https://github.com/voidmatcha/e2e-skills",
+  "bugs": {
+    "url": "https://github.com/voidmatcha/e2e-skills/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest",
+    "registry": "https://registry.npmjs.org"
+  }
+}

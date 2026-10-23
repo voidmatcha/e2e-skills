@@ -41,6 +41,7 @@ FIXTURE_SKILL = {
     "SKILL.md": "| 1 | Name mismatch | P0 |\n| 3b | Uncaught exception | P0 |\n",
     "scripts/scan.sh": "#!/bin/bash\n",
     "references/pattern-reference.md": "#### 1. Name mismatch\nContract text.\n",
+    "references/grep-patterns.md": "Pattern ID lookup contract\n",
 }
 FIXTURE_SOURCE = (
     "import { test } from '@playwright/test';\n\n"

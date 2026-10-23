@@ -384,8 +384,7 @@ SECTION_READ_RULE = (
     "artifact as its own scan root instead of the whole test directory.",
     "For a directory root, use the `--report-file <new-file>` form of the "
     "command in `references/scanner-workflow.md`",
-    "prints only the tier and rule headers, the hit count per file, and the "
-    "`Summary:` line.",
+    "prints a bounded digest with finding counts and the Summary.",
     "Run the scanner in the foreground and wait for its `Summary:` line; never "
     "leave it running in the background.",
     "Run the scanner command on its own, with no `;`, `&&`, `||`, or pipe added",
@@ -659,12 +658,12 @@ def verify_ai_reviewer_100_aggregates() -> None:
 
 def scanner_extensions(scanner_source: str) -> tuple[str, ...]:
     match = re.search(
-        r"^CODE_EXTENSIONS='([^']+)'$",
+        r"^const EXTENSIONS = new Set\(\[([^\]]+)\]\);$",
         scanner_source,
         flags=re.MULTILINE,
     )
-    assert match is not None, "scanner CODE_EXTENSIONS assignment is missing"
-    return tuple(f".{extension}" for extension in match.group(1).split(","))
+    assert match is not None, "Node scanner source-extension inventory is missing"
+    return tuple(f".{extension}" for extension in re.findall(r"'([a-z]+)'", match.group(1)))
 
 
 # Anchor on markers, not on prose. The previous anchors were sentences from the
@@ -805,14 +804,10 @@ def assert_pattern_3_assertion_boundary(
         "pattern-reference.md must pin the same #3 assertion boundary in both "
         "Rule (spec) and Scanner tiering"
     )
-    for contract in (
-        "identical unswallowed re-check",
-        "control flow that fails regardless",
-        "documented intent",
-        "later assertion on a different fact does not excuse it",
-        "Non-assertion catches keep the dependency rule",
-    ):
-        require_normalized_contract(scanner, contract, "scan.sh #3 comment boundary")
+    # The Node port emits only review candidates here, never a confirmed P0.
+    # Semantic re-check/intent exceptions remain pinned above in all four docs.
+    emitted = re.findall(r"findings\.push\(\{\s*patternId:\s*'#3',\s*severity:\s*'P0',\s*disposition:\s*'([^']+)'", scanner)
+    assert emitted and set(emitted) == {"candidate"}, "#3 scanner must retain candidate-only disposition"
     attached_only = "synchronous matcher followed by an attached Promise `.catch()`"
     surrounding_try = "synchronous assertion inside a surrounding `try/catch` is swallowed"
     for text, label in (
@@ -877,7 +872,7 @@ def verify_pattern_3_swallow_scope() -> None:
     skill = normalized(SKILL)
     grep_patterns = normalized(GREP_PATTERNS)
     semantic_review = normalized(SEMANTIC_REVIEW)
-    scanner = normalized(SCANNER)
+    scanner = normalized(ROOT / "packages/scanner/src/catch-handlers.mjs")
 
     consequence_rule = (
         "exempt only when the swallowed failure cannot change what the test "
@@ -908,11 +903,11 @@ def verify_pattern_3_swallow_scope() -> None:
             continue
         raise AssertionError(f"#3 boundary guard survived mutation {index}")
     mutated_scanner = scanner.replace(
-        "a later assertion on a different fact does not excuse it",
-        "a later assertion on a different fact excuses it",
+        "disposition: 'candidate'",
+        "disposition: 'confirmed'",
         1,
     )
-    assert mutated_scanner != scanner, "scan.sh #3 mutation was a no-op"
+    assert mutated_scanner != scanner, "Node #3 mutation was a no-op"
     try:
         assert_pattern_3_assertion_boundary(
             pattern_reference,
@@ -924,7 +919,7 @@ def verify_pattern_3_swallow_scope() -> None:
     except AssertionError:
         pass
     else:
-        raise AssertionError("scan.sh #3 boundary guard survived mutation")
+        raise AssertionError("Node #3 candidate guard survived mutation")
     require_normalized_contract(
         pattern_reference,
         "a swallowed wait, gate, or status check that a later assertion "
@@ -1579,6 +1574,37 @@ def verify_fable_reviewer_policy_contracts() -> None:
     assert "does not default" in case_54_text and "toBeGreaterThan(0)" in case_54_text
 
 
+def verify_pinned_evidence_links(readme: str, status: str) -> None:
+    """Follow the intentional HF migration without permitting identity drift."""
+    revision = "2992d57564bb5b0d7eae0650a64f392481211d41"
+    source_commit = "93afd3b105b869b15589634c88676230c7d92254"
+    prefix = (
+        "https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/"
+        f"{revision}/snapshots/git-{source_commit}/"
+    )
+    manifest = json.loads((ROOT / "benchmarks/external-evidence.json").read_text(encoding="utf-8"))
+    assert manifest["dataset"] == "voidmatcha/e2e-skills-benchmarks"
+    assert manifest["source_commit"] == source_commit
+    assert manifest["archive"]["path"] == f"snapshots/git-{source_commit}/benchmarks.tar.gz"
+    for model, outcome, version in (
+        ("gpt-6-sol", "passed", "v22"),
+        ("gpt-6.1-sol", "passed", "v24"),
+        ("gpt-6-luna", "failed", "v23"),
+    ):
+        url = f"{prefix}benchmarks/reviewer-holdout-{version}/README.md"
+        require_normalized_contract(
+            readme, f"`{model}` {outcome} [{version}]({url})",
+            f"README {model} exact frozen evidence identity",
+        )
+        assert f"]({url})" in status, f"status lacks frozen {version} evidence"
+    assert f"]({prefix}benchmarks/STATUS.md)" in status, "status lacks frozen historical qualifications"
+    assert "](external-evidence.json)" in status, "status lacks immutable restore manifest"
+    require_normalized_contract(
+        status, "Original protocols, reports, adjudications and negative outcomes remain unchanged.",
+        "status archive qualification",
+    )
+
+
 def verify_release_candidate_docs() -> None:
     """Pin release-candidate corrections that are easy to overstate or drift."""
     changelog = normalized(CHANGELOG)
@@ -1657,8 +1683,6 @@ def verify_release_candidate_docs() -> None:
     readme = readme_bytes.decode("utf-8")
     for contract in (
         "Reviewer results depend on the model",
-        "`gpt-6-sol` passed [v22](benchmarks/reviewer-holdout-v22/README.md)",
-        "`gpt-6-luna` failed [v23](benchmarks/reviewer-holdout-v23/README.md)",
         "36 public development cases",
         "completing all 540 calls in each run",
         "These tool-free results measure supplied instructions, not scanner benefit or accuracy on unseen projects.",
@@ -1669,12 +1693,38 @@ def verify_release_candidate_docs() -> None:
         "README.md must link to benchmark status; the link label is editorial"
     )
     status = normalized(BENCHMARK_STATUS)
+    verify_pinned_evidence_links(readme, status)
+    for old, new in (
+        ("2992d57564bb5b0d7eae0650a64f392481211d41", "main"),
+        ("`gpt-6-luna` failed", "`gpt-6-luna` passed"),
+        ("reviewer-holdout-v22/README.md", "reviewer-holdout-v23/README.md"),
+        ("git-93afd3b105b869b15589634c88676230c7d92254", "git-wrong-snapshot"),
+    ):
+        mutated = readme.replace(old, new)
+        assert mutated != readme
+        try:
+            verify_pinned_evidence_links(mutated, status)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError(f"evidence identity mutation survived: {old}")
+    try:
+        verify_pinned_evidence_links(readme, status.replace("/benchmarks/STATUS.md)", "/benchmarks/OTHER.md)"))
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("historical qualifications link mutation survived")
+    # Historical qualifications live in the original study, not duplicated in
+    # the current short status index. Keep the failed lift boundary load-bearing.
     require_normalized_contract(
-        status,
-        "All six lift checks passed against `no-skill`; against `catalog-only`, "
-        "the stable F1 point delta cleared its bar (`0.059 >= 0.05`) while "
-        "the paired-bootstrap 95% CI lower bound was the single failing threshold (`-0.003 < 0.01`).",
-        "benchmark status v7 comparator and failed lift bar",
+        holdout,
+        "All six lift checks passed against `no-skill`. Against `catalog-only`, "
+        "the stable F1 delta point estimate was `+0.058723` and cleared its "
+        "`+0.050000` bar for the first time, but the paired-bootstrap 95% CI "
+        "lower bound was `-0.003205` against the required `>= +0.010000`. "
+        "That is the comparator's only failing reason. The result is `FAIL`, "
+        "and the protocol refuses a skill-lift claim.",
+        "reviewer-holdout-v7 comparator and failed lift bar",
     )
     for translated in TRANSLATED_READMES:
         text = translated.read_text(encoding="utf-8")
@@ -1873,7 +1923,7 @@ def verify_current_docs() -> None:
     grep_patterns = normalized(GREP_PATTERNS)
     applying_fixes = normalized(APPLYING_FIXES)
     rtl_jest_dom_fixes = normalized(RTL_JEST_DOM_FIXES)
-    scanner_source = SCANNER.read_text(encoding="utf-8")
+    scanner_source = (ROOT / "packages/scanner/src/inventory.mjs").read_text(encoding="utf-8")
     scanner = " ".join(scanner_source.split())
     verification_rules = normalized(VERIFICATION_RULES)
     readme = README.read_text(encoding="utf-8")
@@ -1990,7 +2040,8 @@ def verify_current_docs() -> None:
     assert "bounded 24-line/500-character whitespace gap" in grep_patterns
     assert "excludes `.not` chains across whitespace/comments/lines" in grep_patterns
     assert "finite lexical scan, not unbounded parser semantics" in grep_patterns
-    assert "e2e,triage,positive-attached" in scanner
+    assertion_source = normalized(ROOT / "packages/scanner/src/assertions.mjs")
+    assert re.search(r"record\(matcher.name === 'toBeAttached' \? '#4b'.*?'candidate'", assertion_source), "#4b must remain a review candidate"
     assert (
         "distinct fresh-context, read-only e2e-reviewer actor/process that did "
         "not write, debug, or repair the candidate"
@@ -2017,11 +2068,9 @@ def verify_current_docs() -> None:
         for assertion in case["assertions"]
     )
     assert "Report it as an assertion that cannot fail" not in pattern_reference
-    assert (
-        "run_check P1 '#6' 'Raw DOM query inside test code' "
-        "'document\\.(querySelector(?:All)?|getElementById)' "
-        '"$ALL_CODE_GLOB" \'e2e,triage,executable-line\''
-    ) in scanner
+    dom_source = normalized(ROOT / "packages/scanner/src/dom-queries.mjs")
+    assert "record('#6', node)" in dom_source
+    assert "disposition: 'candidate'" in dom_source
 
     expected_extensions = scanner_extensions(scanner_source)
     assert expected_extensions == (
@@ -2352,29 +2401,42 @@ def verify_current_docs() -> None:
         source = "reporting.md" if contract in reporting_contracts else "review-scope.md"
         require_contract(surface, contract, source)
 
-    for contract in (
-        "require both Python 3 and `rg` with PCRE2 support",
-        "NUL-safe candidate identity records",
-        "separate from optional Tier 2 AST tooling",
-    ):
-        require_contract(scanner_workflow, contract, "scanner-workflow.md")
-    for contract in (
-        "PCRE2-capable `rg` and Python 3",
-        "NUL-safe candidate identity records",
-        "separate from optional Tier 2 AST tooling",
-    ):
-        require_contract(" ".join(readme.split()), contract, "README.md")
-
+    assert_node_scanner_docs(scanner_workflow, " ".join(readme.split()))
     for path in TRANSLATED_READMES:
         translated = path.read_text(encoding="utf-8")
-        assert (
-            documented_extensions(
-                translated, SCANNER_EXTENSIONS_START, SCANNER_EXTENSIONS_END
-            )
-            == expected_extensions
-        )
-        for prerequisite in ("PCRE2", "Python 3", "NUL-safe", "Tier 2 AST"):
-            assert prerequisite in translated
+        assert documented_extensions(translated, SCANNER_EXTENSIONS_START, SCANNER_EXTENSIONS_END) == expected_extensions
+        for contract in ("Node.js 22", "TypeScript", "--format json", "--report-file <new-file>",
+                         "--project-eslint --trust-project", "--fail-on p0-candidate", "P0=0", "INCOMPLETE"):
+            assert contract in translated, (path, contract)
+        for obsolete in ("PCRE2", "NUL-safe", "Tier 2 AST", "E2E_SMELL_NO_", "E2E_SMELL_ALLOW_PROJECT_ESLINT"):
+            assert obsolete not in translated, (path, obsolete)
+
+
+def assert_node_scanner_docs(workflow: str, readme: str) -> None:
+    # Match contract concepts independently rather than pinning paragraph wording.
+    for surface, label in ((workflow, "scanner workflow"), (readme, "README")):
+        for concept in ("Node.js 22", "TypeScript", "--format json", "--report-file <new-file>",
+                        "--project-eslint --trust-project", "--fail-on", "p0-candidate", "INCOMPLETE"):
+            assert concept in surface, (label, concept)
+        assert re.search(r"does not[^.]*download", surface, re.I), (label, "no downloads")
+        assert re.search(r"does not[^.]*load (?:executable )?project configuration", surface, re.I), (label, "no project config by default")
+        assert re.search(r"retained candidates[^.]*(?:require Phase 2|still need review)", surface, re.I), (label, "candidate review required")
+        assert re.search(r"retained candidates[^.]*P0=0", surface, re.I), (label, "zero-P0 is not clearance")
+        assert re.search(r"(?:bundled[^.]*TypeScript|TypeScript[^.]*bundled)", surface), (label, "parser bundled")
+        assert re.search(r"(?:INCOMPLETE[^.]*exit 2|exit 2[^.]*INCOMPLETE)", surface), (label, "incomplete exit")
+        assert re.search(r"(?:exact command|approv.*exact)", surface), (label, "exact command approval")
+        assert re.search(r"(?:explicit.*trust|trust.*explicit)", surface), (label, "explicit checkout trust")
+    for original, changed in (("Node.js 22", "Node.js 18"), ("--project-eslint --trust-project", "--project-eslint"),
+                              ("--format json", "--format yaml"), ("INCOMPLETE", "CLEAN")):
+        mutated = workflow.replace(original, changed)
+        assert mutated != workflow
+        try:
+            # Reuse the concept guard without recursively exercising mutations.
+            for concept in ("Node.js 22", "--project-eslint --trust-project", "--format json", "INCOMPLETE"):
+                assert concept in mutated
+        except AssertionError:
+            continue
+        raise AssertionError(f"Node scanner doc mutation survived: {original}")
 
 
 
@@ -2394,7 +2456,6 @@ def main() -> None:
     # Keep the historical fixture denominator in the linked evidence docs;
     # the current README's link and snapshot boundary are checked above.
     for surface, name in (
-        (benchmark_status, "benchmarks/STATUS.md"),
         (ai_review_doc, "docs/review-ai-generated-e2e-tests.md"),
     ):
         require_contract(
@@ -2403,18 +2464,9 @@ def main() -> None:
             name,
         )
 
-    for contract in (
-        "Reviewer holdout v5",
-        "Reviewer holdout v6",
-        "Independent product-review v6",
-        "Independent product-review v9",
-        "Independent product-review v10",
-        "Independent product-review v11",
-        "Archived v1-v11 independent product-review rounds are retained as "
-        "legacy robustness evidence, not current release gates.",
-        "legacy design evidence rather than an active pending release gate",
-    ):
-        require_contract(benchmark_status, contract, "benchmarks/STATUS.md")
+    # The current status index links the exact archived status instead of
+    # repeating historical round names and their complete qualifications.
+    verify_pinned_evidence_links(README.read_text(encoding="utf-8"), benchmark_status)
 
     for contract in (
         "Reviewer holdout v6 did execute its nine preregistered cells once.",
@@ -2427,11 +2479,6 @@ def main() -> None:
             reviewer_holdout_v6_readme,
             contract,
             "benchmarks/reviewer-holdout-v6/README.md",
-        )
-        require_normalized_contract(
-            benchmark_status,
-            contract,
-            "benchmarks/STATUS.md",
         )
     assert (
         "v6 stalled the same way" not in benchmark_status_normalized

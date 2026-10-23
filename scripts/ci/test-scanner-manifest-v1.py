@@ -1,33 +1,17 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""The candidate manifest must still refuse what it refused before.
+"""Current Node inventory preserves the original unreadable-file regressions.
 
-The manifest fingerprints every candidate file and is rebuilt and revalidated
-six times per scan, so that a file changing underneath the scanner is caught
-rather than silently scanned in two states. It is an integrity control, not a
-cache.
-
-It used to spawn one `python3` per candidate per pass -- 1,800 interpreters for
-300 files -- which is about 0.18 s per code file before a single finding is
-evaluated, and on a 9,232-file repository roughly 28 minutes on its own. That
-is now one interpreter per pass. The fingerprinting code did not change; only
-the number of processes running it did.
-
-Which makes the failure path the thing worth testing. These cases assert that a
-candidate the scanner cannot fingerprint still stops the scan with the same
-message and exit code, and that a clean tree still produces a Summary. A
-performance change to an integrity control has to be checked where the control
-does its work, not only where it is fast.
-
-Note the layering: a FIFO or symlink named like a spec is rejected earlier, by
-the tree preflight, and never reaches the manifest. An unreadable regular file
-passes preflight and fails at fingerprinting, which is why that is the case
-used here.
+Historical shell inventory spawned many Python processes per candidate; these
+unchanged fixtures protect the failure boundary rather than that implementation.
+Every unreadable regular file must yield a named fingerprint diagnostic and an
+INCOMPLETE/exit-2 report. A complete focused-test scan still exits 1.
 """
 
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 import subprocess
 import tempfile
@@ -46,11 +30,11 @@ SPEC = (
 
 def run(tree: Path) -> subprocess.CompletedProcess:
     return subprocess.run(
-        ["/bin/bash", "-p", str(SCAN), str(tree)],
+        ["/bin/bash", "-p", str(SCAN), str(tree), "--format", "json"],
         capture_output=True,
         text=True,
         timeout=300,
-        env={**os.environ, "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1"},
+        env={key: value for key, value in os.environ.items() if not key.startswith("E2E_SMELL_")},
     )
 
 
@@ -73,18 +57,15 @@ class ManifestTests(unittest.TestCase):
             result.returncode, 2,
             "a candidate that cannot be fingerprinted must fail the scan closed",
         )
-        self.assertIn(
-            "scanner candidate changed after discovery", out,
-            "the scan must say why it stopped",
-        )
-        self.assertIn(
-            "locked.spec.ts", out,
-            "the message must name the candidate that failed, not another one",
-        )
-        self.assertNotRegex(
-            out, r"(?m)^Summary",
-            "a scan that could not fingerprint a candidate must emit no Summary",
-        )
+        report = json.loads(result.stdout)
+        self.assertEqual(report["schema"], "e2e-skills-node-scan-v1")
+        self.assertEqual(report["status"], "INCOMPLETE")
+        self.assertIs(report["execution"]["complete"], False)
+        self.assertEqual(report["execution"]["exitCode"], 2)
+        self.assertTrue(any(item["code"] == "fingerprint-unavailable" and
+                            item["file"].endswith("/locked.spec.ts")
+                            for item in report["execution"]["diagnostics"]), out)
+        self.assertEqual(report["findings"], [], "unfingerprinted source cannot produce a clean verdict")
 
     def test_a_clean_tree_still_scans(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
@@ -99,8 +80,12 @@ class ManifestTests(unittest.TestCase):
             result = run(tree)
 
         out = result.stdout + result.stderr
-        self.assertRegex(out, r"(?m)^Summary", "a clean tree must reach a Summary")
-        self.assertNotIn("scanner candidate changed", out)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["schema"], "e2e-skills-node-scan-v1")
+        self.assertEqual(report["status"], "COMPLETE")
+        self.assertIs(report["execution"]["complete"], True)
+        self.assertEqual(report["execution"]["diagnostics"], [])
+        self.assertEqual([(hit["patternId"], hit["line"]) for hit in report["findings"]], [("#7", 2)])
         self.assertEqual(result.returncode, 1, "the focused-test finding still exits 1")
 
     def test_every_candidate_is_fingerprinted_not_just_the_first(self) -> None:
@@ -122,10 +107,13 @@ class ManifestTests(unittest.TestCase):
 
         out = result.stdout + result.stderr
         self.assertEqual(result.returncode, 2)
-        self.assertIn(
-            "zz_last.spec.ts", out,
-            "the pass must fingerprint every candidate, not stop at the first",
-        )
+        report = json.loads(result.stdout)
+        self.assertEqual(report["status"], "INCOMPLETE")
+        self.assertIs(report["execution"]["complete"], False)
+        self.assertTrue(any(item["code"] == "fingerprint-unavailable" and
+                            item["file"].endswith("/zz_last.spec.ts")
+                            for item in report["execution"]["diagnostics"]), out)
+
 
 
 if __name__ == "__main__":

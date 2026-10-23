@@ -1,0 +1,144 @@
+{
+  "schema": "legacy-scanner-oracle-v1",
+  "snapshotDate": "2026-10-22",
+  "purpose": "Verification-only pre-Node shell scanner; never a product fallback",
+  "sourceHead": "391d8c1169c5819b7b10a5583ce6afd285537e7a",
+  "sourcePolicy": "Exact working-tree bytes, not assumed equal to HEAD",
+  "archiveSha256": "5753e7ef7c4488ce1711a8cac22666d8128cb4cde7906283c7115b6f3ea086c4",
+  "archiveBytes": 274282,
+  "files": [
+    {
+      "path": "LICENSE",
+      "source": "LICENSE",
+      "bytes": 10179,
+      "mode": 420,
+      "sha256": "4c9fb97c01f065d3113df961e895744276238f69361905181e383503cad57283"
+    },
+    {
+      "path": "NOTICE",
+      "source": "NOTICE",
+      "bytes": 828,
+      "mode": 420,
+      "sha256": "3750db04b78aa2946bd15d5b3e3c0c81a8227ac26b81f088a9fb5d150478c70e"
+    },
+    {
+      "path": "ast-grep-rules/sg-15-missing-await-playwright-expect.yml",
+      "source": "skills/e2e-reviewer/scripts/ast-grep-rules/sg-15-missing-await-playwright-expect.yml",
+      "bytes": 2346,
+      "mode": 420,
+      "sha256": "d2858d241d407414778712e0117b45027ffeb25b4577bdd5201615f6e9da3992"
+    },
+    {
+      "path": "ast-grep-rules/sg-4ce-count.yml",
+      "source": "skills/e2e-reviewer/scripts/ast-grep-rules/sg-4ce-count.yml",
+      "bytes": 1156,
+      "mode": 420,
+      "sha256": "739e34a7f88c3a284d90c82855a594635bff31f20fdeb98da1e40966fc4b7fcb"
+    },
+    {
+      "path": "ast-grep-rules/sg-4ce-state-bool.yml",
+      "source": "skills/e2e-reviewer/scripts/ast-grep-rules/sg-4ce-state-bool.yml",
+      "bytes": 1578,
+      "mode": 420,
+      "sha256": "708d97bce96531c66b2fdbffd0dfa99f494f18d23b1cd5e64083da22d603d878"
+    },
+    {
+      "path": "ast-grep-rules/sg-4ce-text.yml",
+      "source": "skills/e2e-reviewer/scripts/ast-grep-rules/sg-4ce-text.yml",
+      "bytes": 1383,
+      "mode": 420,
+      "sha256": "9a0f73a59dd6709149e2ad0c89d81b4aeb91a684b19ea43145611205266224f7"
+    },
+    {
+      "path": "ast-grep-rules/sg-4f-locator-as-truthy.yml",
+      "source": "skills/e2e-reviewer/scripts/ast-grep-rules/sg-4f-locator-as-truthy.yml",
+      "bytes": 1883,
+      "mode": 420,
+      "sha256": "8620ef94c34a185a56c2ac1116cd780b3abc52d471b17c7bbcd73d4961f46d50"
+    },
+    {
+      "path": "ast-grep-rules/sg-postfix-double-await.yml",
+      "source": "skills/e2e-reviewer/scripts/ast-grep-rules/sg-postfix-double-await.yml",
+      "bytes": 544,
+      "mode": 420,
+      "sha256": "4a42de5ebd80860be53e27c881830e5e9f81d88e3c871031cc5e7e0de47621a3"
+    },
+    {
+      "path": "ast-grep-rules/sg-postfix-empty-expect.yml",
+      "source": "skills/e2e-reviewer/scripts/ast-grep-rules/sg-postfix-empty-expect.yml",
+      "bytes": 375,
+      "mode": 420,
+      "sha256": "fdfc1463320ee7350980f0600b2fb296e9d820910e46b508154d1fc9c6a3ea4a"
+    },
+    {
+      "path": "ast-grep-rules/sg-postfix-orphan-then.yml",
+      "source": "skills/e2e-reviewer/scripts/ast-grep-rules/sg-postfix-orphan-then.yml",
+      "bytes": 584,
+      "mode": 420,
+      "sha256": "203e840f7134e39c8954d16afc939b4c92d5b9a8f6b74cf0d3474425866dcc2d"
+    },
+    {
+      "path": "conditional-discovery.py",
+      "source": "skills/e2e-reviewer/scripts/conditional-discovery.py",
+      "bytes": 8836,
+      "mode": 420,
+      "sha256": "00ff3bd19ae4a753993742372d0de2e20528adcbf767862d99e42e8794a095e6"
+    },
+    {
+      "path": "parse-ast-grep-json.py",
+      "source": "skills/e2e-reviewer/scripts/parse-ast-grep-json.py",
+      "bytes": 3540,
+      "mode": 493,
+      "sha256": "2c1e2fa2c18a3810495b69491ed0ab74163515fa9936dfae0aaaf73018d37f07"
+    },
+    {
+      "path": "regression/test-reviewer-scanner.py",
+      "source": "scripts/ci/test-reviewer-scanner.py",
+      "bytes": 331318,
+      "mode": 420,
+      "sha256": "128c0841ba1ce1028191364976799d17310916b21e789d5e425bc2bef4988742"
+    },
+    {
+      "path": "scan.sh",
+      "source": "skills/e2e-reviewer/scripts/scan.sh",
+      "bytes": 337967,
+      "mode": 493,
+      "sha256": "fc0cfb1d0f6b30d467fab7d3bbfe433ccbc16108da10f40b0ac33815fd0e9e70"
+    },
+    {
+      "path": "scope-graph.py",
+      "source": "skills/e2e-reviewer/scripts/scope-graph.py",
+      "bytes": 17372,
+      "mode": 420,
+      "sha256": "97920e16de17e8e7f556d9b4229994bac1a83ac7adce3729e6685d75962f21ed"
+    },
+    {
+      "path": "scope-lexer.py",
+      "source": "skills/e2e-reviewer/scripts/scope-lexer.py",
+      "bytes": 7142,
+      "mode": 420,
+      "sha256": "0ec3f0804714e478848abd7e00b034d542ec2deeb5349ae22d90d95ee5712441"
+    },
+    {
+      "path": "scope-source.sh",
+      "source": "skills/e2e-reviewer/scripts/scope-source.sh",
+      "bytes": 14817,
+      "mode": 420,
+      "sha256": "ac81b9b7f0b1e723eada7392adba3f0599757b10be19aa7cb1d6bfab3a160be5"
+    },
+    {
+      "path": "scope-watch.py",
+      "source": "skills/e2e-reviewer/scripts/scope-watch.py",
+      "bytes": 11207,
+      "mode": 420,
+      "sha256": "b07cd7b796da5136354ebdc2b6a6dd45dcdbd5871eca6c7dc8e3853afe278351"
+    },
+    {
+      "path": "scope-worker.py",
+      "source": "skills/e2e-reviewer/scripts/scope-worker.py",
+      "bytes": 23353,
+      "mode": 420,
+      "sha256": "260e0468d1000a136a7832f3e8f81d12036d4b79dd419ed15bc5268b46f91bd6"
+    }
+  ]
+}

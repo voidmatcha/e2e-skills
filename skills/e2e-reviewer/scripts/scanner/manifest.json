@@ -1,0 +1,972 @@
+{
+  "entrypoint": "src/cli.mjs",
+  "files": {
+    "LICENSE": {
+      "bytes": 10179,
+      "sha256": "4c9fb97c01f065d3113df961e895744276238f69361905181e383503cad57283"
+    },
+    "NOTICE": {
+      "bytes": 828,
+      "sha256": "3750db04b78aa2946bd15d5b3e3c0c81a8227ac26b81f088a9fb5d150478c70e"
+    },
+    "src/accessible-names.mjs": {
+      "bytes": 4564,
+      "sha256": "88ae06c1abd314407018d2065c0a6ca80b080d1625b2a4b31a01c119de47608e"
+    },
+    "src/actions.mjs": {
+      "bytes": 4054,
+      "sha256": "7adffd9eacaeaf6900ad2df7590ecf1a3b0fa62969868a6cd2de8dc732952692"
+    },
+    "src/assertions.mjs": {
+      "bytes": 25954,
+      "sha256": "20a0736c7b281ae69f21a9e1936784aafd8255e0d918cb951680f94d11b4d625"
+    },
+    "src/catch-handlers.mjs": {
+      "bytes": 57000,
+      "sha256": "44a8c07ff5f3d8b5f9aa7ee4c4325f7e9ca6c9a1d2fb17b5fce5676e281a78ac"
+    },
+    "src/cli.mjs": {
+      "bytes": 19885,
+      "sha256": "ac7cbee014421a8affc3c4e69e6527a20b91d7f86d1415a212a38b5de6a64fc6"
+    },
+    "src/collections.mjs": {
+      "bytes": 4159,
+      "sha256": "06fcfba9b554648c6773c2b476f5af6b80a18730ee06038f2467ad78a9850a0f"
+    },
+    "src/compat-report.mjs": {
+      "bytes": 8898,
+      "sha256": "bf7f650d3faafa8542f3c26a5804eccffde8641e53617ed9776e1a56c6d968f2"
+    },
+    "src/conditional-assertions.mjs": {
+      "bytes": 16427,
+      "sha256": "ebf98bb4ddbfb123ad835391a4f570a515bf855a6c99ba27de544acb1378cb00"
+    },
+    "src/config-context.mjs": {
+      "bytes": 19347,
+      "sha256": "1864f4ac906e08475141dcbb44f6513062b3801a631d9d9d945dfa984f4948c3"
+    },
+    "src/control-flow.mjs": {
+      "bytes": 3201,
+      "sha256": "66e308aeb5411927ce2c1a764bee133ccc6ceab03e72fce350384b6023de7f42"
+    },
+    "src/credentials.mjs": {
+      "bytes": 6156,
+      "sha256": "cb11ceef24539434a7eb6a8e7e7f9367a423a11b85110111fb18a4721b9d6c5a"
+    },
+    "src/cypress-assignment.mjs": {
+      "bytes": 2616,
+      "sha256": "22c5da4932aab156e146c934bb8d443ba545148032349ca7334e20f166261afb"
+    },
+    "src/cypress-callbacks.mjs": {
+      "bytes": 10656,
+      "sha256": "25acb59164a21f56153b0b2a2734e8985b944b9de101a15369d2917a3c90ef72"
+    },
+    "src/cypress-chain-aliases.mjs": {
+      "bytes": 5147,
+      "sha256": "8da1bef67da39c7c5bdb8ca2b0f7fb2101ee3382f592dd18b9c9506a19818ca6"
+    },
+    "src/dedupe.mjs": {
+      "bytes": 3111,
+      "sha256": "41c8191bb7934889510c8bd5d6ff76af472f3fa5f9ee2257d0bc48d9b8c4b45f"
+    },
+    "src/diagnostics.mjs": {
+      "bytes": 5414,
+      "sha256": "521f4b48da61ae3f4c468ddd05febe34903f422d50881490e91a9a7609c9180f"
+    },
+    "src/dom-queries.mjs": {
+      "bytes": 6576,
+      "sha256": "f2946daee08298b38547abd4315805720c0b7f295efbcef88e311ef2088813ba"
+    },
+    "src/eslint-rule-map.mjs": {
+      "bytes": 1327,
+      "sha256": "b0cded59bc1ce8029273f3573e3792c5f053ad3fcf8da80f234ae029e7b2f7d9"
+    },
+    "src/focused-tests.mjs": {
+      "bytes": 9181,
+      "sha256": "b4b1680f511c477c0ffb0c565ee8cf37647d84c4b5da5f092a2626b908fe83b5"
+    },
+    "src/import-snapshot.mjs": {
+      "bytes": 9895,
+      "sha256": "0044cd5e077b8a3453448e18a0d068525448791fa2311bb85141342bca3323b4"
+    },
+    "src/inventory.mjs": {
+      "bytes": 10984,
+      "sha256": "2974dabaeae7c1e3a5579e559cd3d5bc7ccd7c402d6906ab47ed6aeb92ecc190"
+    },
+    "src/justified.mjs": {
+      "bytes": 7095,
+      "sha256": "19a199ed4a7d851b69281d0cc07dbd6b881829c31bbfd65e147b45ad1c051f3b"
+    },
+    "src/networkidle.mjs": {
+      "bytes": 9182,
+      "sha256": "d56ed0809132918045a1b482297f9423106ad37c990c29b4b461c90f4c63ace0"
+    },
+    "src/page-reads.mjs": {
+      "bytes": 12968,
+      "sha256": "d0f255f578a7f4da51d9ed9dd8f9631c1f06f186221acd3b2853922359c76320"
+    },
+    "src/project-context.mjs": {
+      "bytes": 7533,
+      "sha256": "68d19ba8a22a84157897b33cdc7f479a0ac4d9d3a7a00968068583e969ac5e96"
+    },
+    "src/project-eslint.mjs": {
+      "bytes": 17086,
+      "sha256": "4951dc1e7662bca496bfaa6469d994a10cccee4d92211417da9feed7f6b183d0"
+    },
+    "src/promises.mjs": {
+      "bytes": 10308,
+      "sha256": "e7ae5c9ae54bff031c74bfa30f5331f6ce874de2b5ffc2abd4546c58f90b03f9"
+    },
+    "src/read-candidate.mjs": {
+      "bytes": 2272,
+      "sha256": "d92237a0b5ab1824e344c53134cfa2d10f8addca3b53396f99a93ef62deb7a96"
+    },
+    "src/receivers.mjs": {
+      "bytes": 6980,
+      "sha256": "c5bffc781e6ec58dad0a179795a4cd7754cf73a7f7bba0c69cce05d00403aba8"
+    },
+    "src/report.mjs": {
+      "bytes": 1867,
+      "sha256": "55a06f24d5ac40a25640dadf58c15fffc41083128e0384be44bee74850b335e4"
+    },
+    "src/review-candidates.mjs": {
+      "bytes": 53892,
+      "sha256": "1e2208e9da7ad989aeb8cee7126a20ef3900eb2194a7c512dcb8843413d5a95f"
+    },
+    "src/review-obligations.mjs": {
+      "bytes": 6413,
+      "sha256": "4d6f26db7b48c93a535c416e0c1f2e3a342328e9853bf59cf27d7d36b29fddd0"
+    },
+    "src/scope.mjs": {
+      "bytes": 28960,
+      "sha256": "1eac917922c5dd56cbeb6b11fa2b215906e9b846664a02229a11b58a234e2084"
+    },
+    "src/soft-assertions.mjs": {
+      "bytes": 2733,
+      "sha256": "dae22ea55424855948e28544897b1b6bd8b3c8773b562a915d73a2a98de7b657"
+    },
+    "src/source.mjs": {
+      "bytes": 8853,
+      "sha256": "c66b7e67dbf40b6d9c0165d17244f074b3e406359ddd07672b8d1682d1746a36"
+    },
+    "src/state-reads.mjs": {
+      "bytes": 7121,
+      "sha256": "3d824092459c9cdacabad7354ada8bfde49d530609816df0951ddbb3b1b33bf7"
+    },
+    "src/suite-data.mjs": {
+      "bytes": 5724,
+      "sha256": "2072cc53bc5d804dd8d97fd1cb16c1bcf6030eb47e7159dfebf111a3d60d0c61"
+    },
+    "src/timeout-zero.mjs": {
+      "bytes": 10361,
+      "sha256": "b3adf14f26b60a85b3cee91f023717cb34a23a4eb1032d279bd87dc1caf5fd9b"
+    },
+    "src/waits.mjs": {
+      "bytes": 3840,
+      "sha256": "1a8a7ba438846ef5a058efc7710d30743de3cb210d93723dda96ead8c806e52d"
+    },
+    "vendor/typescript/LICENSE.txt": {
+      "bytes": 9197,
+      "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
+    },
+    "vendor/typescript/ThirdPartyNoticeText.txt": {
+      "bytes": 37824,
+      "sha256": "1af3c68039c57e539422da82a4faada506ce6d0ea6f90e0b699d02dbcdb7a90c"
+    },
+    "vendor/typescript/typescript.cjs": {
+      "bytes": 9144216,
+      "sha256": "569177652966bd528c319171c7dd22860dbf72bde116cbc4f644f1d02bb12e39"
+    }
+  },
+  "generated_by": "scripts/dev/build-scanner-runtime.py",
+  "import_edges": [
+    {
+      "from": "cli.mjs",
+      "specifier": "./inventory.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./config-context.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./eslint-rule-map.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./read-candidate.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./focused-tests.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./report.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./dedupe.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./scope.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./waits.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./justified.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./assertions.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./suite-data.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./control-flow.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./networkidle.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./actions.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./promises.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./page-reads.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./cypress-assignment.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./dom-queries.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./catch-handlers.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./timeout-zero.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./soft-assertions.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./cypress-callbacks.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./state-reads.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./collections.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./accessible-names.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./conditional-assertions.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./credentials.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./diagnostics.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./compat-report.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./review-candidates.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./review-obligations.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./import-snapshot.mjs"
+    },
+    {
+      "from": "cli.mjs",
+      "specifier": "./project-eslint.mjs"
+    },
+    {
+      "from": "inventory.mjs",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "inventory.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "inventory.mjs",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "inventory.mjs",
+      "specifier": "./project-context.mjs"
+    },
+    {
+      "from": "config-context.mjs",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "config-context.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "config-context.mjs",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "config-context.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "config-context.mjs",
+      "specifier": "./eslint-rule-map.mjs"
+    },
+    {
+      "from": "read-candidate.mjs",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "read-candidate.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "read-candidate.mjs",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "read-candidate.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "focused-tests.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "dedupe.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "scope.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "scope.mjs",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "scope.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "waits.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "waits.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "justified.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "assertions.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "assertions.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "suite-data.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "control-flow.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "networkidle.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "networkidle.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "actions.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "actions.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "actions.mjs",
+      "specifier": "./cypress-chain-aliases.mjs"
+    },
+    {
+      "from": "promises.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "promises.mjs",
+      "specifier": "./cypress-chain-aliases.mjs"
+    },
+    {
+      "from": "promises.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "page-reads.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "page-reads.mjs",
+      "specifier": "./cypress-chain-aliases.mjs"
+    },
+    {
+      "from": "page-reads.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "cypress-assignment.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "dom-queries.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "dom-queries.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "catch-handlers.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "catch-handlers.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "timeout-zero.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "timeout-zero.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "soft-assertions.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "cypress-callbacks.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "cypress-callbacks.mjs",
+      "specifier": "./cypress-chain-aliases.mjs"
+    },
+    {
+      "from": "state-reads.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "state-reads.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "collections.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "collections.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "accessible-names.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "accessible-names.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "conditional-assertions.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "conditional-assertions.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "credentials.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "compat-report.mjs",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "compat-report.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "compat-report.mjs",
+      "specifier": "./report.mjs"
+    },
+    {
+      "from": "review-candidates.mjs",
+      "specifier": "./receivers.mjs"
+    },
+    {
+      "from": "review-candidates.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "review-obligations.mjs",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "review-obligations.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "review-obligations.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "import-snapshot.mjs",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "import-snapshot.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "import-snapshot.mjs",
+      "specifier": "./inventory.mjs"
+    },
+    {
+      "from": "import-snapshot.mjs",
+      "specifier": "./read-candidate.mjs"
+    },
+    {
+      "from": "import-snapshot.mjs",
+      "specifier": "./project-context.mjs"
+    },
+    {
+      "from": "import-snapshot.mjs",
+      "specifier": "./scope.mjs"
+    },
+    {
+      "from": "import-snapshot.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "project-eslint.mjs",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "project-eslint.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "project-eslint.mjs",
+      "specifier": "node:os"
+    },
+    {
+      "from": "project-eslint.mjs",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "project-eslint.mjs",
+      "specifier": "node:module"
+    },
+    {
+      "from": "project-eslint.mjs",
+      "specifier": "node:child_process"
+    },
+    {
+      "from": "project-eslint.mjs",
+      "specifier": "node:url"
+    },
+    {
+      "from": "project-eslint.mjs",
+      "specifier": "./eslint-rule-map.mjs"
+    },
+    {
+      "from": "project-context.mjs",
+      "specifier": "node:fs"
+    },
+    {
+      "from": "project-context.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "project-context.mjs",
+      "specifier": "node:crypto"
+    },
+    {
+      "from": "source.mjs",
+      "specifier": "node:path"
+    },
+    {
+      "from": "source.mjs",
+      "specifier": "typescript"
+    },
+    {
+      "from": "receivers.mjs",
+      "specifier": "./source.mjs"
+    },
+    {
+      "from": "cypress-chain-aliases.mjs",
+      "specifier": "./source.mjs"
+    }
+  ],
+  "manifest_hash_policy": "manifest.json is excluded from its own payload hashes",
+  "schema": "e2e-skills-scanner-runtime-v1",
+  "source_mapping": [
+    {
+      "output": "src/accessible-names.mjs",
+      "output_sha256": "88ae06c1abd314407018d2065c0a6ca80b080d1625b2a4b31a01c119de47608e",
+      "rewrite": null,
+      "source": "src/accessible-names.mjs",
+      "source_sha256": "88ae06c1abd314407018d2065c0a6ca80b080d1625b2a4b31a01c119de47608e"
+    },
+    {
+      "output": "src/actions.mjs",
+      "output_sha256": "7adffd9eacaeaf6900ad2df7590ecf1a3b0fa62969868a6cd2de8dc732952692",
+      "rewrite": null,
+      "source": "src/actions.mjs",
+      "source_sha256": "7adffd9eacaeaf6900ad2df7590ecf1a3b0fa62969868a6cd2de8dc732952692"
+    },
+    {
+      "output": "src/assertions.mjs",
+      "output_sha256": "20a0736c7b281ae69f21a9e1936784aafd8255e0d918cb951680f94d11b4d625",
+      "rewrite": null,
+      "source": "src/assertions.mjs",
+      "source_sha256": "20a0736c7b281ae69f21a9e1936784aafd8255e0d918cb951680f94d11b4d625"
+    },
+    {
+      "output": "src/catch-handlers.mjs",
+      "output_sha256": "44a8c07ff5f3d8b5f9aa7ee4c4325f7e9ca6c9a1d2fb17b5fce5676e281a78ac",
+      "rewrite": null,
+      "source": "src/catch-handlers.mjs",
+      "source_sha256": "44a8c07ff5f3d8b5f9aa7ee4c4325f7e9ca6c9a1d2fb17b5fce5676e281a78ac"
+    },
+    {
+      "output": "src/cli.mjs",
+      "output_sha256": "ac7cbee014421a8affc3c4e69e6527a20b91d7f86d1415a212a38b5de6a64fc6",
+      "rewrite": null,
+      "source": "src/cli.mjs",
+      "source_sha256": "ac7cbee014421a8affc3c4e69e6527a20b91d7f86d1415a212a38b5de6a64fc6"
+    },
+    {
+      "output": "src/collections.mjs",
+      "output_sha256": "06fcfba9b554648c6773c2b476f5af6b80a18730ee06038f2467ad78a9850a0f",
+      "rewrite": null,
+      "source": "src/collections.mjs",
+      "source_sha256": "06fcfba9b554648c6773c2b476f5af6b80a18730ee06038f2467ad78a9850a0f"
+    },
+    {
+      "output": "src/compat-report.mjs",
+      "output_sha256": "bf7f650d3faafa8542f3c26a5804eccffde8641e53617ed9776e1a56c6d968f2",
+      "rewrite": null,
+      "source": "src/compat-report.mjs",
+      "source_sha256": "bf7f650d3faafa8542f3c26a5804eccffde8641e53617ed9776e1a56c6d968f2"
+    },
+    {
+      "output": "src/conditional-assertions.mjs",
+      "output_sha256": "ebf98bb4ddbfb123ad835391a4f570a515bf855a6c99ba27de544acb1378cb00",
+      "rewrite": null,
+      "source": "src/conditional-assertions.mjs",
+      "source_sha256": "ebf98bb4ddbfb123ad835391a4f570a515bf855a6c99ba27de544acb1378cb00"
+    },
+    {
+      "output": "src/config-context.mjs",
+      "output_sha256": "1864f4ac906e08475141dcbb44f6513062b3801a631d9d9d945dfa984f4948c3",
+      "rewrite": null,
+      "source": "src/config-context.mjs",
+      "source_sha256": "1864f4ac906e08475141dcbb44f6513062b3801a631d9d9d945dfa984f4948c3"
+    },
+    {
+      "output": "src/control-flow.mjs",
+      "output_sha256": "66e308aeb5411927ce2c1a764bee133ccc6ceab03e72fce350384b6023de7f42",
+      "rewrite": null,
+      "source": "src/control-flow.mjs",
+      "source_sha256": "66e308aeb5411927ce2c1a764bee133ccc6ceab03e72fce350384b6023de7f42"
+    },
+    {
+      "output": "src/credentials.mjs",
+      "output_sha256": "cb11ceef24539434a7eb6a8e7e7f9367a423a11b85110111fb18a4721b9d6c5a",
+      "rewrite": null,
+      "source": "src/credentials.mjs",
+      "source_sha256": "cb11ceef24539434a7eb6a8e7e7f9367a423a11b85110111fb18a4721b9d6c5a"
+    },
+    {
+      "output": "src/cypress-assignment.mjs",
+      "output_sha256": "22c5da4932aab156e146c934bb8d443ba545148032349ca7334e20f166261afb",
+      "rewrite": null,
+      "source": "src/cypress-assignment.mjs",
+      "source_sha256": "22c5da4932aab156e146c934bb8d443ba545148032349ca7334e20f166261afb"
+    },
+    {
+      "output": "src/cypress-callbacks.mjs",
+      "output_sha256": "25acb59164a21f56153b0b2a2734e8985b944b9de101a15369d2917a3c90ef72",
+      "rewrite": null,
+      "source": "src/cypress-callbacks.mjs",
+      "source_sha256": "25acb59164a21f56153b0b2a2734e8985b944b9de101a15369d2917a3c90ef72"
+    },
+    {
+      "output": "src/cypress-chain-aliases.mjs",
+      "output_sha256": "8da1bef67da39c7c5bdb8ca2b0f7fb2101ee3382f592dd18b9c9506a19818ca6",
+      "rewrite": null,
+      "source": "src/cypress-chain-aliases.mjs",
+      "source_sha256": "8da1bef67da39c7c5bdb8ca2b0f7fb2101ee3382f592dd18b9c9506a19818ca6"
+    },
+    {
+      "output": "src/dedupe.mjs",
+      "output_sha256": "41c8191bb7934889510c8bd5d6ff76af472f3fa5f9ee2257d0bc48d9b8c4b45f",
+      "rewrite": null,
+      "source": "src/dedupe.mjs",
+      "source_sha256": "41c8191bb7934889510c8bd5d6ff76af472f3fa5f9ee2257d0bc48d9b8c4b45f"
+    },
+    {
+      "output": "src/diagnostics.mjs",
+      "output_sha256": "521f4b48da61ae3f4c468ddd05febe34903f422d50881490e91a9a7609c9180f",
+      "rewrite": null,
+      "source": "src/diagnostics.mjs",
+      "source_sha256": "521f4b48da61ae3f4c468ddd05febe34903f422d50881490e91a9a7609c9180f"
+    },
+    {
+      "output": "src/dom-queries.mjs",
+      "output_sha256": "f2946daee08298b38547abd4315805720c0b7f295efbcef88e311ef2088813ba",
+      "rewrite": null,
+      "source": "src/dom-queries.mjs",
+      "source_sha256": "f2946daee08298b38547abd4315805720c0b7f295efbcef88e311ef2088813ba"
+    },
+    {
+      "output": "src/eslint-rule-map.mjs",
+      "output_sha256": "b0cded59bc1ce8029273f3573e3792c5f053ad3fcf8da80f234ae029e7b2f7d9",
+      "rewrite": null,
+      "source": "src/eslint-rule-map.mjs",
+      "source_sha256": "b0cded59bc1ce8029273f3573e3792c5f053ad3fcf8da80f234ae029e7b2f7d9"
+    },
+    {
+      "output": "src/focused-tests.mjs",
+      "output_sha256": "b4b1680f511c477c0ffb0c565ee8cf37647d84c4b5da5f092a2626b908fe83b5",
+      "rewrite": null,
+      "source": "src/focused-tests.mjs",
+      "source_sha256": "b4b1680f511c477c0ffb0c565ee8cf37647d84c4b5da5f092a2626b908fe83b5"
+    },
+    {
+      "output": "src/import-snapshot.mjs",
+      "output_sha256": "0044cd5e077b8a3453448e18a0d068525448791fa2311bb85141342bca3323b4",
+      "rewrite": null,
+      "source": "src/import-snapshot.mjs",
+      "source_sha256": "0044cd5e077b8a3453448e18a0d068525448791fa2311bb85141342bca3323b4"
+    },
+    {
+      "output": "src/inventory.mjs",
+      "output_sha256": "2974dabaeae7c1e3a5579e559cd3d5bc7ccd7c402d6906ab47ed6aeb92ecc190",
+      "rewrite": null,
+      "source": "src/inventory.mjs",
+      "source_sha256": "2974dabaeae7c1e3a5579e559cd3d5bc7ccd7c402d6906ab47ed6aeb92ecc190"
+    },
+    {
+      "output": "src/justified.mjs",
+      "output_sha256": "19a199ed4a7d851b69281d0cc07dbd6b881829c31bbfd65e147b45ad1c051f3b",
+      "rewrite": null,
+      "source": "src/justified.mjs",
+      "source_sha256": "19a199ed4a7d851b69281d0cc07dbd6b881829c31bbfd65e147b45ad1c051f3b"
+    },
+    {
+      "output": "src/networkidle.mjs",
+      "output_sha256": "d56ed0809132918045a1b482297f9423106ad37c990c29b4b461c90f4c63ace0",
+      "rewrite": null,
+      "source": "src/networkidle.mjs",
+      "source_sha256": "d56ed0809132918045a1b482297f9423106ad37c990c29b4b461c90f4c63ace0"
+    },
+    {
+      "output": "src/page-reads.mjs",
+      "output_sha256": "d0f255f578a7f4da51d9ed9dd8f9631c1f06f186221acd3b2853922359c76320",
+      "rewrite": null,
+      "source": "src/page-reads.mjs",
+      "source_sha256": "d0f255f578a7f4da51d9ed9dd8f9631c1f06f186221acd3b2853922359c76320"
+    },
+    {
+      "output": "src/project-context.mjs",
+      "output_sha256": "68d19ba8a22a84157897b33cdc7f479a0ac4d9d3a7a00968068583e969ac5e96",
+      "rewrite": null,
+      "source": "src/project-context.mjs",
+      "source_sha256": "68d19ba8a22a84157897b33cdc7f479a0ac4d9d3a7a00968068583e969ac5e96"
+    },
+    {
+      "output": "src/project-eslint.mjs",
+      "output_sha256": "4951dc1e7662bca496bfaa6469d994a10cccee4d92211417da9feed7f6b183d0",
+      "rewrite": null,
+      "source": "src/project-eslint.mjs",
+      "source_sha256": "4951dc1e7662bca496bfaa6469d994a10cccee4d92211417da9feed7f6b183d0"
+    },
+    {
+      "output": "src/promises.mjs",
+      "output_sha256": "e7ae5c9ae54bff031c74bfa30f5331f6ce874de2b5ffc2abd4546c58f90b03f9",
+      "rewrite": null,
+      "source": "src/promises.mjs",
+      "source_sha256": "e7ae5c9ae54bff031c74bfa30f5331f6ce874de2b5ffc2abd4546c58f90b03f9"
+    },
+    {
+      "output": "src/read-candidate.mjs",
+      "output_sha256": "d92237a0b5ab1824e344c53134cfa2d10f8addca3b53396f99a93ef62deb7a96",
+      "rewrite": null,
+      "source": "src/read-candidate.mjs",
+      "source_sha256": "d92237a0b5ab1824e344c53134cfa2d10f8addca3b53396f99a93ef62deb7a96"
+    },
+    {
+      "output": "src/receivers.mjs",
+      "output_sha256": "c5bffc781e6ec58dad0a179795a4cd7754cf73a7f7bba0c69cce05d00403aba8",
+      "rewrite": null,
+      "source": "src/receivers.mjs",
+      "source_sha256": "c5bffc781e6ec58dad0a179795a4cd7754cf73a7f7bba0c69cce05d00403aba8"
+    },
+    {
+      "output": "src/report.mjs",
+      "output_sha256": "55a06f24d5ac40a25640dadf58c15fffc41083128e0384be44bee74850b335e4",
+      "rewrite": null,
+      "source": "src/report.mjs",
+      "source_sha256": "55a06f24d5ac40a25640dadf58c15fffc41083128e0384be44bee74850b335e4"
+    },
+    {
+      "output": "src/review-candidates.mjs",
+      "output_sha256": "1e2208e9da7ad989aeb8cee7126a20ef3900eb2194a7c512dcb8843413d5a95f",
+      "rewrite": null,
+      "source": "src/review-candidates.mjs",
+      "source_sha256": "1e2208e9da7ad989aeb8cee7126a20ef3900eb2194a7c512dcb8843413d5a95f"
+    },
+    {
+      "output": "src/review-obligations.mjs",
+      "output_sha256": "4d6f26db7b48c93a535c416e0c1f2e3a342328e9853bf59cf27d7d36b29fddd0",
+      "rewrite": null,
+      "source": "src/review-obligations.mjs",
+      "source_sha256": "4d6f26db7b48c93a535c416e0c1f2e3a342328e9853bf59cf27d7d36b29fddd0"
+    },
+    {
+      "output": "src/scope.mjs",
+      "output_sha256": "1eac917922c5dd56cbeb6b11fa2b215906e9b846664a02229a11b58a234e2084",
+      "rewrite": null,
+      "source": "src/scope.mjs",
+      "source_sha256": "1eac917922c5dd56cbeb6b11fa2b215906e9b846664a02229a11b58a234e2084"
+    },
+    {
+      "output": "src/soft-assertions.mjs",
+      "output_sha256": "dae22ea55424855948e28544897b1b6bd8b3c8773b562a915d73a2a98de7b657",
+      "rewrite": null,
+      "source": "src/soft-assertions.mjs",
+      "source_sha256": "dae22ea55424855948e28544897b1b6bd8b3c8773b562a915d73a2a98de7b657"
+    },
+    {
+      "output": "src/source.mjs",
+      "output_sha256": "c66b7e67dbf40b6d9c0165d17244f074b3e406359ddd07672b8d1682d1746a36",
+      "rewrite": "explicit-vendored-parser",
+      "source": "src/source.mjs",
+      "source_sha256": "f3a3845a6af90758891ed3c79a9715f3cd00eb6f421923685480e6530cc04e19"
+    },
+    {
+      "output": "src/state-reads.mjs",
+      "output_sha256": "3d824092459c9cdacabad7354ada8bfde49d530609816df0951ddbb3b1b33bf7",
+      "rewrite": null,
+      "source": "src/state-reads.mjs",
+      "source_sha256": "3d824092459c9cdacabad7354ada8bfde49d530609816df0951ddbb3b1b33bf7"
+    },
+    {
+      "output": "src/suite-data.mjs",
+      "output_sha256": "2072cc53bc5d804dd8d97fd1cb16c1bcf6030eb47e7159dfebf111a3d60d0c61",
+      "rewrite": null,
+      "source": "src/suite-data.mjs",
+      "source_sha256": "2072cc53bc5d804dd8d97fd1cb16c1bcf6030eb47e7159dfebf111a3d60d0c61"
+    },
+    {
+      "output": "src/timeout-zero.mjs",
+      "output_sha256": "b3adf14f26b60a85b3cee91f023717cb34a23a4eb1032d279bd87dc1caf5fd9b",
+      "rewrite": null,
+      "source": "src/timeout-zero.mjs",
+      "source_sha256": "b3adf14f26b60a85b3cee91f023717cb34a23a4eb1032d279bd87dc1caf5fd9b"
+    },
+    {
+      "output": "src/waits.mjs",
+      "output_sha256": "1a8a7ba438846ef5a058efc7710d30743de3cb210d93723dda96ead8c806e52d",
+      "rewrite": null,
+      "source": "src/waits.mjs",
+      "source_sha256": "1a8a7ba438846ef5a058efc7710d30743de3cb210d93723dda96ead8c806e52d"
+    },
+    {
+      "output": "LICENSE",
+      "output_sha256": "4c9fb97c01f065d3113df961e895744276238f69361905181e383503cad57283",
+      "rewrite": null,
+      "source": "LICENSE",
+      "source_sha256": "4c9fb97c01f065d3113df961e895744276238f69361905181e383503cad57283"
+    },
+    {
+      "output": "NOTICE",
+      "output_sha256": "3750db04b78aa2946bd15d5b3e3c0c81a8227ac26b81f088a9fb5d150478c70e",
+      "rewrite": null,
+      "source": "NOTICE",
+      "source_sha256": "3750db04b78aa2946bd15d5b3e3c0c81a8227ac26b81f088a9fb5d150478c70e"
+    }
+  ],
+  "typescript": {
+    "files": [
+      {
+        "output": "vendor/typescript/LICENSE.txt",
+        "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47",
+        "source": "LICENSE.txt"
+      },
+      {
+        "output": "vendor/typescript/ThirdPartyNoticeText.txt",
+        "sha256": "1af3c68039c57e539422da82a4faada506ce6d0ea6f90e0b699d02dbcdb7a90c",
+        "source": "ThirdPartyNoticeText.txt"
+      },
+      {
+        "output": "vendor/typescript/typescript.cjs",
+        "sha256": "569177652966bd528c319171c7dd22860dbf72bde116cbc4f644f1d02bb12e39",
+        "source": "lib/typescript.js"
+      }
+    ],
+    "upstream": "npm:typescript@6.0.3",
+    "version": "6.0.3"
+  }
+}

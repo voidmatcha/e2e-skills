@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=76503bbf91d620041574636da32ee71c8fd11b92e67c9d202350c81f1284f638; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=c9e98e916806420513ea4e729eea693287b94128bbd84d8a6add47165c6f3cc1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程 agent 提供四个 skill，用于生成、审查 Playwright/Cypress E2E 测试并诊断失败。skill 是 agent 执行任务时遵循的一组指令。
 
@@ -215,7 +215,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 请用这些 skill 补充真实应用及其 E2E suite。审查和诊断支持 Playwright/Cypress，生成仅支持 Playwright。
 
-随附的 shell 脚本和 artifact 读取器面向常规的 macOS/Linux 布局，使用 `/bin/bash` 以及启动器所需的固定系统可执行文件路径。Windows 用户需要兼容的 WSL 发行版，并把 artifact 放在 WSL 文件系统内；不支持原生 Windows。NixOS，以及仅通过 Nix、pyenv、Conda 或 nvm 安装的工具，并不都能被自动发现。审查器的扫描器支持经过验证的绝对路径 `E2E_SMELL_*_BIN` 覆盖，但这并不意味着调试器的启动器也有相同的覆盖。缺少受信任的工具时，相关操作会停止；不要通过环境中的 `PATH` 查找绕过这一边界。请从宿主实际提供的 Skill 位置解析 Skill 资源，包括插件缓存和自定义安装位置，而不是猜测的主目录。
+随附的 shell 脚本和 artifact 读取器面向常规的 macOS/Linux 布局，使用 `/bin/bash` 以及启动器所需的固定系统可执行文件路径。Windows 用户需要兼容的 WSL 发行版，并把 artifact 放在 WSL 文件系统内；不支持原生 Windows。NixOS，以及仅通过 Nix、pyenv、Conda 或 nvm 安装的工具，并不都能被自动发现。缺少受信任的工具时，相关操作会停止；不要通过环境中的 `PATH` 查找绕过这一边界。请从宿主实际提供的 Skill 位置解析 Skill 资源，包括插件缓存和自定义安装位置，而不是猜测的主目录。
 
 generator 将 `thin-rules.md` 和安全指令附加到官方 planner 与 generator 后委派，再运行 reviewer scanner 和新测试。它不安装任何内容，不修改 agent 或 MCP 设置，不使用 CLI fallback 或 healer。缺少设置时会提供指南。
 
@@ -354,12 +354,18 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-需要 Python 3 和支持 PCRE2 的 ripgrep (`rg`)。默认不执行目标项目的 ESLint 代码，也不下载工具。缺少必需工具或无法读取文件时会报告错误，而不是报告没有问题。
+需要 Node.js 22 或更新版本；TypeScript parser 已随附。启动器默认执行静态检查并输出文本，不运行测试、不下载工具，也不执行项目配置。使用 `--format json` 获取结构化输出，或用 `--report-file <new-file>` 保存完整报告；不会覆盖已有文件。
+
+scanner 随 reviewer 提供，无需安装 npm 即可离线运行。如需单独使用，请运行以下固定版本的 npm 命令。仅运行 scan 不会执行 assertion mutation 或 fault injection。这些检查需要 Python 3.10+ 和可信且准备就绪的项目。详见 [CLI 与 probe 指南](packages/scanner/README.md)。
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests
+```
 
 <details>
 <summary>扫描器高级选项和文件读取范围</summary>
 
-扫描器需要支持 PCRE2 的 `rg` 和 Python 3。Python 会创建并校验 NUL-safe 候选标识记录，因此候选漂移或损坏的记录会 fail closed；这项必需的记录工作与可选的 Tier 2 AST 工具无关。默认情况下，它不会执行目标项目控制的 ESLint binaries、plugins、parsers 或 configuration，也不会下载工具。`E2E_SMELL_ALLOW_PROJECT_ESLINT=1` 会让可信 checkout 进入项目 ESLint 执行；`E2E_SMELL_NO_ESLINT_DOWNLOAD=0` 和 `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` 会分别选择启用 pinned downloads。当 portability check 必须忽略 host 预装 binaries 时，设置 `E2E_SMELL_DISABLE_AST_GREP=1`。
+要运行已安装的项目 ESLint 及其配置，请先明确信任 checkout 并批准准确命令，再添加 `--project-eslint --trust-project`。项目控制的代码具有 host 访问权限；不提供 sandbox，也不安装依赖。内置检查无需此选项。
 
 > **读取边界。**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
@@ -370,7 +376,7 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 内置检查读取 `.ts`、`.js`、`.tsx`、`.jsx`、`.mts`、`.mjs`、`.cts`、`.cjs` 源文件。
 <!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
-Tier 3 是内置 fallback。可选的 ESLint 和 ast-grep tiers 会提高精度，但不会替代语义审查。扫描器遇到基础设施或文件系统错误时会以 2 退出，而不是报告虚假的 clean 结果。参见 [SECURITY.md](SECURITY.md) 了解 trust 和 network boundary。
+默认 `p0` 策略在存在机械确认的 P0 时返回 exit 1。使用 `--fail-on p0-candidate` 可同时检查保留的 P0 候选；`any` 检查所有确认的发现，`none` 不根据数量判定退出状态。exit 0 只表示没有达到所选阈值。即使执行完成且 P0=0，保留的候选和待确认事项仍需审查。输入缺失、源文件完整性或分析失败会产生 INCOMPLETE 并返回 exit 2。这不证明已完成全部语义验证。执行与网络边界见 [SECURITY.md](SECURITY.md)。
 
 </details>
 

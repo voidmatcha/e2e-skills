@@ -73,6 +73,39 @@ expand only when the user requested broader coverage and the first result is val
 
 ## Prepare a plan
 
+### Optional installed npm helper
+
+When `@voidmatcha/e2e-skills-scanner` is already installed, use its
+`e2e-skills-check` CLI to discover and bind a supported change before preparing
+the full plan below. Resolve the installed package's absolute path and version
+from the host or the user's selected installation; do not install it, invoke a
+downloading `npx`, or select a target-project executable from `PATH` during review.
+The skill's bundled scanner and Python executor remain available without npm.
+
+Using a trusted Node.js 22+ executable and the resolved package directory:
+
+```bash
+/absolute/node <scanner-package>/src/check-cli.mjs discover --explain assertion <snapshot> <relative-spec>
+/absolute/node <scanner-package>/src/check-cli.mjs discover --explain post <snapshot> <relative-source>
+/absolute/node <scanner-package>/src/check-cli.mjs bind <selected-candidate.json> <binding.json>
+```
+
+Select one returned candidate object from source evidence. Supported changes are
+one awaited literal `toHaveText` expectation or one literal POST omission;
+the separately named Promise-chain operator removes its callbacks too. Read the
+installed package's `examples/README.md` and matching binding template only when
+using this path. Supply the promise, native command, observer and other fields
+from the prepared project. `NEEDS_INPUT` identifies missing fields for the agent
+to complete; it is not a test verdict. `NO_SUPPORTED_CANDIDATE` is not a clean
+review or proof of test quality. If the helper is absent or the shape unsupported,
+continue with a source-backed manual plan under the same trust gate.
+
+Binding does not execute commands or validate the entire plan. Preview and
+execution still use the bundled Python executor described below; do not run both
+executors for the same plan. Static scans never start these probes automatically.
+
+### Manifest
+
 Write JSON version 1 with these fields:
 
 | Field | Required content |

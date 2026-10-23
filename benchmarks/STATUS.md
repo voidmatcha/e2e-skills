@@ -2,6 +2,10 @@
 
 The historical evidence is preserved on [Hugging Face](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks). This page summarizes the 3.0.0 evidence; the [immutable manifest](external-evidence.json) pins the complete pre-cleanup Git snapshot: 4,726 original files, 116,282,107 bytes. Original protocols, reports, adjudications and negative outcomes remain unchanged.
 
+## 3.1.0 pre-release verification
+
+The [source-pinned verification record](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/547146b579f9105a72ed2b90837bab5d89340b08/releases/v3.1.0/pre-release-20261023/README.md) adds full local CI (669 Node tests passed, 0 failed, 1 skipped), installed-package and skill checks, Linux shipped-suite checks, and one prepared SvelteKit V3 probe with normal/fault/restored controls. It records the source snapshot before the final documentation update, not a released commit. Linux and live-probe environment limits are stated in the record. This adds execution evidence, not a new reviewer accuracy benchmark; the historical results below remain unchanged.
+
 ## Results and scope
 
 | Component | Observed result | What the result covers |

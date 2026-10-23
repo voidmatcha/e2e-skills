@@ -224,6 +224,18 @@ SKILL_SOURCE_SUFFIXES = {
     "references": {".md"},
     "scripts": {".py", ".sh", ".yaml", ".yml"},
 }
+# The generated, offline scanner ships its parser and upstream notices with
+# the skill. These bytes belong to the evaluated runtime digest and snapshot,
+# but never to the fixed model-visible prompt profiles below. Keep exceptions
+# path-specific; a .cjs/.txt/extensionless file elsewhere is not admitted.
+SCANNER_RUNTIME_FILES = frozenset({
+    "scripts/scanner/manifest.json",
+    "scripts/scanner/LICENSE",
+    "scripts/scanner/NOTICE",
+    "scripts/scanner/vendor/typescript/typescript.cjs",
+    "scripts/scanner/vendor/typescript/LICENSE.txt",
+    "scripts/scanner/vendor/typescript/ThirdPartyNoticeText.txt",
+})
 PROMPT_SKILL_PROFILES = {
     "full": (
         "SKILL.md",
@@ -1220,7 +1232,7 @@ def is_pinned_no_wrapper_live_run(
 def canonical_severities(
     skill_dir: Path = DEFAULT_SKILL_DIR,
 ) -> dict[str, str]:
-    """Load reportable pattern IDs from the skill table and scanner source."""
+    """Load reportable IDs from the evaluated skill's documented contracts."""
     mapping: dict[str, str] = {}
     skill_text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
     for match in re.finditer(
@@ -1230,16 +1242,43 @@ def canonical_severities(
     ):
         mapping[f"#{match.group(1)}"] = match.group(2)
 
-    scanner_text = (skill_dir / "scripts/scan.sh").read_text(encoding="utf-8")
-    for match in re.finditer(
-        r"^run_check\s+(P[012])\s+'(#[0-9]+[a-z]?(?:-[0-9]+[a-z]?)?)'",
-        scanner_text,
-        re.MULTILINE,
-    ):
-        mapping[match.group(2)] = match.group(1)
+    # scan.sh is a launcher, not a taxonomy. Keep the evaluated skill's
+    # ID lookup and severity contracts authoritative, including custom copies.
     pattern_reference = (
         skill_dir / "references/pattern-reference.md"
     ).read_text(encoding="utf-8")
+    lookup = (skill_dir / "references/grep-patterns.md").read_text(encoding="utf-8")
+    mixed: dict[str, str] = {}
+    # The two mixed-severity families document their split explicitly. Never
+    # infer a severity from a scanner implementation or from a mention alone.
+    rule = re.search(r"^\*\*Severity rule:\*\* (.+)$", pattern_reference, re.MULTILINE)
+    if rule:
+        for group in re.finditer(r"([^:.;]+?) (?:are|is) (P[012])\b", rule.group(1)):
+            for first, last in re.findall(r"#([0-9]+[a-z])(?:[–-]#([0-9]+[a-z]))?", group.group(1)):
+                ids = [first]
+                if last:
+                    if first[:-1] != last[:-1] or first[-1] > last[-1]:
+                        raise ValueError("invalid documented severity range")
+                    ids = [first[:-1] + chr(letter) for letter in range(ord(first[-1]), ord(last[-1]) + 1)]
+                mixed.update({f"#{item}": group.group(2) for item in ids})
+    for header in re.findall(r"^#### .+$", pattern_reference, re.MULTILINE):
+        for pattern, severity in re.findall(r"\b([0-9]+[a-z]) (P[012])\b", header):
+            mixed[f"#{pattern}"] = severity
+    for pattern_id in re.findall(r"^\|\s*(#[0-9]+[a-z]?(?:-[0-9]+[a-z]?)?)\b", lookup, re.MULTILINE):
+        # #4c/#4d/#4e are one combined reportable check in the contract.
+        if pattern_id in {"#4c", "#4d", "#4e"}:
+            if "`#4c-4e`" not in pattern_reference:
+                raise ValueError("missing combined #4c-4e contract")
+            pattern_id = "#4c-4e"
+        family = f"#{re.match(r'#([0-9]+)', pattern_id).group(1)}"
+        severity = mixed.get(pattern_id)
+        if pattern_id == "#4c-4e":
+            members = {mixed.get(f"#4{letter}") for letter in "cde"}
+            severity = members.pop() if len(members) == 1 else None
+        severity = severity or mapping.get(pattern_id) or mapping.get(family)
+        if severity is None:
+            raise ValueError(f"missing documented severity for {pattern_id}")
+        mapping[pattern_id] = severity
     for match in re.finditer(
         r"^\*\*([0-9]+[a-z])\..*?\*\*.*?\[P([012])\]",
         pattern_reference,
@@ -3428,7 +3467,15 @@ def skill_files(skill_dir: Path) -> list[Path]:
                 or path.suffix == ".pyc"
             ):
                 continue
-            if path.suffix not in suffixes:
+            if relative.parts[:2] == ("scripts", "scanner"):
+                allowed = relative.as_posix() in SCANNER_RUNTIME_FILES or (
+                    len(relative.parts) == 4
+                    and relative.parts[:3] == ("scripts", "scanner", "src")
+                    and path.suffix == ".mjs"
+                )
+            else:
+                allowed = path.suffix in suffixes
+            if not allowed:
                 raise ValueError(
                     f"{path}: unsupported file type in canonical skill surface"
                 )
@@ -3480,6 +3527,14 @@ def normalize_oracle_text(value: str) -> str:
     normalized = re.sub(r"\s*([/._-])\s*", r"\1", normalized)
     normalized = re.sub(r"[^a-z0-9#._/-]+", " ", normalized)
     return " ".join(normalized.split())
+
+
+@functools.lru_cache(maxsize=1)
+def normalize_disclosure_text(content: str) -> str:
+    """Reuse only the current file's pure normalization across its labels."""
+    return re.sub(
+        r"[^a-z0-9]+", " ", unicodedata.normalize("NFKC", content).casefold()
+    )
 
 
 ORACLE_SEMANTIC_STOP_WORDS = {
@@ -3589,11 +3644,7 @@ def answer_leak_description(
         and source_line in normalized
     ):
         return "source snippet"
-    disclosure_text = re.sub(
-        r"[^a-z0-9]+",
-        " ",
-        unicodedata.normalize("NFKC", content).casefold(),
-    )
+    disclosure_text = normalize_disclosure_text(content)
     required_matches = min(3, len(distinctive_terms))
     if (
         required_matches >= 2

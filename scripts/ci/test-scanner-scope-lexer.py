@@ -14,6 +14,10 @@ import threading
 from types import SimpleNamespace
 from unittest import mock
 
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.legacy_scanner_oracle import legacy_scanner_file
+
 BASE = Path(__file__).resolve().parents[2] / 'skills/e2e-reviewer/scripts'
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
@@ -173,7 +177,7 @@ print('dense fallback and 64-token boundaries passed')
         self.assertIn('64-token boundaries passed', result.stdout)
 
 
-# scan.sh provenance lexers that carry their own awk program, with the
+# Frozen legacy scan.sh provenance lexers (not Node runtime coverage), with the
 # arguments after the source path that make each one reach that program.
 SCAN_PROVENANCE_LEXERS = (
     ('source_has_unresolved_test_import', ()),
@@ -188,7 +192,7 @@ SCAN_PROVENANCE_LEXERS = (
 
 
 def scan_function(name):
-    scanner = (BASE/'scan.sh').read_text()
+    scanner = legacy_scanner_file().read_text()
     start = scanner.index('\n' + name + '() {\n') + 1
     return scanner[start:scanner.index('\n}\n', start) + 3]
 

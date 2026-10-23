@@ -228,21 +228,22 @@ def assert_debugger_triage_contract(skill_dir: Path, core: str) -> None:
     # Pin today's safe debugger scanner invocation directly. Its trust boundary
     # must not depend on the bytes of the retired generator pipeline.
     scanner_command = (
-        "E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 "
-        "E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 "
-        "/usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN "
-        "-u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN "
-        "/bin/bash -p <e2e-reviewer skill-base>/scripts/scan.sh <one spec or POM path>"
+        "/bin/bash -p <e2e-reviewer skill-base>/scripts/scan.sh "
+        "--fail-on p0 <one spec or POM path>"
     )
-    scanner = re.search(r"`(E2E_SMELL_ALLOW_PROJECT_ESLINT=0 [^`]+)`", reference)
+    scanner = re.search(r"`(/bin/bash -p [^`]+scripts/scan\.sh [^`]+)`", reference)
     assert scanner is not None and scanner.group(1) == scanner_command, skill_dir.name
+    assert "E2E_SMELL_" not in reference, skill_dir.name
     for clause in (
         "NOFIX: <evidence>", "expected values", "assertion target",
         "scenario count", "request proof", "test enablement",
         "V6: required (caller)", "debugger never approves its own repair",
         "F4/F5/F6/F13", "F3/F9", "F1/F7/F8/F11/F14/F15",
-        "exit 0 means P0=0", "exit 1 with a printed Summary means P0>0",
-        "reserve `CANNOT_VERIFY` for exit 2", "never dispatches a reviewer",
+        "exit 0 means no confirmed P0", "exit 1 with a Summary means confirmed P0",
+        "Reserve `CANNOT_VERIFY` for exit 2",
+        "Retained candidates and review obligations still need source review even at exit 0",
+        "Node.js 22 or newer", "downloads nothing", "no project configuration by default",
+        "--project-eslint --trust-project", "explicit checkout trust and exact command approval", "never dispatches a reviewer",
         "never quotes or invents a verdict", "approved-fields packet",
     ):
         assert clause in reference, (skill_dir.name, clause)

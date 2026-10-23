@@ -226,30 +226,52 @@ run_sanitized() { # $1=working directory, rest=argv-safe command
   cd "$dir" && "${safe_env[@]}" "$@"
 }
 
-# parse scan.sh output: "Summary: N total hit(s), N P0," already includes
-# severity-aware AST-origin hits after exact cross-tier deduplication.
-scan_counts() { # $1 = path (file ok — scan.sh accepts non-dirs); echoes "total p0 ast"
-  local out rc t p a
-  out=$(E2E_SMELL_FAIL_ON=none E2E_SMELL_NO_ESLINT_DOWNLOAD=1 bash "$SCAN" "$1" 2>&1)
+# Canonical Node text already includes retained AST-origin findings. Candidate
+# counts remain separate from confirmed P0 findings; neither is an ast-grep run.
+scan_counts() { # $1 = path; echoes "total p0 p0-candidate ast"
+  local out rc
+  out=$(E2E_SMELL_FAIL_ON=none /bin/bash -p "$SCAN" "$1" 2>&1)
   rc=$?
   if [[ $rc -ne 0 ]]; then
     printf '%s\n' "$out" >&2
     return "$rc"
   fi
-  t=$(printf '%s\n' "$out" | sed -n 's/^Summary: \([0-9]*\) total.*/\1/p' | head -1)
-  p=$(printf '%s\n' "$out" | sed -n 's/^Summary: [0-9]* total hit(s), \([0-9]*\) P0.*/\1/p' | head -1)
-  a=$(printf '%s\n' "$out" | sed -n 's/^[[:space:]]*ast-grep total: \([0-9]*\) hit.*/\1/p' | head -1)
-  if [[ -z "$t" || -z "$p" || -z "$a" ]]; then
-    echo "scanner output missing required Summary/ast-grep counts" >&2
-    return 65
-  fi
-  echo "$t $p $a"
+  printf '%s\n' "$out" | python3 -c '
+import re, sys
+text = sys.stdin.read()
+lines = text.splitlines()
+summaries = [line for line in lines if line.startswith("Summary")]
+asts = [line for line in lines if line.startswith("AST-origin")]
+summary = re.fullmatch(r"Summary: (\d+) total hit\(s\), (\d+) P0, (\d+) P1/P2 heuristic, (\d+) LLM-triage, (\d+) P0 candidate; (\d+) AST-origin hit\(s\), canonical retained findings\.", summaries[0] if len(summaries) == 1 else "")
+ast = re.fullmatch(r"AST-origin total: (\d+) hit\(s\); retained findings, not ast-grep execution\.", asts[0] if len(asts) == 1 else "")
+if (not summary or not ast or lines.count("Node source scan (canonical report view)") != 1 or
+    lines.count("Coverage: BOUNDED; discovery: COMPLETE.") != 1 or
+    re.search(r"^\s*(?:INCOMPLETE|ERROR|Error|error)\b", text, re.M)):
+    sys.exit("scanner output missing required Summary/AST-origin canonical counts or contains an error")
+total, p0, p1p2, triage, candidate, ast_count = map(int, summary.groups())
+if total != p0 + p1p2 + triage or candidate > triage or ast_count > total or ast_count != int(ast[1]):
+    sys.exit("scanner output has inconsistent canonical counts")
+grouped = [0, 0, 0, 0, 0]
+for line in lines:
+    if not line.startswith("["):
+        continue
+    header = re.fullmatch(r"\[(P[012])(\?)?\]\[(CONFIRMED|LLM-TRIAGE|JUSTIFIED-REVIEW)\] #\S+ Static (?:candidate|finding) \(([1-9]\d*) hits?\)", line)
+    if not header or bool(header[2]) != (header[3] != "CONFIRMED"):
+        sys.exit("scanner output has an invalid canonical finding group")
+    count, is_candidate = int(header[4]), header[3] != "CONFIRMED"
+    grouped[0] += count
+    grouped[3 if is_candidate else 1 if header[1] == "P0" else 2] += count
+    if is_candidate and header[1] == "P0":
+        grouped[4] += count
+if grouped != [total, p0, p1p2, triage, candidate]:
+    sys.exit("scanner finding groups disagree with canonical Summary")
+print(total, p0, candidate, ast_count)
+'
 }
 
 # ---- Stage 1: smell delta ---------------------------------------------------
-# scan.sh's Tier-3 globs only match in directory mode, so both sides are staged
-# as temp TREES with relative paths preserved (basenames like *.spec.ts must
-# survive for the globs; the dir layout also keeps e2e content scoping intact).
+# Preserve relative paths on both sides. Only changed files are staged; a
+# missing required import graph must remain an incomplete scanner result.
 for f in "${FILES[@]}"; do
   mkdir -p "$TMP/baseline/$(dirname "$f")" "$TMP/after/$(dirname "$f")"
   git -C "$REPO" show "HEAD:$f" > "$TMP/baseline/$f" 2>/dev/null || rm -f "$TMP/baseline/$f" # new file -> absent from baseline (intentional)
@@ -257,12 +279,12 @@ for f in "${FILES[@]}"; do
 done
 scan_failed=0
 if scan_counts "$TMP/baseline" > "$TMP/baseline.counts" 2> "$TMP/baseline.scan.err"; then
-  read -r bt bp ba < "$TMP/baseline.counts"
+  read -r bt bp bc ba < "$TMP/baseline.counts"
 else
   scan_failed=1
 fi
 if scan_counts "$TMP/after" > "$TMP/after.counts" 2> "$TMP/after.scan.err"; then
-  read -r at ap aa < "$TMP/after.counts"
+  read -r at ap ac aa < "$TMP/after.counts"
 else
   scan_failed=1
 fi
@@ -270,16 +292,15 @@ if [[ $scan_failed -ne 0 ]]; then
   verdict smell-delta FAIL "scanner infrastructure/output failed; smell delta is not trustworthy"
   { sed 's/^/    baseline: /' "$TMP/baseline.scan.err"; sed 's/^/    after: /' "$TMP/after.scan.err"; } | tail -20
 else
-  # Summary total already includes deduplicated AST-origin findings. Compare
-  # that unique total directly; adding ast again would double-count Tier 2.
-  if   [[ $at -gt $bt || $ap -gt $bp || $aa -gt $ba ]]; then
-    verdict smell-delta FAIL "smell count increased (total $bt->$at p0 $bp->$ap ast $ba->$aa)"
+  # Adding AST-origin findings again would double-count the retained total.
+  if   [[ $at -gt $bt || $ap -gt $bp || $ac -gt $bc || $aa -gt $ba ]]; then
+    verdict smell-delta FAIL "smell count increased (total $bt->$at p0 $bp->$ap p0-candidate $bc->$ac ast $ba->$aa)"
   elif [[ $at -lt $bt ]]; then
-    verdict smell-delta PASS "total $bt->$at, p0 $bp->$ap, ast $ba->$aa"
+    verdict smell-delta PASS "total $bt->$at, p0 $bp->$ap, p0-candidate $bc->$ac, ast $ba->$aa"
   elif [[ $bt -eq 0 && $bp -eq 0 && $ba -eq 0 && $at -eq 0 && $ap -eq 0 && $aa -eq 0 ]]; then
     verdict smell-delta SKIP "0->0 scanner result; semantic-only fix is not mechanically verifiable by this stage"
   else
-    verdict smell-delta FAIL "no measurable drop (total $bt->$at p0 $bp->$ap ast $ba->$aa) — fix not scanner-visible (fix the right line, or // JUSTIFIED: a legitimate keep)"
+    verdict smell-delta FAIL "no measurable drop (total $bt->$at p0 $bp->$ap p0-candidate $bc->$ac ast $ba->$aa) — fix not scanner-visible (fix the right line, or // JUSTIFIED: a legitimate keep)"
   fi
 fi
 

@@ -275,6 +275,7 @@ def assert_builtin_runners_have_no_model_tool_surface(temp: Path) -> None:
     (skill / "references/pattern-reference.md").write_text(
         "Pattern contract\n", encoding="utf-8"
     )
+    (skill / "references/grep-patterns.md").write_text("Pattern ID lookup contract\n", encoding="utf-8")
     (skill / "references/verification-rules.md").write_text(
         "Verification contract\n", encoding="utf-8"
     )

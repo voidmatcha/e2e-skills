@@ -1,0 +1,13 @@
+e2e-skills
+Copyright 2026 voidmatcha. Licensed under the Apache License, Version 2.0.
+
+Third-party material referenced in benchmark evidence:
+Playwright (https://github.com/microsoft/playwright), Copyright (c) Microsoft Corporation,
+Apache License 2.0. Some recorded benchmark transcripts (under benchmarks/, in the
+voidmatcha/e2e-skills-benchmarks dataset, and in the git history of this repository)
+include excerpts of Playwright's agent definitions (planner, generator, healer)
+as they appeared in the agent's context. Those excerpts remain under the Playwright license.
+The skills, scripts, and documentation shipped by this project do not copy those definitions.
+
+"Playwright" is a trademark of Microsoft Corporation. Its use here describes
+compatibility only; this project is not affiliated with or endorsed by Microsoft.

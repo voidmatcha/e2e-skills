@@ -266,6 +266,19 @@ mutate "$file" "| #3 Error Swallowing |" "| #99 Error Swallowing |"
 assert_fails "Check 1 — bogus grep pattern id #99" "pattern #99 has no matching base id"
 restore "$file"
 
+# Node rule IDs remain checked when the installed scanner is a thin launcher.
+if [ -f packages/scanner/src/cli.mjs ]; then
+  file="packages/scanner/src/cli.mjs"
+  backup "$file"
+  mutate "$file" "const STATIC_RULE_SLICES = ['#7'" "const STATIC_RULE_SLICES = ['#999'"
+  assert_fails "Check 1 — bogus Node pattern id" "pattern #999 has no matching base id"
+  restore "$file"
+  backup "$file"
+  mutate "$file" "const STATIC_RULE_SLICES = [" "const UNCHECKED_RULE_SLICES = ["
+  assert_fails "Check 1 — missing Node rule contract" "Node scanner: missing or invalid STATIC_RULE_SLICES contract"
+  restore "$file"
+fi
+
 # Case 2: missing docs row (Check 1b)
 file="docs/e2e-test-smells.md"
 backup "$file"
@@ -1450,11 +1463,10 @@ if [ "$PARITY_SHARD_INDEX" -ne 0 ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Scanner detection smoke — fixture-based and offline: eslint auto-download is
-# disabled via E2E_SMELL_NO_ESLINT_DOWNLOAD=1 (so counts come from the Tier-3
-# regex path) and ast-grep download via E2E_SMELL_NO_AST_GREP_DOWNLOAD=1. A
-# locally installed ast-grep may still run Tier 2 offline, so assertions only
-# key on Tier-3 output shapes ('[P0] #id' headers and the Summary line).
+# Scanner detection smoke — unchanged source fixtures through the public Node
+# launcher, with no project ESLint opt-in or automatic tooling downloads.
+# Text assertions use the canonical report view; S4 also checks JSON because
+# an unresolved import must not be mistaken for a completed clean scan.
 # ---------------------------------------------------------------------------
 echo ""
 echo "-- Scanner detection smoke --"
@@ -1462,10 +1474,10 @@ echo "-- Scanner detection smoke --"
 SCAN_SH="skills/e2e-reviewer/scripts/scan.sh"
 SCAN_FIXDIR=$(mktemp -d /tmp/e2e-scan-smoke.XXXXXX)
 
-run_scan() { # $1 = fixture subdir, $2 = FAIL_ON mode; sets SCAN_OUT and SCAN_RC
+run_scan() { # $1 = fixture subdir, $2 = policy, optional $3 = format
   SCAN_RC=0
-  SCAN_OUT=$(E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 \
-    E2E_SMELL_FAIL_ON="$2" bash "$SCAN_SH" "$SCAN_FIXDIR/$1" 2>&1) || SCAN_RC=$?
+  SCAN_OUT=$(E2E_SMELL_FAIL_ON="$2" /bin/bash -p "$SCAN_SH" \
+    "$SCAN_FIXDIR/$1" --format "${3:-text}" 2>&1) || SCAN_RC=$?
 }
 
 assert_scan_contains() {
@@ -1510,6 +1522,50 @@ assert_scan_rc() {
   fi
 }
 
+assert_scan_complete() {
+  assert_scan_rc "$1 — policy exit" "$2"
+  assert_scan_contains "$1 — discovery completed" "discovery: COMPLETE."
+  assert_scan_contains "$1 — completed Summary is present" "Summary: "
+}
+
+assert_scan_missing_import() {
+  # Keep the original missing ./db fixture. The Node snapshot contract is
+  # deliberately stricter than the old foreign-file skip: zero findings is
+  # still required, but only an incomplete report is honest here. Require the
+  # exact source-linked cause rather than allowing any exit-2 failure.
+  printf '%s\n' "$SCAN_OUT" > "$SCAN_FIXDIR/s4-report.json"
+  if python3 - "$SCAN_FIXDIR/s4-report.json" "$SCAN_FIXDIR/s4/user-dal.test.ts" <<'PY'
+import json
+from pathlib import Path
+import sys
+
+report = json.loads(Path(sys.argv[1]).read_text())
+file = Path(sys.argv[2]).resolve()
+source = file.read_text()
+assert report['schema'] == 'e2e-skills-node-scan-v1'
+assert report['status'] == 'INCOMPLETE'
+assert report['execution']['complete'] is False
+assert report['execution']['exitCode'] == 2
+assert report['findings'] == []
+assert all(value == 0 for value in report['counts'].values())
+required = ('importSnapshot', 'import-missing', source.index('import { db }'))
+allowed = {required, ('domQueries', 'provenance-unsupported', source.index("db('users')"))}
+diagnostics = report['execution']['diagnostics']
+assert all(item.get('file') == str(file) for item in diagnostics)
+actual = {(item.get('detector'), item.get('code'), item.get('start')) for item in diagnostics}
+assert required in actual and actual <= allowed, diagnostics
+assert len(actual) == len(diagnostics), diagnostics
+PY
+  then
+    echo "  [PASS] Scanner S4 — zero findings with exact missing-import diagnostics"
+    PASS=$((PASS + 1))
+  else
+    echo "  [FAIL] Scanner S4 — missing-import contract" >&2
+    printf '%s\n' "$SCAN_OUT" >&2
+    FAIL=$((FAIL + 1))
+  fi
+}
+
 # Case S1: JUSTIFIED above test.only must NOT suppress #7 (no-exemption contract)
 mkdir -p "$SCAN_FIXDIR/s1"
 cat > "$SCAN_FIXDIR/s1/focused.spec.ts" <<'EOF'
@@ -1521,11 +1577,13 @@ test.only('focused test', async ({ page }) => {
 });
 EOF
 run_scan s1 none
-assert_scan_contains "Scanner S1 — JUSTIFIED does not silence #7" "[P0] #7"
-assert_scan_contains "Scanner S1 — #7 hit names the fixture line" "focused.spec.ts:4"
+assert_scan_complete "Scanner S1" 0
+assert_scan_contains "Scanner S1 — JUSTIFIED does not silence #7" "[P0][CONFIRMED] #7"
+assert_scan_contains "Scanner S1 — #7 hit names the fixture line" '"focused.spec.ts":4: #7'
 
-# Case S2: fixture whose only P0 is test.only must exit 1 under FAIL_ON=p0 (Tier-3 path)
+# Case S2: fixture whose only P0 is test.only must exit 1 under FAIL_ON=p0.
 run_scan s1 p0
+assert_scan_complete "Scanner S2" 1
 assert_scan_rc "Scanner S2 — test.only fixture exits 1 under FAIL_ON=p0" 1
 
 # Case S3: sync-matcher one-shot read is #4c-4e (non-retrying read, P1), never #15
@@ -1538,6 +1596,7 @@ test('one-shot read with sync matcher', async ({ page }) => {
 });
 EOF
 run_scan s3 none
+assert_scan_complete "Scanner S3" 0
 assert_scan_contains "Scanner S3 — sync-matcher read reported as #4c-4e" "#4c-4e"
 assert_scan_absent "Scanner S3 — sync-matcher read not reported as #15" "#15"
 
@@ -1555,14 +1614,17 @@ describe('user dal', () => {
 });
 EOF
 run_scan s4 none
+assert_scan_rc "Scanner S4 — missing import keeps discovery incomplete" 2
 assert_scan_absent "Scanner S4 — backend Knex .first() not flagged as #10a" "#10a"
-assert_scan_contains "Scanner S4 — out-of-scope file skip is reported" "1 out-of-scope file(s) skipped"
-assert_scan_contains "Scanner S4 — zero total hits" "Summary: 0 total hit(s)"
+assert_scan_contains "Scanner S4 — zero findings are not a clean scan" "Summary [INCOMPLETE]: 0 total hit(s)"
+assert_scan_absent "Scanner S4 — no completed Summary" "Summary: "
+run_scan s4 none json
+assert_scan_rc "Scanner S4 — canonical JSON remains incomplete" 2
+assert_scan_missing_import
 
 # Case S5: Cypress 10+ layout — cypress/e2e/<name>_spec.js with a suffix-less basename
-# (no .cy./.spec./.test. dot-suffix) must still be scanned. Guards the $CYI path-include
-# covering cypress/e2e/ (not just the legacy cypress/integration/); a suffix-only glob
-# would miss cy.wait(ms) here.
+# (no .cy./.spec./.test. dot-suffix) must still be scanned using Cypress runtime
+# provenance; a suffix-only file selection would miss cy.wait(ms) here.
 mkdir -p "$SCAN_FIXDIR/s5/cypress/e2e"
 cat > "$SCAN_FIXDIR/s5/cypress/e2e/widget_link_spec.js" <<'EOF'
 describe('widget link', () => {
@@ -1574,8 +1636,9 @@ describe('widget link', () => {
 });
 EOF
 run_scan s5 none
+assert_scan_complete "Scanner S5" 0
 assert_scan_contains "Scanner S5 — cypress/e2e _spec.js hard-coded sleep flagged as #9b" "#9b"
-assert_scan_contains "Scanner S5 — #9b hit names the cypress/e2e fixture line" "widget_link_spec.js:4"
+assert_scan_contains "Scanner S5 — #9b hit names the cypress/e2e fixture line" '"cypress/e2e/widget_link_spec.js":4: #9b'
 
 # Case S6: local Cypress command-model rules run without eslint/plugin downloads and keep
 # ordinary values plus assert-before-action chains out of the raw hit set.
@@ -1593,10 +1656,13 @@ it('safe command model', () => {
 });
 EOF
 run_scan s6 none
+assert_scan_complete "Scanner S6" 0
 assert_scan_contains "Scanner S6 — Cypress async callback flagged as #10d" "#10d"
 assert_scan_contains "Scanner S6 — assigned Cypress command flagged as #10e" "#10e"
 assert_scan_contains "Scanner S6 — unsafe continued action chain triaged as #10f" "#10f"
-assert_scan_absent "Scanner S6 — ordinary expected value is not a second #10e hit" "#10e Cypress return value assigned outside the command chain (2 hits)"
+assert_scan_contains "Scanner S6 — exactly one assigned command" "[P1][CONFIRMED] #10e Static finding (1 hit)"
+assert_scan_contains "Scanner S6 — assigned command anchor" '"commands.cy.ts":2: #10e'
+assert_scan_absent "Scanner S6 — ordinary expected value is not assigned command" '"commands.cy.ts":7: #10e'
 
 # Case S7: Playwright requires async test callbacks; the Cypress-only #10d rule must
 # filter by framework evidence rather than classify every async test callback.
@@ -1610,6 +1676,7 @@ test('normal Playwright callback', async ({ page }) => {
 });
 EOF
 run_scan s7 none
+assert_scan_complete "Scanner S7" 0
 assert_scan_absent "Scanner S7 — normal Playwright async callback not flagged as Cypress #10d" "#10d"
 
 # Case S8: Cypress command-model syntax boundaries. Confirm function/hook callback
@@ -1643,13 +1710,14 @@ it('uses synchronous Cypress Sinon utilities', () => {
 });
 EOF
 run_scan s8 none
-assert_scan_contains "Scanner S8 — async function callback with cy queue flagged as #10d" "boundaries.cy.ts:7"
-assert_scan_contains "Scanner S8 — async afterEach callback with cy queue flagged as #10d" "boundaries.cy.ts:11"
-assert_scan_absent "Scanner S8 — native-Promise-only async callback excluded from #10d" "boundaries.cy.ts:1:"
-assert_scan_absent "Scanner S8 — one-line native-Promise callback excluded from #10d" "boundaries.cy.ts:5:"
-assert_scan_contains "Scanner S8 — typed Cypress Chainable assignment flagged as #10e" "boundaries.cy.ts:16"
-assert_scan_absent "Scanner S8 — synchronous cy.spy assignment excluded from #10e" "boundaries.cy.ts:21:"
-assert_scan_absent "Scanner S8 — synchronous cy.stub assignment excluded from #10e" "boundaries.cy.ts:22:"
+assert_scan_complete "Scanner S8" 0
+assert_scan_contains "Scanner S8 — async function callback with cy queue flagged as #10d" '"boundaries.cy.ts":7: #10d'
+assert_scan_contains "Scanner S8 — async afterEach callback with cy queue flagged as #10d" '"boundaries.cy.ts":11: #10d'
+assert_scan_absent "Scanner S8 — native-Promise-only async callback excluded from #10d" '"boundaries.cy.ts":1:'
+assert_scan_absent "Scanner S8 — one-line native-Promise callback excluded from #10d" '"boundaries.cy.ts":5:'
+assert_scan_contains "Scanner S8 — typed Cypress Chainable assignment flagged as #10e" '"boundaries.cy.ts":16: #10e'
+assert_scan_absent "Scanner S8 — synchronous cy.spy assignment excluded from #10e" '"boundaries.cy.ts":21:'
+assert_scan_absent "Scanner S8 — synchronous cy.stub assignment excluded from #10e" '"boundaries.cy.ts":22:'
 
 rm -rf "$SCAN_FIXDIR"
 

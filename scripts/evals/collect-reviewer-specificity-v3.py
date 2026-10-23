@@ -115,6 +115,25 @@ def safe_path(value: str) -> str:
     return path.as_posix()
 
 
+def frozen_scanner_principal_ids() -> set[str]:
+    """Read the frozen shell producer's reachability, not the label taxonomy.
+
+    The Node launcher has a different execution and candidate contract. Its
+    taxonomy table cannot prove that this historical collector can fill a slot.
+    Recorded-output replay remains available without executing a new producer.
+    """
+    emitted = {
+        principal(pattern) for pattern in re.findall(
+            r"^run_check P[012] '(#[^']+)'", SCANNER.read_text(), re.M)
+    }
+    if not emitted:
+        raise ValueError(
+            "UNSUPPORTED_SCANNER_COLLECTION_CONTRACT: this frozen collector requires "
+            "its pinned legacy shell producer; Node collection requires a successor "
+            "protocol with canonical JSON and complete runtime-input pins")
+    return emitted
+
+
 def validate_candidate_pool_feasibility(protocol: dict) -> None:
     """Reject v4's unreachable taxonomy quota before spending collection budget.
 
@@ -126,10 +145,7 @@ def validate_candidate_pool_feasibility(protocol: dict) -> None:
     frozen = protocol["corpus"]["frozen_adjudication_inputs"]["scanner_sha256"]
     if digest(SCANNER.read_bytes()) != frozen:
         raise ValueError("frozen scanner digest mismatch")
-    emitted = {
-        principal(pattern) for pattern in re.findall(
-            r"^run_check P[012] '(#[^']+)'", SCANNER.read_text(), re.M)
-    }
+    emitted = frozen_scanner_principal_ids()
     missing = [pattern for pattern in protocol["adjudication"]["required_pattern_ids"]
                if pattern not in emitted]
     if missing:
@@ -1077,6 +1093,9 @@ def scanner_result(args, key: str, case_key: str, case_root: Path,
         return (fixture.read_bytes(),
                 stderr_fixture.read_bytes() if stderr_fixture.is_file() else b"",
                 int(status_fixture.read_text().strip()) if status_fixture.is_file() else 0)
+    # Frozen v3/v4 consume legacy headings and one pinned shell input. Do not
+    # silently execute a Node runtime whose bytes are outside those old pins.
+    frozen_scanner_principal_ids()
     env = os.environ.copy()
     env["E2E_SMELL_FAIL_ON"] = "none"
     result = subprocess.run(["/bin/bash", "-p", str(SCANNER), str(case_root)],

@@ -321,6 +321,10 @@ fi
 
 if selected holdout; then
 step "Labeled reviewer holdout"
+run_python scripts/evals/classification-study/test_run.py ||
+  fail "classification-study/test_run.py"
+run_python scripts/evals/classification-report/test_report.py ||
+  fail "classification-report/test_report.py"
 LC_ALL=C LC_CTYPE=C LANG=C /bin/bash -p scripts/ci/test-reviewer-holdout.sh ||
   fail "test-reviewer-holdout.sh"
 
@@ -328,6 +332,20 @@ fi
 
 if selected scanner; then
 step "Reviewer scanner contracts"
+run_python scripts/ci/test-reviewer-runtime-surface.py ||
+  fail "test-reviewer-runtime-surface.py"
+run_python scripts/dev/build-scanner-runtime.py --check ||
+  fail "build-scanner-runtime.py --check"
+run_python scripts/ci/test-scanner-runtime.py ||
+  fail "test-scanner-runtime.py"
+run_python scripts/ci/test-scanner-launcher.py ||
+  fail "test-scanner-launcher.py"
+run_python scripts/ci/test-scanner-node-performance.py ||
+  fail "test-scanner-node-performance.py"
+run_python scripts/ci/test-node-scanner-guards.py ||
+  fail "test-node-scanner-guards.py"
+run_python scripts/ci/test-node-scanner.py --node "$NODE_BIN" ||
+  fail "test-node-scanner.py"
 run_python scripts/ci/test-scanner-scope-graph.py ||
   fail "test-scanner-scope-graph.py"
 run_python scripts/ci/test-scanner-scope-watch.py ||
@@ -392,7 +410,7 @@ if selected tooling; then
 step "Local ESLint path"
 run_python scripts/ci/test-eslint-import-resolution.py --node "$NODE_BIN" ||
   fail "test-eslint-import-resolution.py"
-/bin/bash -p scripts/ci/test-local-eslint-path.sh || fail "test-local-eslint-path.sh"
+run_python scripts/ci/test-local-eslint-node.py || fail "test-local-eslint-node.py"
 run_python scripts/ci/test-reviewer-trust-contract.py ||
   fail "test-reviewer-trust-contract.py"
 run_python scripts/ci/test-reviewer-check.py ||
@@ -448,21 +466,9 @@ step "E2E smell scan"
 # intentionally gitignored collection of third-party repositories used for
 # manual validation; scanning `.` with --no-ignore would make their findings
 # part of this bundle's release gate. Target-project ESLint is default-off;
-# test-local-eslint-path.sh separately exercises its explicit trust opt-in.
-# scan.sh runs Tier 2 only when ast-grep resolves from E2E_SMELL_AST_GREP_BIN or
-# its fixed candidate paths. Hosted CI installs it; a host without it passes
-# this gate on Tier 3 alone, so make that visible instead of silent.
-SELF_SCAN_AST_GREP=""
-for SELF_SCAN_AST_CANDIDATE in "${E2E_SMELL_AST_GREP_BIN:-}" \
-  /opt/homebrew/bin/ast-grep /usr/local/bin/ast-grep /usr/bin/ast-grep; do
-  if [ -n "$SELF_SCAN_AST_CANDIDATE" ] && [ -x "$SELF_SCAN_AST_CANDIDATE" ]; then
-    SELF_SCAN_AST_GREP="$SELF_SCAN_AST_CANDIDATE"
-    break
-  fi
-done
-if [ -z "$SELF_SCAN_AST_GREP" ]; then
-  echo "ci-local: WARNING: ast-grep not found; the self-scan P0 gate below covers Tier 3 only (hosted CI also runs Tier 2)" >&2
-fi
+# test-local-eslint-node.py separately exercises its explicit trust opt-in.
+# The bundled Node parser is mandatory: missing or changed runtime bytes fail
+# instead of falling back to a reduced scanner backend.
 # The fixed Notepad pilot is an intentional negative control required by the
 # adapter contracts. Verify its original findings, then scan an identity-checked
 # temporary view excluding only that exact frozen file. Product bytes and the

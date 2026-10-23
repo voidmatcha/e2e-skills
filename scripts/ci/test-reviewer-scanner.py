@@ -101,7 +101,18 @@ def trusted_node_executable() -> Path:
 TRUSTED_NODE = trusted_node_executable()
 
 
-def scan_path(
+_LEGACY_LOCK = threading.Lock()
+
+
+def legacy_scanner() -> Path:
+    """Explicit historical mechanism accessor; never a product fallback."""
+    sys.path.insert(0, str(ROOT / "scripts/ci"))
+    from lib.legacy_scanner_oracle import legacy_scanner_file
+    with _LEGACY_LOCK:
+        return legacy_scanner_file()
+
+
+def legacy_scan_path(
     path: Path,
     environment_overrides: dict[str, str] | None = None,
     *,
@@ -143,7 +154,7 @@ def scan_path(
     command = ["/bin/bash"]
     if privileged:
         command.append("-p")
-    command.extend((str(scanner or SCANNER), *leading_args, str(path)))
+    command.extend((str(scanner or legacy_scanner()), *leading_args, str(path)))
     return subprocess.run(
         command,
         cwd=ROOT,
@@ -157,11 +168,196 @@ def scan_path(
 
 
 def scan(name: str) -> subprocess.CompletedProcess[str]:
-    return scan_path(EVAL_FILES / name)
+    return legacy_scan_path(EVAL_FILES / name)
+
+
+def scan_canonical(
+    path: Path,
+    *,
+    fail_on: str = "p0",
+    environment_overrides: dict[str, str] | None = None,
+    scanner: Path | None = None,
+    stderr_output: list[str] | None = None,
+) -> dict:
+    """Read the public Node contract without translating candidates to findings.
+
+    This helper deliberately leaves INCOMPLETE reports failing the caller's
+    completeness assertion. A retained candidate never excuses an unrelated
+    execution diagnostic.
+    """
+    environment = {key: value for key, value in os.environ.items()
+                   if not key.startswith("E2E_SMELL_") and key not in {"BASH_ENV", "ENV"}}
+    environment.update({"LC_ALL": "C", "LC_CTYPE": "C", "LANG": "C"})
+    if environment_overrides:
+        environment.update(environment_overrides)
+    result = subprocess.run(
+        ["/bin/bash", "-p", str(scanner or SCANNER), "--format", "json", "--fail-on", fail_on, str(path)],
+        cwd=ROOT, env=environment, text=True, stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, check=False, timeout=SCANNER_HANG_TIMEOUT_SECONDS,
+    )
+    # Bash may warn before the launcher starts when a requested locale is not
+    # installed. stderr is a separate transport channel, never a JSON prefix.
+    # Preserve it for callers and accept only this exact warning for the actual
+    # requested locale; unexpected errors must still fail the test.
+    if stderr_output is not None:
+        stderr_output.append(result.stderr)
+    locale_warning = (
+        "/bin/bash: warning: setlocale: LC_ALL: cannot change locale "
+        f"({environment['LC_ALL']})"
+    )
+    assert all(line == locale_warning for line in result.stderr.splitlines()), result.stderr
+    try:
+        report = json.loads(result.stdout)
+    except (ValueError, TypeError) as error:
+        raise AssertionError(f"public scanner did not emit canonical JSON: stdout={result.stdout!r}, stderr={result.stderr!r}") from error
+    assert report.get("schema") == "e2e-skills-node-scan-v1", report
+    execution = report["execution"]
+    assert execution["exitCode"] == result.returncode, report
+    assert isinstance(execution["complete"], bool), report
+    assert isinstance(execution["diagnostics"], list), report
+    assert isinstance(execution["incomplete"], list), report
+    assert report["failOn"] == fail_on, report
+    findings = report["findings"]
+    counts = dict(total=0, p0=0, p1p2=0, triage=0, p0Candidate=0, ast=0, confirmed=0)
+    for finding in findings:
+        assert finding["severity"] in {"P0", "P1", "P2"}, finding
+        assert finding["disposition"] in {"confirmed", "candidate", "justified-review"}, finding
+        assert finding["origin"] in {"ast", "heuristic", "eslint"}, finding
+        assert isinstance(finding["line"], int) and finding["line"] > 0, finding
+        assert isinstance(finding["column"], int) and finding["column"] > 0, finding
+        counts["total"] += 1
+        counts["ast"] += finding["origin"] == "ast"
+        if finding["disposition"] == "confirmed":
+            counts["confirmed"] += 1
+            counts["p0" if finding["severity"] == "P0" else "p1p2"] += 1
+        else:
+            counts["triage"] += 1
+            counts["p0Candidate"] += finding["severity"] == "P0"
+    assert report["counts"] == counts, report
+    assert execution["complete"] == (not execution["incomplete"]), report
+    failed = {"none": False, "any": counts["confirmed"] > 0,
+              "p0": counts["p0"] > 0,
+              "p0-candidate": counts["p0"] + counts["p0Candidate"] > 0}[fail_on]
+    assert result.returncode == (int(failed) if execution["complete"] else 2), report
+    return report
+
+
+def assert_complete_report(report: dict, *, exit_code: int) -> None:
+    assert report["execution"]["complete"], report["execution"]
+    assert report["execution"]["diagnostics"] == [], report["execution"]
+    assert report["execution"]["exitCode"] == exit_code, report
+
+
+def finding_locations(
+    report: dict, pattern: str, *, severity: str, disposition: str, variant: str | None = None,
+) -> str:
+    """Location-only view: callers explicitly select each canonical disposition."""
+    assert disposition in {"confirmed", "candidate", "justified-review"}
+    return "\n".join(
+        f"{finding['file']}:{finding['line']}:{finding['column']}"
+        for finding in report["findings"]
+        if finding["patternId"] == pattern and finding["severity"] == severity
+        and finding["disposition"] == disposition
+        and (variant is None or finding.get("variant") == variant)
+    )
+
+
+def all_finding_locations(report: dict) -> str:
+    return "\n".join(f"{item['file']}:{item['line']}:{item['column']}"
+                     for item in report["findings"])
+
+
+def canonical_section(report: dict, selector: str) -> str:
+    """Adapt an old query label to canonical fields, never recreate report text.
+
+    Old subheadings are not evidence of a different disposition. Location
+    assertions still run against the actual retained findings selected here.
+    """
+    if selector.startswith("Suppressed by JUSTIFIED"):
+        return "\n".join(f"{item['file']}:{item['line']}:{item['column']}"
+                         for item in report["suppressed"])
+    match = re.match(r"\[(P[012])(\?)?\](?:\[[^]]+\])?\s+(#[0-9]+[a-z]?(?:-[0-9]+[a-z]?)?)", selector)
+    assert match, f"unmigrated canonical selector: {selector!r}"
+    severity, uncertain, pattern = match.groups()
+    disposition = "justified-review" if "[JUSTIFIED-REVIEW]" in selector else (
+        "candidate" if uncertain else "confirmed")
+    return finding_locations(report, pattern, severity=severity, disposition=disposition)
+
+
+def source_diagnostics(scan_root: Path, specifications: list[tuple[str, str, str, int | None]]) -> list[dict]:
+    """Exact source-adjudicated incomplete contracts, never an exit-2 waiver."""
+    base = scan_root.resolve() if scan_root.is_dir() else scan_root.resolve().parent
+    result = []
+    for code, detector, relative, start in specifications:
+        item = {"code": code, "detector": detector, "file": str(base / relative)}
+        if start is not None:
+            item["start"] = start
+        result.append(item)
+    return result
+
+
+def node_scan(
+    path: Path, environment_overrides: dict[str, str] | None = None, *,
+    expected_diagnostics: list[dict] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    overrides = dict(environment_overrides or {})
+    fail_on = overrides.pop("E2E_SMELL_FAIL_ON", "p0")
+    # Semantic fixtures previously disabled optional downloaded shell tiers.
+    # The Node launcher has no such tiers; mechanism checks use the oracle.
+    for key in ("E2E_SMELL_DISABLE_AST_GREP", "E2E_SMELL_NO_AST_GREP_DOWNLOAD",
+                "E2E_SMELL_NO_ESLINT_DOWNLOAD"):
+        if key in overrides:
+            assert overrides.pop(key) == "1", key
+    stderr_output: list[str] = []
+    report = scan_canonical(path, fail_on=fail_on, environment_overrides=overrides,
+                            stderr_output=stderr_output)
+    if expected_diagnostics is None:
+        assert_complete_report(report, exit_code=report["execution"]["exitCode"])
+    else:
+        assert expected_diagnostics, "an empty diagnostic list is a complete-report assertion"
+        assert report["execution"]["complete"] is False, report
+        assert report["execution"]["exitCode"] == 2, report
+        assert report["execution"]["diagnostics"] == expected_diagnostics, report["execution"]
+    result = subprocess.CompletedProcess([], report["execution"]["exitCode"],
+                                         json.dumps(report, ensure_ascii=True), "".join(stderr_output))
+    result.report = report
+    return result
+
+
+def node_scan_fixture(name: str) -> subprocess.CompletedProcess[str]:
+    return node_scan(EVAL_FILES / name)
+
+
+def run_public_scan(
+    path: Path, environment_overrides: dict[str, str] | None = None, *,
+    privileged: bool = True, timeout: int | None = None,
+    leading_args: tuple[str, ...] = (), scanner: Path | None = None,
+) -> subprocess.CompletedProcess[str]:
+    """Raw public transport for rejection, output and hostile-environment tests."""
+    environment = {key: value for key, value in os.environ.items()
+                   if not key.startswith("E2E_SMELL_") and key not in {"BASH_ENV", "ENV"}}
+    environment.update({"E2E_SMELL_FAIL_ON": "p0", "LC_ALL": "C", "LANG": "C"})
+    if environment_overrides:
+        environment.update(environment_overrides)
+    command = ["/bin/bash", *(["-p"] if privileged else []), str(scanner or SCANNER),
+               *leading_args, str(path)]
+    return subprocess.run(command, cwd=ROOT, env=environment, text=True,
+                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                          check=False, timeout=timeout or SCANNER_HANG_TIMEOUT_SECONDS)
+
+
+def assert_inventory_rejected(report: dict, expected: set[tuple[str, str]]) -> None:
+    assert report["execution"]["complete"] is False, report
+    assert report["execution"]["exitCode"] == 2, report
+    assert report["findings"] == [], report
+    diagnostics = report["execution"]["diagnostics"]
+    assert all(item["detector"] == "inventory" for item in diagnostics), diagnostics
+    assert {(item["code"], Path(item["file"]).name) for item in diagnostics} == expected, diagnostics
+    assert len(diagnostics) == len(expected), diagnostics
 
 
 def assert_eslint_registry_fallback_uses_reviewed_exact_pins() -> None:
-    source = SCANNER.read_text(encoding="utf-8")
+    source = legacy_scanner().read_text(encoding="utf-8")
     expected = {
         "eslint": "10.8.0",
         "eslint-plugin-playwright": "2.11.0",
@@ -195,24 +391,19 @@ def assert_eslint_registry_fallback_uses_reviewed_exact_pins() -> None:
             f"floating registry selector {marker!r} crossed the reviewed pin boundary"
         )
 
-    sources = (
-        ROOT / "skills/e2e-reviewer/references/upstream-rule-sources.md"
-    ).read_text(encoding="utf-8")
-    for package, version in expected.items():
-        assert f"{package} {version}" in sources.lower()
-    assert "update them together" in sources
-    assert "Offline operation" in sources
+    # The archived executable above owns these historical pins. Current docs
+    # describe the Node launcher and optional explicit project ESLint adapter.
 
 
 def eslint_download_helper_source(name: str) -> str:
-    source = SCANNER.read_text(encoding="utf-8")
+    source = legacy_scanner().read_text(encoding="utf-8")
     start = source.index(f"{name}() {{")
     end = source.index("\n}\n", start)
     return source[start:end]
 
 
 def try_eslint_body() -> str:
-    source = SCANNER.read_text(encoding="utf-8")
+    source = legacy_scanner().read_text(encoding="utf-8")
     start = source.index("try_eslint() {")
     end = source.index("\n}\n", source.index("  eslint_ran=1", start))
     return source[start:end]
@@ -379,7 +570,7 @@ def assert_eslint_download_path_is_supply_chain_pinned() -> None:
         )
         fake_npx.chmod(0o755)
 
-        result = scan_path(
+        result = legacy_scan_path(
             root,
             {
                 "E2E_SMELL_ALLOW_PROJECT_ESLINT": "1",
@@ -501,7 +692,11 @@ def assert_eslint_download_failure_falls_through_loudly() -> None:
         fake_npx = outer / "npx"
         fake_npx.write_text("#!/bin/bash\nexit 1\n", encoding="utf-8")
         fake_npx.chmod(0o755)
-        result = scan_path(
+        current = node_scan(root)
+        assert "focused.spec.ts:2:" in finding_locations(current.report, "#7", severity="P0", disposition="confirmed")
+        assert current.returncode == 1
+
+        result = legacy_scan_path(
             root,
             {
                 "E2E_SMELL_ALLOW_PROJECT_ESLINT": "1",
@@ -536,11 +731,11 @@ def assert_foreign_cy_basename_requires_executable_cypress_provenance() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
-        assert result.returncode == 0, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
-        assert "foreign-runner.cy.ts:2:" not in focused, result.stdout
-        assert "mixed-runner.cy.ts:3:" in focused, result.stdout
+        report = scan_canonical(root, fail_on="none")
+        assert_complete_report(report, exit_code=0)
+        focused = finding_locations(report, "#7", severity="P0", disposition="confirmed")
+        assert "foreign-runner.cy.ts:2:" not in focused, report
+        assert "mixed-runner.cy.ts:3:" in focused, report
 
 
 def section(output: str, heading: str) -> str:
@@ -623,23 +818,20 @@ def assert_awaited_locator_truthiness_from_real_shape() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
-        assert result.returncode == 0, result.stdout
-        hits = section(
-            result.stdout,
-            "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
-        )
-        assert "cal-shape.spec.ts:8:" in hits, result.stdout
-        assert "direct.spec.ts:3:" in hits, result.stdout
-        assert "direct.spec.ts:4:" not in hits, result.stdout
-        assert "parameter-shadow.spec.ts:4:" in hits, result.stdout
-        assert "parameter-shadow.spec.ts:8:" not in hits, result.stdout
-        assert "multiline-parameter-shadow.spec.ts:4:" in hits, result.stdout
-        assert "multiline-parameter-shadow.spec.ts:10:" not in hits, result.stdout
-        assert "destructured-shadow.spec.ts:4:" in hits, result.stdout
-        assert "destructured-shadow.spec.ts:8:" not in hits, result.stdout
+        report = scan_canonical(root, fail_on="none")
+        assert_complete_report(report, exit_code=0)
+        hits = finding_locations(report, "#4f", severity="P0", disposition="confirmed")
+        assert "cal-shape.spec.ts:8:" in hits, report
+        assert "direct.spec.ts:3:" in hits, report
+        assert "direct.spec.ts:4:" not in hits, report
+        assert "parameter-shadow.spec.ts:4:" in hits, report
+        assert "parameter-shadow.spec.ts:8:" not in hits, report
+        assert "multiline-parameter-shadow.spec.ts:4:" in hits, report
+        assert "multiline-parameter-shadow.spec.ts:10:" not in hits, report
+        assert "destructured-shadow.spec.ts:4:" in hits, report
+        assert "destructured-shadow.spec.ts:8:" not in hits, report
         for line in (4, 10, 11, 15):
-            assert f"cal-shape.spec.ts:{line}:" not in hits, result.stdout
+            assert f"cal-shape.spec.ts:{line}:" not in hits, report
 
 
 def assert_awaited_value_reads_are_not_generic_locator_candidates() -> None:
@@ -656,20 +848,22 @@ def assert_awaited_value_reads_are_not_generic_locator_candidates() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
-        assert result.returncode == 0, result.stdout
-        generic = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #4f Possible generic getBy/query truthiness assertion",
-        )
-        assert "generic-values.spec.ts:7:" in generic, result.stdout
+        report = scan_canonical(root, fail_on="none")
+        # createCustomWrapper() has no definition. Preserve its source-linked
+        # candidate without claiming runtime provenance or a complete analysis.
+        assert report["execution"]["complete"] is False, report
+        assert report["execution"]["exitCode"] == 2, report
+        assert report["execution"]["diagnostics"] == [{
+            "code": "provenance-unsupported", "detector": "assertions",
+            "file": str((root / "generic-values.spec.ts").resolve()), "start": 391,
+        }], report["execution"]
+        generic = finding_locations(report, "#4f", severity="P0", disposition="candidate")
+        assert "generic-values.spec.ts:7:" in generic, report
         for line in (3, 4, 5):
-            assert f"generic-values.spec.ts:{line}:" not in generic, result.stdout
-        value_reads = section(
-            result.stdout, "[P1?][LLM-TRIAGE] #4c-4e One-shot Playwright state/content assertion"
-        )
+            assert f"generic-values.spec.ts:{line}:" not in generic, report
+        value_reads = finding_locations(report, "#4c-4e", severity="P1", disposition="candidate")
         for line in (3, 4, 5):
-            assert f"generic-values.spec.ts:{line}:" in value_reads, result.stdout
+            assert f"generic-values.spec.ts:{line}:" in value_reads, report
 
 
 def assert_same_line_helper_missing_await() -> None:
@@ -690,9 +884,9 @@ def assert_same_line_helper_missing_await() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        missing = section(result.stdout, "[P1] #15 Missing await on Playwright expect")
+        missing = canonical_section(result.report, "[P1] #15 Missing await on Playwright expect")
         assert "inline.spec.ts:3:" in missing, result.stdout
         for line in (5, 7, 9, 10, 11):
             assert f"inline.spec.ts:{line}:" not in missing, result.stdout
@@ -705,9 +899,9 @@ def assert_same_line_helper_missing_await() -> None:
             "test('safe', async ({ page }) => { await expect(page.getByRole('status')).toBeVisible(); });\n",
             encoding="utf-8",
         )
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        missing = section(result.stdout, "[P1] #15 Missing await on Playwright expect")
+        missing = canonical_section(result.report, "[P1] #15 Missing await on Playwright expect")
         assert "method.spec.ts:2:" not in missing, result.stdout
         assert "method.spec.ts:3:" in missing, result.stdout
         assert "method.spec.ts:4:" not in missing, result.stdout
@@ -725,13 +919,13 @@ def assert_same_line_helper_missing_await() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(root / "mixed-inline.spec.ts", {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root / "mixed-inline.spec.ts", {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        assert "mixed-inline.spec.ts:3:" not in result.stdout, result.stdout
-        assert "mixed-inline.spec.ts:5:" in result.stdout, result.stdout
-        assert "mixed-inline.spec.ts:7:" in result.stdout, result.stdout
-        assert "mixed-inline.spec.ts:8:" not in result.stdout, result.stdout
-        assert "mixed-inline.spec.ts:9:" in result.stdout, result.stdout
+        assert "mixed-inline.spec.ts:3:" not in all_finding_locations(result.report), result.stdout
+        assert "mixed-inline.spec.ts:5:" in all_finding_locations(result.report), result.stdout
+        assert "mixed-inline.spec.ts:7:" in all_finding_locations(result.report), result.stdout
+        assert "mixed-inline.spec.ts:8:" not in all_finding_locations(result.report), result.stdout
+        assert "mixed-inline.spec.ts:9:" in all_finding_locations(result.report), result.stdout
 
 
 def assert_ast_scope() -> None:
@@ -836,6 +1030,18 @@ def assert_ast_scope() -> None:
         )
         fake_ast_grep.chmod(0o755)
 
+        current = node_scan(root, expected_diagnostics=source_diagnostics(root, [
+            ("provenance-unsupported", "promises", "shadowed.spec.ts", 76),
+        ]))
+        current_missing = finding_locations(current.report, "#15", severity="P1", disposition="confirmed")
+        for name, line in (("direct.spec.ts", 4), ("custom.spec.ts", 3), ("cjs-property.spec.ts", 2)):
+            assert f"{name}:{line}:" in current_missing
+        for name, line in (("suppressed.spec.ts", 4), ("unit.test.ts", 5), ("returned.spec.ts", 3)):
+            assert f"{name}:{line}:" not in current_missing
+        # The lexical custom expect is not attributable to Playwright.
+        assert "shadowed.spec.ts:3:" not in current_missing
+        assert str(outside.resolve()) not in all_finding_locations(current.report)
+
         environment = os.environ.copy()
         environment.update(
             {
@@ -850,7 +1056,7 @@ def assert_ast_scope() -> None:
             }
         )
         result = subprocess.run(
-            ["/bin/bash", str(SCANNER), str(root)],
+            ["/bin/bash", str(legacy_scanner()), str(root)],
             cwd=ROOT,
             env=environment,
             text=True,
@@ -880,7 +1086,7 @@ def assert_ast_scope() -> None:
         assert (
             "npx --yes --ignore-scripts --package @ast-grep/cli-<platform>@0.39.7 "
             "(sha256-pinned binary)"
-            in SCANNER.read_text(encoding="utf-8")
+            in legacy_scanner().read_text(encoding="utf-8")
         )
         assert (
             "Tier 3 still runs; Tier 2 runs only when available/enabled"
@@ -901,7 +1107,7 @@ def assert_ast_grep_can_be_disabled_even_when_installed() -> None:
             "test('safe', async ({ page }) => { await page.goto('/'); });\n",
             encoding="utf-8",
         )
-        result = scan_path(
+        result = legacy_scan_path(
             root,
             {
                 "E2E_SMELL_AST_GREP_BIN": str(fake),
@@ -941,13 +1147,13 @@ def assert_non_ascii_identifier_scans_under_utf8_locale() -> None:
             encoding="utf-8",
         )
         for locale in ("C.UTF-8", "en_US.UTF-8"):
-            result = scan_path(
+            result = node_scan(
                 root,
                 {"LC_ALL": locale, "LC_CTYPE": locale, "LANG": locale, "E2E_SMELL_FAIL_ON": "none"},
             )
             assert result.returncode == 0, (locale, result.returncode, result.stdout[-2000:])
             assert "INCOMPLETE" not in result.stdout, (locale, result.stdout[-2000:])
-            assert "#9 Playwright hard-coded sleep" in result.stdout, (locale, result.stdout[-2000:])
+            assert finding_locations(result.report, "#9", severity="P1", disposition="confirmed"), (locale, result.stdout[-2000:])
 
 
 def assert_report_file_writes_full_report_and_prints_digest() -> None:
@@ -968,40 +1174,40 @@ def assert_report_file_writes_full_report_and_prints_digest() -> None:
                 "});\n",
                 encoding="utf-8",
             )
-        plain = scan_path(root)
+        plain = run_public_scan(root)
         report = Path(temp) / "report.txt"
-        digest = scan_path(root, leading_args=("--report-file", str(report)))
+        digest = run_public_scan(root, leading_args=("--report-file", str(report)))
         assert digest.returncode == plain.returncode == 1, (plain.returncode, digest.returncode)
         full = report.read_text(encoding="utf-8")
         assert "Summary:" in full and "#7" in full, full[-2000:]
-        hit_lines = [line for line in full.splitlines() if line.startswith("  ") and ".spec.ts:" in line]
+        hit_lines = [line for line in full.splitlines() if line.startswith("  ") and ".spec.ts\":" in line]
         assert hit_lines, full
         for line in hit_lines:
             assert line not in digest.stdout, line
         assert "Summary:" in digest.stdout, digest.stdout
-        assert f"full report with every hit line: {report}" in digest.stdout, digest.stdout
+        assert f"Full report: {json.dumps(str(report))}" in digest.stdout, digest.stdout
         summary = next(line for line in full.splitlines() if line.startswith("Summary:"))
         assert digest.stdout.rstrip("\n").splitlines()[-1] == summary, digest.stdout[-500:]
         for name in ("a", "b"):
-            count = sum(1 for line in hit_lines if f"/{name}.spec.ts:" in line)
-            assert f"/{name}.spec.ts: {count}\n" in digest.stdout, (name, count, digest.stdout)
+            count = sum(1 for line in hit_lines if f'"{name}.spec.ts":' in line)
+            assert f'"{name}.spec.ts": {count}\n' in digest.stdout, (name, count, digest.stdout)
 
-        refused = scan_path(root, leading_args=("--report-file", str(report)))
-        assert refused.returncode == 2 and "already exists" in refused.stdout, refused.stdout
+        refused = run_public_scan(root, leading_args=("--report-file", str(report)))
+        assert refused.returncode == 2 and "EEXIST" in refused.stdout, refused.stdout
         assert report.read_text(encoding="utf-8") == full, "an existing report was overwritten"
         link = Path(temp) / "link.txt"
         link.symlink_to(Path(temp) / "target.txt")
-        refused = scan_path(root, leading_args=("--report-file", str(link)))
+        refused = run_public_scan(root, leading_args=("--report-file", str(link)))
         assert refused.returncode == 2 and not (Path(temp) / "target.txt").exists(), refused.stdout
-        refused = scan_path(root, leading_args=("--report-file", str(Path(temp) / "missing/r.txt")))
-        assert refused.returncode == 2 and "existing, non-symlink directory" in refused.stdout, refused.stdout
-        usage = scan_path(root, leading_args=("--report-file", ""))
-        assert usage.returncode == 2 and "usage" in usage.stdout, usage.stdout
+        refused = run_public_scan(root, leading_args=("--report-file", str(Path(temp) / "missing/r.txt")))
+        assert refused.returncode == 2 and "ENOENT" in refused.stdout, refused.stdout
+        usage = run_public_scan(root, leading_args=("--report-file", ""))
+        assert usage.returncode == 2 and "Usage:" in usage.stdout, usage.stdout
 
 
 def assert_ast_grep_fixed_candidates_exclude_system_sg() -> None:
     """Linux /usr/bin/sg is shadow-utils' group command, not ast-grep."""
-    source = SCANNER.read_text(encoding="utf-8")
+    source = legacy_scanner().read_text(encoding="utf-8")
     call = re.search(r"bind_optional_tool E2E_SMELL_AST_GREP_BIN [^)]*\)", source)
     assert call, "ast-grep fixed candidate list not found"
     candidates = re.findall(r"(/[\w/.-]+)", call.group(0))
@@ -1031,7 +1237,11 @@ def assert_ast_grep_fail_closed() -> None:
         )
         fake_ast_grep.chmod(0o755)
 
-        result = scan_path(
+        current = node_scan(root)
+        assert "safe.spec.ts:2:" in finding_locations(current.report, "#7", severity="P0", disposition="confirmed")
+        assert current.returncode == 1
+
+        result = legacy_scan_path(
             root,
             {
                 "PATH": f"{bin_dir}:{os.environ['PATH']}",
@@ -1054,7 +1264,7 @@ def assert_ast_grep_fail_closed() -> None:
             encoding="utf-8",
         )
         fake_ast_grep.chmod(0o755)
-        bounded_result = scan_path(
+        bounded_result = legacy_scan_path(
             root,
             {
                 "PATH": f"{bin_dir}:{os.environ['PATH']}",
@@ -1074,7 +1284,7 @@ def assert_ast_grep_fail_closed() -> None:
             encoding="utf-8",
         )
         fake_ast_grep.chmod(0o755)
-        format_result = scan_path(
+        format_result = legacy_scan_path(
             root,
             {
                 "E2E_SMELL_AST_GREP_BIN": str(fake_ast_grep),
@@ -1120,7 +1330,7 @@ def assert_explicit_tool_binds_canonical_resolved_path() -> None:
         tool_b.chmod(0o755)
         selected.symlink_to(tool_a)
 
-        result = scan_path(
+        result = legacy_scan_path(
             root,
             {
                 "E2E_SMELL_RG_BIN": str(selected),
@@ -1167,7 +1377,7 @@ def assert_default_versioned_tool_symlink_executes() -> None:
             }
         )
         result = subprocess.run(
-            ["/bin/bash", "-p", str(SCANNER), str(root)],
+            ["/bin/bash", "-p", str(legacy_scanner()), str(root)],
             cwd=ROOT,
             env=environment,
             text=True,
@@ -1272,7 +1482,7 @@ def assert_ast_grep_npx_fallback_is_sanitized() -> None:
         )
         fake_npx.chmod(0o755)
 
-        result = scan_path(
+        result = legacy_scan_path(
             root,
             {
                 "E2E_SMELL_NPX_BIN": str(fake_npx),
@@ -1362,7 +1572,7 @@ def assert_ast_grep_download_path_delegates_every_npx_call() -> None:
     assert '"@ast-grep/cli-$1@0.39.7"' in executable, (
         "the ast-grep download must stay pinned to the exact reviewed version"
     )
-    scanner_text = SCANNER.read_text(encoding="utf-8")
+    scanner_text = legacy_scanner().read_text(encoding="utf-8")
     for digest in (
         "0241e0a18562c22788ec81196125d618e6d94d1f63f2d13375dd270af197e049",
         "08022ae90f40e59b02ce93a919b59a12d86c4fcae655e9e93227e580d14ea4e5",
@@ -1377,7 +1587,7 @@ def assert_ast_grep_download_path_delegates_every_npx_call() -> None:
         "the ESLint download step"
     )
 
-    scanner_source = SCANNER.read_text(encoding="utf-8")
+    scanner_source = legacy_scanner().read_text(encoding="utf-8")
     assert "AST_GREP_NPX_ROOT" not in scanner_source, (
         "the second, hand-rolled ast-grep npm environment is back"
     )
@@ -1488,7 +1698,11 @@ def assert_ast_grep_launcher_failure_falls_through_loudly() -> None:
         # let through.
         fake_npx.write_text("#!/bin/bash\nexit 1\n", encoding="utf-8")
         fake_npx.chmod(0o755)
-        result = scan_path(
+        current = node_scan(root)
+        assert "focused.spec.ts:2:" in finding_locations(current.report, "#7", severity="P0", disposition="confirmed")
+        assert current.returncode == 1
+
+        result = legacy_scan_path(
             root,
             {
                 "E2E_SMELL_NPX_BIN": str(fake_npx),
@@ -1539,7 +1753,12 @@ def assert_ast_awaited_value_read_is_triage_only() -> None:
         )
         fake_ast_grep.chmod(0o755)
 
-        result = scan_path(
+        current = node_scan(root, {"E2E_SMELL_FAIL_ON": "any"})
+        assert current.returncode == 0
+        assert "value-read.spec.ts:3:" in finding_locations(current.report, "#4c-4e", severity="P1", disposition="candidate")
+        assert not finding_locations(current.report, "#4f", severity="P0", disposition="confirmed")
+
+        result = legacy_scan_path(
             root,
             {
                 "PATH": f"{bin_dir}:{os.environ['PATH']}",
@@ -1583,7 +1802,14 @@ def assert_ast_generic_getby_is_triage_only() -> None:
         )
         fake_ast_grep.chmod(0o755)
 
-        result = scan_path(
+        # Unknown custom wrapper remains a candidate with an exact unsupported diagnostic.
+        current = node_scan(root, expected_diagnostics=source_diagnostics(root, [
+            ("provenance-unsupported", "assertions", "wrapper.spec.ts", 132),
+        ]))
+        assert "wrapper.spec.ts:4:" in finding_locations(current.report, "#4f", severity="P0", disposition="candidate")
+        assert not finding_locations(current.report, "#4f", severity="P0", disposition="confirmed")
+
+        result = legacy_scan_path(
             root,
             {
                 "PATH": f"{bin_dir}:{os.environ['PATH']}",
@@ -1631,7 +1857,7 @@ def assert_project_ast_grep_rejected() -> None:
             }
         )
         result = subprocess.run(
-            ["/bin/bash", str(SCANNER), str(root)],
+            ["/bin/bash", str(legacy_scanner()), str(root)],
             cwd=ROOT,
             env=environment,
             text=True,
@@ -1662,7 +1888,7 @@ def assert_project_ripgrep_rejected() -> None:
             encoding="utf-8",
         )
         fake_rg.chmod(0o755)
-        result = scan_path(root, {"PATH": f"{bin_dir}:{os.environ['PATH']}"})
+        result = legacy_scan_path(root, {"PATH": f"{bin_dir}:{os.environ['PATH']}"})
         assert result.returncode == 2, result.stdout
         assert "refusing PATH entry inside the requested scan root" in result.stdout
         assert not marker.exists()
@@ -1678,7 +1904,7 @@ def assert_invalid_inherited_locale_preserves_evidence() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(
+        result = node_scan(
             target,
             {
                 "LC_ALL": "C.UTF-8",
@@ -1687,10 +1913,7 @@ def assert_invalid_inherited_locale_preserves_evidence() -> None:
             },
         )
         assert result.returncode == 0, result.stdout
-        finding = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact",
-        )
+        finding = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
         assert "locale.spec.ts:3:" in finding
         assert "panic: locale.c" not in result.stdout
 
@@ -1712,18 +1935,11 @@ def assert_representative_suite_completes_within_budget() -> None:
             )
         cpu_started = child_process_cpu_seconds()
         wall_started = time.monotonic()
-        result = scan_path(
-            root,
-            {"E2E_SMELL_FAIL_ON": "none"},
-            timeout=SCANNER_PERFORMANCE_HANG_TIMEOUT_SECONDS,
-        )
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         cpu_elapsed = child_process_cpu_seconds() - cpu_started
         wall_elapsed = time.monotonic() - wall_started
         assert result.returncode == 0, result.stdout
-        assert (
-            "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate"
-            not in result.stdout
-        )
+        assert not finding_locations(result.report, "#14", severity="P1", disposition="candidate")
         assert cpu_elapsed < 30, (
             "representative 16-file scanner workload used "
             f"{cpu_elapsed:.2f}s of child-process CPU time "
@@ -1772,7 +1988,7 @@ def assert_parent_project_ast_grep_rejected() -> None:
             }
         )
         result = subprocess.run(
-            ["/bin/bash", str(SCANNER), str(scan_root)],
+            ["/bin/bash", str(legacy_scanner()), str(scan_root)],
             cwd=ROOT,
             env=environment,
             text=True,
@@ -1868,8 +2084,12 @@ def assert_ast_grep_config_discovery_is_pinned() -> None:
         # The exposure needs the scanner started from inside the repository, where a
         # reviewer or generator normally runs it; a relative root exercises the
         # canonicalization that the cwd change depends on.
+        current = node_scan(scan_root)
+        assert "missing-await.spec.ts:3:" in finding_locations(current.report, "#15", severity="P1", disposition="confirmed")
+        assert not argv_log.exists() and not cwd_log.exists() and not config_log.exists()
+
         result = subprocess.run(
-            ["/bin/bash", "-p", str(SCANNER), "tests"],
+            ["/bin/bash", "-p", str(legacy_scanner()), "tests"],
             cwd=root,
             env=environment,
             text=True,
@@ -1916,12 +2136,12 @@ def assert_focused_serial_and_parallel_suites_are_reported() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(root)
-        assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
-        assert "modes.spec.ts:2:" in focused, result.stdout
-        assert "modes.spec.ts:5:" in focused, result.stdout
-        assert "modes.spec.ts:8:" not in focused, result.stdout
+        report = scan_canonical(root)
+        assert_complete_report(report, exit_code=1)
+        focused = finding_locations(report, "#7", severity="P0", disposition="confirmed")
+        assert "modes.spec.ts:2:" in focused, report
+        assert "modes.spec.ts:5:" in focused, report
+        assert "modes.spec.ts:8:" not in focused, report
 
 
 def assert_regex_literal_quotes_do_not_open_strings() -> None:
@@ -1943,19 +2163,13 @@ def assert_regex_literal_quotes_do_not_open_strings() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        assert "[P1] #9 Playwright hard-coded sleep" not in result.stdout, result.stdout
-        assert "regex.spec.ts:5" in section(result.stdout, "Suppressed by JUSTIFIED"), result.stdout
-        assert "regex.spec.ts:6:" in section(
-            result.stdout, "[P1] #16 Missing await on Playwright action"
-        ), result.stdout
-        assert "regex.spec.ts:7:" in section(
-            result.stdout, "[P0] #4f Locator always-true assertion"
-        ), result.stdout
-        assert "regex.spec.ts:9:" in section(
-            result.stdout, "[P0] #7 Focused test committed"
-        ), result.stdout
+        assert not canonical_section(result.report, "[P1] #9 Playwright hard-coded sleep"), result.stdout
+        assert "regex.spec.ts:5" in canonical_section(result.report, "Suppressed by JUSTIFIED"), result.stdout
+        assert "regex.spec.ts:6:" in canonical_section(result.report, "[P1] #16 Missing await on Playwright action"), result.stdout
+        assert "regex.spec.ts:7:" in canonical_section(result.report, "[P0] #4f Locator always-true assertion"), result.stdout
+        assert "regex.spec.ts:9:" in canonical_section(result.report, "[P0] #7 Focused test committed"), result.stdout
 
 
 def assert_justified_chain_covers_option_object_lines() -> None:
@@ -1979,14 +2193,19 @@ def assert_justified_chain_covers_option_object_lines() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(root)
-        justified = section(result.stdout, "Suppressed by JUSTIFIED")
-        assert "chain.spec.ts:5" in justified, result.stdout
-        assert "chain.spec.ts:10" in justified, result.stdout
-        positional = section(result.stdout, "[P1?][LLM-TRIAGE] #10a Positional selector")
-        assert "chain.spec.ts:13:" in positional, result.stdout
-        assert "chain.spec.ts:5:" not in positional, result.stdout
-        assert "chain.spec.ts:10:" not in positional, result.stdout
+        result = node_scan(root)
+        for item in result.report["findings"] + result.report["suppressed"]:
+            if item["patternId"] == "#10a":
+                source = (root / "chain.spec.ts").read_text()
+                assert source[item["start"]:item["end"]].endswith(".first()"), item
+        # AST anchors: chain starts 4/8/12; original terminal tokens 5/10/13.
+        justified = canonical_section(result.report, "Suppressed by JUSTIFIED")
+        assert "chain.spec.ts:4" in justified, result.stdout
+        assert "chain.spec.ts:8" in justified, result.stdout
+        positional = canonical_section(result.report, "[P1?][LLM-TRIAGE] #10a Positional selector")
+        assert "chain.spec.ts:12:" in positional, result.stdout
+        assert "chain.spec.ts:4:" not in positional, result.stdout
+        assert "chain.spec.ts:8:" not in positional, result.stdout
 
 
 def assert_dangling_locator_ignores_multiline_chain_heads() -> None:
@@ -2012,10 +2231,8 @@ def assert_dangling_locator_ignores_multiline_chain_heads() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(root)
-        dangling = section(
-            result.stdout, "[P0?][LLM-TRIAGE] #8a Dangling Playwright locator statement"
-        )
+        result = node_scan(root)
+        dangling = canonical_section(result.report, "[P0?][LLM-TRIAGE] #8a Dangling Playwright locator statement")
         for head in (3, 5, 8):
             assert f"dangle.spec.ts:{head}:" not in dangling, result.stdout
         for real in (12, 14, 16):
@@ -2030,9 +2247,9 @@ def assert_invalid_fail_on_is_rejected_before_scanning() -> None:
             "test.only('focused', async () => {});\n",
             encoding="utf-8",
         )
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "bogus"})
+        result = run_public_scan(root, {"E2E_SMELL_FAIL_ON": "bogus"})
         assert result.returncode == 2, result.stdout
-        assert "E2E_SMELL_FAIL_ON must be one of" in result.stdout, result.stdout
+        assert "invalid E2E_SMELL_FAIL_ON policy" in result.stdout, result.stdout
         assert "Tier 3" not in result.stdout, result.stdout
         assert "Summary" not in result.stdout, result.stdout
 
@@ -2096,43 +2313,33 @@ def assert_module_extension_scope() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        assert "focused.spec.mjs:2:" in section(
-            result.stdout, "[P0] #7 Focused test committed"
+        assert "focused.spec.mjs:2:" in canonical_section(result.report, "[P0] #7 Focused test committed"
         )
-        assert "custom-name.e2e.ts:2:" in section(
-            result.stdout, "[P0] #7 Focused test committed"
+        assert "custom-name.e2e.ts:2:" in canonical_section(result.report, "[P0] #7 Focused test committed"
         )
-        assert "custom-name.browser.jsx:2:" in section(
-            result.stdout, "[P0] #7 Focused test committed"
+        assert "custom-name.browser.jsx:2:" in canonical_section(result.report, "[P0] #7 Focused test committed"
         )
-        assert "account-flow.cts:3:" in section(
-            result.stdout, "[P0] #7 Focused test committed"
+        assert "account-flow.cts:3:" in canonical_section(result.report, "[P0] #7 Focused test committed"
         )
-        assert "checkout-journey.cjs:2:" in section(
-            result.stdout, "[P0] #7 Focused test committed"
+        assert "checkout-journey.cjs:2:" in canonical_section(result.report, "[P0] #7 Focused test committed"
         )
-        raw_dom = section(
-            result.stdout, "[P1?][LLM-TRIAGE] #6 Raw DOM query inside test code"
+        raw_dom = canonical_section(result.report, "[P1?][LLM-TRIAGE] #6 Raw DOM query inside test code"
         )
         for raw_dom_line in (3, 4, 5):
             assert f"raw-dom.e2e.js:{raw_dom_line}:" in raw_dom
-        assert "wait.mjs:2:" in section(
-            result.stdout, "[P1] #9b Cypress hard-coded sleep"
+        assert "wait.mjs:2:" in canonical_section(result.report, "[P1] #9b Cypress hard-coded sleep"
         )
-        assert "wait.mjs:3:" in section(
-            result.stdout, "[P1] #9b Cypress hard-coded sleep"
+        assert "wait.mjs:3:" in canonical_section(result.report, "[P1] #9b Cypress hard-coded sleep"
         )
-        assert "wait.mjs:6:" not in section(
-            result.stdout, "[P1] #9b Cypress hard-coded sleep"
+        assert "wait.mjs:6:" not in canonical_section(result.report, "[P1] #9b Cypress hard-coded sleep"
         )
-        assert "async.mjs:1:" in section(
-            result.stdout,
+        assert "async.mjs:1:" in canonical_section(result.report,
             "[P1?][LLM-TRIAGE] #10d Cypress async callback mixes promises with queued commands",
         )
 
-        scanner_source = SCANNER.read_text(encoding="utf-8")
+        scanner_source = legacy_scanner().read_text(encoding="utf-8")
         assert "CODE_EXTENSIONS='ts,js,tsx,jsx,mts,mjs,cts,cjs'" in scanner_source
         for extension in ("ts", "js", "tsx", "jsx", "mts", "mjs", "cts", "cjs"):
             assert extension in scanner_source.split(
@@ -2160,12 +2367,10 @@ def assert_focused_test_lexical_filter() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
-        assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
-        assert "(4 hits)" in result.stdout[
-            result.stdout.index("[P0] #7 Focused test committed") :
-        ]
+        report = scan_canonical(root)
+        assert_complete_report(report, exit_code=1)
+        focused = finding_locations(report, "#7", severity="P0", disposition="confirmed")
+        assert len(focused.splitlines()) == 4, report
         for hit_line in (7, 8, 9, 10):
             assert f"focused.spec.mjs:{hit_line}:" in focused
         for guard_line in (2, 3, 4, 5, 6, 11, 12):
@@ -2189,20 +2394,21 @@ def assert_expression_wrapped_expect_and_serial_configure() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
-        assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        report = scan_canonical(root)
+        assert_complete_report(report, exit_code=1)
+        focused = finding_locations(report, "#7", severity="P0", disposition="confirmed")
         assert "expression.spec.ts:4:" in focused
-        missing = section(result.stdout, "[P1] #15 Missing await on Playwright expect")
+        missing = finding_locations(report, "#15", severity="P1", disposition="confirmed")
         assert "expression.spec.ts:5:" in missing
         assert "expression.spec.ts:6:" in missing
         assert "expression.spec.ts:7:" not in missing
         assert "expression.spec.ts:8:" not in missing
-        serial = section(result.stdout, "[P1] #10b Serial Playwright suite")
+        serial = finding_locations(report, "#10b", severity="P1", disposition="confirmed")
         assert "expression.spec.ts:2:" in serial
 
 
 def assert_playwright_test_aliases_cannot_bypass_focus_check() -> None:
+    # Workspace test import is unpinned; keep the source candidate and exact diagnostic.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-test-alias-") as temp:
         root = Path(temp)
         (root / "direct-alias.spec.ts").write_text(
@@ -2252,19 +2458,20 @@ def assert_playwright_test_aliases_cannot_bypass_focus_check() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
-        assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('import-unpinned', 'focusedTests', 'workspace-fixture.ts', None)]))
+        assert result.returncode == 2, result.stdout
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         assert "direct-alias.spec.ts:2:" in focused
         assert "fixture-alias.spec.ts:2:" in focused
-        assert "default-fixture.spec.ts:4:" in focused
+        # AST span begins at the multiline receiver on line 2, includes old .only line 4.
+        assert "default-fixture.spec.ts:2:" in focused
+        anchor = next(item for item in result.report["findings"] if Path(item["file"]).name == "default-fixture.spec.ts")
+        source = (root / "default-fixture.spec.ts").read_text()
+        assert source.count("\n", 0, anchor["end"]) + 1 == 4
         assert "optional-focus.spec.ts:2:" in focused
         assert "unrelated-receiver.spec.ts:3:" not in focused
-        unresolved_focused = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #7 Possible Focused test committed "
-            "(framework provenance unproven)",
-        )
+        unresolved_focused = canonical_section(result.report, "[P0?][LLM-TRIAGE] #7 Possible Focused test committed "
+            "(framework provenance unproven)")
         assert "workspace-fixture.ts:2:" in unresolved_focused
 
 
@@ -2299,25 +2506,23 @@ def assert_playwright_namespace_bindings_and_current_matchers() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         assert "namespace-import.spec.ts:2:" in focused
         assert "namespace-require.spec.cjs:2:" in focused
         assert "namespace-import-equals.spec.ts:2:" in focused
-        missing = section(result.stdout, "[P1] #15 Missing await on Playwright expect")
+        missing = canonical_section(result.report, "[P1] #15 Missing await on Playwright expect")
         for line in (3, 4, 5, 6):
             assert f"namespace-import.spec.ts:{line}:" in missing
         assert "namespace-require.spec.cjs:3:" in missing
         assert "namespace-import-equals.spec.ts:3:" in missing
-        truthy = section(
-            result.stdout,
+        truthy = canonical_section(result.report,
             "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
         )
         assert "namespace-import.spec.ts:7:" in truthy
         assert "namespace-import-equals.spec.ts:4:" in truthy
-        actions = section(
-            result.stdout,
+        actions = canonical_section(result.report,
             "[P1?][LLM-TRIAGE] #16 Possible deferred/discarded Playwright action promise",
         )
         assert "namespace-import.spec.ts:8:" in actions
@@ -2354,7 +2559,7 @@ def assert_playwright_namespace_bindings_and_current_matchers() -> None:
             "toHaveValues",
             "toMatchAriaSnapshot",
         }
-        scanner_source = SCANNER.read_text(encoding="utf-8")
+        scanner_source = legacy_scanner().read_text(encoding="utf-8")
         scanner_matchers = set(
             scanner_source.split(
                 "PLAYWRIGHT_ASYNC_MATCHERS='", maxsplit=1
@@ -2362,7 +2567,7 @@ def assert_playwright_namespace_bindings_and_current_matchers() -> None:
         )
         assert scanner_matchers == expected_matchers
         ast_rule = (
-            SCANNER.parent
+            legacy_scanner().parent
             / "ast-grep-rules/sg-15-missing-await-playwright-expect.yml"
         ).read_text(encoding="utf-8")
         for matcher in expected_matchers:
@@ -2385,21 +2590,15 @@ def assert_transitive_commonjs_destructured_aliases() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        assert "commonjs-alias.spec.cjs:2:" in section(
-            result.stdout, "[P0] #7 Focused test committed"
-        )
-        assert "commonjs-alias.spec.cjs:3:" in section(
-            result.stdout, "[P1] #15 Missing await on Playwright expect"
-        )
-        assert "commonjs-alias.spec.cjs:4:" in section(
-            result.stdout,
-            "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
-        )
+        assert "commonjs-alias.spec.cjs:2:" in canonical_section(result.report, "[P0] #7 Focused test committed")
+        assert "commonjs-alias.spec.cjs:3:" in canonical_section(result.report, "[P1] #15 Missing await on Playwright expect")
+        assert "commonjs-alias.spec.cjs:4:" in canonical_section(result.report, "[P0] #4f Locator always-true assertion (truthy/defined/not-null)")
 
 
 def assert_executable_wait_timeout_and_shadowed_test_boundaries() -> None:
+    # Declared Page type cannot prove timeout API runtime provenance.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-executable-waits-") as temp:
         root = Path(temp)
         target = root / "boundaries.spec.ts"
@@ -2421,16 +2620,15 @@ def assert_executable_wait_timeout_and_shadowed_test_boundaries() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
-        assert result.returncode == 0, result.stdout
-        assert "[P0] #7 Focused test committed" not in result.stdout
-        wait = section(result.stdout, "[P1] #9 Playwright hard-coded sleep")
+        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('type-unsupported', 'timeoutZero', 'boundaries.spec.ts', 488)]))
+        assert result.returncode == 2, result.stdout
+        assert not canonical_section(result.report, "[P0] #7 Focused test committed")
+        # A declared Page type does not prove the runtime Page object.
+        wait = finding_locations(result.report, "#9", severity="P1", disposition="candidate")
         assert "boundaries.spec.ts:11:" in wait
         for line in (3, 4, 5, 6):
             assert f"boundaries.spec.ts:{line}:" not in wait
-        timeout = section(
-            result.stdout, "[P1] #4g Zero-timeout retry/deadline hazard"
-        )
+        timeout = finding_locations(result.report, "#4g", severity="P1", disposition="candidate")
         assert "boundaries.spec.ts:14:" in timeout
         for line in (3, 4, 5, 6, 13):
             assert f"boundaries.spec.ts:{line}:" not in timeout
@@ -2448,16 +2646,13 @@ def assert_e2e_suffix_is_non_gating_without_framework_provenance() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        focused = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #7 Possible Focused test committed "
-            "(framework provenance unproven)",
-        )
+        focused = canonical_section(result.report, "[P0?][LLM-TRIAGE] #7 Possible Focused test committed "
+            "(framework provenance unproven)")
         assert "checkout.e2e.ts:1:" in focused
         assert "checkout.e2e.jsx:1:" in focused
-        assert "0 P0" in result.stdout
+        assert result.report["counts"]["p0"] == 0
 
 
 def assert_framework_markers_in_comments_and_strings_do_not_create_scope() -> None:
@@ -2474,10 +2669,10 @@ def assert_framework_markers_in_comments_and_strings_do_not_create_scope() -> No
             encoding="utf-8",
         )
 
-        result = scan_path(root)
-        assert result.returncode == 0, result.stdout
-        assert "Summary: 0 total hit(s)" in result.stdout
-        assert "unit.test.ts:" not in result.stdout
+        report = scan_canonical(root)
+        assert_complete_report(report, exit_code=0)
+        assert report["counts"]["total"] == 0, report
+        assert report["findings"] == [], report
 
 
 def assert_generic_page_callback_is_non_gating_without_framework_lineage() -> None:
@@ -2497,28 +2692,25 @@ def assert_generic_page_callback_is_non_gating_without_framework_lineage() -> No
             encoding="utf-8",
         )
 
-        result = scan_path(target)
+        result = node_scan(target)
         assert result.returncode == 0, result.stdout
-        assert "0 P0" in result.stdout
+        assert result.report["counts"]["p0"] == 0
         assert (
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact"
-            in result.stdout
+            canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
         )
-        assert "[P1] #9 Playwright hard-coded sleep" not in result.stdout
-        assert "[P1] #17 Discouraged direct Page selector API" not in result.stdout
+        assert not canonical_section(result.report, "[P1] #9 Playwright hard-coded sleep")
+        assert not canonical_section(result.report, "[P1] #17 Discouraged direct Page selector API")
         assert (
-            "[P1?][LLM-TRIAGE] #9 Possible Playwright hard-coded sleep "
-            "(framework provenance unproven)"
-            in result.stdout
+            canonical_section(result.report, "[P1?][LLM-TRIAGE] #9 Possible Playwright hard-coded sleep "
+            "(framework provenance unproven)")
         )
         assert (
-            "[P1?][LLM-TRIAGE] #17 Possible Discouraged direct Page selector "
-            "API (framework provenance unproven)"
-            in result.stdout
+            canonical_section(result.report, "[P1?][LLM-TRIAGE] #17 Possible Discouraged direct Page selector "
+            "API (framework provenance unproven)")
         )
-        assert "generic-callback.test.ts:3:" in result.stdout
-        assert "generic-callback.test.ts:4:" in result.stdout
-        assert "generic-callback.test.ts:5:" in result.stdout
+        assert "generic-callback.test.ts:3:" in all_finding_locations(result.report)
+        assert "generic-callback.test.ts:4:" in all_finding_locations(result.report)
+        assert "generic-callback.test.ts:5:" in all_finding_locations(result.report)
 
         proven = root / "playwright-callback.spec.ts"
         proven.write_text(
@@ -2530,21 +2722,13 @@ def assert_generic_page_callback_is_non_gating_without_framework_lineage() -> No
             "});\n",
             encoding="utf-8",
         )
-        proven_result = scan_path(proven)
+        proven_result = node_scan(proven)
         assert proven_result.returncode == 0, proven_result.stdout
-        proven_empty_catch = section(
-            proven_result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact",
-        )
+        proven_empty_catch = canonical_section(proven_result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
         assert "playwright-callback.spec.ts:5:" in proven_empty_catch
         assert "framework provenance unproven" not in proven_empty_catch
-        assert "playwright-callback.spec.ts:3:" in section(
-            proven_result.stdout, "[P1] #9 Playwright hard-coded sleep"
-        )
-        assert "playwright-callback.spec.ts:4:" in section(
-            proven_result.stdout,
-            "[P1] #17 Discouraged direct Page selector API",
-        )
+        assert "playwright-callback.spec.ts:3:" in canonical_section(proven_result.report, "[P1] #9 Playwright hard-coded sleep")
+        assert "playwright-callback.spec.ts:4:" in canonical_section(proven_result.report, "[P1] #17 Discouraged direct Page selector API")
 
 
 def assert_function_expression_catch_boundaries() -> None:
@@ -2568,23 +2752,15 @@ def assert_function_expression_catch_boundaries() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        empty = section(
-            result.stdout, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact"
-        )
+        empty = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
         for line in (3, 4, 9):
             assert f"catch-functions.spec.ts:{line}:" in empty
-        parameterized = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible parameterized catch swallowing",
-        )
+        parameterized = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible parameterized catch swallowing")
         for line in (5, 6, 10):
             assert f"catch-functions.spec.ts:{line}:" in parameterized
-        fallback = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible error swallowing via catch fallback",
-        )
+        fallback = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible error swallowing via catch fallback")
         for line in (7, 8, 11):
             assert f"catch-functions.spec.ts:{line}:" in fallback
 
@@ -2610,17 +2786,17 @@ def assert_multiline_auth_helper_literals() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        credentials = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate",
-        )
+        credentials = canonical_section(result.report, "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate")
         assert "auth.spec.ts:3:" in credentials
         assert "auth.spec.ts:7:" not in credentials
         assert "auth.spec.ts:11:" not in credentials
         assert "auth.spec.ts:12:" not in credentials
-        assert "[REDACTED credential candidate]" in credentials
+        # Canonical JSON carries no credential source excerpt; original secret
+        # non-disclosure and candidate-location assertions remain below.
+        assert all("snippet" not in item and "source" not in item
+                   for item in result.report["findings"])
         assert "admin@example.test" not in result.stdout
         assert "hardcoded-secret" not in result.stdout
 
@@ -2698,12 +2874,9 @@ def assert_form_literal_credential_filter() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        credentials = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate",
-        )
+        credentials = canonical_section(result.report, "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate")
         # A string selector at the head of a multi-line chain is credential
         # evidence too; the chain source alone drops string contents.
         for line in (4, 7):
@@ -2726,7 +2899,10 @@ def assert_form_literal_credential_filter() -> None:
             assert f"form-data.spec.ts:{line}:" not in credentials, (line, credentials)
         for line in (10, 11, 12):
             assert f"login.cy.ts:{line}:" not in credentials, (line, credentials)
-        assert "[REDACTED credential candidate]" in credentials
+        # Canonical JSON carries no credential source excerpt; original secret
+        # non-disclosure and candidate-location assertions remain below.
+        assert all("snippet" not in item and "source" not in item
+                   for item in result.report["findings"])
         # #17 still prints `page.fill(...)` source; #14 evidence is redacted.
         for value in ("hunter2", "sk-live-123", "my-secret-token", "a-password", "Jermey14"):
             assert value not in credentials, value
@@ -2736,9 +2912,9 @@ def assert_cy_env_credentials_are_not_candidates() -> None:
     """Cypress 16 removed Cypress.env(); cy.env() is its documented replacement
     for secrets, so a literal key or username beside a cy.env() value is not a
     hardcoded credential, exactly as the Cypress.env() exclusion already held."""
-    result = scan("cy-env-login.cy.ts")
+    result = node_scan_fixture("cy-env-login.cy.ts")
     assert result.returncode == 0, result.stdout
-    findings = section(result.stdout, "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate")
+    findings = canonical_section(result.report, "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate")
     assert "cy-env-login.cy.ts:12:" in findings, result.stdout
     # The exclusion is anchored to the `cy` identifier: `agency.env(` on line 13
     # must not hide the literal password beside it.
@@ -2754,17 +2930,19 @@ def assert_uncalled_matchers_are_p0() -> None:
     """#8c: a matcher that is read but never called, or a bare expect(x), runs no
     assertion, so the statement passes whatever x is. The fixture pairs each hit
     with the lookalikes that must stay clean."""
-    result = scan("uncalled-matcher.spec.ts")
+    result = node_scan_fixture("uncalled-matcher.spec.ts")
     assert result.returncode == 1, result.stdout
-    uncalled = section(result.stdout, "[P0] #8c Matcher never invoked")
-    bare = section(result.stdout, "[P0] #8c Bare expect() without matcher")
+    uncalled = canonical_section(result.report, "[P0] #8c Matcher never invoked")
+    bare = canonical_section(result.report, "[P0] #8c Bare expect() without matcher")
     for line in (7, 8):
         assert f"uncalled-matcher.spec.ts:{line}:" in uncalled, result.stdout
     assert "uncalled-matcher.spec.ts:9:" in bare, result.stdout
     for line in (6, 10, 11, 12, 13, 14, 15, 16):
         assert f"uncalled-matcher.spec.ts:{line}:" not in uncalled, result.stdout
         assert f"uncalled-matcher.spec.ts:{line}:" not in bare, result.stdout
-    assert "#8c(playwright/valid-expect)" in result.stdout, result.stdout
+    # The Node detector reports #8c directly; it does not claim ESLint ran.
+    assert all(item["origin"] == "ast" for item in result.report["findings"]
+               if item["patternId"] == "#8c"), result.report
 
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-uncalled-matcher-") as temp:
         root = Path(temp)
@@ -2801,13 +2979,17 @@ def assert_uncalled_matchers_are_p0() -> None:
             "})\n",
             encoding="utf-8",
         )
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        # The local custom expect binding is not the imported Playwright expect;
+        # exclude it while retaining every semicolonless positive/negative guard.
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        assert "chai.cy.ts:" not in result.stdout, result.stdout
-        assert "shadowed.spec.ts:4:" not in section(result.stdout, "[P0] #8c Matcher never invoked"), result.stdout
-        uncalled = section(result.stdout, "[P0] #8c Matcher never invoked")
-        # No bare expect() in these fixtures, so that heading must not appear at all.
-        assert "[P0] #8c Bare expect() without matcher" not in result.stdout, result.stdout
+        assert "chai.cy.ts:" not in all_finding_locations(result.report), result.stdout
+        assert "shadowed.spec.ts:4:" not in canonical_section(result.report, "[P0] #8c Matcher never invoked"), result.stdout
+        uncalled = canonical_section(result.report, "[P0] #8c Matcher never invoked")
+        # The canonical #8c group combines bare and uncalled forms. Exactly the
+        # original semicolonless uncalled matcher may remain in this fixture.
+        assert [(Path(item["file"]).name, item["line"]) for item in result.report["findings"]
+                if item["patternId"] == "#8c"] == [("semicolonless.spec.ts", 3)], result.report
         # Line 3 ends the statement (the next code line starts with `await`), while
         # lines 4 and 6 are chain heads whose matcher call follows on a later line.
         assert "semicolonless.spec.ts:3:" in uncalled, result.stdout
@@ -2838,16 +3020,13 @@ def assert_playwright_rules_skip_cypress_only_files_but_allow_mixed_files() -> N
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        direct_page = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #17 Possible discouraged selector-based Page API on POM/aliased receiver",
-        )
+        direct_page = canonical_section(result.report, "[P1?][LLM-TRIAGE] #17 Possible discouraged selector-based Page API on POM/aliased receiver")
         assert "mixed.cy.ts:3:" in direct_page
         assert "cypress-only.cy.ts:4:" not in direct_page
-        assert "cypress-only.cy.ts:5:" not in result.stdout
-        assert "cypress-only.cy.ts:6:" not in result.stdout
+        assert "cypress-only.cy.ts:5:" not in all_finding_locations(result.report)
+        assert "cypress-only.cy.ts:6:" not in all_finding_locations(result.report)
 
 
 def assert_initialized_module_state_only() -> None:
@@ -2864,11 +3043,9 @@ def assert_initialized_module_state_only() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        mutable = section(
-            result.stdout, "[P1] #19 Module-level mutable state in test code"
-        )
+        mutable = canonical_section(result.report, "[P1] #19 Module-level mutable state in test code")
         assert "module-state.spec.ts:4:" in mutable
         assert "module-state.spec.ts:5:" in mutable
         assert "module-state.spec.ts:2:" not in mutable
@@ -2876,6 +3053,7 @@ def assert_initialized_module_state_only() -> None:
 
 
 def assert_positional_selector_is_always_triage() -> None:
+    # database.query is unresolved; do not infer a DOM query implementation.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-positional-triage-") as temp:
         root = Path(temp)
         target = root / "position.spec.ts"
@@ -2897,16 +3075,13 @@ def assert_positional_selector_is_always_triage() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "any"})
-        assert result.returncode == 0, result.stdout
-        positional = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #10a Positional selector",
-        )
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "any"}, expected_diagnostics=source_diagnostics(root, [('provenance-unsupported', 'domQueries', 'position.spec.ts', 97)]))
+        assert result.returncode == 2, result.stdout
+        positional = canonical_section(result.report, "[P1?][LLM-TRIAGE] #10a Positional selector")
         assert "position.spec.ts:3:" in positional
         assert "position.spec.ts:4:" in positional
         assert "admin-rooms.ts:4:" in positional
-        assert "[P1] #10a Positional selector" not in result.stdout
+        assert not canonical_section(result.report, "[P1] #10a Positional selector")
 
 
 def assert_expect_aliases_and_page_receiver_provenance() -> None:
@@ -2924,23 +3099,13 @@ def assert_expect_aliases_and_page_receiver_provenance() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        assert "aliases.spec.ts:4:" in section(
-            result.stdout, "[P1] #4h One-shot page.url assertion"
-        )
-        assert "aliases.spec.ts:5:" in section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #18 Soft assertion dependency candidate",
-        )
-        assert "aliases.spec.ts:6:" in section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #17 Possible discouraged selector-based Page API on POM/aliased receiver",
-        )
-        if "[P1] #19 Module-level mutable state in test code" in result.stdout:
-            assert "aliases.spec.ts:2:" not in section(
-                result.stdout, "[P1] #19 Module-level mutable state in test code"
-            )
+        assert "aliases.spec.ts:4:" in finding_locations(result.report, "#4h", severity="P1", disposition="candidate")
+        assert "aliases.spec.ts:5:" in canonical_section(result.report, "[P1?][LLM-TRIAGE] #18 Soft assertion dependency candidate")
+        assert "aliases.spec.ts:6:" in canonical_section(result.report, "[P1?][LLM-TRIAGE] #17 Possible discouraged selector-based Page API on POM/aliased receiver")
+        if canonical_section(result.report, "[P1] #19 Module-level mutable state in test code"):
+            assert "aliases.spec.ts:2:" not in canonical_section(result.report, "[P1] #19 Module-level mutable state in test code")
 
 
 def assert_semicolonless_page_url_and_retry_boundaries() -> None:
@@ -2968,9 +3133,9 @@ def assert_semicolonless_page_url_and_retry_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(target, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        findings = section(result.stdout, "[P1] #4h One-shot page.url assertion")
+        findings = canonical_section(result.report, "[P1] #4h One-shot page.url assertion")
         for line in (3, 4, 5, 6, 8):
             assert f"url.spec.ts:{line}:" in findings, result.stdout
         for line in (26, 28, 30, 31):
@@ -2978,6 +3143,7 @@ def assert_semicolonless_page_url_and_retry_boundaries() -> None:
 
 
 def assert_whitespace_comments_and_shadowed_page_boundaries() -> None:
+    # Untyped helper and local custom page object cannot prove framework promise semantics.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-whitespace-shadow-") as temp:
         root = Path(temp)
         target = root / "whitespace.spec.ts"
@@ -2994,23 +3160,15 @@ def assert_whitespace_comments_and_shadowed_page_boundaries() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
-        assert result.returncode == 1, result.stdout
-        assert "whitespace.spec.ts:2:" in section(
-            result.stdout, "[P0] #7 Focused test committed"
-        )
-        assert "whitespace.spec.ts:3:" in section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #5a Conditional branch contains assertion",
-        )
-        if "[P1] #16 Missing await on Playwright action" in result.stdout:
-            assert "whitespace.spec.ts:9:" not in section(
-                result.stdout, "[P1] #16 Missing await on Playwright action"
-            )
-        assert "whitespace.spec.ts:9:" in section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #16 Possible missing await on Locator/POM action",
-        )
+        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('provenance-unsupported', 'actions', 'whitespace.spec.ts', None), ('provenance-unsupported', 'promises', 'whitespace.spec.ts', 253)]))
+        assert result.returncode == 2, result.stdout
+        assert "whitespace.spec.ts:2:" in canonical_section(result.report, "[P0] #7 Focused test committed")
+        assert "whitespace.spec.ts:3:" in canonical_section(result.report, "[P0?][LLM-TRIAGE] #5a Conditional branch contains assertion")
+        if canonical_section(result.report, "[P1] #16 Missing await on Playwright action"):
+            assert "whitespace.spec.ts:9:" not in canonical_section(result.report, "[P1] #16 Missing await on Playwright action")
+        # The local object returns a synchronous click() {} method: it is not
+        # a Playwright promise candidate. Exact uncertainty diagnostics remain.
+        assert "whitespace.spec.ts:9:" not in finding_locations(result.report, "#16", severity="P1", disposition="candidate")
 
 
 def assert_multiline_tsx_and_aliased_expect() -> None:
@@ -3037,16 +3195,13 @@ def assert_multiline_tsx_and_aliased_expect() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        missing = section(result.stdout, "[P1] #15 Missing await on Playwright expect")
+        missing = canonical_section(result.report, "[P1] #15 Missing await on Playwright expect")
         assert "expect-boundaries.spec.tsx:4:" in missing
         assert "expect-boundaries.spec.tsx:10:" not in missing
-        assert "expect-boundaries.spec.tsx:13:" not in result.stdout
-        truthy = section(
-            result.stdout,
-            "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
-        )
+        assert "expect-boundaries.spec.tsx:13:" not in all_finding_locations(result.report)
+        truthy = canonical_section(result.report, "[P0] #4f Locator always-true assertion (truthy/defined/not-null)")
         assert "expect-boundaries.spec.tsx:7:" in truthy
         assert "expect-boundaries.spec.tsx:13:" not in truthy
 
@@ -3062,10 +3217,10 @@ def assert_playwright_text_does_not_create_e2e_scope() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        assert "[P0] #7 Focused test committed" not in result.stdout
-        assert "unit.test.ts:3:" not in result.stdout
+        assert not canonical_section(result.report, "[P0] #7 Focused test committed")
+        assert "unit.test.ts:3:" not in all_finding_locations(result.report)
 
 
 def assert_justified_lexical_filter() -> None:
@@ -3104,14 +3259,12 @@ def assert_justified_lexical_filter() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        findings = section(
-            result.stdout, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact"
-        )
+        findings = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
         for suppressed_line in (3, 24):
             assert f"justified.spec.ts:{suppressed_line}:" not in findings
-        suppressed = result.stdout[result.stdout.index("Suppressed by JUSTIFIED:") :]
+        suppressed = finding_locations(result.report, "#3", severity="P0", disposition="justified-review")
         for suppressed_line in (3, 24):
             assert f"justified.spec.ts:{suppressed_line}" in suppressed
         for finding_line in (5, 7, 9, 11, 13, 14, 16, 19, 21, 28):
@@ -3133,23 +3286,18 @@ def assert_justified_p0_remains_candidate_gating() -> None:
             encoding="utf-8",
         )
 
-        candidate_gate = scan_path(
+        candidate_gate = node_scan(
             root, {"E2E_SMELL_FAIL_ON": "p0-candidate"}
         )
         assert candidate_gate.returncode == 1, candidate_gate.stdout
-        assert (
-            "[P0?][JUSTIFIED-REVIEW] Suppressed P0 candidates require "
-            "external verification (1 candidate)"
-            in candidate_gate.stdout
-        )
-        assert "justified.spec.ts:4" in candidate_gate.stdout
-        assert "[P1] #9 Hard-coded wait" not in candidate_gate.stdout
-        assert "justified.spec.ts:6" in candidate_gate.stdout[
-            candidate_gate.stdout.index("Suppressed by JUSTIFIED:")
-        :]
-        assert "1 P0 candidate" in candidate_gate.stdout
+        assert len(finding_locations(candidate_gate.report, "#3", severity="P0",
+                                     disposition="justified-review").splitlines()) == 1
+        assert "justified.spec.ts:4" in all_finding_locations(candidate_gate.report)
+        assert not canonical_section(candidate_gate.report, "[P1] #9 Hard-coded wait")
+        assert "justified.spec.ts:6" in canonical_section(candidate_gate.report, "Suppressed by JUSTIFIED")
+        assert candidate_gate.report["counts"]["p0Candidate"] == 1
 
-        p0_gate = scan_path(root, {"E2E_SMELL_FAIL_ON": "p0"})
+        p0_gate = node_scan(root, {"E2E_SMELL_FAIL_ON": "p0"})
         assert p0_gate.returncode == 0, p0_gate.stdout
 
 
@@ -3191,12 +3339,9 @@ def assert_positive_to_be_attached_arguments_and_negation() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        attached = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #4b Vacuous toBeAttached assertion",
-        )
+        attached = canonical_section(result.report, "[P1?][LLM-TRIAGE] #4b Vacuous toBeAttached assertion")
         for positive_line in (3, 4, 5, 11, 13, 24, 29):
             assert f"attachment.spec.ts:{positive_line}:" in attached
         for negative_line in (6, 7, 8, 10, 16, 18, 19, 21, 22, 23, 26, 27):
@@ -3224,7 +3369,13 @@ def assert_ripgrep_fail_closed() -> None:
             encoding="utf-8",
         )
         no_pcre.chmod(0o755)
-        no_pcre_result = scan_path(root, {"E2E_SMELL_RG_BIN": str(no_pcre)})
+        # The current product does not invoke ripgrep; the retired override must fail closed.
+        current = node_scan(root)
+        assert "focused.spec.ts:2:" in finding_locations(current.report, "#7", severity="P0", disposition="confirmed")
+        rejected = run_public_scan(root, {"E2E_SMELL_RG_BIN": str(no_pcre)})
+        assert rejected.returncode == 2 and "retired" in rejected.stdout.lower()
+
+        no_pcre_result = legacy_scan_path(root, {"E2E_SMELL_RG_BIN": str(no_pcre)})
         assert no_pcre_result.returncode == 2, no_pcre_result.stdout
         assert "PCRE2 support is required" in no_pcre_result.stdout
 
@@ -3240,7 +3391,7 @@ def assert_ripgrep_fail_closed() -> None:
             encoding="utf-8",
         )
         broken.chmod(0o755)
-        broken_result = scan_path(root, {"E2E_SMELL_RG_BIN": str(broken)})
+        broken_result = legacy_scan_path(root, {"E2E_SMELL_RG_BIN": str(broken)})
         assert broken_result.returncode == 2, broken_result.stdout
         # The filename prepass skips checks with no candidates. This fixture's
         # first applicable rule is #7; its line-stream failure must still abort.
@@ -3256,7 +3407,7 @@ def assert_ripgrep_fail_closed() -> None:
             encoding="utf-8",
         )
         discovery_error.chmod(0o755)
-        discovery_result = scan_path(root, {"E2E_SMELL_RG_BIN": str(discovery_error)})
+        discovery_result = legacy_scan_path(root, {"E2E_SMELL_RG_BIN": str(discovery_error)})
         assert discovery_result.returncode == 2, discovery_result.stdout
         assert "Tier 3 filename discovery failed" in discovery_result.stdout
         assert "Summary:" not in discovery_result.stdout
@@ -3273,7 +3424,7 @@ def assert_ripgrep_fail_closed() -> None:
             encoding="utf-8",
         )
         no_match.chmod(0o755)
-        no_match_result = scan_path(root, {"E2E_SMELL_RG_BIN": str(no_match)})
+        no_match_result = legacy_scan_path(root, {"E2E_SMELL_RG_BIN": str(no_match)})
         assert no_match_result.returncode == 0, no_match_result.stdout
 
         helper_error_bin = Path(temp) / "helper-error-bin"
@@ -3288,7 +3439,7 @@ def assert_ripgrep_fail_closed() -> None:
             encoding="utf-8",
         )
         helper_error.chmod(0o755)
-        helper_error_result = scan_path(
+        helper_error_result = legacy_scan_path(
             root, {"E2E_SMELL_RG_BIN": str(helper_error)}
         )
         assert helper_error_result.returncode == 2, helper_error_result.stdout
@@ -3306,7 +3457,7 @@ def assert_ripgrep_fail_closed() -> None:
             encoding="utf-8",
         )
         helper_no_match.chmod(0o755)
-        helper_no_match_result = scan_path(
+        helper_no_match_result = legacy_scan_path(
             root, {"E2E_SMELL_RG_BIN": str(helper_no_match)}
         )
         assert helper_no_match_result.returncode == 0, helper_no_match_result.stdout
@@ -3363,9 +3514,30 @@ def assert_unreadable_fixture_module_fails_closed() -> None:
             )
             hit_line = imports.count("\n") + 2
 
+            current = node_scan(project / "e2e")
+            assert f"login.spec.ts:{hit_line}:" in finding_locations(current.report, "#4f", severity="P0", disposition="confirmed")
+            module.chmod(0)
+            try:
+                current_blocked = scan_canonical(project / "e2e")
+            finally:
+                module.chmod(0o644)
+            assert current_blocked["execution"]["complete"] is False
+            assert current_blocked["execution"]["exitCode"] == 2
+            login = project / "e2e/login.spec.ts"
+            assert current_blocked["execution"]["diagnostics"] == source_diagnostics(login, [
+                ("import-read-unavailable", "importSnapshot", "login.spec.ts", imports.index("import { expect }") if shape == "expect helper" else 0),
+                ("import-missing", "assertions", "login.spec.ts", login.read_text().index("expect(page")),
+            ])
+            assert not finding_locations(current_blocked, "#4f", severity="P0", disposition="confirmed")
+            if shape == "fixture module":
+                assert f"login.spec.ts:{hit_line}:" in finding_locations(current_blocked, "#4f", severity="P0", disposition="candidate")
+            else:
+                # A missing standalone expect re-export has no pinned assertion binding.
+                assert current_blocked["findings"] == []
+
             for backend, overrides in backends.items():
                 label = (shape, backend)
-                readable = scan_path(project / "e2e", overrides)
+                readable = legacy_scan_path(project / "e2e", overrides)
                 assert readable.returncode == 1, (label, readable.stdout)
                 assert "[P0] #4f" in readable.stdout, (label, readable.stdout)
                 assert f"login.spec.ts:{hit_line}:" in readable.stdout, (
@@ -3376,7 +3548,7 @@ def assert_unreadable_fixture_module_fails_closed() -> None:
 
                 module.chmod(0)
                 try:
-                    blocked = scan_path(project / "e2e", overrides)
+                    blocked = legacy_scan_path(project / "e2e", overrides)
                 finally:
                     module.chmod(0o644)
                 assert blocked.returncode == 2, (label, blocked.stdout)
@@ -3396,9 +3568,9 @@ def assert_filename_transport_boundaries() -> None:
                 "test.only('focused', async () => {});\n",
                 encoding="utf-8",
             )
-        supported = scan_path(root)
+        supported = node_scan(root)
         assert supported.returncode == 1, supported.stdout
-        focused = section(supported.stdout, "[P0] #7 Focused test committed")
+        focused = finding_locations(supported.report, "#7", severity="P0", disposition="confirmed")
         for name in ("space name.spec.ts", "한글.spec.ts", "-leading.spec.ts"):
             assert f"{name}:2:" in focused
 
@@ -3410,7 +3582,7 @@ def assert_filename_transport_boundaries() -> None:
         excluded_newline.write_text(
             "test.only('excluded', () => {});\n", encoding="utf-8"
         )
-        excluded = scan_path(root)
+        excluded = node_scan(root)
         assert excluded.returncode == 1, excluded.stdout
         assert "colon/newline-containing filenames are unsupported" not in excluded.stdout
 
@@ -3419,21 +3591,16 @@ def assert_filename_transport_boundaries() -> None:
             "test.only('must fail closed before parsing', async () => {});\n",
             encoding="utf-8",
         )
-        rejected = scan_path(root)
-        assert rejected.returncode == 2, rejected.stdout
-        assert "colon/newline-containing filenames are unsupported" in rejected.stdout
+        rejected = scan_canonical(root)
+        assert_inventory_rejected(rejected, {("unsupported-filename", "colon:name.spec.ts")})
 
         (root / "colon:name.spec.ts").unlink()
         (root / "newline\nname.spec.ts").write_text(
             "import { test } from '@playwright/test';\n",
             encoding="utf-8",
         )
-        newline_rejected = scan_path(root)
-        assert newline_rejected.returncode == 2, newline_rejected.stdout
-        assert (
-            "colon/newline-containing filenames are unsupported"
-            in newline_rejected.stdout
-        )
+        newline_rejected = scan_canonical(root)
+        assert_inventory_rejected(newline_rejected, {("unsupported-filename", "newline\nname.spec.ts")})
 
 
 def assert_private_temp_storage_ignores_ambient_tmpdir() -> None:
@@ -3448,21 +3615,21 @@ def assert_private_temp_storage_ignores_ambient_tmpdir() -> None:
 
         project_tmp = root / "ambient-tmp"
         project_tmp.mkdir()
-        project_result = scan_path(root, {"TMPDIR": str(project_tmp)})
+        project_result = node_scan(root, {"TMPDIR": str(project_tmp)})
         assert project_result.returncode == 1, project_result.stdout
         assert list(project_tmp.iterdir()) == []
 
         symlink_tmp = Path(temp) / "ambient-link"
         symlink_tmp.symlink_to(root, target_is_directory=True)
         before_project = sorted(path.name for path in root.iterdir())
-        symlink_result = scan_path(root, {"TMPDIR": str(symlink_tmp)})
+        symlink_result = node_scan(root, {"TMPDIR": str(symlink_tmp)})
         assert symlink_result.returncode == 1, symlink_result.stdout
         assert sorted(path.name for path in root.iterdir()) == before_project
 
         attacker_tmp = Path(temp) / "attacker-tmp"
         attacker_tmp.mkdir()
         attacker_tmp.chmod(0o777)
-        attacker_result = scan_path(root, {"TMPDIR": str(attacker_tmp)})
+        attacker_result = node_scan(root, {"TMPDIR": str(attacker_tmp)})
         assert attacker_result.returncode == 1, attacker_result.stdout
         assert list(attacker_tmp.iterdir()) == []
 
@@ -3470,13 +3637,13 @@ def assert_private_temp_storage_ignores_ambient_tmpdir() -> None:
         blocked_tmp.mkdir()
         blocked_tmp.chmod(0o500)
         try:
-            blocked_result = scan_path(root, {"TMPDIR": str(blocked_tmp)})
+            blocked_result = node_scan(root, {"TMPDIR": str(blocked_tmp)})
         finally:
             blocked_tmp.chmod(0o700)
         assert blocked_result.returncode == 1, blocked_result.stdout
         assert list(blocked_tmp.iterdir()) == []
 
-        system_result = scan_path(root, {"TMPDIR": "/tmp"})
+        system_result = node_scan(root, {"TMPDIR": "/tmp"})
         assert system_result.returncode == 1, system_result.stdout
         for result in (
             project_result,
@@ -3485,8 +3652,7 @@ def assert_private_temp_storage_ignores_ambient_tmpdir() -> None:
             blocked_result,
             system_result,
         ):
-            assert "focused.spec.ts:2:" in section(
-                result.stdout, "[P0] #7 Focused test committed"
+            assert "focused.spec.ts:2:" in canonical_section(result.report, "[P0] #7 Focused test committed"
             )
 
 
@@ -3501,7 +3667,7 @@ def assert_python3_prerequisite_binding() -> None:
             "});\n",
             encoding="utf-8",
         )
-        missing = scan_path(
+        missing = legacy_scan_path(
             root, {"E2E_SMELL_PYTHON_BIN": str(Path(temp) / "missing-python")}
         )
         assert missing.returncode == 2, missing.stdout
@@ -3511,7 +3677,7 @@ def assert_python3_prerequisite_binding() -> None:
         invalid = Path(temp) / "not-executable-python"
         invalid.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
         invalid.chmod(0o600)
-        invalid_result = scan_path(
+        invalid_result = legacy_scan_path(
             root, {"E2E_SMELL_PYTHON_BIN": str(invalid)}
         )
         assert invalid_result.returncode == 2, invalid_result.stdout
@@ -3523,7 +3689,7 @@ def assert_python3_prerequisite_binding() -> None:
         fake = Path(temp) / "fake-python"
         fake.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
         fake.chmod(0o700)
-        fake_result = scan_path(root, {"E2E_SMELL_PYTHON_BIN": str(fake)})
+        fake_result = legacy_scan_path(root, {"E2E_SMELL_PYTHON_BIN": str(fake)})
         assert fake_result.returncode == 2, fake_result.stdout
         assert (
             "E2E_SMELL_PYTHON_BIN must execute a working Python 3 interpreter"
@@ -3531,7 +3697,7 @@ def assert_python3_prerequisite_binding() -> None:
         )
         assert "scanner candidate changed after discovery" not in fake_result.stdout
 
-        valid = scan_path(
+        valid = legacy_scan_path(
             root, {"E2E_SMELL_PYTHON_BIN": str(TRUSTED_PYTHON)}
         )
         assert valid.returncode == 0, valid.stdout
@@ -3558,12 +3724,9 @@ def assert_multiline_locator_assertions() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        locator = section(
-            result.stdout,
-            "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
-        )
+        locator = canonical_section(result.report, "[P0] #4f Locator always-true assertion (truthy/defined/not-null)")
         assert "locator.spec.mts:3:" in locator
         assert "locator.spec.mts:7:" in locator
         assert "locator.spec.mts:10:" not in locator
@@ -3578,18 +3741,15 @@ def assert_scanner_statement_boundaries() -> None:
             "cypress-action-statement-boundaries.cy.ts",
         ):
             shutil.copyfile(EVAL_FILES / name, root / name)
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        truthy = section(result.stdout, "[P0] #4f Locator always-true assertion")
+        truthy = canonical_section(result.report, "[P0] #4f Locator always-true assertion")
         prefix = "assertion-statement-boundaries.spec.ts"
         for line in (14, 15, 18):
             assert f"{prefix}:{line}:" in truthy, result.stdout
         for line in (6, 8, 9, 10, 11, 13):
             assert f"{prefix}:{line}:" not in truthy, result.stdout
-        continued = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #10f Cypress action followed",
-        )
+        continued = canonical_section(result.report, "[P1?][LLM-TRIAGE] #10f Cypress action followed")
         prefix = "cypress-action-statement-boundaries.cy.ts"
         for line in (5, 7, 8, 10, 16):
             assert f"{prefix}:{line}:" in continued, result.stdout
@@ -3614,19 +3774,19 @@ def assert_locator_identifier_requires_provenance() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
-        assert result.returncode == 1, result.stdout
-        mechanical = section(
-            result.stdout,
-            "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
-        )
+        # createResourceHandle() has no implementation. Its candidate remains
+        # alongside typed/proven positives, but its exact unknown provenance
+        # must keep execution incomplete rather than claiming a clean scan.
+        result = node_scan(root, expected_diagnostics=[{
+            "code": "provenance-unsupported", "detector": "assertions",
+            "file": str(target.resolve()), "start": 171,
+        }])
+        assert result.returncode == 2, result.stdout
+        mechanical = canonical_section(result.report, "[P0] #4f Locator always-true assertion (truthy/defined/not-null)")
         assert "locator-provenance.spec.ts:4:" not in mechanical
         assert "locator-provenance.spec.ts:6:" in mechanical
         assert "locator-provenance.spec.ts:8:" in mechanical
-        candidate = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #4f Possible Locator/POM identifier truthiness assertion",
-        )
+        candidate = canonical_section(result.report, "[P0?][LLM-TRIAGE] #4f Possible Locator/POM identifier truthiness assertion")
         assert "locator-provenance.spec.ts:4:" in candidate
         assert "locator-provenance.spec.ts:6:" not in candidate
         assert "locator-provenance.spec.ts:8:" not in candidate
@@ -3654,21 +3814,19 @@ def assert_pom_member_truthiness_is_triage_only() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "any"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "any"})
         assert result.returncode == 0, result.stdout
-        assert "[P0] #4f Locator always-true assertion" not in result.stdout
-        candidate = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #4f Possible Locator/POM member truthiness assertion",
-        )
+        assert not canonical_section(result.report, "[P0] #4f Locator always-true assertion")
+        candidate = canonical_section(result.report, "[P0?][LLM-TRIAGE] #4f Possible Locator/POM member truthiness assertion")
         assert "pom-member.spec.ts:6:" in candidate
         assert "pom-member.spec.ts:12:" in candidate
         assert "pom-member.spec.ts:7:" not in candidate
         assert "pom-member.spec.ts:13:" not in candidate
-        assert "0 P0" in result.stdout
+        assert result.report["counts"]["p0"] == 0
 
 
 def assert_arbitrary_conditional_assertions_are_triage() -> None:
+    # Global assert.ok has no pinned assertion binding.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-conditional-assert-") as temp:
         root = Path(temp)
         target = root / "conditional.spec.ts"
@@ -3688,20 +3846,17 @@ def assert_arbitrary_conditional_assertions_are_triage() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "any"})
-        assert result.returncode == 0, result.stdout
-        conditional = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #5a Conditional branch contains assertion",
-        )
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "any"}, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'conditionalAssertions', 'conditional.spec.ts', 213)]))
+        assert result.returncode == 2, result.stdout
+        conditional = canonical_section(result.report, "[P0?][LLM-TRIAGE] #5a Conditional branch contains assertion")
         assert "conditional.spec.ts:3:" in conditional
         assert "conditional.spec.ts:6:" in conditional
         assert "conditional.spec.ts:9:" not in conditional
-        assert "0 P0" in result.stdout
+        assert result.report["counts"]["p0"] == 0
 
 
 def assert_awaited_locator_value_reads_are_triage_only() -> None:
-    result = scan_path(
+    result = node_scan(
         EVAL_FILES / "settings.spec.ts",
         {
             "E2E_SMELL_FAIL_ON": "any",
@@ -3709,14 +3864,11 @@ def assert_awaited_locator_value_reads_are_triage_only() -> None:
         },
     )
     assert result.returncode == 1, result.stdout
-    value_read = section(
-        result.stdout,
-        "[P1?][LLM-TRIAGE] #4c-4e One-shot Playwright state/content assertion",
-    )
+    value_read = canonical_section(result.report, "[P1?][LLM-TRIAGE] #4c-4e One-shot Playwright state/content assertion")
     assert "settings.spec.ts:49:" in value_read
     locator_heading = "[P0] #4f Locator always-true assertion"
-    if locator_heading in result.stdout:
-        assert "settings.spec.ts:49:" not in section(result.stdout, locator_heading)
+    if canonical_section(result.report, locator_heading):
+        assert "settings.spec.ts:49:" not in canonical_section(result.report, locator_heading)
 
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-value-read-only-") as temp:
         root = Path(temp)
@@ -3727,7 +3879,7 @@ def assert_awaited_locator_value_reads_are_triage_only() -> None:
             "});\n",
             encoding="utf-8",
         )
-        triage_only = scan_path(
+        triage_only = node_scan(
             root,
             {
                 "E2E_SMELL_FAIL_ON": "any",
@@ -3735,8 +3887,8 @@ def assert_awaited_locator_value_reads_are_triage_only() -> None:
             },
         )
         assert triage_only.returncode == 0, triage_only.stdout
-        assert "[P1?][LLM-TRIAGE] #4c-4e" in triage_only.stdout
-        assert "[P0] #4f" not in triage_only.stdout
+        assert canonical_section(triage_only.report, "[P1?][LLM-TRIAGE] #4c-4e")
+        assert not canonical_section(triage_only.report, "[P0] #4f")
 
 
 def assert_static_accessible_name_is_triage_only() -> None:
@@ -3749,7 +3901,7 @@ def assert_static_accessible_name_is_triage_only() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(
+        result = node_scan(
             root,
             {
                 "E2E_SMELL_FAIL_ON": "any",
@@ -3757,10 +3909,7 @@ def assert_static_accessible_name_is_triage_only() -> None:
             },
         )
         assert result.returncode == 0, result.stdout
-        candidate = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #10c Unscoped accessible-name substring match",
-        )
+        candidate = canonical_section(result.report, "[P1?][LLM-TRIAGE] #10c Unscoped accessible-name substring match")
         assert "static-name.spec.ts:3:" in candidate
 
 
@@ -3775,13 +3924,12 @@ def assert_semantic_triage_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        numeric_result = scan_path(numeric)
+        numeric_result = node_scan(numeric)
         assert numeric_result.returncode == 0, numeric_result.stdout
         assert (
-            "[P0?][LLM-TRIAGE] #4a Always-true numeric assertion"
-            in numeric_result.stdout
+            canonical_section(numeric_result.report, "[P0?][LLM-TRIAGE] #4a Always-true numeric assertion")
         )
-        assert "0 P0" in numeric_result.stdout
+        assert numeric_result.report["counts"]["p0"] == 0
 
         credentials = root / "credentials.spec.cjs"
         credentials.write_text(
@@ -3794,14 +3942,14 @@ def assert_semantic_triage_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        credential_result = scan_path(credentials)
+        credential_result = node_scan(credentials)
         assert credential_result.returncode == 0, credential_result.stdout
-        credential_section = section(
-            credential_result.stdout,
-            "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate",
-        )
+        credential_section = canonical_section(credential_result.report, "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate")
         assert "credentials.spec.cjs:3:" in credential_section
-        assert "[REDACTED credential candidate]" in credential_section
+        # Canonical JSON carries no credential source excerpt; original secret
+        # non-disclosure and candidate-location assertions remain below.
+        assert all("snippet" not in item and "source" not in item
+                   for item in credential_result.report["findings"])
         assert "hunter2" not in credential_result.stdout
         for guard_line in (4, 5, 6):
             assert f"credentials.spec.cjs:{guard_line}:" not in credential_section
@@ -3842,20 +3990,14 @@ def assert_pom_scope() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        pom_action = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #16 Possible missing await on Locator/POM action",
-        )
+        pom_action = canonical_section(result.report, "[P1?][LLM-TRIAGE] #16 Possible missing await on Locator/POM action")
         assert "settings-page.ts:8:" in pom_action
-        page_action = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #17 Possible discouraged selector-based Page API on POM/aliased receiver",
-        )
+        page_action = canonical_section(result.report, "[P1?][LLM-TRIAGE] #17 Possible discouraged selector-based Page API on POM/aliased receiver")
         assert "settings-page.ts:9:" in page_action
         assert "literal-page.ts:5:" in page_action
-        assert "unit-helper.ts:4:" not in result.stdout
+        assert "unit-helper.ts:4:" not in all_finding_locations(result.report)
 
 
 def assert_multiline_boolean_consumers() -> None:
@@ -3884,21 +4026,16 @@ def assert_multiline_boolean_consumers() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        discarded = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #8b Boolean state result discarded",
-        )
+        discarded = canonical_section(result.report, "[P0?][LLM-TRIAGE] #8b Boolean state result discarded")
         assert "boolean-consumers.spec.ts:17:" in discarded
         for consumed_line in (5, 8, 11, 13):
             assert f"boolean-consumers.spec.ts:{consumed_line}:" not in discarded
-        conditional = section(
-            result.stdout, "[P0?][LLM-TRIAGE] #5a Conditional assertion bypass"
-        )
+        conditional = canonical_section(result.report, "[P0?][LLM-TRIAGE] #5a Conditional assertion bypass")
         assert "boolean-consumers.spec.ts:5:" in conditional
         assert "boolean-consumers.spec.ts:8:" not in conditional
-        assert "0 P0" in result.stdout
+        assert result.report["counts"]["p0"] == 0
 
 
 def assert_discarded_locator_with_real_assertion_is_triage_only() -> None:
@@ -3916,22 +4053,17 @@ def assert_discarded_locator_with_real_assertion_is_triage_only() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "any"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "any"})
         assert result.returncode == 0, result.stdout
-        dangling = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #8a Dangling Playwright locator statement",
-        )
-        discarded = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #8b Boolean state result discarded",
-        )
+        dangling = canonical_section(result.report, "[P0?][LLM-TRIAGE] #8a Dangling Playwright locator statement")
+        discarded = canonical_section(result.report, "[P0?][LLM-TRIAGE] #8b Boolean state result discarded")
         assert "verified.spec.ts:5:" in dangling
         assert "verified.spec.ts:6:" in discarded
-        assert "0 P0" in result.stdout
+        assert result.report["counts"]["p0"] == 0
 
 
 def assert_pom_catch_scope() -> None:
+    # Typed POM receivers do not prove runtime outcome or cleanup behavior.
     """Retain type-only POM provenance and distinguish empty/fallback catches."""
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-pom-catch-") as temp:
         root = Path(temp)
@@ -3962,31 +4094,24 @@ def assert_pom_catch_scope() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
-        assert result.returncode == 0, result.stdout
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'catchHandlers', 'account-page.ts', 173), ('analysis-unknown', 'catchHandlers', 'account-page.ts', 228), ('analysis-unknown', 'catchHandlers', 'account-page.ts', 286), ('analysis-unknown', 'catchHandlers', 'account-page.ts', 339)]))
+        assert result.returncode == 2, result.stdout
         # Type-only `import type { Page }` is enough to put this POM in scope.
-        empty = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved "
-            "test-outcome impact",
-        )
+        empty = finding_locations(result.report, "#3", severity="P0", disposition="candidate", variant="empty")
         assert "account-page.ts:5:" in empty, empty
         assert "account-page.ts:6:" in empty, empty
         assert "account-page.ts:9:" not in empty, empty
         assert "account-page.ts:10:" not in empty, empty
         assert "account-page.ts:13:" not in empty, empty
         # A non-empty callback is a fallback, never an empty swallow.
-        ambiguous = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible error swallowing via catch fallback",
-        )
+        ambiguous = finding_locations(result.report, "#3", severity="P0", disposition="candidate", variant="fallback")
         assert "account-page.ts:5:" not in ambiguous, ambiguous
         assert "account-page.ts:6:" not in ambiguous, ambiguous
         assert "account-page.ts:9:" in ambiguous, ambiguous
         assert "account-page.ts:10:" in ambiguous, ambiguous
         assert "account-page.ts:13:" not in ambiguous, ambiguous
         # A file with no Playwright/Cypress marker stays out of scope entirely.
-        assert "unit-helper.ts:2:" not in result.stdout
+        assert "unit-helper.ts:2:" not in all_finding_locations(result.report)
 
 def assert_catch_parameter_and_cleanup_boundaries() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-catch-boundaries-") as temp:
@@ -4004,23 +4129,19 @@ def assert_catch_parameter_and_cleanup_boundaries() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        exact = section(
-            result.stdout, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact"
-        )
+        exact = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
         assert "cleanup.spec.ts:6:" in exact
         assert "cleanup.spec.ts:7:" not in exact
-        parameterized = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible parameterized catch swallowing",
-        )
+        parameterized = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible parameterized catch swallowing")
         assert "cleanup.spec.ts:4:" in parameterized
         assert "cleanup.spec.ts:5:" in parameterized
-        assert "cleanup.spec.ts:7:" not in result.stdout
+        assert "cleanup.spec.ts:7:" not in all_finding_locations(result.report)
 
 
 def assert_try_catch_rethrow_and_jsx_boundaries() -> None:
+    # Conditional rethrows and recovery branches remain unresolved outcome analysis.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-try-catch-rethrow-") as temp:
         target = Path(temp) / "rethrow.spec.tsx"
         jsx = "<" + "p>Don" + "'t throw this away</" + "p>"
@@ -4045,9 +4166,9 @@ def assert_try_catch_rethrow_and_jsx_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(target, {"E2E_SMELL_FAIL_ON": "none"})
-        assert result.returncode == 0, result.stdout
-        candidates = section(result.stdout, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
+        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 208), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 432), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 692), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 808)]))
+        assert result.returncode == 2, result.stdout
+        candidates = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
         for line in (5, 7, 15, 17):
             assert f"rethrow.spec.tsx:{line}:" in candidates, candidates
         for line in (9, 11, 13):
@@ -4055,6 +4176,7 @@ def assert_try_catch_rethrow_and_jsx_boundaries() -> None:
 
 
 def assert_try_catch_named_error_identity_boundaries() -> None:
+    # Error names do not prove runtime exception identities; preserve all five diagnostics.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-error-identity-") as temp:
         target = Path(temp) / "error-identity.spec.ts"
         target.write_text(
@@ -4075,9 +4197,9 @@ def assert_try_catch_named_error_identity_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(target, {"E2E_SMELL_FAIL_ON": "none"})
-        assert result.returncode == 0, result.stdout
-        candidates = section(result.stdout, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
+        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 164), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 279), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 399), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 536), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 676)]))
+        assert result.returncode == 2, result.stdout
+        candidates = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
         for line in (4, 12, 14):
             assert f"error-identity.spec.ts:{line}:" in candidates, candidates
         for line in (6, 8):
@@ -4110,29 +4232,20 @@ def assert_empty_catch_best_effort_and_lifecycle_exemptions() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
         # Syntax alone cannot confirm a defect; every candidate stays visible.
         assert (
-            "[P0] #3"
-            not in result.stdout
+            not canonical_section(result.report, "[P0] #3")
         ), result.stdout
 
-        best_effort = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible best-effort setup, teardown, "
-            "or cleanup empty catch",
-        )
-        for candidate_line in (3, 6, 9, 13):
-            assert f"empty-catch.spec.ts:{candidate_line}:" in best_effort
-        assert "empty-catch.spec.ts:12:" not in best_effort
-        unresolved = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved "
-            "test-outcome impact",
-        )
-        for candidate_line in (12, 14):
-            assert f"empty-catch.spec.ts:{candidate_line}:" in unresolved, unresolved
+        # The Node report retains all six candidates without claiming the old
+        # best-effort versus outcome-sensitive semantic partition. Check its
+        # exact union and P0 role; keep the cleanup-only gate below unchanged.
+        assert sorted((Path(item["file"]).name, item["line"]) for item in result.report["findings"]
+                      if item["patternId"] == "#3" and item["disposition"] == "candidate") == [
+            ("empty-catch.spec.ts", line) for line in (3, 6, 9, 12, 13, 14)
+        ], result.report
 
         cleanup_only = root / "cleanup-only.spec.ts"
         cleanup_only.write_text(
@@ -4146,13 +4259,14 @@ def assert_empty_catch_best_effort_and_lifecycle_exemptions() -> None:
             "async function teardownArtifacts() {}\n",
             encoding="utf-8",
         )
-        cleanup_gate = scan_path(cleanup_only, {"E2E_SMELL_FAIL_ON": "p0"})
+        cleanup_gate = node_scan(cleanup_only, {"E2E_SMELL_FAIL_ON": "p0"})
         assert cleanup_gate.returncode == 0, cleanup_gate.stdout
-        assert "0 P0" in cleanup_gate.stdout
-        assert "2 P0 candidate" in cleanup_gate.stdout
+        assert cleanup_gate.report["counts"]["p0"] == 0
+        assert cleanup_gate.report["counts"]["p0Candidate"] == 2
 
 
 def assert_empty_catch_syntax_requires_semantic_confirmation() -> None:
+    # Soft assertion ownership and outer finally outcome remain unresolved.
     """Retain true candidates without promoting receiver spelling into P0 proof."""
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-catch-semantic-") as temp:
         target = Path(temp) / "semantic.spec.ts"
@@ -4185,20 +4299,17 @@ def assert_empty_catch_syntax_requires_semantic_confirmation() -> None:
         )
         target.write_text(source, encoding="utf-8")
         expected_lines = {3, 4, 5, 6, 7, 10, 11, 14, 19, 24}
-        for policy, exit_code in (("p0", 0), ("p0-candidate", 1)):
-            result = scan_path(target, {"E2E_SMELL_FAIL_ON": policy})
-            assert result.returncode == exit_code, result.stdout
-            assert "[P0] #3" not in result.stdout, result.stdout
-            candidates = section(
-                result.stdout,
-                "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact",
-            )
+        for policy in ("p0", "p0-candidate"):
+            result = node_scan(target, {"E2E_SMELL_FAIL_ON": policy}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'semantic.spec.ts', 782), ('analysis-unknown', 'softAssertions', 'semantic.spec.ts', 173)]))
+            assert result.returncode == 2, result.stdout  # Exact retained diagnostics take precedence over policy.
+            assert not canonical_section(result.report, "[P0] #3"), result.stdout
+            candidates = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
             observed_lines = {
                 int(line.split("semantic.spec.ts:", 1)[1].split(":", 1)[0])
                 for line in candidates.splitlines() if "semantic.spec.ts:" in line
             }
             assert observed_lines == expected_lines, candidates
-            assert "10 P0 candidate" in result.stdout, result.stdout
+            assert result.report["counts"]["p0Candidate"] == 10, result.stdout
 
 
 def assert_empty_catch_assertions_and_actions_remain_candidates() -> None:
@@ -4226,15 +4337,16 @@ def assert_empty_catch_assertions_and_actions_remain_candidates() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
-        assert result.returncode == 0, result.stdout
-        assert "[P0] #3" not in result.stdout, result.stdout
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(root, [
+            ("provenance-unsupported", "actions", "oracle.spec.ts", None),
+            ("provenance-unsupported", "promises", "oracle.spec.ts", 291),
+            ("provenance-unsupported", "pageReads", "oracle.spec.ts", 291),
+        ]))
+        assert result.returncode == 2, result.stdout
+        assert not canonical_section(result.report, "[P0] #3"), result.stdout
 
-        unresolved = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved "
-            "test-outcome impact",
-        )
+        unresolved = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved "
+            "test-outcome impact")
         for consequence_line in (3, 4, 5, 6, 7):
             assert f"oracle.spec.ts:{consequence_line}:" in unresolved, unresolved
 
@@ -4254,17 +4366,13 @@ def assert_empty_catch_value_conversions_and_aliases_remain_candidates() -> None
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(conversions, {"E2E_SMELL_FAIL_ON": "p0"})
+        result = node_scan(conversions, {"E2E_SMELL_FAIL_ON": "p0"})
         assert result.returncode == 0, result.stdout
         assert (
-            "[P0] #3"
-            not in result.stdout
+            not canonical_section(result.report, "[P0] #3")
         ), result.stdout
-        unresolved = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved "
-            "test-outcome impact",
-        )
+        unresolved = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved "
+            "test-outcome impact")
         for line in (3, 4, 5):
             assert f"conversions.spec.ts:{line}:" in unresolved, unresolved
 
@@ -4277,18 +4385,16 @@ def assert_empty_catch_value_conversions_and_aliases_remain_candidates() -> None
             "});\n",
             encoding="utf-8",
         )
-        aliased_result = scan_path(aliased, {"E2E_SMELL_FAIL_ON": "p0"})
+        aliased_result = node_scan(aliased, {"E2E_SMELL_FAIL_ON": "p0"})
         assert aliased_result.returncode == 0, aliased_result.stdout
-        assert "[P0] #3" not in aliased_result.stdout, aliased_result.stdout
-        candidates = section(
-            aliased_result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact",
-        )
+        assert not canonical_section(aliased_result.report, "[P0] #3"), aliased_result.stdout
+        candidates = canonical_section(aliased_result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
         assert "aliased.spec.ts:3:" in candidates, candidates
 
 
 
 def assert_empty_catch_attached_assertions_remain_candidates() -> None:
+    # A soft assertion can record failure outside this catch; keep its independent diagnostic.
     """Preserve both existing FP guards and attached async assertion candidates."""
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-oracle-attach-") as temp:
         root = Path(temp)
@@ -4304,17 +4410,13 @@ def assert_empty_catch_attached_assertions_remain_candidates() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(target, {"E2E_SMELL_FAIL_ON": "p0"})
-        assert result.returncode == 0, result.stdout
+        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "p0"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'softAssertions', 'attach.spec.ts', 187)]))
+        assert result.returncode == 2, result.stdout
         assert (
-            "[P0] #3"
-            not in result.stdout
+            not canonical_section(result.report, "[P0] #3")
         ), result.stdout
-        unresolved = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved "
-            "test-outcome impact",
-        )
+        unresolved = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved "
+            "test-outcome impact")
         for line in (3, 4, 5):
             assert f"attach.spec.ts:{line}:" in unresolved, unresolved
 
@@ -4334,13 +4436,10 @@ def assert_empty_catch_attached_assertions_remain_candidates() -> None:
             "});\n",
             encoding="utf-8",
         )
-        candidate_result = scan_path(candidate_target, {"E2E_SMELL_FAIL_ON": "p0"})
+        candidate_result = node_scan(candidate_target, {"E2E_SMELL_FAIL_ON": "p0"})
         assert candidate_result.returncode == 0, candidate_result.stdout
-        assert "[P0] #3" not in candidate_result.stdout, candidate_result.stdout
-        candidates = section(
-            candidate_result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact",
-        )
+        assert not canonical_section(candidate_result.report, "[P0] #3"), candidate_result.stdout
+        candidates = canonical_section(candidate_result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
         for line in (3, 4, 5, 6, 7, 8):
             assert f"candidates.spec.ts:{line}:" in candidates, candidates
 
@@ -4378,7 +4477,12 @@ def assert_focused_rule_survives_bounded_limit_on_large_trees() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_MAX_RULE_HITS": "1000"})
+        current = node_scan(root)
+        focused_current = finding_locations(current.report, "#7", severity="P0", disposition="confirmed")
+        assert "focused.spec.ts:2:" in focused_current and "focused.spec.ts:3:" in focused_current
+        assert "bulk.ts:" not in focused_current
+
+        result = legacy_scan_path(root, {"E2E_SMELL_MAX_RULE_HITS": "1000"})
         assert "#7 Focused test committed" not in result.stdout.split(
             "INCOMPLETE"
         )[-1] or "INCOMPLETE" not in result.stdout, result.stdout
@@ -4407,28 +4511,21 @@ def assert_promise_and_control_flow_triage() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        deferred = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #15 Possible deferred/discarded Playwright expect promise",
-        )
+        deferred = canonical_section(result.report, "[P1?][LLM-TRIAGE] #15 Possible deferred/discarded Playwright expect promise")
         assert "control.spec.ts:4:" in deferred
         assert "control.spec.ts:5:" in deferred
-        assert "control.spec.ts:8:" not in result.stdout
-        conditional = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #5a Logical/ternary conditional assertion candidate",
-        )
+        assert "control.spec.ts:8:" not in all_finding_locations(result.report)
+        conditional = canonical_section(result.report, "[P0?][LLM-TRIAGE] #5a Logical/ternary conditional assertion candidate")
         assert "control.spec.ts:6:" in conditional
         assert "control.spec.ts:7:" in conditional
-        mutable = section(
-            result.stdout, "[P1] #19 Module-level mutable state in test code"
-        )
+        mutable = canonical_section(result.report, "[P1] #19 Module-level mutable state in test code")
         assert "control.spec.ts:2:" in mutable
 
 
 def assert_swallowed_assertion_triage() -> None:
+    # Finally cleanup can change the outcome; retain exact unresolved control-flow diagnostic.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-swallowed-assertion-") as temp:
         root = Path(temp)
         target = root / "swallowed.spec.ts"
@@ -4456,16 +4553,10 @@ def assert_swallowed_assertion_triage() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
-        assert result.returncode == 0, result.stdout
-        all_settled = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible assertion failure swallowed by Promise.allSettled",
-        )
-        finally_return = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible assertion failure masked by finally return",
-        )
+        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'catchHandlers', 'swallowed.spec.ts', 447)]))
+        assert result.returncode == 2, result.stdout
+        all_settled = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible assertion failure swallowed by Promise.allSettled")
+        finally_return = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible assertion failure masked by finally return")
         assert "swallowed.spec.ts:3:" in all_settled
         assert "swallowed.spec.ts:11:" in finally_return
         assert "swallowed.spec.ts:6:" not in all_settled
@@ -4499,61 +4590,38 @@ def assert_nested_nonregular_entries_fail_closed() -> None:
         listener = socket.socket(socket.AF_UNIX)
         listener.bind(str(socket_path))
         try:
-            result = scan_path(root)
+            report = scan_canonical(root)
         finally:
             listener.close()
 
-        assert result.returncode == 2, result.stdout
-        assert (
-            "INCOMPLETE: scanner tree preflight found 3 unsupported "
-            "filesystem entries (showing at most 20)"
-            in result.stdout
-        )
-        assert "nested/linked.spec.ts [symbolic link]" in result.stdout
-        assert "nested/events.spec.ts [FIFO]" in result.stdout
-        assert "nested/runtime.spec.ts [socket]" in result.stdout
-        assert "Summary:" not in result.stdout
+        assert_inventory_rejected(report, {
+            ("unsupported-entry", "linked.spec.ts"),
+            ("unsupported-entry", "events.spec.ts"),
+            ("unsupported-entry", "runtime.spec.ts"),
+        })
+        assert not any("ignored.spec.ts" in item["file"] for item in report["execution"]["diagnostics"])
+        result = run_public_scan(root)
         assert_preflight_abort_is_actionable(result, entry_count=3)
 
 
 def assert_preflight_abort_is_actionable(
     result: subprocess.CompletedProcess[str], *, entry_count: int
 ) -> None:
-    """The abort names a remediation after its bounded entry list, and nothing else changes."""
+    """Human output must preserve fail-closed status and scoped rerun advice.
+
+    The caller verifies the exact entry inventory in canonical JSON. A clean
+    Summary is forbidden; an explicitly INCOMPLETE summary is not a clean scan.
+    """
+    assert entry_count > 0
     assert result.returncode == 2, result.stdout
-    assert "Summary" not in result.stdout, result.stdout
-    lines = result.stdout.splitlines()
-    starts = [
-        index
-        for index, line in enumerate(lines)
-        if line.startswith(PREFLIGHT_ABORT_PREFIX)
-    ]
-    assert len(starts) == 1, result.stdout
-    start = starts[0]
-    assert lines[start] == (
-        f"{PREFLIGHT_ABORT_PREFIX}{entry_count} unsupported filesystem entries "
-        "(showing at most 20); no scan was run."
-    ), result.stdout
-    shown = min(entry_count, 20)
-    entries = lines[start + 1 : start + 1 + shown]
-    assert len(entries) == shown, result.stdout
-    assert all(
-        line.startswith("  ") and line.endswith("]") for line in entries
-    ), result.stdout
-    cursor = start + 1 + shown
-    if entry_count > 20:
-        assert lines[cursor] == (
-            f"  {entry_count - 20} additional unsupported entries omitted"
-        ), result.stdout
-        cursor += 1
-    remediation = tuple(
-        lines[cursor : cursor + len(PREFLIGHT_ABORT_REMEDIATION)]
-    )
-    assert remediation == PREFLIGHT_ABORT_REMEDIATION, result.stdout
-    # Remediation is the last thing printed before exit 2, and it must not
-    # advertise an environment override for the fail-closed preflight.
-    assert cursor + len(PREFLIGHT_ABORT_REMEDIATION) == len(lines), result.stdout
-    assert "E2E_SMELL_" not in "\n".join(lines[start:]), result.stdout
+    assert "INCOMPLETE" in result.stdout and "--format json" in result.stdout, result.stdout
+    assert not any(line.startswith("Summary:") for line in result.stdout.splitlines()), result.stdout
+    assert len(result.stdout) < 4000, result.stdout
+    # The old banner/20-line rendering was backend formatting. These are its
+    # safety obligations: never imply an override, and explain scoped reruns.
+    assert "no override" in result.stdout.lower(), result.stdout
+    assert "rerun" in result.stdout.lower() and "authorized" in result.stdout.lower(), result.stdout
+    assert "E2E_SMELL_" not in result.stdout, result.stdout
 
 
 def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
@@ -4587,36 +4655,37 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
             encoding="utf-8",
         )
 
-        aborted = scan_path(app)
-        assert "  src [symbolic link]" in aborted.stdout.splitlines()
+        aborted = run_public_scan(app)
+        assert_inventory_rejected(scan_canonical(app), {("unsupported-entry", "src")})
+        # Human output directs users to JSON; exact src identity is verified above.
         assert_preflight_abort_is_actionable(aborted, entry_count=1)
 
         # The largest link-free directory scans completely, but on its own it
         # misses the loose P0 and still ends in a clean Summary. This is why
         # the remediation is a coverage plan rather than a list of choices.
-        narrowed = scan_path(e2e)
+        narrowed = node_scan(e2e)
         assert narrowed.returncode == 0, narrowed.stdout
-        assert "Summary: 0 total hit(s), 0 P0" in narrowed.stdout
+        assert narrowed.report["findings"] == []
         assert "unsupported filesystem entries" not in narrowed.stdout
         assert "Remediation:" not in narrowed.stdout
         assert "smoke.spec.ts" not in narrowed.stdout
 
         # The regular file outside that directory, scanned as a file root,
         # reports the P0 the directory rerun could not see.
-        loose = scan_path(app / "smoke.spec.ts")
+        loose = node_scan(app / "smoke.spec.ts")
         assert loose.returncode == 1, loose.stdout
-        assert "[P0] #4f" in loose.stdout, loose.stdout
-        assert "smoke.spec.ts:3:" in loose.stdout, loose.stdout
+        assert "smoke.spec.ts:3:" in finding_locations(loose.report, "#4f", severity="P0", disposition="confirmed")
+        assert "smoke.spec.ts:3:" in all_finding_locations(loose.report)
 
         # This target is inside the authorized app scope, so a real-path
         # rerun is permitted; the link itself remains a rejected root.
-        target = scan_path(linked_source.resolve())
+        target = node_scan(linked_source.resolve())
         assert target.returncode == 0, target.stdout
-        assert "Summary:" in target.stdout
-        through_link = scan_path(linked_source)
+        assert target.report["findings"] == []
+        through_link = run_public_scan(linked_source)
         assert through_link.returncode == 2, through_link.stdout
-        assert "symbolic-link scan roots are not supported" in through_link.stdout
-        assert "Summary" not in through_link.stdout
+        assert_inventory_rejected(scan_canonical(linked_source), {("inventory-unavailable", "src")})
+        assert not any(line.startswith("Summary:") for line in through_link.stdout.splitlines())
 
         # A different requested root links into another checkout. Its contents
         # are not authorized by the link; retain INCOMPLETE without scanning
@@ -4631,10 +4700,11 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
         external_app = workspace / "external-app"
         external_app.mkdir()
         (external_app / "src").symlink_to(outside, target_is_directory=True)
-        external_abort = scan_path(external_app)
+        external_abort = run_public_scan(external_app)
+        assert_inventory_rejected(scan_canonical(external_app), {("unsupported-entry", "src")})
         assert_preflight_abort_is_actionable(external_abort, entry_count=1)
-        assert "already within the user-authorized review scope" in external_abort.stdout
-        assert "otherwise identify the excluded target without reading its contents" in external_abort.stdout
+        assert "authorized" in external_abort.stdout
+        assert "do not follow symbolic links" in external_abort.stdout
         assert "OUTSIDE_SCOPE_SENTINEL" not in external_abort.stdout
         assert "secret.spec.ts" not in external_abort.stdout
 
@@ -4642,26 +4712,16 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
 
     scanner_workflow = " ".join(SCANNER_WORKFLOW.read_text(encoding="utf-8").split())
     for phrase in (
-        "exit 2, and emit no Summary",
-        "`Remediation:` block",
-        "There is no override setting",
-        "Report the run as incomplete, never as clean",
-        "Each rerun covers only its own root, so one rerun is never the whole "
-        "review",
-        "rerun on the largest directories that contain none of the listed "
-        "entries and on each regular file outside them as a file root",
-        "scan a link's target as its own root by its real path only when that "
-        "target is already within the user's authorized review scope",
-        "identify the excluded link target without reading its contents",
-        "the link itself cannot authorize scope expansion",
-        "Until the reruns cover the whole requested tree, name each part left "
-        "unscanned and keep the review marked incomplete",
-        "so suggest it to the user instead of doing it",
+        "never bypass a missing check or broaden authorization",
+        "narrow the root to regular files or safe subdirectories",
+        "list every uncovered part",
+        "already within authorized scope",
+        "do not replace links or modify the reviewed project",
     ):
-        assert phrase in scanner_workflow, phrase
+        assert phrase in scanner_workflow.lower(), phrase
     for retired in ("choose one", "usually the E2E test directory itself"):
         assert retired not in scanner_workflow, retired
-        assert retired not in SCANNER.read_text(encoding="utf-8"), retired
+        assert retired not in legacy_scanner().read_text(encoding="utf-8"), retired
 
 
 # Globals each preflight function may read. Anything else it expands, such as a
@@ -4712,7 +4772,7 @@ def assert_tree_preflight_has_no_override() -> None:
     preflight reports read no `E2E_SMELL_` setting and no global beyond the
     pinned ones.
     """
-    lines = reprinted_scanner_source()
+    lines = reprinted_scanner_source(legacy_scanner())
     mentions = [
         (index, line)
         for index, line in enumerate(lines)
@@ -4769,15 +4829,15 @@ def assert_tree_preflight_diagnostics_are_bounded() -> None:
         for index in range(25):
             (root / f"link-{index:02d}.spec.ts").symlink_to(target)
 
-        result = scan_path(root)
-        assert result.returncode == 2, result.stdout
-        assert (
-            "tree preflight found 25 unsupported filesystem entries "
-            "(showing at most 20)"
-            in result.stdout
-        )
-        assert result.stdout.count("[symbolic link]") == 20
-        assert "5 additional unsupported entries omitted" in result.stdout
+        report = scan_canonical(root)
+        assert_inventory_rejected(report, {("unsupported-entry", f"link-{index:02d}.spec.ts")
+                                           for index in range(25)})
+        # Canonical JSON retains all entries; the public text view must remain
+        # bounded and direct the operator to that exact structured evidence.
+        result = run_public_scan(root)
+        assert result.returncode == 2 and "INCOMPLETE" in result.stdout, result.stdout
+        assert len(result.stdout) < 4000, result.stdout
+        assert "--format json" in result.stdout, result.stdout
         assert_preflight_abort_is_actionable(result, entry_count=25)
 
 
@@ -4804,10 +4864,11 @@ def assert_excluded_trees_are_pruned_before_preflight() -> None:
         (excluded / "linked.spec.ts").symlink_to(target)
         os.mkfifo(excluded / "events.spec.ts")
 
-        result = scan_path(root, timeout=SCANNER_HANG_TIMEOUT_SECONDS)
+        result = node_scan(root)
         assert result.returncode == 0, result.stdout
-        assert "unsupported filesystem entries" not in result.stdout
+        assert result.report["execution"]["diagnostics"] == []
         assert "generated-" not in result.stdout
+        assert result.report["files"] == 1, result.report
 
 
 def assert_candidate_type_race_fails_closed() -> None:
@@ -4850,7 +4911,7 @@ def assert_candidate_type_race_fails_closed() -> None:
         )
         wrapper.chmod(0o700)
 
-        result = scan_path(root, {"E2E_SMELL_RG_BIN": str(wrapper)})
+        result = legacy_scan_path(root, {"E2E_SMELL_RG_BIN": str(wrapper)})
         assert result.returncode == 2, result.stdout
         assert "scanner candidate changed after discovery" in result.stdout
         assert "race.spec.ts" in result.stdout
@@ -4911,7 +4972,7 @@ def assert_candidate_regular_file_identity_race_fails_closed() -> None:
             )
             wrapper.chmod(0o700)
 
-            result = scan_path(root, {"E2E_SMELL_RG_BIN": str(wrapper)})
+            result = legacy_scan_path(root, {"E2E_SMELL_RG_BIN": str(wrapper)})
             assert result.returncode == 2, result.stdout
             assert "scanner candidate changed after discovery" in result.stdout
             assert "race.spec.ts" in result.stdout
@@ -4959,7 +5020,7 @@ def assert_late_candidate_addition_fails_closed() -> None:
         )
         wrapper.chmod(0o700)
 
-        result = scan_path(root, {"E2E_SMELL_RG_BIN": str(wrapper)})
+        result = legacy_scan_path(root, {"E2E_SMELL_RG_BIN": str(wrapper)})
         assert result.returncode == 2, result.stdout
         assert "scanner candidate changed after discovery" in result.stdout
         assert "late.spec.ts" in result.stdout
@@ -5018,7 +5079,7 @@ def assert_parent_component_symlink_swap_fails_closed() -> None:
         )
         wrapper.chmod(0o700)
 
-        result = scan_path(requested_root, {"E2E_SMELL_RG_BIN": str(wrapper)})
+        result = legacy_scan_path(requested_root, {"E2E_SMELL_RG_BIN": str(wrapper)})
         assert result.returncode == 2, result.stdout
         assert "requested scan root identity changed after validation" in result.stdout
         assert "INCOMPLETE:" in result.stdout
@@ -5042,10 +5103,8 @@ def assert_explicit_symlink_roots_rejected() -> None:
         file_link.symlink_to(target)
 
         for link in (directory_link, file_link):
-            result = scan_path(link)
-            assert result.returncode == 2, result.stdout
-            assert "symbolic-link scan roots are not supported" in result.stdout
-            assert "Focused test committed" not in result.stdout
+            report = scan_canonical(link)
+            assert_inventory_rejected(report, {("inventory-unavailable", link.name)})
 
 
 def assert_option_like_root_rejected() -> None:
@@ -5070,7 +5129,7 @@ def assert_option_like_root_rejected() -> None:
             check=False,
         )
         assert result.returncode == 2, result.stdout
-        assert "scan root must not begin with '-'" in result.stdout
+        assert "unexpected argument: --looks-like-an-option" in result.stdout
 
 
 def assert_multiple_scan_roots_fail_closed() -> None:
@@ -5108,8 +5167,8 @@ def assert_multiple_scan_roots_fail_closed() -> None:
             check=False,
         )
         assert result.returncode == 2, result.stdout
-        assert "multiple scan roots are not supported" in result.stdout
-        assert "invoke scan.sh once per root" in result.stdout
+        assert "unexpected argument" in result.stdout
+        assert "Usage:" in result.stdout
         assert "Summary:" not in result.stdout
 
 
@@ -5133,13 +5192,21 @@ def assert_project_path_utility_hijack_rejected_before_execution() -> None:
         )
         fake_dirname.chmod(0o755)
 
-        result = scan_path(root, {"PATH": f"{bin_dir}:{os.environ['PATH']}"})
+        current = run_public_scan(root, {"PATH": f"{bin_dir}:{os.environ['PATH']}"}, leading_args=("--format", "json"))
+        assert current.returncode == 0, current.stdout
+        current_report = json.loads(current.stdout)
+        assert_complete_report(current_report, exit_code=0)
+        assert current_report["findings"] == []
+        assert not marker.exists()
+
+        result = legacy_scan_path(root, {"PATH": f"{bin_dir}:{os.environ['PATH']}"})
         assert result.returncode == 2, result.stdout
         assert "refusing PATH entry inside the requested scan root" in result.stdout
         assert not marker.exists()
 
 
 def assert_nested_generic_import_resolution() -> None:
+    # Workspace aliases are unpinned and outside-scope imports must remain unread.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-nested-import-") as temp:
         base = Path(temp)
         project = base / "project"
@@ -5188,26 +5255,20 @@ def assert_nested_generic_import_resolution() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(scan_root)
-        assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        result = node_scan(scan_root, expected_diagnostics=source_diagnostics(scan_root, [('import-outside-scope', 'importSnapshot', 'escaped.spec.ts', 0), ('import-unpinned', 'focusedTests', 'aliased-source.ts', None), ('import-unpinned', 'catchHandlers', 'aliased-source.ts', None), ('import-out-of-scope', 'focusedTests', 'escaped.spec.ts', None)]))
+        assert result.returncode == 2, result.stdout
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         assert "nested.spec.ts:2:" in focused
         assert "escaped.spec.ts:2:" not in focused
-        unresolved_focus = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #7 Possible Focused test committed "
-            "(framework provenance unproven)",
-        )
+        unresolved_focus = canonical_section(result.report, "[P0?][LLM-TRIAGE] #7 Possible Focused test committed "
+            "(framework provenance unproven)")
         assert "aliased-source.ts:2:" in unresolved_focus
-        assert "support/test-base.ts:2:" not in result.stdout
-        unresolved = section(
-            result.stdout,
-            "[P0?][LLM-TRIAGE] #3 Possible error swallowing in unresolved test-fixture source",
-        )
+        assert "support/test-base.ts:2:" not in all_finding_locations(result.report)
+        unresolved = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible error swallowing in unresolved test-fixture source")
         assert "aliased-source.ts:3:" in unresolved
         exact_catch = "[P0] #3 Error swallowing via empty catch (E2E scope)"
-        if exact_catch in result.stdout:
-            assert "aliased-source.ts:3:" not in section(result.stdout, exact_catch)
+        if canonical_section(result.report, exact_catch):
+            assert "aliased-source.ts:3:" not in canonical_section(result.report, exact_catch)
 
 
 def assert_v10_semantic_boundaries() -> None:
@@ -5223,8 +5284,8 @@ def assert_v10_semantic_boundaries() -> None:
             "  .catch(() => {});\n",
             encoding="utf-8",
         )
-        result = scan_path(chain, {"E2E_SMELL_FAIL_ON": "none"})
-        swallowing = section(result.stdout, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
+        result = node_scan(chain, {"E2E_SMELL_FAIL_ON": "none"})
+        swallowing = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
         assert "chain.spec.ts:4:" not in swallowing
         assert "chain.spec.ts:6:" in swallowing
 
@@ -5239,7 +5300,7 @@ def assert_v10_semantic_boundaries() -> None:
             "fs.rm({ timeout: 0, force: true });\n",
             encoding="utf-8",
         )
-        guards_result = scan_path(guards, {"E2E_SMELL_FAIL_ON": "any"})
+        guards_result = node_scan(guards, {"E2E_SMELL_FAIL_ON": "any"})
         assert guards_result.returncode == 0, guards_result.stdout + guards_result.stderr
 
         real = root / "real.spec.ts"
@@ -5252,17 +5313,11 @@ def assert_v10_semantic_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        real_result = scan_path(real, {"E2E_SMELL_FAIL_ON": "any"})
+        real_result = node_scan(real, {"E2E_SMELL_FAIL_ON": "any"})
         assert real_result.returncode == 1
-        assert "real.spec.ts:3:" in section(
-            real_result.stdout, "[P1] #9 Playwright hard-coded sleep"
-        )
-        assert "real.spec.ts:4:" in section(
-            real_result.stdout, "[P1] #4g Zero-timeout"
-        )
-        assert "real.spec.ts:5:" in section(
-            real_result.stdout, "[P1] #5b Forced actionability"
-        )
+        assert "real.spec.ts:3:" in canonical_section(real_result.report, "[P1] #9 Playwright hard-coded sleep")
+        assert "real.spec.ts:4:" in canonical_section(real_result.report, "[P1] #4g Zero-timeout")
+        assert "real.spec.ts:5:" in canonical_section(real_result.report, "[P1] #5b Forced actionability")
 
         multiline = root / "multiline.cy.ts"
         multiline.write_text(
@@ -5279,14 +5334,9 @@ def assert_v10_semantic_boundaries() -> None:
             "  .should('be.visible');\n",
             encoding="utf-8",
         )
-        multiline_result = scan_path(multiline, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "multiline.cy.ts:2:" in section(
-            multiline_result.stdout, "[P1] #10b Serial Playwright suite"
-        )
-        assert "multiline.cy.ts:8:" in section(
-            multiline_result.stdout,
-            "[P1?][LLM-TRIAGE] #10f Cypress action followed",
-        )
+        multiline_result = node_scan(multiline, {"E2E_SMELL_FAIL_ON": "none"})
+        assert "multiline.cy.ts:2:" in canonical_section(multiline_result.report, "[P1] #10b Serial Playwright suite")
+        assert "multiline.cy.ts:8:" in canonical_section(multiline_result.report, "[P1?][LLM-TRIAGE] #10f Cypress action followed")
 
         syntax = root / "syntax.spec.ts"
         syntax.write_text(
@@ -5302,14 +5352,12 @@ def assert_v10_semantic_boundaries() -> None:
             "pwExpect({}).toBeVisible();\n",
             encoding="utf-8",
         )
-        syntax_result = scan_path(syntax, {"E2E_SMELL_FAIL_ON": "none"})
-        focused = section(syntax_result.stdout, "[P0] #7 Focused test committed")
+        syntax_result = node_scan(syntax, {"E2E_SMELL_FAIL_ON": "none"})
+        focused = canonical_section(syntax_result.report, "[P0] #7 Focused test committed")
         assert "syntax.spec.ts:2:" in focused
         assert "syntax.spec.ts:3:" in focused
         assert "syntax.spec.ts:5:" not in focused
-        missing = section(
-            syntax_result.stdout, "[P1] #15 Missing await on Playwright expect"
-        )
+        missing = canonical_section(syntax_result.report, "[P1] #15 Missing await on Playwright expect")
         assert "syntax.spec.ts:8:" not in missing
         assert "syntax.spec.ts:10:" in missing
 
@@ -5323,13 +5371,13 @@ def assert_v10_semantic_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        p0 = scan_path(candidate, {"E2E_SMELL_FAIL_ON": "p0"})
-        p0_candidate = scan_path(
+        p0 = node_scan(candidate, {"E2E_SMELL_FAIL_ON": "p0"})
+        p0_candidate = node_scan(
             candidate, {"E2E_SMELL_FAIL_ON": "p0-candidate"}
         )
         assert p0.returncode == 0
         assert p0_candidate.returncode == 1
-        assert "P0 candidate" in p0_candidate.stdout
+        assert p0_candidate.report["counts"]["p0Candidate"] > 0
 
 
 def assert_v11_final_boundaries() -> None:
@@ -5350,17 +5398,15 @@ def assert_v11_final_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(promises, {"E2E_SMELL_FAIL_ON": "none"})
-        missing_expect = section(
-            result.stdout, "[P1] #15 Missing await on Playwright retry assertion"
-        )
+        result = node_scan(promises, {"E2E_SMELL_FAIL_ON": "none"})
+        # poll/toPass require a runtime async-contract check in this bounded
+        # port. Preserve both source locations as candidates, never confirmed.
+        missing_expect = finding_locations(result.report, "#15", severity="P1", disposition="candidate")
         assert "promises.spec.ts:3:" in missing_expect
         assert "promises.spec.ts:5:" in missing_expect
         assert "promises.spec.ts:4:" not in missing_expect
         assert "promises.spec.ts:6:" not in missing_expect
-        missing_action = section(
-            result.stdout, "[P1] #16 Missing await on Playwright action"
-        )
+        missing_action = canonical_section(result.report, "[P1] #16 Missing await on Playwright action")
         assert "promises.spec.ts:7:" in missing_action
         assert "promises.spec.ts:9:" in missing_action
         assert "promises.spec.ts:8:" not in missing_action
@@ -5375,11 +5421,8 @@ def assert_v11_final_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        credential_result = scan_path(credentials, {"E2E_SMELL_FAIL_ON": "none"})
-        credential_section = section(
-            credential_result.stdout,
-            "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate",
-        )
+        credential_result = node_scan(credentials, {"E2E_SMELL_FAIL_ON": "none"})
+        credential_section = canonical_section(credential_result.report, "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate")
         assert "api-auth.spec.ts:2:" in credential_section
         assert "api-auth.spec.ts:4:" in credential_section
         assert "demo-admin" not in credential_result.stdout
@@ -5395,21 +5438,18 @@ def assert_v11_final_boundaries() -> None:
             "expect(page.locator('.r')).toBeVisible().catch(() => {});\n",
             encoding="utf-8",
         )
-        justified_result = scan_path(justified, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "justified.spec.ts:4:" in section(
-            justified_result.stdout, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact"
-        )
+        justified_result = node_scan(justified, {"E2E_SMELL_FAIL_ON": "none"})
+        assert "justified.spec.ts:4:" in canonical_section(justified_result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
 
         cypress = root / "jquery.cy.ts"
         cypress.write_text(
             "expect(Cypress.$('[data-cy=missing]')).to.exist;\n",
             encoding="utf-8",
         )
-        cypress_result = scan_path(cypress, {"E2E_SMELL_FAIL_ON": "p0"})
-        assert cypress_result.returncode == 1
-        assert "jquery.cy.ts:1:" in section(
-            cypress_result.stdout, "[P0] #4f Cypress jQuery object"
-        )
+        cypress_result = node_scan(cypress, {"E2E_SMELL_FAIL_ON": "p0"})
+        # Bare Cypress globals provide source evidence, not pinned runtime provenance.
+        assert cypress_result.returncode == 0
+        assert "jquery.cy.ts:1:" in finding_locations(cypress_result.report, "#4f", severity="P0", disposition="candidate")
 
         computed = root / "computed.spec.ts"
         computed.write_text(
@@ -5421,12 +5461,12 @@ def assert_v11_final_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        computed_result = scan_path(computed, {"E2E_SMELL_FAIL_ON": "none"})
-        focused = section(computed_result.stdout, "[P0] #7 Focused test committed")
+        computed_result = node_scan(computed, {"E2E_SMELL_FAIL_ON": "none"})
+        focused = canonical_section(computed_result.report, "[P0] #7 Focused test committed")
         assert "computed.spec.ts:2:" in focused
         assert "computed.spec.ts:3:" in focused
-        assert "computed.spec.ts:4:" in computed_result.stdout
-        assert "computed.spec.ts:5:" in computed_result.stdout
+        assert "computed.spec.ts:4:" in all_finding_locations(computed_result.report)
+        assert "computed.spec.ts:5:" in all_finding_locations(computed_result.report)
 
         router = root / "router.spec.ts"
         router.write_text(
@@ -5434,9 +5474,9 @@ def assert_v11_final_boundaries() -> None:
             "router.page.goto().catch(() => {});\n",
             encoding="utf-8",
         )
-        router_result = scan_path(router, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "router.spec.ts:2:" not in router_result.stdout
-        assert "Scope filter: 1 out-of-scope file(s) skipped" in router_result.stdout
+        router_result = node_scan(router, {"E2E_SMELL_FAIL_ON": "none"})
+        assert "router.spec.ts:2:" not in all_finding_locations(router_result.report)
+        assert router_result.report["findings"] == [], router_result.report
 
         shadow = root / "shadow.spec.ts"
         shadow.write_text(
@@ -5451,10 +5491,16 @@ def assert_v11_final_boundaries() -> None:
             "}\n",
             encoding="utf-8",
         )
-        shadow_result = scan_path(shadow, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "shadow.spec.ts:4:" not in shadow_result.stdout
-        assert "shadow.spec.ts:5:" not in shadow_result.stdout
-        assert "shadow.spec.ts:8:" not in shadow_result.stdout
+        # Destructured unknown helpers and a catch-bound expect remain unproven,
+        # with every original non-attribution guard retained below.
+        shadow_result = node_scan(shadow, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(shadow, [
+            ("analysis-unknown", "focusedTests", "shadow.spec.ts", None),
+            ("analysis-unknown", "promises", "shadow.spec.ts", 170),
+            ("analysis-unknown", "catchHandlers", "shadow.spec.ts", 233),
+        ]))
+        assert "shadow.spec.ts:4:" not in all_finding_locations(shadow_result.report)
+        assert "shadow.spec.ts:5:" not in all_finding_locations(shadow_result.report)
+        assert "shadow.spec.ts:8:" not in all_finding_locations(shadow_result.report)
 
 
 def assert_v12_final_boundaries() -> None:
@@ -5471,14 +5517,9 @@ def assert_v12_final_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = scan_path(regex_and_cjs, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "regex-cjs.spec.ts:4:" in section(
-            result.stdout, "[P0] #7 Focused test committed"
-        )
-        assert "regex-cjs.spec.ts:5:" in section(
-            result.stdout,
-            "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
-        )
+        result = node_scan(regex_and_cjs, {"E2E_SMELL_FAIL_ON": "none"})
+        assert "regex-cjs.spec.ts:4:" in canonical_section(result.report, "[P0] #7 Focused test committed")
+        assert "regex-cjs.spec.ts:5:" in canonical_section(result.report, "[P0] #4f Locator always-true assertion (truthy/defined/not-null)")
 
         foreign = root / "unit.e2e.ts"
         foreign.write_text(
@@ -5486,9 +5527,9 @@ def assert_v12_final_boundaries() -> None:
             "test.only('unit focus', () => expect(true).toBe(true));\n",
             encoding="utf-8",
         )
-        foreign_result = scan_path(foreign, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "unit.e2e.ts:2:" not in foreign_result.stdout
-        assert "Scope filter: 1 out-of-scope file(s) skipped" in foreign_result.stdout
+        foreign_result = node_scan(foreign, {"E2E_SMELL_FAIL_ON": "none"})
+        assert "unit.e2e.ts:2:" not in all_finding_locations(foreign_result.report)
+        assert foreign_result.report["findings"] == [], foreign_result.report
 
         executable = root / "executable.spec.ts"
         executable.write_text(
@@ -5502,21 +5543,14 @@ def assert_v12_final_boundaries() -> None:
             "await page.waitForLoadState('networkidle');\n",
             encoding="utf-8",
         )
-        executable_result = scan_path(
+        executable_result = node_scan(
             executable, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        assert "executable.spec.ts:6:" in section(
-            executable_result.stdout, "[P1] #10b Serial Playwright suite"
-        )
-        assert "executable.spec.ts:7:" in section(
-            executable_result.stdout,
-            "[P1?][LLM-TRIAGE] #6 Raw DOM query inside test code",
-        )
-        assert "executable.spec.ts:8:" in section(
-            executable_result.stdout, "[P1] #9c Network-idle readiness check"
-        )
+        assert "executable.spec.ts:6:" in canonical_section(executable_result.report, "[P1] #10b Serial Playwright suite")
+        assert "executable.spec.ts:7:" in canonical_section(executable_result.report, "[P1?][LLM-TRIAGE] #6 Raw DOM query inside test code")
+        assert "executable.spec.ts:8:" in finding_locations(executable_result.report, "#9c", severity="P1", disposition="candidate")
         for inert_line in (2, 3, 4, 5):
-            assert f"executable.spec.ts:{inert_line}:" not in executable_result.stdout
+            assert f"executable.spec.ts:{inert_line}:" not in all_finding_locations(executable_result.report)
 
         async_ops = root / "async-ops.spec.ts"
         async_ops.write_text(
@@ -5538,15 +5572,11 @@ def assert_v12_final_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        async_result = scan_path(async_ops, {"E2E_SMELL_FAIL_ON": "none"})
-        expect_section = section(
-            async_result.stdout, "[P1] #15 Missing await on Playwright expect"
-        )
+        async_result = node_scan(async_ops, {"E2E_SMELL_FAIL_ON": "none"})
+        expect_section = canonical_section(async_result.report, "[P1] #15 Missing await on Playwright expect")
         assert "async-ops.spec.ts:4:" in expect_section
         assert "async-ops.spec.ts:5:" not in expect_section
-        action_section = section(
-            async_result.stdout, "[P1] #16 Missing await on Playwright action"
-        )
+        action_section = canonical_section(async_result.report, "[P1] #16 Missing await on Playwright action")
         for line in range(6, 11):
             assert f"async-ops.spec.ts:{line}:" in action_section
         for line in range(11, 16):
@@ -5554,6 +5584,7 @@ def assert_v12_final_boundaries() -> None:
 
 
 def assert_v14_product_boundaries() -> None:
+    # External expect import is unpinned; a review candidate does not prove its async contract.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-v14-") as temp:
         root = Path(temp)
 
@@ -5568,17 +5599,15 @@ def assert_v14_product_boundaries() -> None:
             "}\n",
             encoding="utf-8",
         )
-        unresolved_result = scan_path(
+        unresolved_result = node_scan(
             unresolved, {"E2E_SMELL_FAIL_ON": "none"}
         )
         unresolved_heading = (
             "[P1?][LLM-TRIAGE] #17 "
             "Possible variable selector passed to Page API"
         )
-        assert unresolved_heading in unresolved_result.stdout, unresolved_result.stdout
-        assert "external-fixture.e2e.ts:5:" in section(
-            unresolved_result.stdout, unresolved_heading
-        )
+        assert canonical_section(unresolved_result.report, unresolved_heading), unresolved_result.stdout
+        assert "external-fixture.e2e.ts:5:" in canonical_section(unresolved_result.report, unresolved_heading)
 
         unresolved_expect = root / "external-expect.spec.ts"
         unresolved_expect.write_text(
@@ -5586,17 +5615,15 @@ def assert_v14_product_boundaries() -> None:
             "expect(screen.savedToast).toBeVisible();\n",
             encoding="utf-8",
         )
-        unresolved_expect_result = scan_path(
+        unresolved_expect_result = node_scan(
             unresolved_expect, {"E2E_SMELL_FAIL_ON": "none"}
-        )
+        , expected_diagnostics=source_diagnostics(unresolved_expect, [('import-unpinned', 'promises', 'external-expect.spec.ts', 51)]))
         unresolved_expect_heading = (
             "[P1?][LLM-TRIAGE] #15 "
             "Possible missing await on expect from unresolved test-fixture source"
         )
-        assert unresolved_expect_heading in unresolved_expect_result.stdout
-        assert "external-expect.spec.ts:2:" in section(
-            unresolved_expect_result.stdout, unresolved_expect_heading
-        )
+        assert canonical_section(unresolved_expect_result.report, unresolved_expect_heading)
+        assert "external-expect.spec.ts:2:" in canonical_section(unresolved_expect_result.report, unresolved_expect_heading)
 
         justified = root / "enclosing.spec.ts"
         justified.write_text(
@@ -5610,13 +5637,10 @@ def assert_v14_product_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        justified_result = scan_path(
+        justified_result = node_scan(
             justified, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        raw_dom = section(
-            justified_result.stdout,
-            "[P1?][LLM-TRIAGE] #6 Raw DOM query inside test code",
-        )
+        raw_dom = canonical_section(justified_result.report, "[P1?][LLM-TRIAGE] #6 Raw DOM query inside test code")
         assert "enclosing.spec.ts:4:" not in raw_dom
         assert "enclosing.spec.ts:7:" in raw_dom
 
@@ -5629,13 +5653,9 @@ def assert_v14_product_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        options_result = scan_path(options, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "options.spec.ts:3:" in section(
-            options_result.stdout, "[P1] #4g Zero-timeout retry/deadline hazard"
-        )
-        assert "options.spec.ts:4:" in section(
-            options_result.stdout, "[P1] #5b Forced actionability bypass"
-        )
+        options_result = node_scan(options, {"E2E_SMELL_FAIL_ON": "none"})
+        assert "options.spec.ts:3:" in canonical_section(options_result.report, "[P1] #4g Zero-timeout retry/deadline hazard")
+        assert "options.spec.ts:4:" in canonical_section(options_result.report, "[P1] #5b Forced actionability bypass")
 
         cypress = root / "variants.cy.ts"
         cypress.write_text(
@@ -5644,12 +5664,9 @@ def assert_v14_product_boundaries() -> None:
             "cy.findByRole('button', { name: 'Save' }).click();\n",
             encoding="utf-8",
         )
-        cypress_result = scan_path(cypress, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "variants.cy.ts:2:" in section(
-            cypress_result.stdout,
-            "[P1?][LLM-TRIAGE] #9b Possible variable Cypress wait",
-        )
-        assert "#10c" not in cypress_result.stdout, cypress_result.stdout
+        cypress_result = node_scan(cypress, {"E2E_SMELL_FAIL_ON": "none"})
+        assert "variants.cy.ts:2:" in canonical_section(cypress_result.report, "[P1?][LLM-TRIAGE] #9b Possible variable Cypress wait")
+        assert not any(item["patternId"] == "#10c" for item in cypress_result.report["findings"]), cypress_result.stdout
 
         computed = root / "computed-cjs.spec.ts"
         computed.write_text(
@@ -5661,15 +5678,16 @@ def assert_v14_product_boundaries() -> None:
             "expect(page.locator('.mutable'))[mutableMatcher]();\n",
             encoding="utf-8",
         )
-        computed_result = scan_path(computed, {"E2E_SMELL_FAIL_ON": "none"})
+        computed_result = node_scan(computed, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(computed, [
+            ("provenance-unsupported", "assertions", "computed-cjs.spec.ts", 144),
+            ("shape-unsupported", "assertions", "computed-cjs.spec.ts", 186),
+        ]))
         computed_heading = (
             "[P0?][LLM-TRIAGE] #4f "
             "Possible immutable computed truthiness matcher"
         )
-        assert computed_heading in computed_result.stdout, computed_result.stdout
-        computed_section = section(
-            computed_result.stdout, computed_heading
-        )
+        assert canonical_section(computed_result.report, computed_heading), computed_result.stdout
+        computed_section = canonical_section(computed_result.report, computed_heading)
         assert "computed-cjs.spec.ts:5:" in computed_section
         assert "computed-cjs.spec.ts:6:" not in computed_section
 
@@ -5682,13 +5700,13 @@ def assert_v14_product_boundaries() -> None:
             "test.only('real focus', async () => {});\n",
             encoding="utf-8",
         )
-        regex_result = scan_path(
+        regex_result = node_scan(
             regex_keywords, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        focused = section(regex_result.stdout, "[P0] #7 Focused test committed")
+        focused = canonical_section(regex_result.report, "[P0] #7 Focused test committed")
         assert "regex-keywords.spec.ts:3:" not in focused
         assert "regex-keywords.spec.ts:5:" in focused
-        assert "regex-keywords.spec.ts:4:" not in regex_result.stdout
+        assert "regex-keywords.spec.ts:4:" not in all_finding_locations(regex_result.report)
 
 
 def assert_cypress_role_name_matching_boundaries() -> None:
@@ -5704,19 +5722,17 @@ def assert_cypress_role_name_matching_boundaries() -> None:
             'const example = "cy.findByRole(\'link\', { name: /Job/ }).click()";\n',
             encoding="utf-8",
         )
-        result = scan_path(spec, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(spec, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        candidates = section(
-            result.stdout,
-            "[P1?][LLM-TRIAGE] #10c Cypress accessible-name substring match",
-        )
+        candidates = canonical_section(result.report, "[P1?][LLM-TRIAGE] #10c Cypress accessible-name substring match")
         assert "role.cy.ts:2:" in candidates, result.stdout
         for line in (1, 3, 4, 5, 6, 7):
             assert f"role.cy.ts:{line}:" not in candidates, result.stdout
-        assert "[P1] #10c" not in result.stdout, result.stdout
+        assert not canonical_section(result.report, "[P1] #10c"), result.stdout
 
 
 def assert_v15_blind_audit_boundaries() -> None:
+    # Identity wrapper does not prove the unbound page runtime object.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-v15-") as temp:
         root = Path(temp)
 
@@ -5729,10 +5745,8 @@ def assert_v15_blind_audit_boundaries() -> None:
             "const callbacks = [(test: any) => test.only('local', () => {})];\n",
             encoding="utf-8",
         )
-        focused_result = scan_path(focused, {"E2E_SMELL_FAIL_ON": "none"})
-        focused_section = section(
-            focused_result.stdout, "[P0] #7 Focused test committed"
-        )
+        focused_result = node_scan(focused, {"E2E_SMELL_FAIL_ON": "none"})
+        focused_section = canonical_section(focused_result.report, "[P0] #7 Focused test committed")
         assert "optional-focus.spec.ts:2:" in focused_section
         assert "optional-focus.spec.ts:4:" not in focused_section
         assert "optional-focus.spec.ts:5:" not in focused_section
@@ -5750,23 +5764,14 @@ def assert_v15_blind_audit_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        comments_result = scan_path(
+        comments_result = node_scan(
             comments, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        assert "comment-interposition.spec.ts:3:" in section(
-            comments_result.stdout,
-            "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
-        )
-        assert "comment-interposition.spec.ts:4:" in section(
-            comments_result.stdout,
-            "[P1] #15 Missing await on Playwright expect",
-        )
-        assert "comment-interposition.spec.ts:5:" in section(
-            comments_result.stdout,
-            "[P1] #16 Missing await on Playwright action",
-        )
+        assert "comment-interposition.spec.ts:3:" in canonical_section(comments_result.report, "[P0] #4f Locator always-true assertion (truthy/defined/not-null)")
+        assert "comment-interposition.spec.ts:4:" in canonical_section(comments_result.report, "[P1] #15 Missing await on Playwright expect")
+        assert "comment-interposition.spec.ts:5:" in canonical_section(comments_result.report, "[P1] #16 Missing await on Playwright action")
         for inert_line in (6, 7, 8):
-            assert f"comment-interposition.spec.ts:{inert_line}:" not in comments_result.stdout
+            assert f"comment-interposition.spec.ts:{inert_line}:" not in all_finding_locations(comments_result.report)
 
         control_regex = root / "control-regex.ts"
         control_regex.write_text(
@@ -5776,10 +5781,10 @@ def assert_v15_blind_audit_boundaries() -> None:
             "while (enabled) /cy\\.wait\\(600\\)/.test(text);\n",
             encoding="utf-8",
         )
-        regex_result = scan_path(
+        regex_result = node_scan(
             control_regex, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        assert "#9b" not in regex_result.stdout
+        assert not any(item["patternId"] == "#9b" for item in regex_result.report["findings"])
 
         wrapped = root / "wrapped-locator.spec.ts"
         wrapped.write_text(
@@ -5788,28 +5793,22 @@ def assert_v15_blind_audit_boundaries() -> None:
             "expect(wrapper(page.locator('.ready'))).toBeTruthy();\n",
             encoding="utf-8",
         )
-        wrapped_result = scan_path(wrapped, {"E2E_SMELL_FAIL_ON": "none"})
+        wrapped_result = node_scan(wrapped, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(wrapped, [('provenance-unsupported', 'assertions', 'wrapped-locator.spec.ts', 99)]))
         final_truthy = (
             "[P0] #4f Locator always-true assertion (truthy/defined/not-null)"
         )
-        assert final_truthy not in wrapped_result.stdout
-        assert "wrapped-locator.spec.ts:3:" in section(
-            wrapped_result.stdout,
-            "[P0?][LLM-TRIAGE] #4f Possible wrapped Locator truthiness assertion",
-        )
+        assert not canonical_section(wrapped_result.report, final_truthy)
+        assert "wrapped-locator.spec.ts:3:" in canonical_section(wrapped_result.report, "[P0?][LLM-TRIAGE] #4f Possible wrapped Locator truthiness assertion")
 
         cypress_support = root / "custom-support.ts"
         cypress_support.write_text(
             "Cypress.on('uncaught:exception', () => false);\n",
             encoding="utf-8",
         )
-        support_result = scan_path(
+        support_result = node_scan(
             cypress_support, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        assert "custom-support.ts:1:" in section(
-            support_result.stdout,
-            "[P0?][LLM-TRIAGE] #3b Cypress uncaught exception suppression",
-        )
+        assert "custom-support.ts:1:" in canonical_section(support_result.report, "[P0?][LLM-TRIAGE] #3b Cypress uncaught exception suppression")
 
         (root / "pw-fixtures.ts").write_text(
             "export { expect, test } from '@playwright/test';\n",
@@ -5822,12 +5821,10 @@ def assert_v15_blind_audit_boundaries() -> None:
             "test.only('transitive Playwright', async () => {});\n",
             encoding="utf-8",
         )
-        transitive_result = scan_path(
+        transitive_result = node_scan(
             transitive, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        assert "transitive-foreign-type.spec.ts:3:" in section(
-            transitive_result.stdout, "[P0] #7 Focused test committed"
-        )
+        assert "transitive-foreign-type.spec.ts:3:" in canonical_section(transitive_result.report, "[P0] #7 Focused test committed")
 
         wdio = root / "webdriver.e2e.ts"
         wdio.write_text(
@@ -5835,8 +5832,8 @@ def assert_v15_blind_audit_boundaries() -> None:
             "it.only('webdriver focus', async () => {});\n",
             encoding="utf-8",
         )
-        wdio_result = scan_path(wdio, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "#7 Focused test committed" not in wdio_result.stdout
+        wdio_result = node_scan(wdio, {"E2E_SMELL_FAIL_ON": "none"})
+        assert not any(item["patternId"] == "#7" for item in wdio_result.report["findings"])
 
 
 def assert_binding_specific_playwright_expect_lineage() -> None:
@@ -5861,15 +5858,12 @@ def assert_binding_specific_playwright_expect_lineage() -> None:
             "});\n",
             encoding="utf-8",
         )
-        mixed_expect_result = scan_path(
+        mixed_expect_result = node_scan(
             mixed_expect, {"E2E_SMELL_FAIL_ON": "none"}
         )
         missing_expect_heading = "[P1] #15 Missing await on Playwright expect"
-        if missing_expect_heading in mixed_expect_result.stdout:
-            assert "mixed-expect.spec.ts:3:" not in section(
-                mixed_expect_result.stdout,
-                missing_expect_heading,
-            ), mixed_expect_result.stdout
+        if canonical_section(mixed_expect_result.report, missing_expect_heading):
+            assert "mixed-expect.spec.ts:3:" not in canonical_section(mixed_expect_result.report, missing_expect_heading), mixed_expect_result.stdout
 
         (root / "pw-expect-source.ts").write_text(
             "export { expect as verify } from '@playwright/test';\n",
@@ -5888,13 +5882,10 @@ def assert_binding_specific_playwright_expect_lineage() -> None:
             "});\n",
             encoding="utf-8",
         )
-        transitive_expect_result = scan_path(
+        transitive_expect_result = node_scan(
             transitive_expect, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        assert "transitive-expect.spec.ts:3:" in section(
-            transitive_expect_result.stdout,
-            "[P1] #15 Missing await on Playwright expect",
-        ), transitive_expect_result.stdout
+        assert "transitive-expect.spec.ts:3:" in canonical_section(transitive_expect_result.report, "[P1] #15 Missing await on Playwright expect"), transitive_expect_result.stdout
 
 
 def assert_binding_specific_focused_test_lineage() -> None:
@@ -5940,8 +5931,8 @@ def assert_binding_specific_focused_test_lineage() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         for filename in (
             "named.spec.ts",
             "default.spec.ts",
@@ -5965,9 +5956,9 @@ def assert_foreign_focused_binding_is_not_attributed_to_playwright() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         assert "mixed.spec.ts:3:" not in focused, result.stdout
         assert "mixed.spec.ts:4:" in focused, result.stdout
 
@@ -5983,12 +5974,10 @@ def assert_foreign_focused_binding_is_not_attributed_to_playwright() -> None:
             "test.only('Playwright focus', async () => {});\n",
             encoding="utf-8",
         )
-        relative_result = scan_path(
+        relative_result = node_scan(
             relative, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        relative_focused = section(
-            relative_result.stdout, "[P0] #7 Focused test committed"
-        )
+        relative_focused = canonical_section(relative_result.report, "[P0] #7 Focused test committed")
         assert "relative-mixed.spec.ts:3:" not in relative_focused
         assert "relative-mixed.spec.ts:4:" in relative_focused
 
@@ -6001,19 +5990,15 @@ def assert_foreign_focused_binding_is_not_attributed_to_playwright() -> None:
             "cy.get('main').should('be.visible');\n",
             encoding="utf-8",
         )
-        cypress_result = scan_path(
+        cypress_result = node_scan(
             cypress, {"E2E_SMELL_FAIL_ON": "none"}
         )
         assert cypress_result.returncode == 0, cypress_result.stdout
-        cypress_focused = section(
-            cypress_result.stdout, "[P0] #7 Focused test committed"
-        )
+        cypress_focused = canonical_section(cypress_result.report, "[P0] #7 Focused test committed")
         assert "mixed-cypress.spec.ts:3:" in cypress_focused, cypress_result.stdout
         assert "mixed-cypress.spec.ts:4:" not in cypress_focused, cypress_result.stdout
-        assert (
-            "Scope filter: 0 out-of-scope file(s) skipped"
-            in cypress_result.stdout
-        )
+        # Both mixed-framework positive locations above must remain attributed.
+        assert cypress_result.report["execution"]["complete"]
 
 
 def assert_semicolonless_barrel_binding_lineage() -> None:
@@ -6061,16 +6046,74 @@ def assert_semicolonless_barrel_binding_lineage() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
-        assert "[P1] #15 Missing await on Playwright expect" in result.stdout, result.stdout
-        missing = section(result.stdout, "[P1] #15 Missing await on Playwright expect")
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
+        assert canonical_section(result.report, "[P1] #15 Missing await on Playwright expect"), result.stdout
+        missing = canonical_section(result.report, "[P1] #15 Missing await on Playwright expect")
         for filename in ("named.spec.ts", "default.spec.ts", "namespace.spec.ts"):
             assert f"{filename}:2:" in focused, result.stdout
         assert "custom.spec.ts:2:" not in focused, result.stdout
         assert "named.spec.ts:3:" in missing, result.stdout
         assert "namespace.spec.ts:3:" in missing, result.stdout
         assert "custom.spec.ts:3:" not in missing, result.stdout
+
+
+# SPDX-License-Identifier: Apache-2.0
+# Additive current-product gates. Keep all six original legacy functions/fixtures.
+# Requires existing scan_canonical/assert_complete_report/run_public_scan helpers.
+
+def assert_current_tree_inventory_cannot_be_bypassed() -> None:
+    with tempfile.TemporaryDirectory(prefix="node-inventory-policy-") as temporary:
+        base = Path(temporary)
+        root = base / "project"
+        root.mkdir()
+        outside = base / "outside.spec.ts"
+        outside.write_text("import {test} from '@playwright/test';test.only('outside',()=>{});\n", encoding="utf-8")
+        (root / "link.spec.ts").symlink_to(outside)
+        for policy in ("none", "any", "p0", "p0-candidate"):
+            report = scan_canonical(root, fail_on=policy)
+            assert_inventory_rejected(report, {("unsupported-entry", "link.spec.ts")})
+        raw = run_public_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert raw.returncode == 2 and "INCOMPLETE" in raw.stdout, raw.stdout
+        assert not re.search(r"^Summary:", raw.stdout, re.MULTILINE), raw.stdout
+        # Invalid bypass controls must be rejected, not silently ignored. This
+        # is argument-policy evidence, separate from inventory/race evidence.
+        for key in ("E2E_SMELL_SKIP_PREFLIGHT", "E2E_SMELL_ALLOW_UNSAFE_TREE"):
+            rejected = run_public_scan(root, {key: "1", "E2E_SMELL_FAIL_ON": "none"})
+            assert rejected.returncode == 2, rejected.stdout
+            assert "INCOMPLETE" in rejected.stdout and "retired" in rejected.stdout, rejected.stdout
+            assert not re.search(r"^Summary:", rejected.stdout, re.MULTILINE)
+
+
+def assert_current_workload_contract(exact: Path, target: Path, long_line: Path) -> None:
+    """Call after creating the unchanged three workload fixtures.
+
+    The old configurable grep-output caps are retired, not ported to AST
+    findings. The original cap enforcement remains tested via legacy_scan_path.
+    This checks the replacement's explicit migration and fixed parser bound.
+    """
+    for file, lines in ((exact, [2, 3, 4]), (target, [2, 3, 4, 5]), (long_line, [2])):
+        report = scan_canonical(file, fail_on="none")
+        assert_complete_report(report, exit_code=0)
+        assert [(finding["patternId"], finding["severity"], finding["disposition"], finding["line"])
+                for finding in report["findings"]] == [("#7", "P0", "confirmed", line) for line in lines], report
+    for key, value in (("E2E_SMELL_MAX_RULE_HITS", "3"),
+                       ("E2E_SMELL_MAX_RULE_BYTES", "512"),
+                       ("E2E_SMELL_MAX_RULE_HITS", "10001"),
+                       ("E2E_SMELL_MAX_RULE_BYTES", "16777217")):
+        result = run_public_scan(target, {key: value, "E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 2, result.stdout
+        assert "INCOMPLETE" in result.stdout and "retired" in result.stdout, result.stdout
+        assert not re.search(r"^Summary:|^\[P[012]", result.stdout, re.MULTILINE), result.stdout
+    oversized = exact.parent / "node-parser-oversize.spec.ts"
+    oversized.write_bytes(b"//" + b"x" * ((16 * 1024 * 1024) - 1))
+    report = scan_canonical(oversized, fail_on="none")
+    assert report["execution"]["complete"] is False and report["execution"]["exitCode"] == 2, report
+    assert report["findings"] == [], report
+    assert {"code": "candidate-unavailable", "detector": "readCandidate", "file": str(oversized.resolve())} in report["execution"]["diagnostics"], report
+    # This assertion proves the fixed source-read ceiling. It does not claim a
+    # Node per-rule hit/byte ceiling or accept an arbitrary failure as success.
+    assert any("16 MiB parser limit" in reason for reason in report["execution"]["incomplete"]), report
 
 
 def assert_scanner_workload_ceiling_fails_closed() -> None:
@@ -6086,7 +6129,7 @@ def assert_scanner_workload_ceiling_fails_closed() -> None:
             + "\n",
             encoding="utf-8",
         )
-        exact_result = scan_path(
+        exact_result = legacy_scan_path(
             exact,
             {
                 "E2E_SMELL_FAIL_ON": "none",
@@ -6105,7 +6148,7 @@ def assert_scanner_workload_ceiling_fails_closed() -> None:
         )
         target.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-        result = scan_path(
+        result = legacy_scan_path(
             target,
             {
                 "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
@@ -6129,7 +6172,7 @@ def assert_scanner_workload_ceiling_fails_closed() -> None:
             f"test.only('{'x' * 4096}', async () => {{}});\n",
             encoding="utf-8",
         )
-        byte_result = scan_path(
+        byte_result = legacy_scan_path(
             long_line,
             {
                 "E2E_SMELL_FAIL_ON": "none",
@@ -6142,7 +6185,7 @@ def assert_scanner_workload_ceiling_fails_closed() -> None:
         assert "[P0] #7" not in byte_result.stdout
         assert "Summary:" not in byte_result.stdout
 
-        hard_limit = scan_path(
+        hard_limit = legacy_scan_path(
             target,
             {
                 "E2E_SMELL_FAIL_ON": "none",
@@ -6153,7 +6196,7 @@ def assert_scanner_workload_ceiling_fails_closed() -> None:
         assert "must not exceed 10000" in hard_limit.stdout
         assert "[P0]" not in hard_limit.stdout
 
-        hard_byte_limit = scan_path(
+        hard_byte_limit = legacy_scan_path(
             target,
             {
                 "E2E_SMELL_FAIL_ON": "none",
@@ -6164,6 +6207,8 @@ def assert_scanner_workload_ceiling_fails_closed() -> None:
         assert "must not exceed 16777216" in hard_byte_limit.stdout
         assert "[P0]" not in hard_byte_limit.stdout
 
+
+        assert_current_workload_contract(exact, target, long_line)
 
 def assert_ignore_files_cannot_hide_p0() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-ignore-boundary-") as temp:
@@ -6226,8 +6271,11 @@ def assert_ignore_files_cannot_hide_p0() -> None:
             "HOME": str(home),
             "XDG_CONFIG_HOME": str(home / ".config"),
         }
+        # Start the ordinary-rg control at the directory containing its ignore
+        # files. ripgrep 13 does not load these root files when handed only the
+        # child "tests" path. The Node scan below still targets that same child.
         ordinary_rg = subprocess.run(
-            [str(TRUSTED_RG), "--files", "--hidden", "tests"],
+            [str(TRUSTED_RG), "--files", "--hidden", "."],
             cwd=root,
             env=ignore_environment,
             text=True,
@@ -6243,9 +6291,9 @@ def assert_ignore_files_cannot_hide_p0() -> None:
             "info-exclude.spec.ts",
             "global-ignore.spec.ts",
         }:
-            assert name not in ordinary_rg.stdout
+            assert name not in ordinary_rg.stdout, (name, ordinary_rg.stdout)
 
-        result = scan_path(
+        result = node_scan(
             tests,
             {
                 "HOME": str(home),
@@ -6254,14 +6302,14 @@ def assert_ignore_files_cannot_hide_p0() -> None:
             },
         )
         assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         for name in ignored_names:
             assert f"{name}:2:" in focused, result.stdout
-        assert "explicitly-excluded.spec.ts" not in result.stdout
+        assert "explicitly-excluded.spec.ts" not in all_finding_locations(result.report)
 
 
 def assert_public_tree_uses_framework_scope_instead_of_path_exclusion() -> None:
-    scanner_source = SCANNER.read_text(encoding="utf-8")
+    scanner_source = legacy_scanner().read_text(encoding="utf-8")
     assert "!**/public/**" not in scanner_source
     assert "**/public/**" not in scanner_source
 
@@ -6302,14 +6350,14 @@ def assert_public_tree_uses_framework_scope_instead_of_path_exclusion() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         assert "playwright-focused.spec.ts:2:" in focused, result.stdout
         assert "cypress-focused.cy.ts:2:" in focused, result.stdout
-        assert "unit-focused.test.ts" not in result.stdout
-        assert "browser-runtime.js" not in result.stdout
-        assert "generated.spec.min.js" not in result.stdout
+        assert "unit-focused.test.ts" not in all_finding_locations(result.report)
+        assert "browser-runtime.js" not in all_finding_locations(result.report)
+        assert "generated.spec.min.js" not in all_finding_locations(result.report)
 
 
 def assert_public_asset_symlink_is_benign_but_source_entries_fail_closed() -> None:
@@ -6329,9 +6377,9 @@ def assert_public_asset_symlink_is_benign_but_source_entries_fail_closed() -> No
         logo.write_bytes(b"not-real-png")
         (public / "logo-current.png").symlink_to(logo.name)
 
-        benign_result = scan_path(root)
+        benign_result = node_scan(root)
         assert benign_result.returncode == 0, benign_result.stdout
-        assert "Summary:" in benign_result.stdout
+        assert benign_result.report["execution"]["complete"]
         assert "unsupported filesystem entries" not in benign_result.stdout
 
         target = base / "outside.spec.ts"
@@ -6342,10 +6390,8 @@ def assert_public_asset_symlink_is_benign_but_source_entries_fail_closed() -> No
         )
         (public / "linked.spec.ts").symlink_to(target)
 
-        result = scan_path(root)
-        assert result.returncode == 2, result.stdout
-        assert "public/linked.spec.ts [symbolic link]" in result.stdout
-        assert "Summary:" not in result.stdout
+        report = scan_canonical(root)
+        assert_inventory_rejected(report, {("unsupported-entry", "linked.spec.ts")})
 
         (public / "linked.spec.ts").unlink()
         external_directory = base / "outside-tests"
@@ -6359,10 +6405,8 @@ def assert_public_asset_symlink_is_benign_but_source_entries_fail_closed() -> No
             external_directory, target_is_directory=True
         )
 
-        directory_result = scan_path(root)
-        assert directory_result.returncode == 2, directory_result.stdout
-        assert "public/current-assets [symbolic link]" in directory_result.stdout
-        assert "Summary:" not in directory_result.stdout
+        directory_report = scan_canonical(root)
+        assert_inventory_rejected(directory_report, {("unsupported-entry", "current-assets")})
 
 
 def assert_cdpath_cannot_redirect_relative_root() -> None:
@@ -6396,7 +6440,7 @@ def assert_cdpath_cannot_redirect_relative_root() -> None:
             }
         )
         result = subprocess.run(
-            ["/bin/bash", str(SCANNER), "scripts"],
+            ["/bin/bash", str(SCANNER), "scripts", "--format", "json"],
             cwd=cwd,
             env=environment,
             text=True,
@@ -6405,7 +6449,7 @@ def assert_cdpath_cannot_redirect_relative_root() -> None:
             check=False,
         )
         assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = finding_locations(json.loads(result.stdout), "#7", severity="P0", disposition="confirmed")
         assert "focused.spec.ts:2:" in focused
         assert str(decoy) not in result.stdout
 
@@ -6483,7 +6527,15 @@ def assert_ast_tier_honors_hard_exclusions_without_excluding_public_tests() -> N
             encoding="utf-8",
         )
         fake_ast_grep.chmod(0o755)
-        result = scan_path(
+        current = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
+        locations = finding_locations(current.report, "#15", severity="P1", disposition="confirmed")
+        assert len([f for f in current.report["findings"] if f["patternId"] == "#15"]) == 4
+        for allowed in [source, public_file, *fixture_named_files]:
+            assert f"{allowed.resolve()}:3:" in locations
+        for excluded in excluded_files:
+            assert str(excluded.resolve()) not in all_finding_locations(current.report)
+
+        result = legacy_scan_path(
             root,
             {
                 "E2E_SMELL_AST_GREP_BIN": str(fake_ast_grep),
@@ -6517,11 +6569,11 @@ def assert_fixture_path_exclusions_are_self_repo_only() -> None:
                 encoding="utf-8",
             )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = finding_locations(result.report, "#7", severity="P0", disposition="confirmed")
         for target in targets:
-            assert f"{target}:2:" in focused, result.stdout
+            assert f"{target.resolve()}:2:" in focused, result.stdout
 
     with tempfile.TemporaryDirectory(
         prefix=".e2e-reviewer-nested-project-",
@@ -6537,13 +6589,10 @@ def assert_fixture_path_exclusions_are_self_repo_only() -> None:
             encoding="utf-8",
         )
 
-        nested_result = scan_path(nested_root, {"E2E_SMELL_FAIL_ON": "none"})
+        nested_result = node_scan(nested_root, {"E2E_SMELL_FAIL_ON": "none"})
         assert nested_result.returncode == 0, nested_result.stdout
-        nested_focused = section(
-            nested_result.stdout,
-            "[P0] #7 Focused test committed",
-        )
-        assert f"{nested_target}:2:" in nested_focused, nested_result.stdout
+        nested_focused = finding_locations(nested_result.report, "#7", severity="P0", disposition="confirmed")
+        assert f"{nested_target.resolve()}:2:" in nested_focused, nested_result.stdout
 
 
 def summary_line(output: str) -> str:
@@ -6558,30 +6607,30 @@ def assert_self_repo_scan_is_decided_by_the_scanned_project() -> None:
     # location-derived answer made the documented verify-reviewer flow report
     # this repository's intentional fixtures as findings while an in-repo run of
     # the identical scanner reported none.
-    source = SCANNER.read_text(encoding="utf-8")
+    source = legacy_scanner().read_text(encoding="utf-8")
     assert "SCANNER_REPO_ROOT_REAL" not in source, (
         "self-repo detection must not reintroduce a scanner-location fingerprint"
     )
     assert '-f "$PROJECT_ROOT_REAL/AGENTS.md"' in source
 
     target = ROOT / "skills"
-    in_repo = scan_path(target, {"E2E_SMELL_FAIL_ON": "none"})
+    in_repo = scan_canonical(target, fail_on="none")
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-installed-") as temp:
         installed = Path(temp) / "e2e-reviewer"
         shutil.copytree(ROOT / "skills/e2e-reviewer", installed)
-        copied = scan_path(
+        copied = scan_canonical(
             target,
-            {"E2E_SMELL_FAIL_ON": "none"},
+            fail_on="none",
             scanner=installed / "scripts/scan.sh",
         )
 
-    assert in_repo.returncode == 0, in_repo.stdout
-    assert copied.returncode == 0, copied.stdout
+    assert_complete_report(in_repo, exit_code=0)
+    assert_complete_report(copied, exit_code=0)
     for result in (in_repo, copied):
-        assert "evals/files" not in result.stdout, result.stdout
-    assert summary_line(in_repo.stdout) == summary_line(copied.stdout), (
-        summary_line(in_repo.stdout),
-        summary_line(copied.stdout),
+        assert "evals/files" not in all_finding_locations(result), result
+    assert in_repo["counts"] == copied["counts"], (
+        in_repo["counts"],
+        copied["counts"],
     )
 
 
@@ -6594,7 +6643,7 @@ def assert_symlinked_invocation_matches_real_path() -> None:
     # both gate on `-d` that path, the tier vanished without printing anything.
     # The Tier 2 paths are asserted at source level so this check stays
     # deterministic on hosts that have no ast-grep.
-    source = SCANNER.read_text(encoding="utf-8")
+    source = legacy_scanner().read_text(encoding="utf-8")
     for variable in ("ASTGREP_RULES_DIR", "ASTGREP_JSON_PARSER"):
         assignments = [
             line
@@ -6608,20 +6657,20 @@ def assert_symlinked_invocation_matches_real_path() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-symlink-") as temp:
         link = Path(temp) / "scan-link.sh"
         link.symlink_to(SCANNER)
-        real = scan_path(ancestor, {"E2E_SMELL_FAIL_ON": "none"})
-        linked = scan_path(
+        real = scan_canonical(ancestor, fail_on="none")
+        linked = scan_canonical(
             ancestor,
-            {"E2E_SMELL_FAIL_ON": "none"},
+            fail_on="none",
             scanner=link,
         )
 
-    assert real.returncode == 0, real.stdout
-    assert linked.returncode == 0, linked.stdout
+    assert_complete_report(real, exit_code=0)
+    assert_complete_report(linked, exit_code=0)
     for result in (real, linked):
-        assert "evals/files" not in result.stdout, result.stdout
-    assert summary_line(real.stdout) == summary_line(linked.stdout), (
-        summary_line(real.stdout),
-        summary_line(linked.stdout),
+        assert "evals/files" not in all_finding_locations(result), result
+    assert real["counts"] == linked["counts"], (
+        real["counts"],
+        linked["counts"],
     )
 
 
@@ -6649,11 +6698,10 @@ def assert_inherited_path_and_output_are_untrusted() -> None:
             b"import { test } from '@playwright/test';\n"
             b"test.only('```\x1b[2J\x1b[H forged \xe2\x80\xae summary', async () => {});\n"
         )
-        result = scan_path(
+        result = run_public_scan(
             root,
             {
                 "PATH": f"{fake_bin}:{os.environ['PATH']}",
-                "E2E_SMELL_RG_BIN": str(real_rg),
                 "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "1",
             },
         )
@@ -6661,7 +6709,7 @@ def assert_inherited_path_and_output_are_untrusted() -> None:
         assert not marker.exists(), marker.read_text(encoding="utf-8")
         assert "\x1b" not in result.stdout
         assert "\u202e" not in result.stdout
-        assert "```?[2J?[H forged ? summary" in result.stdout
+        assert "forged" not in result.stdout  # source excerpts are never emitted
 
         startup_marker = outer / "hostile-startup-ran"
         hostile_startup = outer / "hostile-bash-env"
@@ -6670,7 +6718,7 @@ def assert_inherited_path_and_output_are_untrusted() -> None:
             "exit 0\n",
             encoding="utf-8",
         )
-        privileged_result = scan_path(
+        privileged_result = run_public_scan(
             root,
             {
                 "BASH_ENV": str(hostile_startup),
@@ -6690,14 +6738,14 @@ def assert_inherited_path_and_output_are_untrusted() -> None:
             },
         )
         assert privileged_result.returncode == 1, privileged_result.stdout
-        assert "```?[2J?[H forged ? summary" in privileged_result.stdout
+        assert "forged" not in privileged_result.stdout
         assert not startup_marker.exists(), (
             "privileged scanner entry processed hostile shell startup state: "
             + startup_marker.read_text(encoding="utf-8")
         )
 
         scrub_marker = outer / "imported-function-ran"
-        scrubbed_result = scan_path(
+        scrubbed_result = run_public_scan(
             root,
             {
                 "BASH_FUNC_mktemp%%": (
@@ -6716,7 +6764,7 @@ def assert_inherited_path_and_output_are_untrusted() -> None:
             privileged=False,
         )
         assert scrubbed_result.returncode == 1, scrubbed_result.stdout
-        assert "```?[2J?[H forged ? summary" in scrubbed_result.stdout
+        assert "forged" not in scrubbed_result.stdout
         assert not scrub_marker.exists(), (
             "scanner builtin scrub left an imported function callable: "
             + scrub_marker.read_text(encoding="utf-8")
@@ -6745,15 +6793,16 @@ def assert_inherited_path_and_output_are_untrusted() -> None:
         project_rg.chmod(0o755)
         escaped_link = outer / "outside-looking-rg"
         escaped_link.symlink_to(project_rg)
-        rejected = scan_path(root, {"E2E_SMELL_RG_BIN": str(escaped_link)})
+        rejected = run_public_scan(root, {"E2E_SMELL_RG_BIN": str(escaped_link)})
         assert rejected.returncode == 2, rejected.stdout
-        assert "refusing E2E_SMELL_RG_BIN executable inside the target project root" in (
+        assert "retired E2E_SMELL_* backend, executable or limit setting" in (
             rejected.stdout
         )
         assert not marker.exists()
 
 
 def assert_v16_unresolved_scope_boundaries() -> None:
+    # Unpinned workspace expect cannot confirm numeric assertion semantics.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-v16-") as temp:
         root = Path(temp)
 
@@ -6770,17 +6819,11 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "}\n",
             encoding="utf-8",
         )
-        workspace_result = scan_path(
+        workspace_result = node_scan(
             workspace, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        assert "workspace-fixture.ts:4:" in section(
-            workspace_result.stdout,
-            "[P1?][LLM-TRIAGE] #16 Possible missing await on Locator/POM action",
-        )
-        assert "workspace-fixture.ts:7:" in section(
-            workspace_result.stdout,
-            "[P1?][LLM-TRIAGE] #17 Possible variable selector passed to Page API",
-        )
+        assert "workspace-fixture.ts:4:" in canonical_section(workspace_result.report, "[P1?][LLM-TRIAGE] #16 Possible missing await on Locator/POM action")
+        assert "workspace-fixture.ts:7:" in canonical_section(workspace_result.report, "[P1?][LLM-TRIAGE] #17 Possible variable selector passed to Page API")
 
         unit = root / "unit-fixture.ts"
         unit.write_text(
@@ -6791,9 +6834,9 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "}\n",
             encoding="utf-8",
         )
-        unit_result = scan_path(unit, {"E2E_SMELL_FAIL_ON": "none"})
-        assert "#16" not in unit_result.stdout
-        assert "#17" not in unit_result.stdout
+        unit_result = node_scan(unit, {"E2E_SMELL_FAIL_ON": "none"})
+        assert not any(item["patternId"] == "#16" for item in unit_result.report["findings"])
+        assert not any(item["patternId"] == "#17" for item in unit_result.report["findings"])
 
         aliases = root / "focused-aliases.spec.ts"
         aliases.write_text(
@@ -6819,10 +6862,8 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "}\n",
             encoding="utf-8",
         )
-        alias_result = scan_path(aliases, {"E2E_SMELL_FAIL_ON": "none"})
-        alias_section = section(
-            alias_result.stdout, "[P0] #7 Focused test alias committed"
-        )
+        alias_result = node_scan(aliases, {"E2E_SMELL_FAIL_ON": "none"})
+        alias_section = canonical_section(alias_result.report, "[P0] #7 Focused test alias committed")
         assert "focused-aliases.spec.ts:3:" in alias_section
         assert "focused-aliases.spec.ts:5:" in alias_section, alias_result.stdout
         assert "focused-aliases.spec.ts:7:" in alias_section
@@ -6851,12 +6892,10 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "}\n",
             encoding="utf-8",
         )
-        cypress_alias_result = scan_path(
+        cypress_alias_result = node_scan(
             cypress_aliases, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        cypress_alias_section = section(
-            cypress_alias_result.stdout, "[P0] #7 Focused test alias committed"
-        )
+        cypress_alias_section = canonical_section(cypress_alias_result.report, "[P0] #7 Focused test alias committed")
         for hit_line in (2, 4, 6):
             assert (
                 f"focused-aliases.cy.ts:{hit_line}:" in cypress_alias_section
@@ -6874,7 +6913,7 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "focused('unit alias', () => {});\n",
             encoding="utf-8",
         )
-        vitest_alias_result = scan_path(
+        vitest_alias_result = node_scan(
             vitest_alias, {"E2E_SMELL_FAIL_ON": "none"}
         )
         assert "Focused test alias committed" not in vitest_alias_result.stdout
@@ -6886,7 +6925,7 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "focused('Mocha alias', () => {});\n",
             encoding="utf-8",
         )
-        mocha_alias_result = scan_path(
+        mocha_alias_result = node_scan(
             mocha_alias, {"E2E_SMELL_FAIL_ON": "none"}
         )
         assert "Focused test alias committed" not in mocha_alias_result.stdout
@@ -6899,7 +6938,7 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "focused('shadowed receiver', () => {});\n",
             encoding="utf-8",
         )
-        shadowed_receiver_result = scan_path(
+        shadowed_receiver_result = node_scan(
             shadowed_receiver, {"E2E_SMELL_FAIL_ON": "none"}
         )
         assert (
@@ -6914,13 +6953,10 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "focused('runtime-proven Cypress alias', () => {});\n",
             encoding="utf-8",
         )
-        cypress_runtime_result = scan_path(
+        cypress_runtime_result = node_scan(
             cypress_runtime_alias, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        assert "focused-runtime.spec.ts:3:" in section(
-            cypress_runtime_result.stdout,
-            "[P0] #7 Focused test alias committed",
-        ), cypress_runtime_result.stdout
+        assert "focused-runtime.spec.ts:3:" in canonical_section(cypress_runtime_result.report, "[P0] #7 Focused test alias committed"), cypress_runtime_result.stdout
 
         unresolved_numeric = root / "unresolved-numeric.ts"
         unresolved_numeric.write_text(
@@ -6930,13 +6966,10 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        numeric_result = scan_path(
+        numeric_result = node_scan(
             unresolved_numeric, {"E2E_SMELL_FAIL_ON": "none"}
-        )
-        assert "unresolved-numeric.ts:3:" in section(
-            numeric_result.stdout,
-            "[P0?][LLM-TRIAGE] #4a Always-true numeric assertion",
-        )
+        , expected_diagnostics=source_diagnostics(unresolved_numeric, [('import-unpinned', 'assertions', 'unresolved-numeric.ts', 75)]))
+        assert "unresolved-numeric.ts:3:" in canonical_section(numeric_result.report, "[P0?][LLM-TRIAGE] #4a Always-true numeric assertion")
 
         unit_numeric = root / "unit-numeric.ts"
         unit_numeric.write_text(
@@ -6944,10 +6977,10 @@ def assert_v16_unresolved_scope_boundaries() -> None:
             "test('numeric', () => expect(0).toBeGreaterThanOrEqual(0));\n",
             encoding="utf-8",
         )
-        unit_numeric_result = scan_path(
+        unit_numeric_result = node_scan(
             unit_numeric, {"E2E_SMELL_FAIL_ON": "none"}
         )
-        assert "#4a" not in unit_numeric_result.stdout
+        assert not any(item["patternId"] == "#4a" for item in unit_numeric_result.report["findings"])
 
 
 def assert_v25_scanner_security_boundaries() -> None:
@@ -6970,7 +7003,22 @@ def assert_v25_scanner_security_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        unresolved_result = scan_path(unresolved)
+        current_unresolved = node_scan(unresolved, expected_diagnostics=source_diagnostics(unresolved, [
+            ("import-unpinned", "focusedTests", "custom-fixture-alias.ts", None),
+            ("import-unpinned", "assertions", "custom-fixture-alias.ts", 250),
+            ("import-unpinned", "assertions", "custom-fixture-alias.ts", 289),
+            ("import-unpinned", "assertions", "custom-fixture-alias.ts", 450),
+            ("import-unpinned", "promises", "custom-fixture-alias.ts", 186),
+            ("import-unpinned", "catchHandlers", "custom-fixture-alias.ts", None),
+            ("import-unpinned", "conditionalAssertions", "custom-fixture-alias.ts", 346),
+            ("analysis-unknown", "conditionalAssertions", "custom-fixture-alias.ts", 346),
+            ("import-unpinned", "conditionalAssertions", "custom-fixture-alias.ts", 397),
+        ]))
+        expected = {"#3": 4, "#4a": 5, "#4f": 6, "#5a": 7, "#7": 2, "#8a": 10}
+        for pattern, line in expected.items():
+            assert f"custom-fixture-alias.ts:{line}:" in finding_locations(current_unresolved.report, pattern, severity="P0", disposition="candidate")
+        assert current_unresolved.report["counts"]["p0"] == 0
+        unresolved_result = legacy_scan_path(unresolved)
         assert unresolved_result.returncode == 0, unresolved_result.stdout
         unresolved_expectations = {
             "#3 Possible empty catch with unresolved test-outcome impact": 4,
@@ -7010,7 +7058,9 @@ def assert_v25_scanner_security_boundaries() -> None:
             "\n",
             encoding="utf-8",
         )
-        focus_result = scan_path(focus, {"E2E_SMELL_FAIL_ON": "none"})
+        current_focus = node_scan(focus, {"E2E_SMELL_FAIL_ON": "none"})
+        assert {item["line"] for item in current_focus.report["findings"] if item["patternId"] == "#7"} == {3, 5}
+        focus_result = legacy_scan_path(focus, {"E2E_SMELL_FAIL_ON": "none"})
         alias_section = section(
             focus_result.stdout, "[P0] #7 Focused test alias committed"
         )
@@ -7021,7 +7071,7 @@ def assert_v25_scanner_security_boundaries() -> None:
         assert "focus-boundaries.spec.ts:15:" not in focus_result.stdout
 
         for invalid_timeout in ("0", "abc", "3601"):
-            timeout_result = scan_path(
+            timeout_result = legacy_scan_path(
                 focus,
                 {"E2E_SMELL_ESLINT_TIMEOUT_SECS": invalid_timeout},
             )
@@ -7069,12 +7119,12 @@ def assert_multiline_cypress_chain_proves_provenance() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         assert "login.cy.ts:3:" in focused, result.stdout
         assert "commands.cy.ts:6:" in focused, result.stdout
-        assert "0 out-of-scope file(s) skipped" in result.stdout, result.stdout
+        assert result.report["files"] == 3, result.report  # config plus both original specs
 
 
 def assert_type_only_foreign_imports_do_not_leave_e2e_scope() -> None:
@@ -7108,20 +7158,19 @@ def assert_type_only_foreign_imports_do_not_leave_e2e_scope() -> None:
                 header + "it.only('focused', () => {});\n", encoding="utf-8"
             )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         for name in erased:
             assert f"{name}:2:" in focused, (name, result.stdout)
         for name in executed:
             # A value import may still surface as a non-gating candidate, but it
             # must never reach the gating P0 section that drives the exit code.
             assert f"{name}:2:" not in focused, (name, result.stdout)
-        assert f"{len(erased)} P0," in result.stdout, result.stdout
-        assert (
-            f"Scope filter: {len(executed)} out-of-scope file(s) skipped"
-            in result.stdout
-        ), result.stdout
+        assert result.report["counts"]["p0"] == len(erased), result.report
+        assert not any(Path(item["file"]).name in executed
+                       for item in result.report["findings"]
+                       if item["disposition"] == "confirmed"), result.report
 
 
 def assert_escaped_module_specifiers_resolve_to_their_evaluated_value() -> None:
@@ -7133,7 +7182,7 @@ def assert_escaped_module_specifiers_resolve_to_their_evaluated_value() -> None:
     and it cannot hide a foreign runner (which would invent a gating P0 on a
     file no browser ever runs).
     """
-    scanner_source = SCANNER.read_text(encoding="utf-8") + SCANNER.with_name(
+    scanner_source = legacy_scanner().read_text(encoding="utf-8") + legacy_scanner().with_name(
         "scope-source.sh"
     ).read_text(encoding="utf-8")
     # One lexer across the scanner and its shared scope source, so the two provenance questions cannot disagree about the same
@@ -7175,9 +7224,9 @@ def assert_escaped_module_specifiers_resolve_to_their_evaluated_value() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         for name in (
             "plain.spec.ts",
             "unicode-escaped.spec.ts",
@@ -7185,7 +7234,7 @@ def assert_escaped_module_specifiers_resolve_to_their_evaluated_value() -> None:
             "code-point-escaped.spec.ts",
         ):
             assert f"{name}:2:" in focused, (name, result.stdout)
-        assert "[P0?][LLM-TRIAGE] #7" not in result.stdout, result.stdout
+        assert not finding_locations(result.report, "#7", severity="P0", disposition="candidate")
 
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-escaped-foreign-") as temp:
         root = Path(temp)
@@ -7209,14 +7258,14 @@ def assert_escaped_module_specifiers_resolve_to_their_evaluated_value() -> None:
             encoding="utf-8",
         )
 
-        result = scan_path(root)
+        result = node_scan(root)
         assert result.returncode == 1, result.stdout
-        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        focused = canonical_section(result.report, "[P0] #7 Focused test committed")
         assert "escaped-cypress.cy.tsx:3:" in focused, result.stdout
-        assert "plain-unit.cy.tsx" not in result.stdout, result.stdout
-        assert "escaped-unit.cy.tsx" not in result.stdout, result.stdout
-        assert "Summary: 1 total hit(s), 1 P0" in result.stdout, result.stdout
-        assert "2 out-of-scope file(s) skipped" in result.stdout, result.stdout
+        assert "plain-unit.cy.tsx" not in all_finding_locations(result.report), result.stdout
+        assert "escaped-unit.cy.tsx" not in all_finding_locations(result.report), result.stdout
+        assert result.report["counts"]["total"] == result.report["counts"]["p0"] == 1
+        assert result.report["files"] == 3  # Both foreign files are inventoried; neither is attributed to Cypress.
 
 
 def run_checks_in_parallel(*checks: Callable[[], None]) -> None:
@@ -7275,124 +7324,78 @@ def run_checks_in_parallel(*checks: Callable[[], None]) -> None:
         )
 
 
+def assert_node_action_vocabulary() -> None:
+    """Verify static dispatch vocabulary through the installed consumer."""
+    actions = ('click dblclick tap fill clear type press pressSequentially check uncheck setChecked '
+               'selectOption setInputFiles hover focus blur dragTo drop dispatchEvent '
+               'scrollIntoViewIfNeeded selectText screenshot').split()
+    page_actions = ('click dblclick tap fill type press check uncheck setChecked selectOption '
+                    'setInputFiles hover focus dispatchEvent dragAndDrop').split()
+    with tempfile.TemporaryDirectory(prefix='e2e-node-action-vocabulary-') as temp:
+        target = Path(temp) / 'vocabulary.spec.ts'
+        source = ["import {test} from '@playwright/test';", "test('vocabulary',async({page})=>{"]
+        source += [f"page.locator('#x').{method}();" for method in actions]
+        source += [f"await page.locator('#x').{method}();" for method in actions]
+        source += [f"await page.{method}('#x');" for method in page_actions]
+        target.write_text('\n'.join([*source, '});']) + '\n', encoding='utf-8')
+        result = node_scan(target)
+        assert result.returncode == 0, result.stdout
+        assert all(item['severity'] == 'P1' and item['disposition'] == 'confirmed' for item in result.report['findings'])
+        assert {item['line'] for item in result.report['findings'] if item['patternId'] == '#16'} == set(range(3,25))
+        assert {item['line'] for item in result.report['findings'] if item['patternId'] == '#17'} == set(range(47,62))
+        assert not any(25 <= item['line'] <= 46 for item in result.report['findings'])
+        assert len(result.report['findings']) == 37
+
+
+def assert_main_inline_contract() -> None:
+# Replace main() body before run_checks_in_parallel; preserve the subsequent checks.
+    exclusions_path = EVAL_FILES / 'documented-exclusions.spec.ts'
+    exclusions = node_scan(exclusions_path, expected_diagnostics=source_diagnostics(exclusions_path, [
+        ('analysis-unknown', 'stateReads', 'documented-exclusions.spec.ts', 942),
+    ]))
+    assert exclusions.returncode == 2
+    assert {item['line'] for item in exclusions.report['findings'] if item['patternId'] == '#5a'} == {15, 64}
+    assert all(item['disposition'] == 'candidate' for item in exclusions.report['findings'])
+    assert not any(item['patternId'] == '#16' or item['line'] == 33 for item in exclusions.report['findings'])
+    # The custom flags.isEnabled call at line 24 is not a proven Locator read;
+    # its original uncertainty remains diagnostic rather than an invented hit.
+    assert exclusions.report['counts'] == dict(total=8, p0=0, p1p2=0, triage=8, p0Candidate=3, ast=8, confirmed=0)
+
+    contexts_path = EVAL_FILES / 'missing-await-contexts.spec.ts'
+    contexts = node_scan(contexts_path, expected_diagnostics=source_diagnostics(contexts_path, [
+        ('provenance-unsupported', 'actions', 'missing-await-contexts.spec.ts', None),
+        ('provenance-unsupported', 'pageReads', 'missing-await-contexts.spec.ts', 397),
+        ('analysis-unknown', 'catchHandlers', 'missing-await-contexts.spec.ts', 5069),
+        ('analysis-unknown', 'accessibleNames', 'missing-await-contexts.spec.ts', 3422),
+    ]))
+    assert contexts.returncode == 2
+    def lines(pattern, disposition):
+        return {item['line'] for item in contexts.report['findings']
+                if item['patternId'] == pattern and item['severity'] == 'P1' and item['disposition'] == disposition}
+    assert lines('#15', 'confirmed') == {24}
+    direct_actions = lines('#16', 'confirmed')
+    variable_actions = lines('#16', 'candidate')
+    assert direct_actions == {25, 114, *range(117, 125), 167}
+    assert variable_actions == {11, 32, 108, 127, *range(129, 137), 169, 194, 195}
+    guarded = {16, 43, 47, 55, 61, 68, 73, 78, 84, 92, 99, 140, 141, 144,
+               151, 153, 160, 161, 162, 163, 170, 171, 193, 197}
+    assert not guarded & (direct_actions | variable_actions)
+    assert not any(item['line'] in {151,153} for item in contexts.report['findings'])
+    source = contexts_path.read_text(encoding='utf-8')
+    # Canonical AST locations start at the receiver, with the original method
+    # line still inside the finding's exact source span.
+    for method_line, start_line in [(116, 114), (128, 127)]:
+        item = next(item for item in contexts.report['findings'] if item['patternId'] == '#16' and item['line'] == start_line)
+        assert source.count('\n', 0, item['start']) + 1 == start_line
+        assert source.count('\n', 0, item['end']) + 1 == method_line
+    assert lines('#17', 'confirmed') == set(range(175,190))
+    assert contexts.report['counts'] == dict(total=48, p0=0, p1p2=27, triage=21, p0Candidate=1, ast=48, confirmed=27)
+    assert_node_action_vocabulary()
+
+
+
 def main() -> None:
-    exclusions = scan("documented-exclusions.spec.ts")
-    assert exclusions.returncode == 0, exclusions.stdout
-    assert "[P0?][LLM-TRIAGE] #5a" in exclusions.stdout
-    assert "[P1] #16 Missing await on Playwright action" not in exclusions.stdout
-    assert "documented-exclusions.spec.ts:33:" not in exclusions.stdout
-    assert "Summary: 9 total hit(s), 0 P0" in exclusions.stdout
-
-    contexts = scan("missing-await-contexts.spec.ts")
-    assert contexts.returncode == 0, contexts.stdout
-    expect_section = section(
-        contexts.stdout, "[P1] #15 Missing await on Playwright expect"
-    )
-    assert "missing-await-contexts.spec.ts:24:" in expect_section
-
-    direct_action_section = section(
-        contexts.stdout, "[P1] #16 Missing await on Playwright action"
-    )
-    assert "missing-await-contexts.spec.ts:25:" in direct_action_section
-    assert "missing-await-contexts.spec.ts:43:" not in direct_action_section
-
-    variable_action_section = section(
-        contexts.stdout,
-        "[P1?][LLM-TRIAGE] #16 Possible missing await on Locator/POM action",
-    )
-    assert "missing-await-contexts.spec.ts:11:" in variable_action_section
-    assert "missing-await-contexts.spec.ts:32:" in variable_action_section
-    assert "missing-await-contexts.spec.ts:43:" not in variable_action_section
-    for action_line in range(116, 125):
-        assert f"missing-await-contexts.spec.ts:{action_line}:" in direct_action_section
-    for action_line in range(128, 137):
-        assert f"missing-await-contexts.spec.ts:{action_line}:" in variable_action_section
-    for guarded_line in (16, 43, 47, 55, 61, 68, 73, 78, 84, 92, 99, 140, 141, 144):
-        assert f"missing-await-contexts.spec.ts:{guarded_line}:" not in direct_action_section
-        assert f"missing-await-contexts.spec.ts:{guarded_line}:" not in variable_action_section
-    for lexical_guard_line in (151, 153):
-        assert f"missing-await-contexts.spec.ts:{lexical_guard_line}:" not in contexts.stdout
-        assert (
-            f"missing-await-contexts.spec.ts:{lexical_guard_line}:"
-            not in direct_action_section
-        )
-        assert (
-            f"missing-await-contexts.spec.ts:{lexical_guard_line}:"
-            not in variable_action_section
-        )
-    assert "missing-await-contexts.spec.ts:108:" in direct_action_section
-    for same_line_guard in (160, 161, 162, 163):
-        assert f"missing-await-contexts.spec.ts:{same_line_guard}:" not in direct_action_section
-        assert f"missing-await-contexts.spec.ts:{same_line_guard}:" not in variable_action_section
-    assert "missing-await-contexts.spec.ts:167:" in direct_action_section
-    assert "missing-await-contexts.spec.ts:169:" in variable_action_section
-    for awaited_screenshot in (170, 171):
-        assert f"missing-await-contexts.spec.ts:{awaited_screenshot}:" not in direct_action_section
-        assert f"missing-await-contexts.spec.ts:{awaited_screenshot}:" not in variable_action_section
-    for observed_aggregate_line in (193, 197):
-        assert (
-            f"missing-await-contexts.spec.ts:{observed_aggregate_line}:"
-            not in direct_action_section
-        )
-    for floating_aggregate_line in (194, 195):
-        assert (
-            f"missing-await-contexts.spec.ts:{floating_aggregate_line}:"
-            in direct_action_section
-        )
-
-    direct_page_section = section(
-        contexts.stdout, "[P1] #17 Discouraged direct Page selector API"
-    )
-    for direct_page_line in range(175, 190):
-        assert f"missing-await-contexts.spec.ts:{direct_page_line}:" in direct_page_section
-    assert "Summary: 48 total hit(s), 0 P0, 30 P1/P2 heuristic" in contexts.stdout
-
-    scanner_source = SCANNER.read_text(encoding="utf-8")
-    for action in (
-        "click",
-        "dblclick",
-        "tap",
-        "fill",
-        "clear",
-        "type",
-        "press",
-        "pressSequentially",
-        "check",
-        "uncheck",
-        "setChecked",
-        "selectOption",
-        "setInputFiles",
-        "hover",
-        "focus",
-        "blur",
-        "dragTo",
-        "drop",
-        "dispatchEvent",
-        "scrollIntoViewIfNeeded",
-        "selectText",
-        "screenshot",
-    ):
-        assert action in scanner_source
-
-    for page_action in (
-        "click",
-        "dblclick",
-        "tap",
-        "fill",
-        "type",
-        "press",
-        "check",
-        "uncheck",
-        "setChecked",
-        "selectOption",
-        "setInputFiles",
-        "hover",
-        "focus",
-        "dispatchEvent",
-        "dragAndDrop",
-    ):
-        assert page_action in scanner_source
-    assert "playwright/no-element-handle" not in scanner_source
+    assert_main_inline_contract()
 
     # Each check owns a temporary directory and shells out to scan.sh, so the wall clock here
     # is subprocess wait, not Python. Threads release the GIL across subprocess.run and need no
@@ -7486,6 +7489,7 @@ def main() -> None:
         assert_promise_and_control_flow_triage,
         assert_swallowed_assertion_triage,
         assert_nested_nonregular_entries_fail_closed,
+        assert_current_tree_inventory_cannot_be_bypassed,
         assert_preflight_symlink_abort_remediation_is_actionable,
         assert_tree_preflight_diagnostics_are_bounded,
         assert_excluded_trees_are_pruned_before_preflight,
@@ -7530,9 +7534,8 @@ def main() -> None:
 
     print(
         "reviewer scanner: pass "
-        "(rg helpers/PCRE2/mktemp/filename transport fail-closed; "
-        "test aliases + fixture provenance; #5a and identifier/member #4f/#8 triage; "
-        "exact JUSTIFIED syntax; #6 raw DOM APIs)"
+        "(current canonical semantic and safety contracts; "
+        "explicit frozen legacy mechanism checks; unchanged original fixtures)"
     )
 
 

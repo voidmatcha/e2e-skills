@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 from pathlib import Path
 import re
@@ -115,6 +116,13 @@ TEXT_ASSET_SUFFIXES = {
 }
 EXCLUDED_PATH = Path("scripts/ci/lib/scan-secrets.py")
 MAX_TEXT_BYTES = 8 * 1024 * 1024
+# This exact TypeScript 6.0.3 artifact needs a larger read, not a scan exemption.
+# Changing the parser requires reviewing and updating both identity pins here.
+TYPESCRIPT_VENDOR_PATH = Path(
+    'skills/e2e-reviewer/scripts/scanner/vendor/typescript/typescript.cjs'
+)
+TYPESCRIPT_VENDOR_BYTES = 9144216
+TYPESCRIPT_VENDOR_SHA256 = '569177652966bd528c319171c7dd22860dbf72bde116cbc4f644f1d02bb12e39'
 
 
 def is_source_or_config(path: Path) -> bool:
@@ -222,28 +230,37 @@ def scan(root: Path, test_git: Path | None = None) -> list[str]:
     findings = []
     for relative in enumerate_files(root, test_git):
         path = root / relative
+        pinned_vendor = relative == TYPESCRIPT_VENDOR_PATH
+        limit = TYPESCRIPT_VENDOR_BYTES if pinned_vendor else MAX_TEXT_BYTES
+        if pinned_vendor and path.resolve() != root.resolve() / relative:
+            raise RuntimeError('pinned TypeScript vendor path is not canonical: {}'.format(relative))
         if path.is_symlink():
             raise RuntimeError("selected path is a symlink: {}".format(relative))
         try:
             if not os.path.lexists(path) and test_git is None:
                 data = read_index_blob(root, relative)
             else:
-                if path.stat().st_size > MAX_TEXT_BYTES:
+                if path.stat().st_size > limit:
                     raise RuntimeError(
                         "selected text file exceeds the {}-byte limit: {}".format(
-                            MAX_TEXT_BYTES,
+                            limit,
                             relative,
                         )
                     )
                 with path.open("rb") as handle:
-                    data = handle.read(MAX_TEXT_BYTES + 1)
-            if len(data) > MAX_TEXT_BYTES:
+                    data = handle.read(limit + 1)
+            if len(data) > limit:
                 raise RuntimeError(
                     "selected text file exceeds the {}-byte limit: {}".format(
-                        MAX_TEXT_BYTES,
+                        limit,
                         relative,
                     )
                 )
+            if pinned_vendor and (
+                len(data) != TYPESCRIPT_VENDOR_BYTES
+                or hashlib.sha256(data).hexdigest() != TYPESCRIPT_VENDOR_SHA256
+            ):
+                raise RuntimeError('pinned TypeScript vendor identity mismatch: {}'.format(relative))
             if b"\0" in data:
                 raise RuntimeError(
                     "selected text file contains a NUL byte: {}".format(relative)

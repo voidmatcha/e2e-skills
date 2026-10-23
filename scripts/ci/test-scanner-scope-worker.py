@@ -438,12 +438,20 @@ class SandboxedScannerTests(unittest.TestCase):
                 "  await page.goto('/');\n"
                 "  await expect(page.getByRole('heading')).toBeVisible();\n"
                 "});\n")
-            env = dict(os.environ, E2E_SMELL_RG_BIN=resolve_rg())
+            # Current Node scanning has no ripgrep worker or socket dependency.
+            env = {'PATH': '/usr/bin:/bin:/usr/sbin:/sbin', 'LANG': 'C', 'LC_ALL': 'C'}
             result = subprocess.run(['sandbox-exec', '-p', '(version 1)(allow default)(deny network*)',
-                                     '/bin/bash', '-p', str(BASE / 'scan.sh'), str(project)],
+                                     '/bin/bash', '-p', str(BASE / 'scan.sh'), str(project),
+                                     '--format', 'json'],
                                     capture_output=True, text=True, timeout=240, env=env)
             self.assertEqual(result.returncode, 0, result.stderr[-2000:])
-            self.assertIn('Summary:', result.stdout)
+            report = json.loads(result.stdout)
+            self.assertEqual(report['schema'], 'e2e-skills-node-scan-v1')
+            self.assertEqual(report['status'], 'COMPLETE')
+            self.assertTrue(report['execution']['complete'])
+            self.assertEqual(report['execution']['diagnostics'], [])
+            self.assertEqual(report['execution']['exitCode'], 0)
+            self.assertEqual(report['findings'], [])
             self.assertNotIn('persistent scope worker', result.stderr)
 
 
