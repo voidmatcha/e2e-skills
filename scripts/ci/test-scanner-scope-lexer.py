@@ -18,7 +18,7 @@ from unittest import mock
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.legacy_scanner_oracle import legacy_scanner_file
 
-BASE = Path(__file__).resolve().parents[2] / 'skills/e2e-reviewer/scripts'
+BASE = legacy_scanner_file().parent
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)

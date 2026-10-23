@@ -3,6 +3,8 @@
 
 Import, plan, roster, power and finished-output analysis are offline. Live commands
 are opt-in, freeze-bound, and hold the existing machine-wide campaign lock.
+Replay its frozen scanner inventory from the original pinned source checkout;
+the current Node scanner no longer ships the legacy backend files listed below.
 """
 from __future__ import annotations
 

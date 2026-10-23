@@ -14,7 +14,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFY = ROOT / "scripts/verify-fixes.sh"
-RULES = ROOT / "skills/e2e-reviewer/scripts/ast-grep-rules"
+RULES = ROOT / "scripts/ast-grep-rules"
 
 
 FAKE_AST_GREP = """#!/bin/sh
@@ -119,7 +119,7 @@ def main() -> None:
         shutil.copy2(VERIFY, isolated_verifier)
         shutil.copytree(
             RULES,
-            temp / "isolated-verifier/skills/e2e-reviewer/scripts/ast-grep-rules",
+            temp / "isolated-verifier/scripts/ast-grep-rules",
         )
         npx_marker = temp / "npx-called"
         system_sg_marker = temp / "system-sg-called"

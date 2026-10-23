@@ -31,12 +31,17 @@ test('retired backend controls fail before scanning or executing local configura
     }
     const inert = { E2E_SMELL_NO_ESLINT_DOWNLOAD: '1', E2E_SMELL_NO_AST_GREP_DOWNLOAD: '1',
       E2E_SMELL_ALLOW_PROJECT_ESLINT: '0', E2E_SMELL_SCOPE_WATCH: 'off' };
-    assert.deepEqual(JSON.parse(run(inert).stdout), JSON.parse(run({}).stdout));
+    for (const [key, value] of Object.entries(inert)) {
+      const result = run({ [key]: value }, ['--project-eslint', '--trust-project']);
+      assert.ifError(result.error);
+      assert.equal(result.status, 2, key);
+      assert.equal(result.stdout, '', key);
+      assert.match(result.stderr, /INCOMPLETE: retired E2E_SMELL_/);
+    }
     assert.equal(run({ E2E_SMELL_FAIL_ON: 'none' }).status, 0);
     assert.equal(run({ E2E_SMELL_FAIL_ON: 'none' }, ['--fail-on', 'p0']).status, 1);
     assert.equal(run({ E2E_SMELL_ALLOW_PROJECT_ESLINT: '1' }).status, 2);
     assert.equal(run({ E2E_SMELL_SCOPE_WATCH: 'strict' }).status, 2);
-    assert.match(run(inert, ['--project-eslint', '--trust-project']).stderr, /conflicts with/);
     assert.equal(fs.existsSync(marker), false);
     assert.equal(fs.readFileSync(file, 'utf8'), "import {test} from '@playwright/test';test.only('focus',()=>{});\n");
   } finally { fs.rmSync(root, { recursive: true, force: true }); }

@@ -20,7 +20,7 @@
 <strong>English</strong> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-`e2e-skills` gives AI coding agents four skills for generating, reviewing, and debugging Playwright/Cypress end-to-end (E2E) tests. A skill is a set of instructions the agent follows for a task.
+`e2e-skills` provides four open-source skills for Playwright and Cypress end-to-end (E2E) testing with Claude Code, Codex, and other compatible AI coding agents. Generate Playwright tests, review existing Playwright/Cypress tests and PRs, and debug failed runs.
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
@@ -38,10 +38,10 @@ A passing test can still miss a broken feature. `e2e-skills` helps check whether
 
 | Need | Skill | Result |
 | --- | --- | --- |
-| Generate new Playwright coverage | `playwright-test-generator` | Playwright tests based on the observed page, with scanner and test-execution results |
-| Review Playwright/Cypress tests or PR/diff changes | `e2e-reviewer` | Problems ranked by severity, with evidence and suggested fixes; for changes, whether each problem is new, worsened, or pre-existing |
-| Debug a failed Playwright run | `playwright-debugger` | Likely cause, supporting evidence, and a suggested fix |
-| Debug a failed Cypress run | `cypress-debugger` | Likely cause, supporting evidence, and a suggested fix |
+| Generate new Playwright coverage | [`playwright-test-generator`](skills/playwright-test-generator/SKILL.md) | Playwright tests based on the observed page, with scanner and test-execution results |
+| Review Playwright/Cypress tests or PR/diff changes | [`e2e-reviewer`](skills/e2e-reviewer/SKILL.md) | Problems ranked by severity, with evidence and suggested fixes; for changes, whether each problem is new, worsened, or pre-existing |
+| Debug a failed Playwright run | [`playwright-debugger`](skills/playwright-debugger/SKILL.md) | Likely cause, supporting evidence, and a suggested fix |
+| Debug a failed Cypress run | [`cypress-debugger`](skills/cypress-debugger/SKILL.md) | Likely cause, supporting evidence, and a suggested fix |
 | Run a deterministic local scan | `skills/e2e-reviewer/scripts/scan.sh` | Possible code problems without installing the target project’s packages |
 
 Review results use P0/P1/P2 for severity: P0 means a test can pass despite a broken feature, P1 concerns reliability or diagnosis, and P2 concerns maintenance. Debuggers use F1–F15 to label 15 failure categories, such as timing, selectors, and authentication.
@@ -103,11 +103,13 @@ The bundled scanner catches the false-green assertions without project configura
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
-[P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)
-  .../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();
-  .../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();
+[P0][CONFIRMED] #4f Static finding (2 hits)
+  "login.spec.ts":5: #4f
+  "login.spec.ts":6: #4f
 
-Summary: 2 total hit(s), 2 P0
+AST-origin total: 2 hit(s); retained findings, not ast-grep execution.
+
+Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 2 AST-origin hit(s), canonical retained findings.
 ```
 
 Because this run reports P0 findings, `scan.sh` exits 1.
@@ -350,16 +352,18 @@ The debuggers classify product regressions separately from brittle tests and ret
 Run the code scanner directly without asking an AI agent. It reports possible problems for review; it does not run your tests or decide whether they prove the intended behavior.
 
 ```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests --format text
+```
+
+Requires Node.js 22 or newer; the TypeScript parser is bundled. npx downloads the package and its dependencies if they are not already cached. Scanning does not execute tests or project configuration. Use `--format json` for structured output or `--report-file <new-file>` to save a full report without overwriting an existing file.
+
+The reviewer already includes an offline copy of the scanner; no npm installation is needed. By default, this bundled scanner does not download tools or load project configuration. From an installed skill or source checkout, use:
+
+```bash
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-Requires Node.js 22 or newer; the TypeScript parser is bundled. The launcher runs static checks with text output by default. It does not execute tests, download tools, or load project configuration. Use `--format json` for structured output or `--report-file <new-file>` to save a full report without overwriting an existing file.
-
-The scanner is bundled with the reviewer and works offline; no npm installation is needed. To use it separately, run the pinned npm command below. Scanning does not start assertion mutation or fault injection. Those checks require Python 3.10+ and a trusted, prepared project; see the [CLI and probe guide](packages/scanner/README.md).
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests
-```
+Scanning does not start assertion mutation or fault injection. Those checks require Python 3.10+ and a trusted, prepared project; see the [CLI and probe guide](packages/scanner/README.md).
 
 <details>
 <summary>Advanced scanner options and file access</summary>

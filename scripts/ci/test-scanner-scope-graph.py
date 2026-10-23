@@ -13,7 +13,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.legacy_scanner_oracle import legacy_scanner_file
 
-SCRIPT = Path(__file__).resolve().parents[2] / 'skills/e2e-reviewer/scripts/scope-graph.py'
+SCRIPT = legacy_scanner_file('scope-graph.py')
 spec = importlib.util.spec_from_file_location('scope_graph', SCRIPT)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

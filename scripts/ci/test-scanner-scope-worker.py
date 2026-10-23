@@ -18,7 +18,10 @@ import unittest
 from unittest import mock
 from types import SimpleNamespace
 
-BASE = Path(__file__).resolve().parents[2] / 'skills/e2e-reviewer/scripts'
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.legacy_scanner_oracle import legacy_scanner_file
+
+BASE = legacy_scanner_file().parent
 WORKER = BASE / 'scope-worker.py'
 spec = importlib.util.spec_from_file_location('worker', WORKER)
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
@@ -441,7 +444,7 @@ class SandboxedScannerTests(unittest.TestCase):
             # Current Node scanning has no ripgrep worker or socket dependency.
             env = {'PATH': '/usr/bin:/bin:/usr/sbin:/sbin', 'LANG': 'C', 'LC_ALL': 'C'}
             result = subprocess.run(['sandbox-exec', '-p', '(version 1)(allow default)(deny network*)',
-                                     '/bin/bash', '-p', str(BASE / 'scan.sh'), str(project),
+                                     '/bin/bash', '-p', str(Path(__file__).resolve().parents[2] / 'skills/e2e-reviewer/scripts/scan.sh'), str(project),
                                      '--format', 'json'],
                                     capture_output=True, text=True, timeout=240, env=env)
             self.assertEqual(result.returncode, 0, result.stderr[-2000:])

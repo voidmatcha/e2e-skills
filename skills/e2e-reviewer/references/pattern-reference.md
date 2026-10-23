@@ -483,7 +483,7 @@ await expect(page.locator('.toast')).toBeVisible();
 
 **Rule:** Report P1 when an async Locator/Page web-first matcher, `expect.poll(...).toX()`, or `expect(fn).toPass()` is not `await`ed or returned. Awaited/returned retry assertions are explicit guards. Prove the called `expect` binding through its own local declaration/import/re-export lineage; the presence of a Playwright `test` export elsewhere in a mixed fixture/barrel does not make a custom `expect` Playwright-owned.
 
-**Boundary with #4c-4e (the #15/#4 split):** Sync value matchers are excluded. `expect(await x.isVisible()).toBe(true)`, `expect(Number(await getRowCount(page))).toBe(4)`, and other value-resolving reads (including wrapped forms) resolve a real value and are #4c-4e, not #15. Matcher-on-next-line splits are covered by Tier 2 (`sg-15`).
+**Boundary with #4c-4e (the #15/#4 split):** Sync value matchers are excluded. `expect(await x.isVisible()).toBe(true)`, `expect(Number(await getRowCount(page))).toBe(4)`, and other value-resolving reads (including wrapped forms) resolve a real value and are #4c-4e, not #15. The Node scanner's structural #15 check covers matcher-on-next-line splits.
 
 **Escalation/dedupe:** If code catches or otherwise swallows the floating matcher's rejection, report #3 P0 for error swallowing. If the scenario also lacks an independent postcondition, #2 P0 may apply. Keep #15 as the P1 sequencing defect; do not inflate it to P0.
 

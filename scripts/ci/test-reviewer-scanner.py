@@ -5112,8 +5112,6 @@ def assert_option_like_root_rejected() -> None:
         environment = os.environ.copy()
         environment.update(
             {
-                "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
-                "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "1",
                 "LC_ALL": "C",
                 "LC_CTYPE": "C",
                 "LANG": "C",
@@ -5150,8 +5148,6 @@ def assert_multiple_scan_roots_fail_closed() -> None:
         environment = os.environ.copy()
         environment.update(
             {
-                "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
-                "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "1",
                 "LC_ALL": "C",
                 "LC_CTYPE": "C",
                 "LANG": "C",
@@ -6432,8 +6428,6 @@ def assert_cdpath_cannot_redirect_relative_root() -> None:
             {
                 "CDPATH": str(workspace),
                 "E2E_SMELL_FAIL_ON": "p0",
-                "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "1",
-                "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
                 "LC_ALL": "C",
                 "LC_CTYPE": "C",
                 "LANG": "C",
@@ -6702,7 +6696,6 @@ def assert_inherited_path_and_output_are_untrusted() -> None:
             root,
             {
                 "PATH": f"{fake_bin}:{os.environ['PATH']}",
-                "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "1",
             },
         )
         assert result.returncode == 1, result.stdout

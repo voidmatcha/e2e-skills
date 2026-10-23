@@ -20,9 +20,9 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=c9e98e916806420513ea4e729eea693287b94128bbd84d8a6add47165c6f3cc1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=3f683b045d1c446ac3d6f2d0b29b8cfb21e1cff6aeb20e14952936b41252d6e4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-`e2e-skills` は、AI コーディング agent が Playwright/Cypress の E2E テストを生成し、レビューし、失敗を診断するための 4 つの skill です。skill は agent が作業時に従う指示の集まりです。
+`e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。4 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、失敗原因の診断を行います。
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
@@ -40,10 +40,10 @@
 
 | 必要なこと | スキル | 結果 |
 | --- | --- | --- |
-| 新しい Playwright カバレッジを生成 | `playwright-test-generator` | 実際の画面を観察して書いたテストと、スキャナー確認および実行結果 |
-| Playwright/Cypress テストまたは PR/diff 変更をレビュー | `e2e-reviewer` | 重要度別の問題、判断根拠、修正案。変更では新規・悪化・既存の問題を区別 |
-| 失敗した Playwright 実行をデバッグ | `playwright-debugger` | 推定原因、判断根拠、具体的な修正案 |
-| 失敗した Cypress 実行をデバッグ | `cypress-debugger` | 推定原因、判断根拠、具体的な修正案 |
+| 新しい Playwright カバレッジを生成 | [`playwright-test-generator`](skills/playwright-test-generator/SKILL.md) | 実際の画面を観察して書いたテストと、スキャナー確認および実行結果 |
+| Playwright/Cypress テストまたは PR/diff 変更をレビュー | [`e2e-reviewer`](skills/e2e-reviewer/SKILL.md) | 重要度別の問題、判断根拠、修正案。変更では新規・悪化・既存の問題を区別 |
+| 失敗した Playwright 実行をデバッグ | [`playwright-debugger`](skills/playwright-debugger/SKILL.md) | 推定原因、判断根拠、具体的な修正案 |
+| 失敗した Cypress 実行をデバッグ | [`cypress-debugger`](skills/cypress-debugger/SKILL.md) | 推定原因、判断根拠、具体的な修正案 |
 | 決定論的なローカルスキャンを実行 | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package をインストールせずに見つけた問題候補 |
 
 P0/P1/P2 はレビューの重要度です。P0 は機能が壊れても成功する問題、P1 は信頼性や診断の問題、P2 は保守性の改善です。debugger の F1–F15 は、タイミング、selector、認証など 15 種類の失敗原因を示す分類コードです。
@@ -105,11 +105,13 @@ test('shows the welcome message', async ({ page }) => {
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
-[P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)
-  .../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();
-  .../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();
+[P0][CONFIRMED] #4f Static finding (2 hits)
+  "login.spec.ts":5: #4f
+  "login.spec.ts":6: #4f
 
-Summary: 2 total hit(s), 2 P0
+AST-origin total: 2 hit(s); retained findings, not ast-grep execution.
+
+Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 2 AST-origin hit(s), canonical retained findings.
 ```
 
 この実行は P0 指摘を報告するため、`scan.sh` は exit 1 で終了します。
@@ -352,16 +354,18 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 AI agent に依頼せず、コードスキャナーだけを直接実行できます。レビューする問題候補を探す道具であり、テストの実行や、意図した動作を検証しているかの判断は行いません。
 
 ```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests --format text
+```
+
+Node.js 22 以降が必要で、TypeScript パーサーは同梱されています。npx はキャッシュにない package と依存関係をダウンロードします。scan はテストやプロジェクト設定を実行しません。構造化された出力には `--format json`、レポートの保存には `--report-file <new-file>` を使います。既存ファイルは上書きしません。
+
+reviewer にはオフラインで使える scanner が同梱されているため、npm のインストールは不要です。この scanner はデフォルトでツールのダウンロードやプロジェクト設定の実行を行いません。インストール済み skill またはソース checkout では、次のコマンドを使います。
+
+```bash
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-Node.js 22 以降が必要で、TypeScript パーサーは同梱されています。ランチャーはデフォルトで静的検査を実行し、テキストを出力します。テスト実行、ツールのダウンロード、プロジェクト設定の実行は行いません。構造化された出力には `--format json`、レポートの保存には `--report-file <new-file>` を使います。既存ファイルは上書きしません。
-
-scanner は reviewer に同梱され、npm のインストールなしでオフラインで動作します。単独で使う場合は、次のバージョン固定 npm コマンドを実行します。scan だけでは assertion mutation や fault injection は実行されません。これらの検査には Python 3.10+ と、信頼でき準備済みのプロジェクトが必要です。[CLI と probe のガイド](packages/scanner/README.md)を参照してください。
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests
-```
+scan だけでは assertion mutation や fault injection は実行されません。これらの検査には Python 3.10+ と、信頼でき準備済みのプロジェクトが必要です。[CLI と probe のガイド](packages/scanner/README.md)を参照してください。
 
 <details>
 <summary>スキャナーの詳細設定とファイル読み取り範囲</summary>

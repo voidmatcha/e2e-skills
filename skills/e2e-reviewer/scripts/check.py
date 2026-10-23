@@ -13,8 +13,6 @@ import sys
 REPO = Path(__file__).resolve().parents[3]
 PILOT = REPO / "scripts/evals/hybrid-check-pilot/check-docker-matrix"
 ADAPTERS = {
-    # Compatibility only: v1 lacks strict native reporter consistency admission.
-    "notepad-playwright-v1": PILOT / "notepad_adapter_v1.py",
     "notepad-playwright-v2": PILOT.parent / "reviewer-evidence-v2/notepad_adapter_v2.py",
     "passport-cypress-v1": PILOT / "passport_adapter_v1.py",
 }
@@ -71,9 +69,8 @@ def preview(adapter, adapter_path: Path, promise: dict, test: str) -> dict:
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__, epilog=(
-        "Internal trusted-checkout pilot only; public execution remains NO-GO. "
-        "notepad-playwright-v1 is legacy compatibility and lacks v2 reporter consistency admission."))
+    parser = argparse.ArgumentParser(description=__doc__, epilog=
+        "Internal trusted-checkout pilot only; public execution remains NO-GO.")
     parser.add_argument("--adapter", choices=sorted(ADAPTERS), required=True)
     parser.add_argument("--promise-file", type=Path, required=True)
     parser.add_argument("--test", required=True)

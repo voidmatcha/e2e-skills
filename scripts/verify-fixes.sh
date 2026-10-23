@@ -41,7 +41,7 @@ fi
 # AST rules live with the verifier. Resolve only already-installed executables;
 # postfix verification must never download and execute an unpinned package.
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-RULES_DIR="$SCRIPT_DIR/../skills/e2e-reviewer/scripts/ast-grep-rules"
+RULES_DIR="$SCRIPT_DIR/ast-grep-rules"
 REPO_CANONICAL="$(cd "$REPO" && pwd -P)"
 VALIDATED_EXPLICIT_FILES=()
 

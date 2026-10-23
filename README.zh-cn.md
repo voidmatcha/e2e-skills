@@ -19,9 +19,9 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=c9e98e916806420513ea4e729eea693287b94128bbd84d8a6add47165c6f3cc1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=3f683b045d1c446ac3d6f2d0b29b8cfb21e1cff6aeb20e14952936b41252d6e4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-`e2e-skills` 为 AI 编程 agent 提供四个 skill，用于生成、审查 Playwright/Cypress E2E 测试并诊断失败。skill 是 agent 执行任务时遵循的一组指令。
+`e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。四个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及诊断失败原因。
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
@@ -39,10 +39,10 @@
 
 | 需求 | Skill | 结果 |
 | --- | --- | --- |
-| 生成新的 Playwright 覆盖 | `playwright-test-generator` | 根据实际页面编写的测试，以及扫描器检查和执行结果 |
-| 审查 Playwright/Cypress 测试或 PR/diff 变更 | `e2e-reviewer` | 按严重程度排列的问题、判断依据和修复建议；对变更区分新增、恶化和已有问题 |
-| 调试失败的 Playwright 运行 | `playwright-debugger` | 推测原因、判断依据和具体修复建议 |
-| 调试失败的 Cypress 运行 | `cypress-debugger` | 推测原因、判断依据和具体修复建议 |
+| 生成新的 Playwright 覆盖 | [`playwright-test-generator`](skills/playwright-test-generator/SKILL.md) | 根据实际页面编写的测试，以及扫描器检查和执行结果 |
+| 审查 Playwright/Cypress 测试或 PR/diff 变更 | [`e2e-reviewer`](skills/e2e-reviewer/SKILL.md) | 按严重程度排列的问题、判断依据和修复建议；对变更区分新增、恶化和已有问题 |
+| 调试失败的 Playwright 运行 | [`playwright-debugger`](skills/playwright-debugger/SKILL.md) | 推测原因、判断依据和具体修复建议 |
+| 调试失败的 Cypress 运行 | [`cypress-debugger`](skills/cypress-debugger/SKILL.md) | 推测原因、判断依据和具体修复建议 |
 | 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 无需安装目标项目 package 即可发现的候选问题 |
 
 P0/P1/P2 表示审查的严重程度：P0 是功能损坏仍通过的问题，P1 影响可靠性或诊断，P2 涉及维护改进。debugger 的 F1–F15 是时序、selector、认证等 15 类失败原因的分类代码。
@@ -104,11 +104,13 @@ test('shows the welcome message', async ({ page }) => {
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
-[P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)
-  .../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();
-  .../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();
+[P0][CONFIRMED] #4f Static finding (2 hits)
+  "login.spec.ts":5: #4f
+  "login.spec.ts":6: #4f
 
-Summary: 2 total hit(s), 2 P0
+AST-origin total: 2 hit(s); retained findings, not ast-grep execution.
+
+Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 2 AST-origin hit(s), canonical retained findings.
 ```
 
 由于这次运行报告了 P0 发现，`scan.sh` 会以 exit 1 结束。
@@ -351,16 +353,18 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 无需请求 AI agent，即可直接运行代码扫描器。它查找待审查的候选问题，不会执行测试，也不会判断测试是否证明了预期行为。
 
 ```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests --format text
+```
+
+需要 Node.js 22 或更新版本；TypeScript parser 已随附。npx 会下载尚未缓存的 package 及其依赖。scan 不执行测试或项目配置。使用 `--format json` 获取结构化输出，或用 `--report-file <new-file>` 保存完整报告；不会覆盖已有文件。
+
+reviewer 已内置可离线运行的 scanner，无需安装 npm。该内置 scanner 默认不下载工具或执行项目配置。在已安装的 skill 或源码 checkout 中，使用以下命令：
+
+```bash
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-需要 Node.js 22 或更新版本；TypeScript parser 已随附。启动器默认执行静态检查并输出文本，不运行测试、不下载工具，也不执行项目配置。使用 `--format json` 获取结构化输出，或用 `--report-file <new-file>` 保存完整报告；不会覆盖已有文件。
-
-scanner 随 reviewer 提供，无需安装 npm 即可离线运行。如需单独使用，请运行以下固定版本的 npm 命令。仅运行 scan 不会执行 assertion mutation 或 fault injection。这些检查需要 Python 3.10+ 和可信且准备就绪的项目。详见 [CLI 与 probe 指南](packages/scanner/README.md)。
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests
-```
+仅运行 scan 不会执行 assertion mutation 或 fault injection。这些检查需要 Python 3.10+ 和可信且准备就绪的项目。详见 [CLI 与 probe 指南](packages/scanner/README.md)。
 
 <details>
 <summary>扫描器高级选项和文件读取范围</summary>

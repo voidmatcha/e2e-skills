@@ -11,7 +11,11 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "skills/e2e-reviewer/scripts/scope-source.sh"
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.legacy_scanner_oracle import legacy_scanner_file
+
+SOURCE = legacy_scanner_file("scope-source.sh")
 ENV = dict(os.environ, LC_ALL="C", LANG="C", PATH="/usr/bin:/bin:/usr/sbin:/sbin")
 SPEC = importlib.util.spec_from_file_location('scope_graph', SOURCE.with_name('scope-graph.py'))
 GRAPH = importlib.util.module_from_spec(SPEC)

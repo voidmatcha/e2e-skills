@@ -26,8 +26,8 @@
       "sha256": "44a8c07ff5f3d8b5f9aa7ee4c4325f7e9ca6c9a1d2fb17b5fce5676e281a78ac"
     },
     "src/cli.mjs": {
-      "bytes": 19885,
-      "sha256": "ac7cbee014421a8affc3c4e69e6527a20b91d7f86d1415a212a38b5de6a64fc6"
+      "bytes": 19266,
+      "sha256": "04ad3085f28c7c596aaa5f506dea1115f6caa919c34dde62ccb1d78d4fa29fcb"
     },
     "src/collections.mjs": {
       "bytes": 4159,
@@ -690,10 +690,10 @@
     },
     {
       "output": "src/cli.mjs",
-      "output_sha256": "ac7cbee014421a8affc3c4e69e6527a20b91d7f86d1415a212a38b5de6a64fc6",
+      "output_sha256": "04ad3085f28c7c596aaa5f506dea1115f6caa919c34dde62ccb1d78d4fa29fcb",
       "rewrite": null,
       "source": "src/cli.mjs",
-      "source_sha256": "ac7cbee014421a8affc3c4e69e6527a20b91d7f86d1415a212a38b5de6a64fc6"
+      "source_sha256": "04ad3085f28c7c596aaa5f506dea1115f6caa919c34dde62ccb1d78d4fa29fcb"
     },
     {
       "output": "src/collections.mjs",

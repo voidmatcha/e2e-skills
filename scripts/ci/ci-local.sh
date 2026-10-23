@@ -346,6 +346,7 @@ run_python scripts/ci/test-node-scanner-guards.py ||
   fail "test-node-scanner-guards.py"
 run_python scripts/ci/test-node-scanner.py --node "$NODE_BIN" ||
   fail "test-node-scanner.py"
+step "Frozen shell oracle mechanism contracts (not Node product)"
 run_python scripts/ci/test-scanner-scope-graph.py ||
   fail "test-scanner-scope-graph.py"
 run_python scripts/ci/test-scanner-scope-watch.py ||
@@ -370,6 +371,7 @@ run_python scripts/ci/test-scanner-assertion-token-guard.py ||
   fail "test-scanner-assertion-token-guard.py"
 run_python scripts/ci/test-scanner-rule-scope-predicate-cache.py ||
   fail "test-scanner-rule-scope-predicate-cache.py"
+step "Reviewer scanner regression contracts"
 run_python scripts/ci/test-reviewer-scanner.py ||
   fail "test-reviewer-scanner.py"
 

@@ -180,7 +180,19 @@ class LegacyBoundedRuleTests(unittest.TestCase):
         rather than on its truth, which is the exact defect class this scanner
         exists to find.
         """
-        result = legacy_scan(noisy_tree(6, 10), {"E2E_SMELL_MAX_RULE_HITS": "5"})
+        files = noisy_tree(6, 10)
+        # Overflow two independent shell rules without relying on an optional
+        # host ast-grep installation to suppress a second rule.
+        files["tests/focused.spec.ts"] = (
+            "import { test } from '@playwright/test';\n"
+            + "\n".join(
+                f"test.only('focused {n}', async () => {{}});" for n in range(6)
+            )
+        )
+        result = legacy_scan(files, {
+            "E2E_SMELL_MAX_RULE_HITS": "5",
+            "E2E_SMELL_DISABLE_AST_GREP": "1",
+        })
         out = result.stdout + result.stderr
 
         label = re.search(r"Summary \[INCOMPLETE — (\d+) rule\(s\) suppressed\]", out)
@@ -193,6 +205,7 @@ class LegacyBoundedRuleTests(unittest.TestCase):
         self.assertIsNotNone(listed, "the suppressed rules must be listed by id")
         named = listed.group(1).split()
         self.assertGreater(len(named), 1, "this fixture must suppress several rules")
+        self.assertTrue({"#7", "#15"}.issubset(named), out)
         self.assertEqual(
             int(label.group(1)), len(named),
             "the label's count must equal the number of rules listed below it",

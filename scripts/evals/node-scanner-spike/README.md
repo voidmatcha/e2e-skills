@@ -3,7 +3,7 @@
 Experimental, dependency-free Node.js inventory of scanner candidates. This is
 **not a scanner, npm package, npx product, or proof of scanner parity**. It emits
 no findings and makes no P0 gating decision. No project configuration is loaded.
-The shipped `scan.sh` remains authoritative. The implementation now lives in
+The current scanner implementation is `packages/scanner/src/`; installed skills use its bundled runtime through the `scan.sh` launcher. The implementation now lives in
 `packages/scanner/src/inventory.mjs`; this directory retains a compatibility
 CLI and re-exports that module without duplicating it.
 

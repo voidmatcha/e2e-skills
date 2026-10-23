@@ -1649,9 +1649,9 @@ def check_scanner_transcript_contract(path, text, errors):
         return None
     transcript = matches[0].strip()
     required_lines = (
-        "[P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)",
-        ".../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();",
-        ".../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();",
+        "[P0][CONFIRMED] #4f Static finding (2 hits)",
+        '"login.spec.ts":5: #4f',
+        '"login.spec.ts":6: #4f',
         "Summary: 2 total hit(s), 2 P0",
     )
     missing_or_duplicated = [

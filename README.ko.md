@@ -20,9 +20,9 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=c9e98e916806420513ea4e729eea693287b94128bbd84d8a6add47165c6f3cc1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=3f683b045d1c446ac3d6f2d0b29b8cfb21e1cff6aeb20e14952936b41252d6e4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-`e2e-skills`는 AI agent가 Playwright/Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 skill입니다.
+`e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 네 종류의 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하며, 실패 원인을 분석합니다.
 
 <p align="center">
   <a href="https://www.kimi.ai/ko/resources/software-testing-skills">
@@ -40,10 +40,10 @@
 
 | 필요 | skill | 결과 |
 | --- | --- | --- |
-| 새 Playwright 테스트 생성 | `playwright-test-generator` | 실제 화면을 살펴보고 작성한 테스트와 scanner 검사 및 실행 결과 |
-| Playwright/Cypress 테스트 또는 PR/diff 변경 사항 리뷰 | `e2e-reviewer` | 문제 등급별 목록과 판단 근거, 수정안, 변경 사항별 구분(신규 문제, 악화된 문제, 기존 문제) |
-| 실패한 Playwright 실행 분석 | `playwright-debugger` | 추정 원인, 판단 근거, 구체적인 수정안 |
-| 실패한 Cypress 실행 분석 | `cypress-debugger` | 추정 원인, 판단 근거, 구체적인 수정안 |
+| 새 Playwright 테스트 생성 | [`playwright-test-generator`](skills/playwright-test-generator/SKILL.md) | 실제 화면을 살펴보고 작성한 테스트와 scanner 검사 및 실행 결과 |
+| Playwright/Cypress 테스트 또는 PR/diff 변경 사항 리뷰 | [`e2e-reviewer`](skills/e2e-reviewer/SKILL.md) | 문제 등급별 목록과 판단 근거, 수정안, 변경 사항별 구분(신규 문제, 악화된 문제, 기존 문제) |
+| 실패한 Playwright 실행 분석 | [`playwright-debugger`](skills/playwright-debugger/SKILL.md) | 추정 원인, 판단 근거, 구체적인 수정안 |
+| 실패한 Cypress 실행 분석 | [`cypress-debugger`](skills/cypress-debugger/SKILL.md) | 추정 원인, 판단 근거, 구체적인 수정안 |
 | 로컬 규칙 검사 | `skills/e2e-reviewer/scripts/scan.sh` | 대상 프로젝트의 패키지 설치 없이 찾은 문제 후보 |
 
 리뷰 결과는 P0/P1/P2로 문제 등급을 구분합니다. P0는 기능이 제대로 동작하지 않아도 테스트가 통과하는 문제, P1은 안정성이나 원인 파악을 어렵게 하는 문제, P2는 유지보수 개선 사항을 뜻합니다. debugger의 F1–F15는 타이밍, selector, 인증 등 실패 원인 15개의 분류 코드입니다.
@@ -105,11 +105,13 @@ test('shows the welcome message', async ({ page }) => {
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
-[P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)
-  .../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();
-  .../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();
+[P0][CONFIRMED] #4f Static finding (2 hits)
+  "login.spec.ts":5: #4f
+  "login.spec.ts":6: #4f
 
-Summary: 2 total hit(s), 2 P0
+AST-origin total: 2 hit(s); retained findings, not ast-grep execution.
+
+Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 2 AST-origin hit(s), canonical retained findings.
 ```
 
 이 실행은 P0 문제를 보고하므로 `scan.sh`는 exit 1로 종료됩니다.
@@ -352,16 +354,18 @@ Playwright/Cypress `test smell` 24개를 정리한 목록이며, 각 항목의 I
 AI agent에 요청하지 않고 코드 scanner만 직접 실행할 수 있습니다. 검토할 문제 후보를 찾는 tool이며, 테스트를 실행하거나 테스트가 의도한 동작을 검증하는지 판단하지는 않습니다.
 
 ```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests --format text
+```
+
+Node.js 22 이상이 필요하며 TypeScript 파서는 함께 제공됩니다. npx는 캐시에 없는 패키지와 의존성을 내려받습니다. scan은 테스트나 프로젝트 설정 코드를 실행하지 않습니다. 구조화된 결과는 `--format json`으로 확인하고, 전체 보고서는 `--report-file <new-file>`로 저장하세요. 기존 파일은 덮어쓰지 않습니다.
+
+reviewer에는 오프라인으로 실행할 수 있는 scanner가 포함되어 있어 npm 설치가 필요하지 않습니다. 기본 설정에서는 tool을 내려받거나 프로젝트 설정 코드를 실행하지 않습니다. skill 설치본이나 소스 checkout에서는 다음 명령을 사용하세요.
+
+```bash
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-Node.js 22 이상이 필요하며 TypeScript 파서는 함께 제공됩니다. launcher는 기본적으로 static 검사를 실행하고 결과를 텍스트로 보여줍니다. 테스트를 실행하거나 tool을 내려받거나 프로젝트 설정 코드를 불러오지 않습니다. 구조화된 결과는 `--format json`으로 확인하고, 전체 보고서는 `--report-file <new-file>`로 저장하세요. 기존 파일은 덮어쓰지 않습니다.
-
-scanner는 reviewer에 포함되어 있으며 npm 설치 없이 오프라인으로 동작합니다. scanner만 따로 쓰려면 아래의 버전 고정 npm 명령을 실행하세요. scan만으로 assertion mutation이나 fault injection을 실행하지는 않습니다. 이 검사를 실행하려면 Python 3.10+와 신뢰하고 준비를 마친 프로젝트가 필요합니다. 자세한 내용은 [CLI와 probe 가이드](packages/scanner/README.md)를 참고해주세요.
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan path/to/tests
-```
+scan만으로 assertion mutation이나 fault injection을 실행하지는 않습니다. 이 검사를 실행하려면 Python 3.10+와 신뢰하고 준비를 마친 프로젝트가 필요합니다. 자세한 내용은 [CLI와 probe 가이드](packages/scanner/README.md)를 참고해주세요.
 
 <details>
 <summary>scanner 고급 옵션과 파일 읽기 범위</summary>

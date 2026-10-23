@@ -105,6 +105,14 @@ class ConditionalIntegrationTests(unittest.TestCase):
             "test('x', () => {\nif (ready) { expect(true).toBe(true); }\n});\n")
         copied = self.directory / 'scanner'
         shutil.copytree(support.SCANNER.parent, copied)
+        # Exercise real conditional discovery/batching, not every legacy rule
+        # over 132 unrelated negatives three times. Keep #7 for a real P0/exit 1.
+        scanner = copied / 'scan.sh'
+        scanner_text = scanner.read_text()
+        entry = "run_check() {\n"
+        self.assertEqual(scanner_text.count(entry), 1)
+        scanner.write_text(scanner_text.replace(entry, entry +
+            '  [[ "$2" == "#7" || ",${6:-}," == *",conditional-assertion,"* ]] || return 0\n', 1))
         worker = copied / 'scope-worker.py'
         log = self.directory / 'repeat-log'
         text = worker.read_text().replace(

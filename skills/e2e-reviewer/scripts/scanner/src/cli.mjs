@@ -64,19 +64,11 @@ JavaScript semantics or completed human review.
 
 function argumentsFor(argv) {
   if (argv.length === 1 && ['--help', '-h'].includes(argv[0])) return null;
-  // Do not silently ignore an old backend selector, limit or executable pin.
-  // These inert values only restate guarantees of the Node implementation.
-  const inertLegacy = new Map([
-    ['E2E_SMELL_NO_ESLINT_DOWNLOAD', '1'], ['E2E_SMELL_NO_AST_GREP_DOWNLOAD', '1'],
-    ['E2E_SMELL_ALLOW_PROJECT_ESLINT', '0'], ['E2E_SMELL_SCOPE_WATCH', 'off'],
-  ]);
+  // Retired backend controls are rejected, including formerly inert values.
   for (const key of Object.keys(process.env)) {
-    if (key.startsWith('E2E_SMELL_') && key !== 'E2E_SMELL_FAIL_ON' &&
-        (!inertLegacy.has(key) || process.env[key] !== inertLegacy.get(key)))
+    if (key.startsWith('E2E_SMELL_') && key !== 'E2E_SMELL_FAIL_ON')
       throw new Error('INCOMPLETE: retired E2E_SMELL_* backend, executable or limit setting; remove it. Local ESLint requires --project-eslint --trust-project; no tooling is downloaded.');
   }
-  if (process.env.E2E_SMELL_ALLOW_PROJECT_ESLINT === '0' && argv.includes('--project-eslint'))
-    throw new Error('INCOMPLETE: E2E_SMELL_ALLOW_PROJECT_ESLINT=0 conflicts with --project-eslint; remove the old setting before explicitly trusting local ESLint.');
   let root, failOn = process.env.E2E_SMELL_FAIL_ON || 'p0', experimental, seenPolicy = false, projectEslintEnabled = false, trustProject = false;
   let format = 'json', seenFormat = false, reportFile;
   for (let index = 0; index < argv.length; index++) {

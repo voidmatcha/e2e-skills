@@ -1,5 +1,7 @@
 # Self-audit of the rules
 
+**Historical audit:** scanner implementation details and the frozen v10 prompt budget below describe the earlier shell analyzer, not the 3.1.0 Node scanner. They are retained as audit evidence, not current implementation limits. For current prerequisites and behavior, see the [scanner workflow](../skills/e2e-reviewer/references/scanner-workflow.md) and [Node scanner documentation](../packages/scanner/README.md).
+
 An adversarial audit of this project's own contracts: the 24 anti-patterns, the 15 failure codes, and the operational rules that decide how a finding is produced and whether it survives. Scanner findings below cite scanner reproductions where they exist; debugger and procedure findings cite the source, eval, or local CI behavior that supported the claim. Findings that did not survive that evidence check are recorded as refuted, at the end.
 
 ## How it was run

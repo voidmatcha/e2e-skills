@@ -857,8 +857,8 @@ backup "$file"
 bad_home="/""Users/machine-owner/e2e-skills"
 mutate \
   "$file" \
-  "gives AI coding agents four skills" \
-  "gives AI coding agents four skills from $bad_home"
+  "open-source skills for Playwright" \
+  "open-source skills for Playwright from $bad_home"
 assert_security_fails \
   "Pre-push hardcoded-home guard — public docs reject real user paths" \
   "machine-specific absolute user-home paths found in public artifacts"
@@ -870,7 +870,7 @@ file="README.md"
 backup "$file"
 mutate \
   "$file" \
-  "gives AI coding agents four skills" \
+  "open-source skills for Playwright" \
   "four focused workflows for Playwright and Cypress E2E 한국어 work"
 assert_fails "Language guard — Hangul outside switcher line in README.md" "Korean text found in public docs: README.md"
 restore "$file"
@@ -920,8 +920,8 @@ file="README.ja.md"
 backup "$file"
 mutate \
   "$file" \
-  ".../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();" \
-  ".../tests/login.spec.ts:7:  expect(page.locator('.user-badge')).not.toBeNull();"
+  '"login.spec.ts":6: #4f' \
+  '"login.spec.ts":7: #4f'
 assert_fails \
   "README i18n parity — localized scanner transcript matches canonical bytes" \
   "README.ja.md scanner transcript differs from README.md"
@@ -1233,7 +1233,7 @@ for framework in Puppeteer Selenium WebdriverIO TestCafe Nightwatch; do
   backup "$file"
   mutate \
     "$file" \
-    "Playwright/Cypress end-to-end (E2E) tests" \
+    "Playwright and Cypress end-to-end (E2E) testing" \
     "Playwright, Cypress, and $framework E2E tests"
   assert_fails \
     "Framework scope — $framework support claim rejected" \

@@ -45,10 +45,12 @@ The deterministic scanner reports the load-bearing line:
 
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
-[P0] #4f Locator always-true assertion (truthy/defined/not-null) (1 hit)
-  .../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();
+[P0][CONFIRMED] #4f Static finding (1 hit)
+  "login.spec.ts":5: #4f
 
-Summary: 1 total hit(s), 1 P0
+AST-origin total: 1 hit(s); retained findings, not ast-grep execution.
+
+Summary: 1 total hit(s), 1 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 1 AST-origin hit(s), canonical retained findings.
 ```
 
 Replace the object check with a web-first assertion that observes the page:
@@ -71,7 +73,7 @@ The scanner reports candidates. A semantic review verifies each candidate agains
 - **Diff base/range:** supplied patch
 - **Changed E2E artifacts:** tests/login.spec.ts
 - **Context-only files consulted:** none
-- **Static evidence:** Tier 3 #4f candidate; semantic check confirmed
+- **Static evidence:** scanner #4f candidate; semantic check confirmed
 - **Runtime evidence:** not executed; run the approved Playwright command
 - **Independent verification:** V1 recommended; not executed
 - **Limitations/exclusions:** application runtime unavailable

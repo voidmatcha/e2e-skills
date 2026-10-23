@@ -24,6 +24,12 @@
 - Bounded Node detector slices retain source-linked catch, conditional assertion, POM and unresolved-fixture review candidates without promoting uncertain bindings or runtime outcomes to confirmed findings. Parser, import, propagation and provenance diagnostics remain explicit; only exact candidate-linked reasons can become review obligations.
 - The Node scanner honors `E2E_SMELL_FAIL_ON` with explicit flag precedence. Unsupported analysis remains incomplete rather than a clean result; candidates and confirmed findings use distinct policy counts.
 
+### Removed
+
+- Unused shell scope helpers and retired ast-grep backend files from the installed reviewer. Frozen originals remain in the integrity-pinned regression oracle; developer-only postfix rules live under `scripts/ast-grep-rules/`.
+- Compatibility allowances for retired `E2E_SMELL_*` controls, including previously inert values. Only the current `E2E_SMELL_FAIL_ON` policy remains supported.
+- The source-checkout pilot's `notepad-playwright-v1` CLI choice. The stricter v2 adapter remains available and retains its internal v1 implementation dependency.
+
 ### Bounded validation
 
 - Published `3.1.0-rc.0` registry-package checks passed 75 targeted tests and four static controls. Selected native probes returned V2 assertion sensitivity for TanStack, V3 detection for SvelteKit, and survival for an authored weak control, with nine native reports retained. These checks exercise the named package and cases; they do not establish general accuracy or replace final bundle release gates.

@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.legacy_scanner_oracle import legacy_scanner_file
 
 ROOT = Path(__file__).resolve().parents[2]
-HELPER = ROOT / 'skills/e2e-reviewer/scripts/conditional-discovery.py'
+HELPER = legacy_scanner_file('conditional-discovery.py')
 SPEC = importlib.util.spec_from_file_location('conditional_discovery', HELPER)
 helper = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(helper)
@@ -215,7 +215,7 @@ class DiscoveryTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which('rg'), 'rg required')
     def test_original_classifier_accepted_candidates_survive(self):
         shell = 'scanner_rg() { ' + shlex.quote(shutil.which('rg')) + ' "$@"; }\n'
-        scope_source = (ROOT / 'skills/e2e-reviewer/scripts/scope-source.sh').read_text()
+        scope_source = legacy_scanner_file('scope-source.sh').read_text()
         for name in ('run_source_lexer', 'source_executable_code'):
             shell += function(scope_source, name)
         for name in ('source_has_unresolved_test_import', 'source_binding_shadowed_at',

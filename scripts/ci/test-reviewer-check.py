@@ -22,7 +22,7 @@ SPEC.loader.exec_module(CHECK)
 
 
 class FakeAdapter:
-    ADAPTER_ID = "notepad-playwright-v1"
+    ADAPTER_ID = "notepad-playwright-v2"
     PROMISE_ID = "note-content-persists-after-save"
     PROMISE_TEXT = "A saved note persists after reload."
     TEST_SELECTORS = ("weak", "strong")
@@ -110,6 +110,13 @@ class CheckBoundary(unittest.TestCase):
         code, result = self.invoke()
         self.assertEqual((code, result["status"], FakeAdapter.runs), (2, "CANNOT_VERIFY", 0))
 
+    def test_retired_notepad_adapter_is_not_a_cli_choice(self):
+        with contextlib.redirect_stderr(io.StringIO()), patch.object(CHECK, "load_adapter") as load:
+            with self.assertRaises(SystemExit) as denied:
+                CHECK.main(["--adapter", "notepad-playwright-v1", *self.base[2:]])
+        self.assertEqual(denied.exception.code, 2)
+        load.assert_not_called()
+
     def test_both_registered_descriptors_preview_without_execution(self):
         for name in CHECK.ADAPTERS:
             with self.subTest(name=name):
@@ -130,8 +137,8 @@ class NotepadV2Admission(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="reviewer-check-", dir=cache.resolve())
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
-        self.v1, _ = CHECK.load_adapter("notepad-playwright-v1")
         self.v2, _ = CHECK.load_adapter("notepad-playwright-v2")
+        self.v1 = self.v2.LEGACY
         self.contradict = False
         self.commands = []
 

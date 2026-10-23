@@ -13,7 +13,7 @@ Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatibl
 - `playwright-debugger` — root-cause diagnosis from `playwright-report/`.
 - `cypress-debugger` — root-cause diagnosis from `cypress/reports/` (mochawesome / JUnit).
 
-The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.codex-plugin/`), a cross-agent skill source via the `skills` CLI, and a standalone scanner (`skills/e2e-reviewer/scripts/scan.sh`).
+The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.codex-plugin/`), a cross-agent skill source via the `skills` CLI, and the standalone npm scanner (`packages/scanner/`). Installed skills launch the bundled Node scanner through `skills/e2e-reviewer/scripts/scan.sh`; that file is a generated integrity-checking launcher, not a separate analyzer.
 
 **Product vs. infrastructure.** The four `skills/` directories above are the product — what a user installs and runs. `scripts/ci/` and the eval harnesses verify the product. Historical research evidence lives in a pinned Hugging Face snapshot; `benchmarks/` keeps its status index and restoration manifest. A typo fix or a small skill-wording change barely touches any of it — see `CONTRIBUTING.md`'s tier table before assuming a change needs the full process below.
 
@@ -57,8 +57,11 @@ For development and pre-commit checks, `ci-local.sh --changed origin/main` selec
 │   │   └── references/      # e.g. artifact-extraction.md, classification-procedure.md, safety-procedures.md
 │   └── cypress-debugger/
 │       └── references/      # e.g. artifact-extraction.md, classification-procedure.md, safety-procedures.md
+├── packages/scanner/        # Canonical Node scanner implementation and npm package
 ├── scripts/
+│   ├── ast-grep-rules/     # Developer-only postfix verification rules
 │   ├── ci/                 # CI parity, security, eval-metadata checks
+│   │   └── fixtures/legacy-scanner/ # Immutable shell oracle for regression comparisons
 │   ├── dev/                # contributor reinstall + git hook setup
 │   ├── evals/              # labeled reviewer holdout, live runners, executable fixtures
 │   ├── hooks/              # local git hooks
@@ -178,7 +181,7 @@ The reinstall script executes a verified `skills@1.5.21` artifact from an exact 
 
 ## When You Edit Skills
 
-1. **Update taxonomy surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md` (Quick Reference), `skills/e2e-reviewer/references/pattern-reference.md` (per-pattern contract — CI Checks 3b/3c validate this file), `docs/e2e-test-smells.md`, `README.md` 24 Patterns table, `skills/e2e-reviewer/references/grep-patterns.md`, `skills/e2e-reviewer/scripts/scan.sh`, and `scripts/ci/lib/reviewer_taxonomy_contract.py`. `scripts/ci/review.sh` derives the expected Quick Reference row order from the IDs themselves, so it needs no edit for a new pattern. CI fails fast if IDs, titles, order, or severities drift. Regenerate the Lean severity model with `python3 scripts/dev/reviewer-contract.py --write`; CI checks it against the skill without Lean, and a new instance-severity exception must be added to its hand-written rules and the Quick Reference row together. After any `pattern-reference.md` edit, run `python3 scripts/dev/split-pattern-reference.py` to regenerate the per-pattern copies in `references/patterns/`, which the reviewer reads instead of the 90 KB source; CI fails when they drift. Plugin descriptions remain concise host-specific package metadata and do not store the reviewer taxonomy.
+1. **Update taxonomy surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md` (Quick Reference), `skills/e2e-reviewer/references/pattern-reference.md` (per-pattern contract — CI Checks 3b/3c validate this file), `docs/e2e-test-smells.md`, `README.md` 24 Patterns table, `skills/e2e-reviewer/references/grep-patterns.md`, `packages/scanner/src/` detector and report mappings, and `scripts/ci/lib/reviewer_taxonomy_contract.py`. Rebuild the installed scanner with `scripts/dev/build-scanner-runtime.py` when runtime sources change; edit `scripts/dev/scanner-launcher.sh` for launcher changes and keep the public `scan.sh` copy byte-identical. Do not hand-edit generated bundled files. `scripts/ci/review.sh` derives the expected Quick Reference row order from the IDs themselves, so it needs no edit for a new pattern. CI fails fast if IDs, titles, order, or severities drift. Regenerate the Lean severity model with `python3 scripts/dev/reviewer-contract.py --write`; CI checks it against the skill without Lean, and a new instance-severity exception must be added to its hand-written rules and the Quick Reference row together. After any `pattern-reference.md` edit, run `python3 scripts/dev/split-pattern-reference.py` to regenerate the per-pattern copies in `references/patterns/`, which the reviewer reads instead of the 90 KB source; CI fails when they drift. Plugin descriptions remain concise host-specific package metadata and do not store the reviewer taxonomy.
 2. **Re-run the drift smoke test.** `scripts/ci/test-parity.sh` mutates known-bad versions of the files and asserts the parity check catches each one — keep it green when you add new parity rules.
 3. **Add or update evals when behavior changes.** Each skill has an `evals/evals.json`. Eval IDs must follow the skill's naming convention (CI validates). Each new smell or behavior change should add at least two assertions: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 4. **Respect severity contracts.** P0 entries should be silent-always-pass smells; don't downgrade. P1/P2 should not creep into P0 just because they're easier to grep.
@@ -201,7 +204,7 @@ When you bump the bundle version, touch all three manifests in one commit. The d
 - Do **not** silently change a pattern ID, severity, or failure category code. Downstream evals and OSS adopters depend on them.
 - Do **not** introduce out-of-scope framework code paths. Skills must say "out of scope" rather than emit half-working examples for Selenium/WebdriverIO/etc.
 - Do **not** push commits without running `/bin/bash -p scripts/ci/ci-local.sh`.
-- Do **not** edit `skills/e2e-reviewer/references/grep-patterns.md` without checking that the matching pattern IDs in `skills/e2e-reviewer/scripts/scan.sh` still line up — `scan.sh` is now the runtime source of truth, `grep-patterns.md` is an ID-meaning reference for Phase 2 / debugger lookup.
+- Do **not** edit `skills/e2e-reviewer/references/grep-patterns.md` without checking the matching pattern IDs against `packages/scanner/src/` and the reviewer taxonomy contract. The Node sources implement detection; `scan.sh` only verifies and launches the generated bundle. `grep-patterns.md` is an ID-meaning reference for Phase 2 / debugger lookup.
 - Do **not** create side effects on third-party repos when validating the skill. Cloning into `testbed/` and running `scan.sh` locally is allowed; pushing to forks, opening PRs/issues, posting comments, or any state-changing `gh` command is not.
 
 ## Installation Paths Documented for Users

@@ -170,7 +170,7 @@ Pattern and failure-code semantics live in several files that must move together
 - `docs/e2e-test-smells.md`,
 - the `README.md` pattern table,
 - `skills/e2e-reviewer/references/grep-patterns.md`,
-- `skills/e2e-reviewer/scripts/scan.sh`,
+- the detector and report mappings in `packages/scanner/src/` (rebuild the installed bundle with `scripts/dev/build-scanner-runtime.py`; do not hand-edit generated files),
 - `scripts/ci/lib/reviewer_taxonomy_contract.py` (the stable reviewer ID/title/severity order).
 
 Then:

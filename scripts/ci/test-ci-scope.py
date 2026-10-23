@@ -34,6 +34,7 @@ class ScopeTests(unittest.TestCase):
             ('scripts/evals/fixtures/app.js', {'fixtures', 'selfscan'}),
             ('scripts/evals/run-reviewer-holdout.py', {'harness', 'holdout'}),
             ('scripts/dev/reinstall-skills.sh', {'install'}),
+            ('scripts/ast-grep-rules/sg-postfix-empty-expect.yml', {'postfix'}),
             ('examples/react-optimistic-write/index.html', {'evidence', 'selfscan'}),
         ):
             mode, _, groups = SCOPE.select([path])

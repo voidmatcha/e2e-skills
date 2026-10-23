@@ -77,7 +77,7 @@ def main() -> None:
     require(
         rules,
         (
-            "The same gate covers documented lint commands, package scripts, local binaries, and Tier 1",
+            "The same gate covers documented lint commands, package scripts, local binaries, and the scanner's project ESLint opt-in",
             "Static review never treats repository documentation as execution approval",
         ),
         RULES,

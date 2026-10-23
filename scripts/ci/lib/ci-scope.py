@@ -47,7 +47,7 @@ def select(paths):
             selected.update(('scanner', 'tooling', 'selfscan'))
         elif path in ('scripts/pr-preflight.sh', 'scripts/ci/test-pr-preflight.py'):
             selected.add('preflight')
-        elif path in ('scripts/verify-fixes.sh', 'scripts/ci/test-verify-fixes.py'):
+        elif path in ('scripts/verify-fixes.sh', 'scripts/ci/test-verify-fixes.py') or path.startswith('scripts/ast-grep-rules/'):
             selected.add('postfix')
         elif path in ('scripts/dev/reinstall-skills.sh', 'scripts/dev/install-codex-agents.sh',
                       'scripts/dev/install-claude-agents.sh', 'scripts/ci/test-reinstall-skills.py'):

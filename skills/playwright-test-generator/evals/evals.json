@@ -105,9 +105,9 @@
       "id": 7,
       "title": "Scanner gate fixes P1 and respects JUSTIFIED",
       "prompt": "After writing specs for evals/files/project-pom/, the e2e-reviewer scanner reports a P1 hit for a #submit-btn id selector at tests/checkout.spec.ts:14 and a hit at line 31 on a positional locator that has a '// JUSTIFIED: list order is the behaviour under test' marker on the line above.",
-      "expected_output": "Runs the pinned scan.sh invocation (E2E_SMELL_ALLOW_PROJECT_ESLINT=0 ... via /usr/bin/env -u ...) from the real e2e-reviewer skill directory once per changed spec file, replaces the id selector with a role locator, leaves the justified line, re-scans (at most 3 passes), then runs the project's tests once.",
+      "expected_output": "Runs /bin/bash -p <its skill dir>/scripts/scan.sh --fail-on p0 <one spec file> from the loaded e2e-reviewer skill copy once per changed spec file, without project ESLint opt-in, replaces the id selector with a role locator, leaves the justified line, re-scans (at most 3 passes), then runs the project's tests once.",
       "assertions": [
-        "Runs the scanner from the real e2e-reviewer skill directory, not a copy inside the repo, once per changed spec file (not on the whole test directory), with the pinned E2E_SMELL_ settings and no other E2E_SMELL_ override",
+        "Runs the scanner from the real e2e-reviewer skill directory, not a copy inside the repo, once per changed spec file (not on the whole test directory), with --fail-on p0 and no project ESLint opt-in",
         "Replaces the #submit-btn selector with a role or label locator",
         "Runs the project test command once after the scanner passes",
         "FALSE-POSITIVE GUARD: does not remove or rewrite the justified positional locator at line 31"
