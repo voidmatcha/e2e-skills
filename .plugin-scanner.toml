@@ -17,6 +17,10 @@ ignore_paths = [
   # eval is source text parsed as a fixture, never executed by this test.
   "packages/scanner/test/config-context.test.mjs",
   # Fixed test programs use argv arrays; the oracle shell policy is hash-pinned.
+  # These Node fixtures use fixed programs and JSON-serialized temporary paths,
+  # never shell strings or untrusted project input.
+  "scripts/ci/test-all-in-one-install-node.mjs",
+  "packages/scanner/test/probe-runtime.test.mjs",
   "packages/scanner/test/project-context.test.mjs",
   "packages/scanner/test/cli.test.mjs",
   "packages/scanner/test/legacy-oracle.test.mjs",
