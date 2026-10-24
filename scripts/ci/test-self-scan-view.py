@@ -3,6 +3,7 @@
 """The CI-only frozen exception cannot hide changed or additional test source."""
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import copy
@@ -149,17 +150,29 @@ class ViewTests(unittest.TestCase):
                 ("conditionalAssertions", "provenance-unsupported", 1801),
                 ("conditionalAssertions", "import-unpinned", 1920),
                 ("conditionalAssertions", "import-unpinned", 2115)]
+        locations = {1517: (21, 11, 1523), 543: (9, 18, 547),
+                     1801: (26, 99, 1826), 1920: (29, 13, 1926), 2115: (32, 13, 2121)}
+        identity = [HELPER.FROZEN_SHA256, file, "conditionalAssertions", "provenance-unsupported", 1801, 1826]
+        digest = hashlib.sha256(json.dumps(identity, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
+        task = {"taskId": f"analysis-sha256:{digest}", "status": "UNRESOLVED",
+                "detector": "conditionalAssertions", "code": "provenance-unsupported", "file": file,
+                "start": 1801, "end": 1826, "line": 26, "column": 99,
+                "sourceSha256": HELPER.FROZEN_SHA256,
+                "requirements": ["verify-runtime-binding", "verify-branch-reachability",
+                                 "verify-independent-postcondition"]}
         return {
             "schema": "e2e-skills-node-scan-v1", "status": "INCOMPLETE", "scope": "static-review",
             "failOn": "p0-candidate", "files": 1, "coverage": {"complete": False},
             "compatibility": {"contract": "source-review-v1", "status": "development", "referenceLegacyCallVariants": 69},
-            "review": {"required": True, "candidates": 2, "obligations": []},
+            "review": {"required": True, "candidates": 2, "obligations": [], "analysisTasks": [task]},
             "execution": {"complete": False, "exitCode": 2,
                           "incomplete": [f"analysis incomplete: {file}: {detector} could not establish its contract"
                                          + (f" at offset {start}" if start is not None else "")
                                          for detector, _, start in gaps],
                           "diagnostics": [{"code": code, "detector": detector, "file": file,
-                                           **({"start": start} if start is not None else {})}
+                                           **({"start": start, "line": locations[start][0],
+                                               "column": locations[start][1], "end": locations[start][2]}
+                                              if start is not None else {})}
                                           for detector, code, start in gaps]},
             "counts": {"total": 2, "p0": 0, "p1p2": 0, "triage": 2, "p0Candidate": 2, "ast": 2, "confirmed": 0},
             "findings": [{"patternId": pattern, "severity": "P0", "disposition": "candidate", "origin": "ast",
@@ -181,6 +194,25 @@ class ViewTests(unittest.TestCase):
                 },
             },
         }
+
+    def test_non_ascii_source_path_uses_literal_unicode_task_identity(self):
+        unicode_source = self.base / "프로젝트-é"
+        shutil.copytree(self.source, unicode_source)
+        self.source = unicode_source
+        self.fixture = self.source / HELPER.FROZEN_PATH
+        report = self.control_report()
+        verify = lambda value: HELPER.verify_original_candidates(
+            self.source, subprocess.CompletedProcess([], 2, json.dumps(value)))
+        verify(report)
+        identity = [HELPER.FROZEN_SHA256, str(self.fixture), "conditionalAssertions",
+                    "provenance-unsupported", 1801, 1826]
+        escaped_digest = hashlib.sha256(
+            json.dumps(identity, ensure_ascii=True, separators=(",", ":")).encode()).hexdigest()
+        escaped_task_id = f"analysis-sha256:{escaped_digest}"
+        self.assertNotEqual(report["review"]["analysisTasks"][0]["taskId"], escaped_task_id)
+        report["review"]["analysisTasks"][0]["taskId"] = escaped_task_id
+        with self.assertRaises(HELPER.ViewError):
+            verify(report)
 
     def test_unknown_original_scan_outcomes_fail_closed(self):
         valid = self.control_report()
@@ -213,6 +245,23 @@ class ViewTests(unittest.TestCase):
             changed = copy.deepcopy(valid)
             changed["execution"]["diagnostics"][0][field] = value
             with self.subTest(diagnostic=field), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        for field, value in [("line", 22), ("column", 12), ("end", 1524), ("end", True)]:
+            changed = copy.deepcopy(valid)
+            changed["execution"]["diagnostics"][1][field] = value
+            with self.subTest(position=field), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        for field, value in [("taskId", "analysis-sha256:forged"), ("sourceSha256", "0" * 64),
+                             ("start", 1802), ("end", 1827), ("line", 27), ("column", 100),
+                             ("status", "RESOLVED"), ("requirements", [])]:
+            changed = copy.deepcopy(valid)
+            changed["review"]["analysisTasks"][0][field] = value
+            with self.subTest(task=field), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+        for tasks in ([], [valid["review"]["analysisTasks"][0]] * 2):
+            changed = copy.deepcopy(valid)
+            changed["review"]["analysisTasks"] = tasks
+            with self.subTest(tasks=tasks), self.assertRaises(HELPER.ViewError):
                 verify(changed)
         for change in ("missing-gap", "extra-gap", "complete", "exit", "empty-reasons", "fake-count"):
             changed = copy.deepcopy(valid)

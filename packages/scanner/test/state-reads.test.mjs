@@ -106,3 +106,91 @@ test('unresolved/mutable provenance and malformed source stay incomplete', () =>
   }
   assert.match(stateReads(Buffer.from(''), 'x.ts').diagnostics[0].message, /pinned scope/);
 });
+
+test('nested callbacks cannot silently borrow an outer retry exemption', () => {
+  for (const nested of [
+    "setTimeout(async()=>{expect(await page.locator('row').count()).toBe(1);},0);",
+    "const later=async()=>{expect(await page.locator('row').count()).toBe(1);}; save(later);",
+    "async function later(){expect(await page.locator('row').count()).toBe(1);} save(later);",
+    "class Helper {async later(){expect(await page.locator('row').count()).toBe(1);}} save(new Helper());",
+    "const helper={async later(){expect(await page.locator('row').count()).toBe(1);}}; save(helper);",
+    "void (async()=>{expect(await page.locator('row').count()).toBe(1);})();",
+    "await Promise.all([1].map(async()=>{expect(await page.locator('row').count()).toBe(1);}));",
+  ]) for (const retry of [
+    `await expect(async()=>{${nested}}).toPass();`,
+    `await expect.poll(async()=>{${nested} return 1;}).toBe(1);`,
+  ]) {
+    const result=run(body(retry));
+    assert.deepEqual(result.findings,[],retry);
+    assert.equal(result.diagnostics.length,1,retry);
+    assert.match(result.diagnostics[0].message,/retry propagation across a nested callback is unproven/);
+    assert.equal(result.diagnostics[0].start,body(retry).indexOf("expect(await page.locator"));
+  }
+  const direct=run(body("await expect(async()=>{expect(await page.locator('row').count()).toBe(1);}).toPass();\n"+
+    "await expect.poll(async()=>{expect(await page.locator('row').count()).toBe(1);return 1;}).toBe(1);\n"+
+    "await expect(async function(){expect(await page.locator('row').count()).toBe(1);}).toPass();"));
+  assert.deepEqual(direct,{findings:[],diagnostics:[]},'direct retry callbacks keep their exemption');
+});
+
+test('a detached timer assertion can settle after its enclosing async callback', async () => {
+  const trace=[];
+  let finish;
+  const timerFinished=new Promise(resolve=>{finish=resolve;});
+  const retryCallback=async()=>{
+    setTimeout(async()=>{await Promise.resolve();trace.push('assertion');finish();},0);
+    trace.push('callback');
+  };
+  await retryCallback();
+  trace.push('outer-settled');
+  assert.deepEqual(trace,['callback','outer-settled']);
+  await timerFinished;
+  assert.deepEqual(trace,['callback','outer-settled','assertion']);
+});
+
+test('canonical CLI keeps nested retry propagation unresolved instead of returning COMPLETE', async t => {
+  const {spawnSync}=await import('node:child_process');
+  const {fileURLToPath}=await import('node:url');
+  const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'e2e-retry-boundary-')));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.writeFileSync(path.join(root,'example.spec.ts'),body(
+    "await expect(async()=>{setTimeout(async()=>{expect(await page.locator('row').count()).toBe(1);},0);}).toPass();"));
+  const cli=fileURLToPath(new URL('../src/cli.mjs',import.meta.url));
+  const result=spawnSync(process.execPath,[cli,'--scan',root],{encoding:'utf8',timeout:30000});
+  assert.equal(result.status,2,result.stderr);
+  const report=JSON.parse(result.stdout);
+  assert.equal(report.status,'INCOMPLETE');
+  assert.equal(report.execution.complete,false);
+  assert.ok(report.execution.diagnostics.some(d=>d.detector==='stateReads'&&d.code==='provenance-unsupported'));
+  assert.ok(report.review.analysisTasks.some(task=>task.detector==='stateReads'&&task.status==='UNRESOLVED'));
+});
+
+
+test('async generator retry callbacks do not prove that their assertion body executes', () => {
+  for (const text of [
+    "await expect(async function*(){expect(await page.locator('row').count()).toBe(1);}).toPass();",
+    "await expect.poll(async function*(){expect(await page.locator('row').count()).toBe(1);}).toBe(1);",
+  ]) {
+    const result=run(body(text));
+    assert.deepEqual(result.findings,[]);
+    assert.equal(result.diagnostics.length,1);
+    assert.match(result.diagnostics[0].message,/generator retry callback execution is unproven/);
+  }
+});
+
+test('ordinary control-flow blocks inside a direct retry callback keep their exemption', () => {
+  for (const block of [
+    "if(ready){expect(await page.locator('row').count()).toBe(1);}",
+    "for(const item of items){expect(await page.locator('row').count()).toBe(1);}",
+    "try{expect(await page.locator('row').count()).toBe(1);}finally{cleanup();}",
+  ]) assert.deepEqual(run(body(`await expect(async()=>{${block}}).toPass();`)),{findings:[],diagnostics:[]});
+});
+
+test('awaiting an async generator callback returns its iterator without executing the body', async () => {
+  const trace=[];
+  const callback=async function*(){trace.push('body');yield 1;};
+  const iterator=await callback();
+  assert.deepEqual(trace,[]);
+  assert.equal(typeof iterator.next,'function');
+  await iterator.next();
+  assert.deepEqual(trace,['body']);
+});

@@ -30,9 +30,9 @@ Use `--host claude` for Claude Code. `--project` names the directory containing 
 The npm CLI installs the same skills and agents without a repository clone. Preview the changes, then install and diagnose the selected host:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills install --host codex --project /path/to/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills doctor --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills doctor --host codex --project /path/to/playwright-project
 ```
 
 Use `--host claude` for Claude Code. Installation reuses the host installer described above; it does not create a project or install its dependencies or browsers. The default `doctor` returns structured file checks, missing requirements and next steps without executing project code. Active-session tools and approvals remain unknown.

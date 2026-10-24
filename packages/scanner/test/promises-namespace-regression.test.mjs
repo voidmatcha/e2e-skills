@@ -164,7 +164,7 @@ test('catch callbacks cannot borrow their chain await; floating and unresolved c
     const result = analyze(scenario(body));
     assert.deepEqual(result.findings.map(f => [f.patternId, f.disposition]), [['#15', 'candidate']], body);
   }
-  // This bounded change is assertion-only; action-chain accounting is unchanged.
+  // Proven action catch chains also consume their underlying action promise.
   assert.deepEqual(analyze(scenario("await page.click('button').catch(() => {});")).findings
-    .map(f => [f.patternId, f.disposition]), [['#16', 'candidate']]);
+    .map(f => [f.patternId, f.disposition]), []);
 });

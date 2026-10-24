@@ -284,16 +284,57 @@ def canonical_section(report: dict, selector: str) -> str:
     return finding_locations(report, pattern, severity=severity, disposition=disposition)
 
 
-def source_diagnostics(scan_root: Path, specifications: list[tuple[str, str, str, int | None]]) -> list[dict]:
+def source_diagnostics(
+    scan_root: Path,
+    specifications: list[tuple[str, str, str, int | None] | tuple[str, str, str, int, str]],
+) -> list[dict]:
     """Exact source-adjudicated incomplete contracts, never an exit-2 waiver."""
     base = scan_root.resolve() if scan_root.is_dir() else scan_root.resolve().parent
     result = []
-    for code, detector, relative, start in specifications:
+    for specification in specifications:
+        code, detector, relative, start = specification[:4]
         item = {"code": code, "detector": detector, "file": str(base / relative)}
         if start is not None:
             item["start"] = start
+            if detector != "importSnapshot":
+                source = (base / relative).read_bytes().decode("utf-8")
+                # Scanner offsets are UTF-16 units, not Python code points.
+                encoded = source.encode("utf-16-le")
+                assert start * 2 <= len(encoded), specification
+                prefix = encoded[:start * 2].decode("utf-16-le")
+                lines = re.split(r"\r\n|[\r\n\u2028\u2029]", prefix)
+                item.update(line=len(lines), column=len(lines[-1].encode("utf-16-le")) // 2 + 1)
+                assert len(specification) == 5, f"missing pinned diagnostic source span: {specification!r}"
+                span = specification[4]
+                length = len(span.encode("utf-16-le")) // 2
+                assert length > 0 and encoded[start * 2:(start + length) * 2].decode("utf-16-le") == span, specification
+                item["end"] = start + length
         result.append(item)
     return result
+
+
+def assert_source_diagnostic_positions_require_pinned_spans() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-diagnostic-source-positions-") as temp:
+        root = Path(temp)
+        target = root / "positions.spec.ts"
+        target.write_bytes("😀 \r\nexpect(value);".encode("utf-8"))
+        specs = [("import-unpinned", "assertions", target.name, 5, "expect")]
+        expected = [{"code": "import-unpinned", "detector": "assertions", "file": str(target.resolve()),
+                     "start": 5, "line": 2, "column": 1, "end": 11}]
+        assert source_diagnostics(root, specs) == expected
+        for span in ("", "expect(other)", "value"):
+            try:
+                source_diagnostics(root, [("import-unpinned", "assertions", target.name, 5, span)])
+            except AssertionError:
+                pass
+            else:
+                raise AssertionError(f"unpinned diagnostic span accepted: {span!r}")
+        try:
+            source_diagnostics(root, [("import-unpinned", "assertions", target.name, 5)])
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("missing diagnostic span accepted")
 
 
 def node_scan(
@@ -853,10 +894,9 @@ def assert_awaited_value_reads_are_not_generic_locator_candidates() -> None:
         # candidate without claiming runtime provenance or a complete analysis.
         assert report["execution"]["complete"] is False, report
         assert report["execution"]["exitCode"] == 2, report
-        assert report["execution"]["diagnostics"] == [{
-            "code": "provenance-unsupported", "detector": "assertions",
-            "file": str((root / "generic-values.spec.ts").resolve()), "start": 391,
-        }], report["execution"]
+        assert report["execution"]["diagnostics"] == source_diagnostics(root, [
+            ("provenance-unsupported", "assertions", "generic-values.spec.ts", 391, "app.getByRole('status')"),
+        ]), report["execution"]
         generic = finding_locations(report, "#4f", severity="P0", disposition="candidate")
         assert "generic-values.spec.ts:7:" in generic, report
         for line in (3, 4, 5):
@@ -1031,7 +1071,7 @@ def assert_ast_scope() -> None:
         fake_ast_grep.chmod(0o755)
 
         current = node_scan(root, expected_diagnostics=source_diagnostics(root, [
-            ("provenance-unsupported", "promises", "shadowed.spec.ts", 76),
+            ("provenance-unsupported", "promises", "shadowed.spec.ts", 76, 'expect'),
         ]))
         current_missing = finding_locations(current.report, "#15", severity="P1", disposition="confirmed")
         for name, line in (("direct.spec.ts", 4), ("custom.spec.ts", 3), ("cjs-property.spec.ts", 2)):
@@ -1804,7 +1844,7 @@ def assert_ast_generic_getby_is_triage_only() -> None:
 
         # Unknown custom wrapper remains a candidate with an exact unsupported diagnostic.
         current = node_scan(root, expected_diagnostics=source_diagnostics(root, [
-            ("provenance-unsupported", "assertions", "wrapper.spec.ts", 132),
+            ("provenance-unsupported", "assertions", "wrapper.spec.ts", 132, "app.getByRole('button')"),
         ]))
         assert "wrapper.spec.ts:4:" in finding_locations(current.report, "#4f", severity="P0", disposition="candidate")
         assert not finding_locations(current.report, "#4f", severity="P0", disposition="confirmed")
@@ -2620,7 +2660,7 @@ def assert_executable_wait_timeout_and_shadowed_test_boundaries() -> None:
             encoding="utf-8",
         )
 
-        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('type-unsupported', 'timeoutZero', 'boundaries.spec.ts', 488)]))
+        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('type-unsupported', 'timeoutZero', 'boundaries.spec.ts', 488, 'page')]))
         assert result.returncode == 2, result.stdout
         assert not canonical_section(result.report, "[P0] #7 Focused test committed")
         # A declared Page type does not prove the runtime Page object.
@@ -3075,7 +3115,7 @@ def assert_positional_selector_is_always_triage() -> None:
             encoding="utf-8",
         )
 
-        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "any"}, expected_diagnostics=source_diagnostics(root, [('provenance-unsupported', 'domQueries', 'position.spec.ts', 97)]))
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "any"}, expected_diagnostics=source_diagnostics(root, [('provenance-unsupported', 'domQueries', 'position.spec.ts', 97, 'database.query()')]))
         assert result.returncode == 2, result.stdout
         positional = canonical_section(result.report, "[P1?][LLM-TRIAGE] #10a Positional selector")
         assert "position.spec.ts:3:" in positional
@@ -3160,7 +3200,7 @@ def assert_whitespace_comments_and_shadowed_page_boundaries() -> None:
             encoding="utf-8",
         )
 
-        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('provenance-unsupported', 'actions', 'whitespace.spec.ts', None), ('provenance-unsupported', 'promises', 'whitespace.spec.ts', 253)]))
+        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('provenance-unsupported', 'actions', 'whitespace.spec.ts', None), ('provenance-unsupported', 'promises', 'whitespace.spec.ts', 253, 'page.locator()')]))
         assert result.returncode == 2, result.stdout
         assert "whitespace.spec.ts:2:" in canonical_section(result.report, "[P0] #7 Focused test committed")
         assert "whitespace.spec.ts:3:" in canonical_section(result.report, "[P0?][LLM-TRIAGE] #5a Conditional branch contains assertion")
@@ -3526,7 +3566,7 @@ def assert_unreadable_fixture_module_fails_closed() -> None:
             login = project / "e2e/login.spec.ts"
             assert current_blocked["execution"]["diagnostics"] == source_diagnostics(login, [
                 ("import-read-unavailable", "importSnapshot", "login.spec.ts", imports.index("import { expect }") if shape == "expect helper" else 0),
-                ("import-missing", "assertions", "login.spec.ts", login.read_text().index("expect(page")),
+                ("import-missing", "assertions", "login.spec.ts", login.read_text().index("expect(page"), "expect"),
             ])
             assert not finding_locations(current_blocked, "#4f", severity="P0", disposition="confirmed")
             if shape == "fixture module":
@@ -3777,10 +3817,9 @@ def assert_locator_identifier_requires_provenance() -> None:
         # createResourceHandle() has no implementation. Its candidate remains
         # alongside typed/proven positives, but its exact unknown provenance
         # must keep execution incomplete rather than claiming a clean scan.
-        result = node_scan(root, expected_diagnostics=[{
-            "code": "provenance-unsupported", "detector": "assertions",
-            "file": str(target.resolve()), "start": 171,
-        }])
+        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [
+            ("provenance-unsupported", "assertions", "locator-provenance.spec.ts", 171, "resourceLocator"),
+        ]))
         assert result.returncode == 2, result.stdout
         mechanical = canonical_section(result.report, "[P0] #4f Locator always-true assertion (truthy/defined/not-null)")
         assert "locator-provenance.spec.ts:4:" not in mechanical
@@ -3846,7 +3885,7 @@ def assert_arbitrary_conditional_assertions_are_triage() -> None:
             encoding="utf-8",
         )
 
-        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "any"}, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'conditionalAssertions', 'conditional.spec.ts', 213)]))
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "any"}, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'conditionalAssertions', 'conditional.spec.ts', 213, 'assert.ok(response.body)')]))
         assert result.returncode == 2, result.stdout
         conditional = canonical_section(result.report, "[P0?][LLM-TRIAGE] #5a Conditional branch contains assertion")
         assert "conditional.spec.ts:3:" in conditional
@@ -4094,7 +4133,7 @@ def assert_pom_catch_scope() -> None:
             encoding="utf-8",
         )
 
-        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'catchHandlers', 'account-page.ts', 173), ('analysis-unknown', 'catchHandlers', 'account-page.ts', 228), ('analysis-unknown', 'catchHandlers', 'account-page.ts', 286), ('analysis-unknown', 'catchHandlers', 'account-page.ts', 339)]))
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'catchHandlers', 'account-page.ts', 173, 'catch'), ('analysis-unknown', 'catchHandlers', 'account-page.ts', 228, 'catch'), ('analysis-unknown', 'catchHandlers', 'account-page.ts', 286, 'catch'), ('analysis-unknown', 'catchHandlers', 'account-page.ts', 339, 'catch')]))
         assert result.returncode == 2, result.stdout
         # Type-only `import type { Page }` is enough to put this POM in scope.
         empty = finding_locations(result.report, "#3", severity="P0", disposition="candidate", variant="empty")
@@ -4166,7 +4205,7 @@ def assert_try_catch_rethrow_and_jsx_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 208), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 432), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 692), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 808)]))
+        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 208, 'catch (error) { if (!(error instanceof TimeoutError)) throw error; }'), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 432, 'catch (error) { if (!(error instanceof SlotError)) throw error; }'), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 692, 'catch (error) { if (recover) return; throw error; }'), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 808, "catch { const help = <p>Don't throw this away</p>; }")]))
         assert result.returncode == 2, result.stdout
         candidates = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
         for line in (5, 7, 15, 17):
@@ -4197,7 +4236,7 @@ def assert_try_catch_named_error_identity_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 164), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 279), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 399), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 536), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 676)]))
+        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 164, "catch (e) { if (e.name !== 'TimeoutError') throw e; }"), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 279, 'catch (e) { if (!(e instanceof PaymentError)) throw e; }'), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 399, "catch (e) {\n    if (e.constructor.name !== 'PaymentError') throw e;\n  }"), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 536, "catch (e) { if (!(e.constructor.name === 'BrowserTimeoutError')) throw e; }"), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 676, 'catch (e) { if (!(e instanceof AssertionError)) throw e; }')]))
         assert result.returncode == 2, result.stdout
         candidates = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
         for line in (4, 12, 14):
@@ -4300,7 +4339,7 @@ def assert_empty_catch_syntax_requires_semantic_confirmation() -> None:
         target.write_text(source, encoding="utf-8")
         expected_lines = {3, 4, 5, 6, 7, 10, 11, 14, 19, 24}
         for policy in ("p0", "p0-candidate"):
-            result = node_scan(target, {"E2E_SMELL_FAIL_ON": policy}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'semantic.spec.ts', 782), ('analysis-unknown', 'softAssertions', 'semantic.spec.ts', 173)]))
+            result = node_scan(target, {"E2E_SMELL_FAIL_ON": policy}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'semantic.spec.ts', 782, "{ throw new Error('still fails'); }"), ('analysis-unknown', 'softAssertions', 'semantic.spec.ts', 173, "expect.soft(page.getByRole('main'))")]))
             assert result.returncode == 2, result.stdout  # Exact retained diagnostics take precedence over policy.
             assert not canonical_section(result.report, "[P0] #3"), result.stdout
             candidates = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
@@ -4339,8 +4378,8 @@ def assert_empty_catch_assertions_and_actions_remain_candidates() -> None:
 
         result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(root, [
             ("provenance-unsupported", "actions", "oracle.spec.ts", None),
-            ("provenance-unsupported", "promises", "oracle.spec.ts", 291),
-            ("provenance-unsupported", "pageReads", "oracle.spec.ts", 291),
+            ("provenance-unsupported", "promises", "oracle.spec.ts", 291, 'page.keyboard'),
+            ("provenance-unsupported", "pageReads", "oracle.spec.ts", 291, 'page.keyboard'),
         ]))
         assert result.returncode == 2, result.stdout
         assert not canonical_section(result.report, "[P0] #3"), result.stdout
@@ -4410,7 +4449,7 @@ def assert_empty_catch_attached_assertions_remain_candidates() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "p0"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'softAssertions', 'attach.spec.ts', 187)]))
+        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "p0"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'softAssertions', 'attach.spec.ts', 187, "expect.soft(page.locator('.r'))")]))
         assert result.returncode == 2, result.stdout
         assert (
             not canonical_section(result.report, "[P0] #3")
@@ -4553,7 +4592,7 @@ def assert_swallowed_assertion_triage() -> None:
             encoding="utf-8",
         )
 
-        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'catchHandlers', 'swallowed.spec.ts', 447)]))
+        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'catchHandlers', 'swallowed.spec.ts', 447, '{\n    await cleanup();\n  }')]))
         assert result.returncode == 2, result.stdout
         all_settled = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible assertion failure swallowed by Promise.allSettled")
         finally_return = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible assertion failure masked by finally return")
@@ -5491,8 +5530,8 @@ def assert_v11_final_boundaries() -> None:
         # with every original non-attribution guard retained below.
         shadow_result = node_scan(shadow, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(shadow, [
             ("analysis-unknown", "focusedTests", "shadow.spec.ts", None),
-            ("analysis-unknown", "promises", "shadow.spec.ts", 170),
-            ("analysis-unknown", "catchHandlers", "shadow.spec.ts", 233),
+            ("analysis-unknown", "promises", "shadow.spec.ts", 170, 'expect'),
+            ("analysis-unknown", "catchHandlers", "shadow.spec.ts", 233, 'catch (expect) {\n  expect({}).toBeVisible();\n}'),
         ]))
         assert "shadow.spec.ts:4:" not in all_finding_locations(shadow_result.report)
         assert "shadow.spec.ts:5:" not in all_finding_locations(shadow_result.report)
@@ -5613,7 +5652,7 @@ def assert_v14_product_boundaries() -> None:
         )
         unresolved_expect_result = node_scan(
             unresolved_expect, {"E2E_SMELL_FAIL_ON": "none"}
-        , expected_diagnostics=source_diagnostics(unresolved_expect, [('import-unpinned', 'promises', 'external-expect.spec.ts', 51)]))
+        , expected_diagnostics=source_diagnostics(unresolved_expect, [('import-unpinned', 'promises', 'external-expect.spec.ts', 51, 'expect')]))
         unresolved_expect_heading = (
             "[P1?][LLM-TRIAGE] #15 "
             "Possible missing await on expect from unresolved test-fixture source"
@@ -5675,8 +5714,8 @@ def assert_v14_product_boundaries() -> None:
             encoding="utf-8",
         )
         computed_result = node_scan(computed, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(computed, [
-            ("provenance-unsupported", "assertions", "computed-cjs.spec.ts", 144),
-            ("shape-unsupported", "assertions", "computed-cjs.spec.ts", 186),
+            ("provenance-unsupported", "assertions", "computed-cjs.spec.ts", 144, "page.locator('.ready')"),
+            ("shape-unsupported", "assertions", "computed-cjs.spec.ts", 186, "expect(page.locator('.mutable'))[mutableMatcher]"),
         ]))
         computed_heading = (
             "[P0?][LLM-TRIAGE] #4f "
@@ -5789,7 +5828,7 @@ def assert_v15_blind_audit_boundaries() -> None:
             "expect(wrapper(page.locator('.ready'))).toBeTruthy();\n",
             encoding="utf-8",
         )
-        wrapped_result = node_scan(wrapped, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(wrapped, [('provenance-unsupported', 'assertions', 'wrapped-locator.spec.ts', 99)]))
+        wrapped_result = node_scan(wrapped, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(wrapped, [('provenance-unsupported', 'assertions', 'wrapped-locator.spec.ts', 99, "wrapper(page.locator('.ready'))")]))
         final_truthy = (
             "[P0] #4f Locator always-true assertion (truthy/defined/not-null)"
         )
@@ -6961,7 +7000,7 @@ def assert_v16_unresolved_scope_boundaries() -> None:
         )
         numeric_result = node_scan(
             unresolved_numeric, {"E2E_SMELL_FAIL_ON": "none"}
-        , expected_diagnostics=source_diagnostics(unresolved_numeric, [('import-unpinned', 'assertions', 'unresolved-numeric.ts', 75)]))
+        , expected_diagnostics=source_diagnostics(unresolved_numeric, [('import-unpinned', 'assertions', 'unresolved-numeric.ts', 75, 'expect')]))
         assert "unresolved-numeric.ts:3:" in canonical_section(numeric_result.report, "[P0?][LLM-TRIAGE] #4a Always-true numeric assertion")
 
         unit_numeric = root / "unit-numeric.ts"
@@ -6998,14 +7037,14 @@ def assert_v25_scanner_security_boundaries() -> None:
         )
         current_unresolved = node_scan(unresolved, expected_diagnostics=source_diagnostics(unresolved, [
             ("import-unpinned", "focusedTests", "custom-fixture-alias.ts", None),
-            ("import-unpinned", "assertions", "custom-fixture-alias.ts", 250),
-            ("import-unpinned", "assertions", "custom-fixture-alias.ts", 289),
-            ("import-unpinned", "assertions", "custom-fixture-alias.ts", 450),
-            ("import-unpinned", "promises", "custom-fixture-alias.ts", 186),
+            ("import-unpinned", "assertions", "custom-fixture-alias.ts", 250, 'verify'),
+            ("import-unpinned", "assertions", "custom-fixture-alias.ts", 289, 'verify'),
+            ("import-unpinned", "assertions", "custom-fixture-alias.ts", 450, 'page'),
+            ("import-unpinned", "promises", "custom-fixture-alias.ts", 186, 'verify'),
             ("import-unpinned", "catchHandlers", "custom-fixture-alias.ts", None),
-            ("import-unpinned", "conditionalAssertions", "custom-fixture-alias.ts", 346),
-            ("analysis-unknown", "conditionalAssertions", "custom-fixture-alias.ts", 346),
-            ("import-unpinned", "conditionalAssertions", "custom-fixture-alias.ts", 397),
+            ("import-unpinned", "conditionalAssertions", "custom-fixture-alias.ts", 346, "page.locator('.optional')"),
+            ("analysis-unknown", "conditionalAssertions", "custom-fixture-alias.ts", 346, "page.locator('.optional').isVisible()"),
+            ("import-unpinned", "conditionalAssertions", "custom-fixture-alias.ts", 397, 'verify'),
         ]))
         expected = {"#3": 4, "#4a": 5, "#4f": 6, "#5a": 7, "#7": 2, "#8a": 10}
         for pattern, line in expected.items():
@@ -7344,7 +7383,7 @@ def assert_main_inline_contract() -> None:
 # Replace main() body before run_checks_in_parallel; preserve the subsequent checks.
     exclusions_path = EVAL_FILES / 'documented-exclusions.spec.ts'
     exclusions = node_scan(exclusions_path, expected_diagnostics=source_diagnostics(exclusions_path, [
-        ('analysis-unknown', 'stateReads', 'documented-exclusions.spec.ts', 942),
+        ('analysis-unknown', 'stateReads', 'documented-exclusions.spec.ts', 942, 'flags'),
     ]))
     assert exclusions.returncode == 2
     assert {item['line'] for item in exclusions.report['findings'] if item['patternId'] == '#5a'} == {15, 64}
@@ -7357,9 +7396,9 @@ def assert_main_inline_contract() -> None:
     contexts_path = EVAL_FILES / 'missing-await-contexts.spec.ts'
     contexts = node_scan(contexts_path, expected_diagnostics=source_diagnostics(contexts_path, [
         ('provenance-unsupported', 'actions', 'missing-await-contexts.spec.ts', None),
-        ('provenance-unsupported', 'pageReads', 'missing-await-contexts.spec.ts', 397),
-        ('analysis-unknown', 'catchHandlers', 'missing-await-contexts.spec.ts', 5069),
-        ('analysis-unknown', 'accessibleNames', 'missing-await-contexts.spec.ts', 3422),
+        ('provenance-unsupported', 'pageReads', 'missing-await-contexts.spec.ts', 397, "page.locator('#return-dispatch')"),
+        ('analysis-unknown', 'catchHandlers', 'missing-await-contexts.spec.ts', 5069, "Promise.allSettled([page.locator('#settled-preview').screenshot()])"),
+        ('analysis-unknown', 'accessibleNames', 'missing-await-contexts.spec.ts', 3422, "page\n      .getByRole('button', { name: 'Open details' })"),
     ]))
     assert contexts.returncode == 2
     def lines(pattern, disposition):
@@ -7388,6 +7427,7 @@ def assert_main_inline_contract() -> None:
 
 
 def main() -> None:
+    assert_source_diagnostic_positions_require_pinned_spans()
     assert_main_inline_contract()
 
     # Each check owns a temporary directory and shells out to scan.sh, so the wall clock here

@@ -631,10 +631,10 @@ export function reviewCandidates(bytes, filename, { scope } = {}) {
         ts.isExpressionStatement(statement.parent) && statement.parent.parent === source &&
         access.name === 'waitForLoadState' && node.arguments.length === 1 && literalString(node.arguments[0]) === 'networkidle') record('#9c', 'P1', node, 'unresolved-page');
   }
-  function record(patternId, severity, node, kind) {
+  function record(patternId, severity, node, kind, end = node.end) {
     const start = node.getStart(source), position = source.getLineAndCharacterOfPosition(start);
     findings.push({ patternId, severity, disposition: 'candidate', origin: 'ast', file: filename,
-      line: position.line + 1, column: position.character + 1, start, end: node.end,
+      line: position.line + 1, column: position.character + 1, start, end,
       evidence: { kind, requirements: ['verify-runtime-binding', 'verify-required-test-outcome'] } });
   }
   function unresolvedCall(node) {
@@ -828,7 +828,18 @@ export function reviewCandidates(bytes, filename, { scope } = {}) {
     if (!expectKind) return;
     if (node.arguments.length === 0 && (negated ? ['toBeNull', 'toBeUndefined'] : ['toBeTruthy', 'toBeDefined']).includes(access.name)) {
       const kind = subjectKind(base.arguments[0]);
-      if (kind) record('#4f', 'P0', base, kind);
+      // Only unknown factory identifiers overlap the strict assertion lane.
+      // Keep bare expect-call anchors for POM properties and other review-only
+      // shapes: semantic obligations identify that exact AST call range.
+      const subject = unwrap(base.arguments[0]);
+      const binding = ts.isIdentifier(subject) && declaration(subject);
+      const factory = binding && ts.isVariableDeclaration(binding) && binding.initializer && unwrap(binding.initializer);
+      const overlap = expectKind === 'known' && ts.isIdentifier(subject) && HANDLE.test(subject.text) &&
+        binding && (binding.parent.flags & ts.NodeFlags.Const) &&
+        factory && ts.isCallExpression(factory) && !factory.questionDotToken &&
+        !factory.arguments.some(ts.isSpreadElement) && ts.isIdentifier(unwrap(factory.expression)) &&
+        declaration(unwrap(factory.expression)) === null;
+      if (kind) record('#4f', 'P0', base, kind, overlap ? node.end : base.end);
     }
     if (expectKind === 'unresolved' && ASYNC_MATCHERS.has(access.name) &&
         ts.isExpressionStatement(node.parent) && node.parent.expression === node) record('#15', 'P1', base, 'unresolved-fixture');

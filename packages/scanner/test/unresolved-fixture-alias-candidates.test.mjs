@@ -54,22 +54,34 @@ const originals = [
       {
         "code": "import-unpinned",
         "detector": "assertions",
-        "start": 250
+        "start": 250,
+        "line": 5,
+        "column": 3,
+        "end": 256
       },
       {
         "code": "import-unpinned",
         "detector": "assertions",
-        "start": 289
+        "start": 289,
+        "line": 6,
+        "column": 3,
+        "end": 295
       },
       {
         "code": "import-unpinned",
         "detector": "assertions",
-        "start": 450
+        "start": 450,
+        "line": 10,
+        "column": 3,
+        "end": 454
       },
       {
         "code": "import-unpinned",
         "detector": "promises",
-        "start": 186
+        "start": 186,
+        "line": 4,
+        "column": 9,
+        "end": 192
       },
       {
         "code": "import-unpinned",
@@ -78,17 +90,26 @@ const originals = [
       {
         "code": "import-unpinned",
         "detector": "conditionalAssertions",
-        "start": 346
+        "start": 346,
+        "line": 7,
+        "column": 13,
+        "end": 371
       },
       {
         "code": "analysis-unknown",
         "detector": "conditionalAssertions",
-        "start": 346
+        "start": 346,
+        "line": 7,
+        "column": 13,
+        "end": 383
       },
       {
         "code": "import-unpinned",
         "detector": "conditionalAssertions",
-        "start": 397
+        "start": 397,
+        "line": 8,
+        "column": 11,
+        "end": 403
       }
     ]
   },

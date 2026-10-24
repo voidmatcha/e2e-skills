@@ -151,6 +151,10 @@ export function promises(bytes, filename, { scope } = {}) {
       if (cypress.kind === 'cypress-runtime') return;
       const value = receiver(access.object);
       if (['page', 'locator', 'page-type', 'locator-type'].includes(value.kind)) {
+        // Proven actions return promises too. Adopt only a direct catch
+        // receiver edge; optional/computed actions retain candidate accounting.
+        if (!node.questionDotToken && !unwrap(node.expression).questionDotToken &&
+            ts.isPropertyAccessExpression(unwrap(node.expression)) && consumedCatchChain(node)) return;
         // Preserve legacy action-direct vs action-variable accounting. Stronger
         // AST alias proof must not silently promote the Locator/aliased arm.
         let root = unwrap(access.object), link;

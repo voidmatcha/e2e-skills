@@ -159,7 +159,7 @@ After this setup, you do not need to repeat the manual installation steps. Use t
 Install without a repository clone. Replace `codex` with `claude` for Claude Code; add `--dry-run` to preview changes. See the [installation guide](docs/installation.md#cli-installer) for diagnosis, prerequisites and conflicts.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills install --host codex --project /path/to/playwright-project
 ```
 
 <details>
@@ -360,7 +360,7 @@ The debuggers classify product regressions separately from brittle tests and ret
 Run the code scanner directly without asking an AI agent. It reports possible problems for review; it does not run your tests or decide whether they prove the intended behavior.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills-scan --scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills-scan --scan path/to/tests --format text
 ```
 
 Requires Node.js 22 or newer; the TypeScript parser is bundled. npx downloads the package and its dependencies if they are not already cached. Scanning does not execute tests or project configuration. Use `--format json` for structured output or `--report-file <new-file>` to save a full report without overwriting an existing file.

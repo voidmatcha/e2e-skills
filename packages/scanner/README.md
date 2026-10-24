@@ -2,21 +2,21 @@
 
 Static Playwright and Cypress test review with configuration context and explicitly approved probes. The scanner finds candidates; an LLM reviews context, selects checks and interprets the evidence. Scanning never starts a probe.
 
-The commands below pin version `3.2.0`.
+The commands below pin version `3.2.1`.
 
 Requires Node.js 22+. Neither CLI requires Python. Probe execution additionally requires a trusted, prepared project.
 
 ## Run with npx
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills-scan --scan /absolute/project/tests --format text
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills-scan --scan /absolute/project/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
 ```
 
 Or install locally:
 
 ```bash
-npm install --save-dev @voidmatcha/e2e-skills-scanner@3.2.0
+npm install --save-dev @voidmatcha/e2e-skills-scanner@3.2.1
 npx e2e-skills-scan --scan ./tests --format json
 npx e2e-skills-check --help
 ```
@@ -32,11 +32,11 @@ The reviewer skill includes its own scanner, so reviewing an existing project do
 Version 3.2.0 adds `e2e-skills install`, `doctor`, `scan` and `check`:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills install --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills doctor --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills scan /absolute/playwright-project/tests --format json
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills check --help
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills install --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills doctor --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills scan /absolute/playwright-project/tests --format json
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills check --help
 ```
 
 Command and option parsing for `install` and `doctor` uses the pinned MIT-licensed [Commander.js](https://github.com/tj/commander.js) package. Scanner and check arguments are passed through to their existing CLIs.
@@ -102,13 +102,22 @@ The separate `--bounded-static` mode reports `status: "PARTIAL"` even when execu
 
 ### Static-review contract
 
-`--scan` is the static-review contract used by the installed launcher. It runs the Node detectors directly, without invoking the legacy analyzer. JSON uses `e2e-skills-node-scan-v1`. `status: COMPLETE` and `execution.complete: true` mean mechanical discovery finished within the declared scope. `coverage.complete` remains false, and `review.required` is true whenever retained triage candidates need contextual review. Neither a complete discovery nor exit 0 means the tests are correct.
+`--scan` is the static-review contract used by the installed launcher. It runs the Node detectors directly, without invoking the legacy analyzer. JSON uses `e2e-skills-node-scan-v1`. `status: COMPLETE` and `execution.complete: true` mean mechanical discovery finished within the declared scope. `coverage.complete` remains false, and `review.required` is true whenever retained triage candidates or unresolved analysis tasks need contextual review. Neither a complete discovery nor exit 0 means the tests are correct.
 
 Uncertainty can become a review obligation only when its exact detector reason and AST location match a retained candidate with the required evidence. Other parser, read, provenance, drift and required ESLint failures remain incomplete and exit 2. Candidate-only P0 findings continue to require the explicit `p0-candidate` policy; they do not become confirmed P0 findings. Import discovery reads bounded local helpers without executing them or treating them as additional test targets.
 
 `--format text` renders a source-linked report. `--report-file /absolute/new-file` also selects text and creates a private file without replacing an existing path. Complete discovery permits a `Summary:` line; incomplete discovery is explicitly partial. JSON consumers should read canonical pattern, severity, disposition and source-location fields instead of inferring them from historical shell headings.
 
+Analysis diagnostics include `line` and `column` when their source offset can be located in the pinned input. Text reports show locations and fixed review guidance for common unresolved categories. These entries identify analysis gaps, not findings; they neither prove a defect nor clear the incomplete status.
+
+A direct awaited state read through `wrapper.page.locator('literal')` can remain a P1 candidate when the wrapper is constructed from a pinned relative import with a proven Page argument and no local writes. This shape does not prove the wrapper's runtime receiver: its diagnostic and incomplete status remain, with explicit receiver, expected-outcome and retry-boundary review requirements. Unbound or mutable wrappers are not promoted by this fallback.
+
+
+Unresolved state-read and conditional-assertion diagnostics with valid source ranges also populate `review.analysisTasks`: stable task IDs, source SHA-256, UTF-16 ranges and review requirements. These tasks require contextual review even without a retained finding. Verify the source hash before adjudication, retain source citations separately, and rescan changed inputs. Tasks do not remove diagnostics, change finding counts or clear exit 2.
+
 Release validation requires source-candidate and negative controls, policy exits, suppressions, inventory, project ESLint, text/JSON consumers, and installed execution on macOS and Linux with the old analyzer unavailable. The 69 authored legacy call variants are regression inputs, not independent defects or a detection-rate benchmark. Real-project location comparisons are separate evidence. This contract does not claim that the final release gates have passed.
+
+The frozen shell oracle can omit calls under native Linux tools. Differential tests name and pin known omissions while independently asserting the full Node result; they do not weaken Node expectations or claim whole-output parity.
 
 ### Existing configuration and rule overlap
 
@@ -186,7 +195,7 @@ Implemented modules:
 - Internal `justified`: the legacy immediate-line, 8-line fluent-chain and 24-line browser-callback windows. P1/P2 findings move to a suppression ledger, P0 remains a review candidate, and `#7` is never suppressed.
 - Internal `assertions`: direct ambient `expect(Cypress.$(...))` truthiness and bounded `*Page` member-handle truthiness can produce source-linked candidates; they are not confirmed findings. Only precisely matched uncertainty can be handed off for review in `--scan`. Ordinary objects and known scalar fields are excluded; complete POM lineage remains unsupported. Discarded locator/boolean-result candidates (`#8a`/`#8b`), uncalled matchers (`#8c`), proven direct Locator truthiness (`#4f`), optional and statically computed truthiness matcher candidates, numeric-shape candidates (`#4a`) and positive attachment candidates (`#4b`). Direct Page/Locator type annotations are candidates only, not runtime proof. Numeric candidates do not establish that a subject is nonnegative or that its assertion always passes.
 - Internal `suite-data`, `control-flow`, `networkidle`, `actions`: bounded serial configuration (`#10b`), initialized module state (`#19`), exception/skip candidates (`#3b`/`#11c`), Page network-idle calls (`#9c`), and literal forced actions (`#5b`). These are partial ports; dynamic options and unproven receiver graphs are not complete coverage.
-- Internal `promises`: bounded missing-await checks (`#15`/`#16`) for imported expect and proven Page/Locator operations. Directly discarded expect and direct `page` operations are confirmed; Locator aliases, typed, deferred, void, optional and computed calls remain candidates, preserving the legacy migration boundary. Await, return and directly observed Promise aggregates are excluded. POM fields, complete saved-promise lifetimes, namespace expect and dynamic methods remain unsupported; supported discarded retry assertions produce missing-await candidates; unsupported retry shapes remain diagnostic.
+- Internal `promises`: bounded missing-await checks (`#15`/`#16`) for imported expect and proven Page/Locator operations. Directly discarded expect and direct `page` operations are confirmed; Locator aliases, typed, deferred, void, optional and computed calls remain candidates, preserving the legacy migration boundary. Await, return and directly observed Promise aggregates are excluded. Proven namespace expect imports are supported. POM fields, complete saved-promise lifetimes and dynamic methods remain unsupported; supported discarded retry assertions produce missing-await candidates; unsupported retry shapes remain diagnostic.
 - Internal `page-reads`: one-shot Page URL assertions (`#4h`) outside proven retry callbacks and direct Page selector APIs (`#17`). Proven immutable Page aliases and identifier selectors remain P1 candidates; selector values and types are not inferred. Identifier selectors on bounded `*Page` instances or unresolved `*Page` names in proven test callbacks can produce candidates with explicit review requirements; they are not confirmed Page calls. Complete POM lineage, type-only Page proof and complex selectors remain unsupported.
 - Internal `cypress-assignment`: same-line simple `const`/`let`/`var` assignment of a proven global Cypress chain (`#10e`), excluding spy/stub calls. Split, destructured and subsequent declarations are diagnostic; alias-mediated assignments are outside this slice.
 - Internal `dom-queries`: raw document queries (`#6`) and positional-selector candidates (`#10a`) in bounded framework contexts, retaining P1 triage. Selected immutable POM query chains and custom Cypress query chains produce candidates with unresolved-subject evidence. Arbitrary receiver provenance remains unsupported.
@@ -194,7 +203,7 @@ Implemented modules:
 - Internal `timeout-zero`: literal zero timeout (`#4g`) on bounded proven Playwright action, navigation and assertion signatures. This is a retry/deadline hazard, not an immediate-check or always-pass claim. Cypress timeout semantics remain a separate semantic review; dynamic options and retry wrappers are unsupported.
 - Internal `soft-assertions`: direct, unawaited physical-line-start `expect.soft` calls (`#18`), preserving P1 triage. Awaited, returned, inline and multiline calls remain diagnostic gaps. A soft assertion alone does not establish an unsafe prerequisite.
 - Internal `cypress-callbacks`: async Cypress test/hook callbacks that directly queue commands (`#10d`) and continued action chains (`#10f`), both P1 candidates. Hook identity comes from shared scope; aliases, optional/computed chains and arbitrary helper execution remain unsupported.
-- Internal `state-reads`: directly awaited Playwright state/content reads in assertions (`#4c-4e`), as P1 candidates. Proven retry callbacks are excluded. Wrapped reads, POM and type-only receiver proof remain diagnostic gaps.
+- Internal `state-reads`: directly awaited Playwright state/content reads in assertions (`#4c-4e`), as P1 candidates. Direct proven retry callbacks are excluded; nested function propagation and generator callback execution remain diagnostic instead of borrowing the retry exemption. Narrow imported POM wrappers and direct `for...of` items from `await page.$$('literal')` retain source-review candidates with explicit requirements; receiver diagnostics and incomplete status remain. Mutated or escaped collections, arbitrary objects, wrapped reads and type-only receiver proof remain outside this slice.
 - Internal `collections`: absence assertions (`#4i`), awaited Locator iteration and Cypress `each` (`#4k`), as P1 candidates. These shapes include legitimate empty-state assertions and setup loops. Positive-match proof, collection size and the purpose of a loop require semantic review. Aliased Cypress chains and optional/computed calls are outside this slice.
 - Internal `accessible-names`: bounded same-line Page name options and Cypress unanchored role-name regexes (`#10c`), as P1 candidates. Preserve the legacy explicit-exact exclusion and direct receiver spelling. Dynamic or spread options remain diagnostic; collisions and container scope require semantic review.
 - Internal `conditional-assertions`: bounded inline `if`, logical and ternary assertion paths and proven Page/Locator boolean conditions (`#5a`), as P0 candidates. This does not decide whether a required assertion is bypassed. Generic assert helpers, transitive calls, awaited-variable dataflow, expect wrappers and separate else bodies remain diagnostic gaps.

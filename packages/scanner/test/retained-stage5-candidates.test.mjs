@@ -30,7 +30,10 @@ const fixtures = [
     "diagnostic": {
       "code": "provenance-unsupported",
       "detector": "domQueries",
-      "start": 97
+      "start": 97,
+      "line": 3,
+      "column": 9,
+      "end": 113
     }
   },
   {
@@ -42,7 +45,10 @@ const fixtures = [
     "diagnostic": {
       "code": "provenance-unsupported",
       "detector": "assertions",
-      "start": 99
+      "start": 99,
+      "line": 3,
+      "column": 8,
+      "end": 130
     }
   },
   {
@@ -54,7 +60,10 @@ const fixtures = [
     "diagnostic": {
       "code": "import-unpinned",
       "detector": "assertions",
-      "start": 75
+      "start": 75,
+      "line": 3,
+      "column": 3,
+      "end": 81
     }
   }
 ];

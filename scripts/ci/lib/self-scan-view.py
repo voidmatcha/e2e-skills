@@ -251,9 +251,22 @@ def verify_original_candidates(source: Path, result: subprocess.CompletedProcess
                         ("conditionalAssertions", "provenance-unsupported", 1801),
                         ("conditionalAssertions", "import-unpinned", 1920),
                         ("conditionalAssertions", "import-unpinned", 2115))
+    # Source positions and ranges are frozen independently of scanner output.
+    locations = {1517: (21, 11, 1523), 543: (9, 18, 547),
+                 1801: (26, 99, 1826), 1920: (29, 13, 1926), 2115: (32, 13, 2121)}
     diagnostics = [{"code": code, "detector": detector, "file": file,
-                    **({"start": start} if start is not None else {})}
+                    **({"start": start, "line": locations[start][0],
+                        "column": locations[start][1], "end": locations[start][2]}
+                       if start is not None else {})}
                    for detector, code, start in diagnostic_specs]
+    task_identity = [FROZEN_SHA256, file, "conditionalAssertions", "provenance-unsupported", 1801, 1826]
+    task_hash = hashlib.sha256(json.dumps(task_identity, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
+    tasks = [{"taskId": f"analysis-sha256:{task_hash}", "status": "UNRESOLVED",
+              "detector": "conditionalAssertions", "code": "provenance-unsupported", "file": file,
+              "start": 1801, "end": 1826, "line": 26, "column": 99,
+              "sourceSha256": FROZEN_SHA256,
+              "requirements": ["verify-runtime-binding", "verify-branch-reachability",
+                               "verify-independent-postcondition"]}]
     incomplete = [f"analysis incomplete: {file}: {detector} could not establish its contract"
                   + (f" at offset {start}" if start is not None else "")
                   for detector, _code, start in diagnostic_specs]
@@ -261,7 +274,7 @@ def verify_original_candidates(source: Path, result: subprocess.CompletedProcess
         "schema": "e2e-skills-node-scan-v1", "status": "INCOMPLETE", "scope": "static-review",
         "failOn": "p0-candidate", "files": 1,
         "compatibility": {"contract": "source-review-v1", "status": "development", "referenceLegacyCallVariants": 69},
-        "review": {"required": True, "candidates": 2, "obligations": []},
+        "review": {"required": True, "candidates": 2, "obligations": [], "analysisTasks": tasks},
         "execution": {"complete": False, "exitCode": 2, "incomplete": incomplete, "diagnostics": diagnostics},
         "counts": {"total": 2, "p0": 0, "p1p2": 0, "triage": 2, "p0Candidate": 2, "ast": 2, "confirmed": 0},
         "findings": expected_findings, "suppressed": [], "duplicates": [],

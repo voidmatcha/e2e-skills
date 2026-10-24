@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { analysisDiagnostic, inventoryDiagnostic } from '../src/diagnostics.mjs';
+import { analysisDiagnostic, inventoryDiagnostic, analysisReviewTasks } from '../src/diagnostics.mjs';
 
 test('analysis categories retain only trusted location and enum guidance', () => {
   const sentinel = 'SYNTHETIC_ONLY_DIAGNOSTIC_SECRET';
@@ -41,4 +41,35 @@ test('inventory categories omit raw detail and do not accept unknown codes', () 
     { code: 'identity-drift', detector: 'revalidate', file: '/x' });
   assert.deepEqual(inventoryDiagnostic({ code: 'secret', path: '/x', detail: 'secret' }, 'inventory'),
     { code: 'inventory-unknown', detector: 'inventory', file: '/x' });
+});
+
+test('analysis locations use pinned UTF-16 source offsets without exporting source', () => {
+  const bytes = Buffer.from('private😀\r\nnext\u2028end');
+  const text = bytes.toString('utf8');
+  const result = analysisDiagnostic({ start: text.indexOf('end'), message: 'unknown' }, 'stateReads', '/x', bytes);
+  assert.deepEqual(result, { code: 'analysis-unknown', detector: 'stateReads', file: '/x',
+    start: text.indexOf('end'), line: 3, column: 1 });
+  assert.ok(!JSON.stringify(result).includes('private'));
+  const invalid = analysisDiagnostic({ start: text.length + 1 }, 'stateReads', '/x', bytes);
+  assert.ok(!('line' in invalid));
+});
+
+test('analysis tasks pin unresolved ranges without copying source or inventing findings', () => {
+  const file = '/x.spec.ts', bytes = Buffer.from('private\napp.page');
+  const item = analysisDiagnostic({ start: 8, length: 8, message: 'mutable receiver binding' }, 'stateReads', file, bytes);
+  const sources = new Map([[file, bytes]]);
+  const [task] = analysisReviewTasks([item, item], sources);
+  assert.equal(analysisReviewTasks([item, item], sources).length, 1);
+  assert.equal(task.status, 'UNRESOLVED');
+  assert.deepEqual([task.line, task.column, task.start, task.end], [2, 1, 8, 16]);
+  assert.match(task.sourceSha256, /^[a-f0-9]{64}$/);
+  assert.match(task.taskId, /^analysis-sha256:[a-f0-9]{64}$/);
+  assert.ok(task.requirements.includes('verify-runtime-receiver'));
+  assert.ok(!('patternId' in task) && !('severity' in task) && !('verdict' in task));
+  assert.ok(!JSON.stringify(task).includes('private'));
+  const changed = analysisReviewTasks([item], new Map([[file, Buffer.from('changed\napp.page')]]));
+  assert.notEqual(changed[0].taskId, task.taskId);
+  for (const patch of [{start:-1}, {end:999}, {end:8}, {line:1}, {column:9}, {detector:'credentials'}, {code:'parse-invalid'}])
+    assert.deepEqual(analysisReviewTasks([{...item,...patch}], sources), []);
+  assert.deepEqual(analysisReviewTasks([item], new Map()), []);
 });

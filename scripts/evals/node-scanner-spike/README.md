@@ -53,12 +53,19 @@ Project marker discovery and the two self-checkout fixture exclusions are now im
 
 ```sh
 python3 scripts/evals/node-scanner-spike/compare-legacy-checks.py --output /new/external/evidence/path
+# If dependencies are already available outside this checkout:
+python3 scripts/evals/node-scanner-spike/compare-legacy-checks.py --dependency-dir /existing/node_modules --output /another/new/external/path
+python3 scripts/ci/test-legacy-call-comparison.py
 ```
 
-This opt-in study freezes the existing scanner source, Node parser dependency and
-69 pairs of small authored canaries. It verifies each legacy call's exact target
-warning, requires unchanged output after call tracing, then runs the bounded Node
-CLI against the same files. It reports matching pattern locations, diagnostic-only
-refusals, silent omissions and negative warnings separately. One shape per call
-is migration evidence, not full syntax coverage or accuracy on independent projects.
-It does not execute project ESLint configuration or run browser probes.
+This opt-in study freezes the current scanner source, existing Node parser
+dependency and 69 pairs of small authored canaries. It restores the verified
+frozen shell oracle, verifies each legacy call's exact target warning and requires
+unchanged output after call tracing. It then runs the current Node `--scan` CLI
+against the same files. It reports target pattern/severity/line matches,
+incomplete executions and negative target warnings separately. Other findings
+remain in the raw reports. A successful study exit validates evidence integrity;
+it does not establish identical reports, exit policies, or defect accuracy.
+One shape per call is migration evidence, not full syntax coverage or accuracy
+on independent projects. No dependencies are installed, optional legacy
+backends are disabled, and no project configuration or browser probes execute.

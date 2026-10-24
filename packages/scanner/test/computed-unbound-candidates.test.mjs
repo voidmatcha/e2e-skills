@@ -33,8 +33,8 @@ test('original immutable computed matcher retains only line 5 and both original 
   assert.equal(run.status,2,run.stderr);const report=JSON.parse(run.stdout);
   assert.equal(report.status,'INCOMPLETE');
   assert.deepEqual(report.execution.diagnostics,[
-   {code:'provenance-unsupported',detector:'assertions',file,start:144},
-   {code:'shape-unsupported',detector:'assertions',file,start:186},
+   {code:'provenance-unsupported',detector:'assertions',file,start:144,line:5,column:8,end:166},
+   {code:'shape-unsupported',detector:'assertions',file,start:186,line:6,column:1,end:234},
   ]);
   assert.deepEqual(report.findings.filter(item=>item.patternId==='#4f').map(item=>[item.line,item.disposition]),[[5,'candidate']]);
  });

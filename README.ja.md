@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=457b7227544408a2614dac5f1e60618dcc90238c15e567b51eef5998524c417d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=eaf89a00d2d33b9a493ab7eba35fc34eda98f271a85aefe33c92b689a54a8838; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。4 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、失敗原因の診断を行います。
 
@@ -161,7 +161,7 @@ Install https://github.com/voidmatcha/e2e-skills using its install.sh for my cur
 リポジトリのcloneは不要です。Claude Codeでは`codex`を`claude`に置き換え、変更内容を確認するには`--dry-run`を追加してください。診断方法、前提条件、設定の競合については[インストールガイド](docs/installation.md#cli-installer)を参照してください。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills install --host codex --project /path/to/playwright-project
 ```
 
 <details>
@@ -362,7 +362,7 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 AI agent に依頼せず、コードスキャナーだけを直接実行できます。レビューする問題候補を探す道具であり、テストの実行や、意図した動作を検証しているかの判断は行いません。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills-scan --scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills-scan --scan path/to/tests --format text
 ```
 
 Node.js 22 以降が必要で、TypeScript パーサーは同梱されています。npx はキャッシュにない package と依存関係をダウンロードします。scan はテストやプロジェクト設定を実行しません。構造化された出力には `--format json`、レポートの保存には `--report-file <new-file>` を使います。既存ファイルは上書きしません。

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Guidance only: these categories never establish findings or change exit policy.
+import { createHash } from 'node:crypto';
 // Match only analyzer-owned literals/prefixes; never serialize reason suffixes,
 // split joined reasons, or search source-controlled text for suggestive words.
 const PREFIXES = [
@@ -24,6 +25,8 @@ const GROUPS = {
     'Cypress global expression is not in pinned source',
   ],
   'provenance-unsupported': [
+    '#4c-4e retry propagation across a nested callback is unproven',
+    '#4c-4e generator retry callback execution is unproven',
     '#4f Cypress jQuery truthiness requires unsupported ambient expect provenance',
     '#4f POM member truthiness requires unsupported runtime Locator provenance',
     '#17 POM selector action requires unsupported runtime Page provenance',
@@ -69,12 +72,51 @@ for (const subject of ['Cypress assignment', 'action', 'wait', 'suite/data']) {
   EXACT.set(`pinned project scope is required for ${subject} provenance`, 'provenance-missing');
 }
 
-export function analysisDiagnostic(diagnostic, detector, file) {
+export function analysisDiagnostic(diagnostic, detector, file, bytes) {
   const message = diagnostic?.message;
   const code = diagnostic?.code === 'parse-invalid' ? 'parse-invalid' :
     EXACT.get(message) ?? (typeof message === 'string' ? PREFIXES.find(([prefix]) => message.startsWith(prefix))?.[1] : undefined) ?? 'analysis-unknown';
-  return { code, detector, file,
-    ...(Number.isSafeInteger(diagnostic?.start) && diagnostic.start >= 0 ? { start: diagnostic.start } : {}) };
+  const located = Number.isSafeInteger(diagnostic?.start) && diagnostic.start >= 0;
+  let position = {};
+  if (located && Buffer.isBuffer(bytes)) {
+    const text = bytes.toString('utf8');
+    if (diagnostic.start <= text.length) {
+      const prefix = text.slice(0, diagnostic.start);
+      const lines = prefix.split(/\r\n|[\r\n\u2028\u2029]/);
+      position = { line: lines.length, column: lines.at(-1).length + 1 };
+      if (Number.isSafeInteger(diagnostic.length) && diagnostic.length > 0 &&
+          diagnostic.start + diagnostic.length <= text.length) position.end = diagnostic.start + diagnostic.length;
+    }
+  }
+  return { code, detector, file, ...(located ? { start: diagnostic.start } : {}), ...position };
+}
+
+// Separate from candidate-linked obligations: these tasks NEVER discharge a
+// diagnostic or imply a finding. A reviewer must check the pinned source hash.
+export function analysisReviewTasks(diagnostics, sources) {
+  const requirements = {
+    stateReads: ['verify-runtime-receiver', 'verify-required-test-outcome', 'verify-retry-boundary'],
+    conditionalAssertions: ['verify-runtime-binding', 'verify-branch-reachability', 'verify-independent-postcondition'],
+  };
+  const tasks = new Map();
+  for (const item of diagnostics) {
+    if (!Object.hasOwn(requirements, item?.detector) ||
+        !['binding-mutable', 'analysis-unknown', 'provenance-unsupported', 'type-unsupported'].includes(item.code)) continue;
+    const bytes = sources.get(item.file);
+    if (!Buffer.isBuffer(bytes) || !Number.isSafeInteger(item.start) || item.start < 0 ||
+        !Number.isSafeInteger(item.end) || item.end <= item.start) continue;
+    const text = bytes.toString('utf8');
+    if (item.end > text.length) continue;
+    const prefix = text.slice(0, item.start).split(/\r\n|[\r\n\u2028\u2029]/);
+    if (item.line !== prefix.length || item.column !== prefix.at(-1).length + 1) continue;
+    const sha = value => createHash('sha256').update(value).digest('hex');
+    const sourceSha256 = sha(bytes);
+    const taskId = `analysis-sha256:${sha(JSON.stringify([sourceSha256, item.file, item.detector, item.code, item.start, item.end]))}`;
+    tasks.set(taskId, { taskId, status: 'UNRESOLVED', detector: item.detector, code: item.code,
+      file: item.file, start: item.start, end: item.end, line: item.line, column: item.column,
+      sourceSha256, requirements: [...requirements[item.detector]] });
+  }
+  return [...tasks.values()];
 }
 
 const INVENTORY_CODES = new Set(['unsupported-filename-encoding', 'unsupported-entry', 'project-context-unavailable',

@@ -341,7 +341,17 @@ test('bounded diagnostics classify parser, imports, mutation and shape without s
     assert.ok(report.execution.diagnostics.some(item => item.code === code), result.stdout);
     for (const item of report.execution.diagnostics) {
       assert.equal(item.file, file);
-      assert.deepEqual(Object.keys(item).sort(), ('start' in item ? ['code','detector','file','start'] : ['code','detector','file']));
+      assert.deepEqual(Object.keys(item).sort(), ('start' in item
+        ? ['code','column','detector','end','file','line','start'] : ['code','detector','file']));
+      if ('start' in item) {
+        const start = code === 'parse-invalid' ? source.indexOf(';') : source.indexOf('expect(');
+        const end = code === 'parse-invalid' ? start + 1
+          : start + `expect(page.locator('x'))[${sentinel}]`.length;
+        assert.equal(item.start, start);
+        assert.equal(item.end, end);
+        assert.equal(item.line, 1);
+        assert.equal(item.column, start + 1);
+      }
     }
     const preview = JSON.parse(run(['--experimental-static', root]).stdout);
     assert.ok(!('execution' in preview));

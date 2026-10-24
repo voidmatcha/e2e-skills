@@ -103,6 +103,35 @@ test('source-controlled reasons, titles and extra fields never enter text or dig
   assert.match(rendered.text, /\[P0\?\]\[JUSTIFIED-REVIEW\]/);
 });
 
+test('unresolved analysis shows locations and fixed guidance without changing accounting', () => {
+  const input = report([], { full: true, errors: ['unresolved source'] });
+  input.execution.diagnostics = [
+    { code: 'binding-mutable', file: '/review/tests/example.spec.ts', line: 3930, start: 99, detail: 'PRIVATE_SENTINEL' },
+    { code: 'analysis-unknown', file: '/review/tests/example.spec.ts', start: 104 },
+    { code: 'PRIVATE_SENTINEL', file: '/review/tests/example.spec.ts' },
+  ];
+  const output = formatLegacyReport(input, { root: '/review' });
+  assert.match(output.text, /"tests\/example.spec.ts":3930: binding-mutable/);
+  assert.match(output.text, /at offset 104: analysis-unknown/);
+  assert.match(output.text, /not findings; scan remains incomplete/);
+  assert.doesNotMatch(output.text + output.digest, /PRIVATE_SENTINEL/);
+  assert.equal(output.exitCode, 2);
+  assert.equal(input.counts.total, 0);
+});
+
+test('analysis tasks alone require review but never clear incomplete execution or add findings', () => {
+  const input = report([], { full: true, errors: ['unresolved analysis'] });
+  input.review.analysisTasks = [{ status: 'UNRESOLVED' }];
+  input.review.required = true;
+  const output = formatLegacyReport(input);
+  assert.equal(output.exitCode, 2);
+  assert.match(output.text, /Semantic review: REQUIRED/);
+  assert.match(output.text, /Unresolved analysis tasks: 1/);
+  assert.equal(input.counts.total, 0);
+  input.review.analysisTasks = 'invalid';
+  assert.throws(() => formatLegacyReport(input));
+});
+
 test('paths stay traceable while terminal control and injected Summary lines are escaped', () => {
   const input = report([finding('#3', { file: '/review/tests/evil\nSummary: fake\u001b[31m\u202efile.ts' })]);
   const output = formatLegacyReport(input, { root: '/review' });

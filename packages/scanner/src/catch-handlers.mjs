@@ -103,11 +103,20 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
       locator(expect.arguments[0]);
   }
   function directTry(statement) {
+    const final = statement.finallyBlock;
+    const cleanup = !statement.catchClause && final?.statements.length === 1 &&
+      ts.isExpressionStatement(final.statements[0]) && unwrap(final.statements[0].expression);
+    // A plain call's normal completion preserves a pending throw from any
+    // try body; its own throw also fails the test. Keep registration proof,
+    // and leave awaited, nested and control-flow cleanup shapes unresolved.
+    if (cleanup && ts.isCallExpression(cleanup) && !cleanup.questionDotToken &&
+        plainBinding(cleanup.expression) && directTestStatement(statement)) {
+      supported.add(final); return;
+    }
     if (!directAssertion(statement)) return;
     const emptyCatch = statement.catchClause && !statement.finallyBlock &&
       statement.catchClause.block.statements.length === 0 &&
       (!statement.catchClause.variableDeclaration || ts.isIdentifier(statement.catchClause.variableDeclaration.name));
-    const final = statement.finallyBlock;
     // The returned expression can itself throw/reject. Report the override
     // shape for review, never claim that the whole test necessarily passes.
     const finalReturn = !statement.catchClause && final?.statements.length === 1 &&
@@ -116,13 +125,8 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
     const catchBlock = statement.catchClause?.block;
     const directThrow = !final && catchBlock?.statements.length === 1 &&
       ts.isThrowStatement(catchBlock.statements[0]);
-    const cleanup = !statement.catchClause && final?.statements.length === 1 &&
-      ts.isExpressionStatement(final.statements[0]) && unwrap(final.statements[0].expression);
-    // These direct shapes do not discard an assertion rejection. A cleanup
-    // call may throw its own error, but cannot return from the test callback.
+    // A direct throw does not discard an assertion rejection.
     if (directThrow) { supported.add(statement.catchClause); return; }
-    if (cleanup && ts.isCallExpression(cleanup) && !cleanup.questionDotToken &&
-        plainBinding(cleanup.expression)) { supported.add(final); return; }
     if (!(emptyCatch || finalReturn)) return;
     const node = emptyCatch ? statement.catchClause : final;
     supported.add(node);

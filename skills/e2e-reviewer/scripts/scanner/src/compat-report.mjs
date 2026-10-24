@@ -16,7 +16,8 @@ function checked(report) {
   const replacement = report.schema === 'e2e-skills-node-scan-v1' &&
     ['COMPLETE', 'INCOMPLETE'].includes(report.status) && report.coverage.complete === false &&
     report.compatibility?.contract === 'source-review-v1' && report.compatibility.status === 'development' &&
-    typeof report.review?.required === 'boolean' && Array.isArray(report.review.obligations);
+    typeof report.review?.required === 'boolean' && Array.isArray(report.review.obligations) &&
+    (report.review.analysisTasks === undefined || Array.isArray(report.review.analysisTasks));
   if (!bounded && !replacement) throw new TypeError('unsupported scan schema or coverage state');
   if (!Array.isArray(report.execution.incomplete) ||
       report.execution.incomplete.some(reason => typeof reason !== 'string' || !reason.trim()) ||
@@ -34,7 +35,7 @@ function checked(report) {
   const summary = summarize(report.findings, { failOn: report.failOn, incomplete: report.execution.incomplete });
   if (!report.counts || COUNT_FIELDS.some(key => report.counts[key] !== summary.counts[key]) ||
       report.execution.exitCode !== summary.exitCode ||
-      (replacement && (report.review.required !== (summary.counts.triage > 0) || report.review.candidates !== summary.counts.triage))) {
+      (replacement && (report.review.required !== (summary.counts.triage > 0 || (report.review.analysisTasks?.length ?? 0) > 0) || report.review.candidates !== summary.counts.triage))) {
     throw new TypeError('inconsistent canonical accounting');
   }
   return { summary, complete: replacement && report.execution.complete };
@@ -65,11 +66,29 @@ export function formatLegacyReport(report, { root } = {}) {
   if (report.schema === 'e2e-skills-node-scan-v1') headers.push(
     `Semantic review: ${report.review.required ? 'REQUIRED' : 'no retained candidates'}; compatibility contract: DEVELOPMENT.`,
     `Review obligations: ${report.review.obligations.length}, linked to retained candidates.`,
+    `Unresolved analysis tasks: ${report.review.analysisTasks?.length ?? 0}; separate from findings, execution status unchanged.`,
   );
   if (!complete) headers.push(
     'INCOMPLETE: this report cannot establish a complete replacement scan.',
     'Use --format json to inspect structured execution diagnostics; no clean result is implied.',
   );
+  const gaps = report.execution.diagnostics ?? [];
+  const guidance = {
+    'binding-mutable': 'Verify receiver identity and writes before treating it as a framework object.',
+    'analysis-unknown': 'Review the unsupported source shape and its runtime context.',
+    'provenance-unsupported': 'Verify the runtime binding and callback propagation where applicable; static provenance is unsupported.',
+    'type-unsupported': 'A type annotation alone does not prove the runtime receiver.',
+  };
+  const visibleGaps = gaps.filter(item => Object.hasOwn(guidance, item?.code) && typeof item.file === 'string');
+  if (visibleGaps.length) {
+    headers.push('Unresolved analysis (not findings; scan remains incomplete):');
+    for (const item of visibleGaps.slice(0, 20)) {
+      const at = Number.isSafeInteger(item.line) && item.line > 0 ? `:${item.line}` :
+        Number.isSafeInteger(item.start) && item.start >= 0 ? ` at offset ${item.start}` : '';
+      headers.push(`  ${location(item.file, root)}${at}: ${item.code}. ${guidance[item.code]}`);
+    }
+    if (visibleGaps.length > 20) headers.push(`  ${visibleGaps.length - 20} more; see JSON diagnostics.`);
+  }
   if (!report.execution.complete && report.execution.diagnostics?.some(item => item.code === 'unsupported-entry')) headers.push(
     'No override bypasses unsupported entries. Rerun on regular files or directories within the authorized scope; do not follow symbolic links without authorization.',
     'The requested scan remains incomplete until every requested part is covered.',

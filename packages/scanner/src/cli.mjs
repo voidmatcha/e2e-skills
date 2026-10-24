@@ -28,7 +28,7 @@ import { collections } from './collections.mjs';
 import { accessibleNames } from './accessible-names.mjs';
 import { conditionalAssertions } from './conditional-assertions.mjs';
 import { credentials } from './credentials.mjs';
-import { analysisDiagnostic, inventoryDiagnostic } from './diagnostics.mjs';
+import { analysisDiagnostic, inventoryDiagnostic, analysisReviewTasks } from './diagnostics.mjs';
 import { formatLegacyReport, writeLegacyReportFile } from './compat-report.mjs';
 import { reviewCandidates } from './review-candidates.mjs';
 import { handoffDiagnostics } from './review-obligations.mjs';
@@ -180,7 +180,7 @@ try {
                 continue;
               }
               incomplete.push(`analysis incomplete: ${candidate.path}: ${result.detector} could not establish its contract${diagnosticLocation(diagnostic)}`);
-              if (bounded) diagnostics.push(analysisDiagnostic(diagnostic, result.detector, candidate.path));
+              if (bounded) diagnostics.push(analysisDiagnostic(diagnostic, result.detector, candidate.path, bytes));
             }
           }
         } catch (error) {
@@ -237,7 +237,21 @@ try {
         if (bounded) diagnostics.push(inventoryDiagnostic(error, 'revalidate'));
       }
     }
-    const deduplicated = dedupeFindings(findings);
+    // The strict and review detectors can describe the same unresolved #4f
+    // assertion. Collapse only identical source ranges and evidence; separate
+    // assertions on one line and differing review requirements stay distinct.
+    const exactAssertions = new Set();
+    const uniqueFindings = findings.filter(finding => {
+      if (finding.patternId !== '#4f' || finding.origin !== 'ast' ||
+          finding.disposition !== 'candidate' || !Number.isSafeInteger(finding.start) ||
+          !Number.isSafeInteger(finding.end)) return true;
+      const key = JSON.stringify([finding.file, finding.start, finding.end,
+        finding.line, finding.column, finding.severity, finding.evidence]);
+      if (exactAssertions.has(key)) return false;
+      exactAssertions.add(key);
+      return true;
+    });
+    const deduplicated = dedupeFindings(uniqueFindings);
     const obligations = [];
     if (scan) for (const { detector, file, diagnostic } of analysisRecords) {
       const handoff = handoffDiagnostics({ detector, file, bytes: sources.get(file),
@@ -245,15 +259,17 @@ try {
       obligations.push(...handoff.obligations);
       for (const unresolved of handoff.diagnostics) {
         incomplete.push(`analysis incomplete: ${file}: ${detector} could not establish its contract${diagnosticLocation(unresolved)}`);
-        diagnostics.push(analysisDiagnostic(unresolved, detector, file));
+        diagnostics.push(analysisDiagnostic(unresolved, detector, file, sources.get(file)));
       }
     }
     const summary = summarize(deduplicated.findings, { failOn: args.failOn, incomplete });
+    const analysisTasks = scan ? analysisReviewTasks(diagnostics, sources) : [];
     const report = { ...(bounded ? {
       schema: scan ? 'e2e-skills-node-scan-v1' : 'e2e-skills-node-bounded-v1', status: scan ? summary.complete ? 'COMPLETE' : 'INCOMPLETE' : 'PARTIAL',
       scope: scan ? 'static-review' : 'bounded-static',
       ...(scan ? { compatibility: { contract: 'source-review-v1', status: 'development', referenceLegacyCallVariants: 69 },
-        review: { required: summary.counts.triage > 0, candidates: summary.counts.triage, obligations } } : {}),
+        review: { required: summary.counts.triage > 0 || analysisTasks.length > 0, candidates: summary.counts.triage,
+          obligations, analysisTasks } } : {}),
       execution: { complete: summary.complete, exitCode: summary.exitCode, incomplete: summary.incomplete, diagnostics },
       coverage: { complete: false, ruleSlices: STATIC_RULE_SLICES, limitations: COVERAGE_LIMITATIONS.map(text => {
         if (scan && text.startsWith('Unsupported syntax')) return 'Unsupported analysis remains incomplete. Only exact source-linked uncertainty covered by retained candidates becomes a review obligation; review is still required.';

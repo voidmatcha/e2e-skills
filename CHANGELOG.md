@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+## [3.2.1] - 2026-10-24
+
+### Added
+
+- Source-pinned review tasks for unresolved state reads and conditional assertions, with IDs, review requirements and separate reviewer dispositions. Diagnostics and incomplete exit status remain unchanged.
+
+### Fixed
+
+- Keep nested callback retry propagation and generator callback execution unresolved instead of silently borrowing a `toPass` or `expect.poll` exemption. Direct non-generator retry callbacks retain their existing exclusion.
+- Retain one-shot ElementHandle state-read candidates for direct loop items from a proven Page collection. Mutations, escaped collections and retry callbacks remain excluded; unresolved receiver diagnostics stay visible.
+- Consume directly awaited or returned catch chains on proven Playwright actions instead of reporting a missing-await candidate; floating, optional and nested callback cases remain independently checked.
+- Report one candidate when two detectors identify the same unresolved locator assertion, preserving distinct assertions on the same line and their review evidence.
+- Retain one-shot state-read candidates on narrowly recognized imported POM wrappers. Runtime receiver uncertainty still requires source review and keeps execution incomplete.
+- Recognize a single plain cleanup call in a no-catch `finally` block of a registered Playwright test without requiring a single-statement `try`. Returning or unsupported cleanup still requires analysis.
+- Show pinned-source line and column in analysis JSON diagnostics, and locations with fixed review guidance for common unresolved categories in text reports. Unresolved analysis still exits 2 and does not count as a finding.
+
 ## [3.2.0] - 2026-10-24
 
 ### Added
