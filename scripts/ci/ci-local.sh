@@ -283,6 +283,8 @@ run_python scripts/ci/test-reinstall-skills.py ||
   fail "test-reinstall-skills.py"
 "$NODE_BIN" --test scripts/ci/test-all-in-one-install-node.mjs ||
   fail "test-all-in-one-install-node.mjs"
+"$NODE_BIN" scripts/ci/test-npm-setup-package.mjs ||
+  fail "test-npm-setup-package.mjs"
 
 fi
 

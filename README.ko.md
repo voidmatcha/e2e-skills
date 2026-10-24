@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=832b3f2fccdd3b24dbb3bf14dfee4361f61eb4d5f550330eeb013e8b8637259a; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=457b7227544408a2614dac5f1e60618dcc90238c15e567b51eef5998524c417d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 네 종류의 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하며, 실패 원인을 분석합니다.
 
@@ -155,6 +155,14 @@ Install https://github.com/voidmatcha/e2e-skills using its install.sh for my cur
 이 방법으로 설정했다면 수동 설치 절차를 반복할 필요가 없습니다. [상세 설치 안내](docs/installation.md)는 준비 조건 확인, 충돌 해결, 수동 설치가 필요할 때 참고해주세요.
 
 **리뷰나 실패 분석만 사용하나요?** agent에 Playwright generator 설정 없이 skill과 전용 agent만 설치해 달라고 하세요. 공식 Playwright agent와 `playwright-test` MCP는 생성 기능에 필요하며, 기존 Playwright/Cypress 테스트의 리뷰나 실패 분석에는 필요하지 않습니다.
+
+### CLI로 직접 설치하기
+
+저장소를 clone하지 않고 설치할 수 있습니다. Claude Code에서는 `codex`를 `claude`로 바꾸고, 변경 내용을 먼저 확인하려면 `--dry-run`을 추가해주세요. 진단 방법과 사전 준비, 설정 충돌은 [설치 안내](docs/installation.md#cli-installer)를 참고해주세요.
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills install --host codex --project /path/to/playwright-project
+```
 
 <details>
 <summary>다른 설치 방법: skills.sh와 plugin</summary>
@@ -354,7 +362,7 @@ Playwright/Cypress `test smell` 24개를 정리한 목록이며, 각 항목의 I
 AI agent에 요청하지 않고 코드 scanner만 직접 실행할 수 있습니다. 검토할 문제 후보를 찾는 tool이며, 테스트를 실행하거나 테스트가 의도한 동작을 검증하는지 판단하지는 않습니다.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.1 e2e-skills-scan --scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills-scan --scan path/to/tests --format text
 ```
 
 Node.js 22 이상이 필요하며 TypeScript 파서는 함께 제공됩니다. npx는 캐시에 없는 패키지와 의존성을 내려받습니다. scan은 테스트나 프로젝트 설정 코드를 실행하지 않습니다. 구조화된 결과는 `--format json`으로 확인하고, 전체 보고서는 `--report-file <new-file>`로 저장하세요. 기존 파일은 덮어쓰지 않습니다.

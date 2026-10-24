@@ -1,6 +1,6 @@
 {
   "name": "@voidmatcha/e2e-skills-scanner",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "type": "module",
   "license": "Apache-2.0",
   "engines": {
@@ -8,7 +8,8 @@
   },
   "bin": {
     "e2e-skills-scan": "src/cli.mjs",
-    "e2e-skills-check": "src/check-cli.mjs"
+    "e2e-skills-check": "src/check-cli.mjs",
+    "e2e-skills": "src/setup-cli.mjs"
   },
   "exports": {
     "./check": "./src/check-candidates.mjs",
@@ -21,12 +22,18 @@
     "examples/",
     "LICENSE",
     "NOTICE",
-    "README.md"
+    "README.md",
+    "setup-runtime/",
+    "scripts/build-setup-runtime.mjs"
   ],
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "build:setup": "node scripts/build-setup-runtime.mjs",
+    "check:setup": "node scripts/build-setup-runtime.mjs --check",
+    "prepack": "node scripts/build-setup-runtime.mjs"
   },
   "dependencies": {
+    "commander": "14.0.3",
     "typescript": "6.0.3"
   },
   "description": "Static Playwright and Cypress test review, configuration context, and explicit evidence-backed probes.",

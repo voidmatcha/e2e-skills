@@ -68,3 +68,6 @@ scripts/evals/generator-live/*/playwright-report/
 /benchmarks/*
 !/benchmarks/STATUS.md
 !/benchmarks/external-evidence.json
+
+# Explicitly generated npm setup payload.
+/packages/scanner/setup-runtime/

@@ -510,7 +510,44 @@ def expected_remove() -> list[str]:
     ]
 
 
+def check_trusted_trio_contract() -> None:
+    # Exercise the production path matcher without touching standard tool paths.
+    source = SOURCE.read_text(encoding="utf-8")
+    function = source.split("trusted_trio_targets() {", 1)[1].split(
+        "\nTRUSTED_NODE_TRIOS=", 1
+    )[0]
+    command = "trusted_trio_targets() {" + function + '\ntrusted_trio_targets "$@"'
+    local_npm = "/usr/local/lib/node_modules/npm/bin/"
+    direct = ("/usr/local/bin/node", "/usr/local/bin/node",
+              local_npm + "npm-cli.js", local_npm + "npx-cli.js")
+    accepted = [
+        direct,
+        ("/usr/local/bin/node", "/usr/local/Cellar/node/22.23.3/bin/node",
+         local_npm + "npm-cli.js", local_npm + "npx-cli.js"),
+        ("/usr/bin/node", "/usr/bin/node", "/usr/share/nodejs/npm/bin/npm-cli.js",
+         "/usr/share/nodejs/npm/bin/npx-cli.js"),
+    ]
+    rejected = [
+        ("/usr/bin/node", *direct[1:]),  # a different launcher cannot borrow this tuple
+        (direct[0], "/tmp/node", *direct[2:]),
+        (direct[0], "/usr/bin/node", *direct[2:]),
+        (*direct[:2], "/usr/share/nodejs/npm/bin/npm-cli.js", direct[3]),
+        (*direct[:3], "/usr/share/nodejs/npm/bin/npx-cli.js"),
+        (*direct[:3], "/usr/local/bin/npx"),
+        (*direct[:2], "/tmp/npm-cli.js", "/tmp/npx-cli.js"),
+    ]
+    for expected, tuples in ((0, accepted), (1, rejected)):
+        for paths in tuples:
+            result = subprocess.run(
+                ["/bin/bash", "-p", "-c", command, "trio-contract", *paths],
+                env={"PATH": "/usr/bin:/bin"}, capture_output=True, text=True,
+                timeout=10, check=False,
+            )
+            assert result.returncode == expected, (paths, result.stdout, result.stderr)
+
+
 def main() -> None:
+    check_trusted_trio_contract()
     with tempfile.TemporaryDirectory(prefix="reinstall-skills-contract-") as raw:
         harness = Harness(Path(raw))
         result = harness.run()

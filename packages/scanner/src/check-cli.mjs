@@ -32,6 +32,11 @@ function bytes(filename) {
   if (!result.complete || result.candidates.length !== 1) throw new Error('source must be a stable supported regular file');
   return readCandidate(result.candidates[0]);
 }
+function readJson(filename, label) {
+  const text = fs.readFileSync(filename, 'utf8');
+  try { return JSON.parse(text); }
+  catch { throw new Error(`invalid ${label} JSON`); }
+}
 // Missing-input output contains field names and static reasons, never plan values.
 function bindOrRequirements(candidate, binding, bind) {
   if (!binding || typeof binding !== 'object' || Array.isArray(binding)) throw new Error('binding must be an object');
@@ -105,8 +110,8 @@ function main(args) {
       if (!found) process.exitCode = 2;
     }
   } else if (args.length === 3 && args[0] === 'bind') {
-    const candidate = JSON.parse(fs.readFileSync(args[1], 'utf8'));
-    const binding = JSON.parse(fs.readFileSync(args[2], 'utf8'));
+    const candidate = readJson(args[1], 'candidate');
+    const binding = readJson(args[2], 'binding');
     const bind = candidate?.operator === 'playwright-to-have-text-literal-v1' ? bindAssertion :
       ['omit-awaited-post-statement-v1', 'omit-post-promise-chain-statement-v1'].includes(candidate?.operator) ? bindPost : null;
     if (!bind) throw new Error('unsupported candidate operator');

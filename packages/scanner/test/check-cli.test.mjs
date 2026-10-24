@@ -67,3 +67,15 @@ test('requirements never echo plan values and help states division of responsibi
   assert.doesNotMatch(JSON.stringify(output), /SECRET_VALUE_NO_ECHO|secret plan content/);
   const help = run('--help'); assert.equal(help.status, 0); assert.match(help.stdout, /LLMs select targets/); assert.match(help.stdout, /full plan validation remains probe preview/);
 });
+
+test('malformed candidate and binding JSON errors never echo input contents', () => {
+  for (const label of ['candidate', 'binding']) {
+    const malformed = path.join(root, 'malformed-' + label + '.json');
+    fs.writeFileSync(malformed, '{"private":"SENSITIVE_INPUT_SENTINEL", invalid}');
+    const result = label === 'candidate' ? run('bind', malformed, aFile) : run('bind', aFile, malformed);
+    assert.equal(result.status, 2);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, new RegExp('invalid ' + label + ' JSON'));
+    assert.doesNotMatch(result.stderr, /SENSITIVE_INPUT_SENTINEL|private|invalid}/);
+  }
+});

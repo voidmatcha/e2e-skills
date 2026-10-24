@@ -1,5 +1,20 @@
 # Changelog
 
+## [Unreleased]
+
+## [3.2.0] - 2026-10-24
+
+### Added
+
+- An `e2e-skills` CLI entry point for installation, read-only setup diagnosis, scanning and explicit checks. Installation reuses the existing host installer from a bundled, integrity-checked setup payload; no repository clone or installation prompt is required. The setup commands require Node.js 22.20 or newer.
+- The unified CLI uses pinned Commander.js option parsing for installation and diagnosis, retaining duplicate-option rejection and unchanged scanner/check argument forwarding.
+- Structured setup requirements and next steps, installation previews, and an explicitly selected MCP server check. Session tool visibility, host approval and browser readiness remain separate from installation; scanning never installs tools or starts probes.
+
+### Fixed
+
+- Malformed candidate or binding JSON produces a fixed diagnostic without echoing input contents.
+- Probe timeout cleanup signals its owned process group once, avoiding a second signal after the child exits. Initial signal failures still invalidate the run.
+
 ## [3.1.1] - 2026-10-23
 
 ### Changed

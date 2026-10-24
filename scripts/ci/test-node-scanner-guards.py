@@ -42,11 +42,14 @@ class NodeScannerGuards(unittest.TestCase):
     def package(self):
         self.put('.gitignore', 'node_modules/\n')
         self.put('packages/scanner/package.json', json.dumps({
-            'name': 'scanner-test', 'version': '0.0.0', 'dependencies': {'typescript': '6.0.3'},
+            'name': 'scanner-test', 'version': '0.0.0', 'dependencies': {'typescript': '6.0.3', 'commander': '14.0.3'},
         }))
         self.put('packages/scanner/package-lock.json', json.dumps({
             'lockfileVersion': 3, 'packages': {
-                '': {'dependencies': {'typescript': '6.0.3'}},
+                '': {'dependencies': {'typescript': '6.0.3', 'commander': '14.0.3'}},
+                'node_modules/commander': {'version': '14.0.3',
+                    'resolved': 'https://registry.npmjs.org/commander/-/commander-14.0.3.tgz',
+                    'integrity': 'sha512-dGVzdA=='},
                 'node_modules/typescript': {'version': '6.0.3',
                     'resolved': 'https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz',
                     'integrity': 'sha512-dGVzdA=='},
@@ -150,10 +153,15 @@ class NodeScannerGuards(unittest.TestCase):
         self.assertTrue((view / 'packages/scanner/.npmrc').exists(), 'source config is preserved as inert bytes')
         lockfile = view / 'packages/scanner/package-lock.json'
         lock = json.loads(lockfile.read_text())
-        lock['packages']['node_modules/typescript']['resolved'] = 'file:/tmp/untrusted'
-        lockfile.write_text(json.dumps(lock))
-        with self.assertRaisesRegex(HELPER.GateError, 'public-registry'):
-            HELPER.prepare_install(view, self.base / 'bad-install')
+        for name in ('typescript', 'commander'):
+            with self.subTest(dependency=name):
+                dependency = lock['packages']['node_modules/' + name]
+                original_url = dependency['resolved']
+                dependency['resolved'] = 'file:/tmp/untrusted'
+                lockfile.write_text(json.dumps(lock))
+                with self.assertRaisesRegex(HELPER.GateError, 'public-registry'):
+                    HELPER.prepare_install(view, self.base / ('bad-install-' + name))
+                dependency['resolved'] = original_url
 
     def test_full_orchestration_uses_clean_env_actual_tests_and_propagates_failure(self):
         self.package()

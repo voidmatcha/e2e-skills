@@ -145,6 +145,47 @@ class Probe(unittest.TestCase):
                     self.assertEqual(json.loads((command_dir/'command.json').read_text())['exit_code'], 7)
                     self.assertIn('evidence', json.loads((command_dir/'stdout.txt').read_text()))
     @unittest.skipUnless(os.name == 'posix', 'process groups require POSIX')
+    def test_timeout_does_not_signal_owned_group_twice(self):
+        output = self.root/'command';output.mkdir()
+        script = """import {runCommand} from RUNNER;
+const originalKill = process.kill;
+let signals = 0;
+process.kill = function(pid, signal) {
+  if (pid < 0 && signal === 'SIGKILL' && ++signals > 1) {
+    const error = new Error('duplicate group signal'); error.code = 'EPERM'; throw error;
+  }
+  return originalKill.call(process, pid, signal);
+};
+const receipt = await runCommand(JSON.parse(process.argv[1]), ...JSON.parse(process.argv[2]));
+console.log(JSON.stringify({receipt, signals}));
+""".replace('RUNNER', json.dumps(RUNNER.as_uri()))
+        config = {'argv':[sys.executable,'-c','import time;time.sleep(30)'],
+                  '_selector':'copies content', 'timeout_seconds':1}
+        args = [str(self.source), 'fault', str(self.root/'unused-report.json'), str(output)]
+        result = subprocess.run([NODE, '--input-type=module', '-e', script,
+                                 json.dumps(config), json.dumps(args)],
+                                capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        value = json.loads(result.stdout)
+        self.assertEqual(value['signals'], 1)
+        self.assertTrue(value['receipt']['timeout'])
+        self.assertIs(value['receipt']['owned_process_group_cleanup'], True)
+    @unittest.skipUnless(os.name == 'posix', 'process groups require POSIX')
+    def test_initial_group_signal_permission_error_still_fails_closed(self):
+        output = self.root/'command';output.mkdir()
+        script = """import {runCommand} from RUNNER;
+process.kill = () => { const error = new Error('group signal denied'); error.code = 'EPERM'; throw error; };
+await runCommand(JSON.parse(process.argv[1]), ...JSON.parse(process.argv[2]));
+""".replace('RUNNER', json.dumps(RUNNER.as_uri()))
+        config = {'argv':[sys.executable,'-c','pass'], '_selector':'copies content'}
+        args = [str(self.source), 'fault', str(self.root/'unused-report.json'), str(output)]
+        result = subprocess.run([NODE, '--input-type=module', '-e', script,
+                                 json.dumps(config), json.dumps(args)],
+                                capture_output=True, text=True, timeout=15)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('group signal denied', result.stderr)
+        self.assertFalse((output/'command.json').exists())
+    @unittest.skipUnless(os.name == 'posix', 'process groups require POSIX')
     def test_timeout_kills_owned_child_process_group(self):
         module = NodeRunner()
         output = self.root/'command';output.mkdir()

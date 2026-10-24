@@ -340,7 +340,7 @@ export async function main(argv = process.argv.slice(2), hooks = {}) {
     console.log("Use the project's existing auth/seed fixtures; browser availability remains unchecked.");
     console.log('Restart the host in this trusted project, approve the MCP tools, and confirm generator_write_test is visible.');
     console.log('Installation complete; generator session readiness remains unverified.');
-    console.log('Check the server in this trusted project (executes project code, no tool calls): ' + shell(['bash', path.join(ROOT, 'install.sh'), '--host', opts.host, '--project', project, '--check']));
+    console.log('Check the server in this trusted project (executes project code, no tool calls): ' + shell(hooks.nextCommand ? [...hooks.nextCommand, '--host', opts.host, '--project', project, '--check-server'] : ['bash', path.join(ROOT, 'install.sh'), '--host', opts.host, '--project', project, '--check']));
     console.log('Do not infer approval is the cause of missing tools; distinguish configuration, server startup, and host/session discovery.');
   } else console.log('Playwright agents/MCP not configured; rerun with --project to prepare them.');
   return 0;

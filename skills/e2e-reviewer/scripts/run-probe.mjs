@@ -135,8 +135,21 @@ export async function runCommand(config,project,phase,report,out) {
   const receipt = {argv,cwd:project,environment_names:Object.keys(env).sort()}, stdout = fs.openSync(path.join(out,'stdout.txt'),'wx'), stderr = fs.openSync(path.join(out,'stderr.txt'),'wx');
   try {
     await new Promise((resolve,reject) => {
-      const child = spawn(argv[0],argv.slice(1),{cwd:project,env,stdio:['ignore',stdout,stderr],detached:process.platform !== 'win32'}); let timer, timedOut = false;
-      function cleanup() { if (!child.pid) return; try { if (process.platform !== 'win32') { process.kill(-child.pid,'SIGKILL'); receipt.owned_process_group_cleanup = true; } else child.kill('SIGKILL'); } catch (e) { if (e.code === 'ESRCH') receipt.owned_process_group_cleanup ??= 'already exited'; else throw e; } }
+      const child = spawn(argv[0],argv.slice(1),{cwd:project,env,stdio:['ignore',stdout,stderr],detached:process.platform !== 'win32'}); let timer, timedOut = false, cleanupSent = false;
+      function cleanup() {
+        if (cleanupSent || !child.pid) return;
+        try {
+          if (process.platform !== 'win32') {
+            process.kill(-child.pid,'SIGKILL');
+            receipt.owned_process_group_cleanup = true;
+            cleanupSent = true;
+          } else cleanupSent = child.kill('SIGKILL');
+        } catch (e) {
+          if (e.code !== 'ESRCH') throw e;
+          receipt.owned_process_group_cleanup ??= 'already exited';
+          cleanupSent = true;
+        }
+      }
       child.once('error',error => { clearTimeout(timer); reject(error); });
       child.once('exit',(code,signal) => { clearTimeout(timer); receipt.exit_code = timedOut ? null : code ?? -1; if (timedOut) receipt.timeout = true; if (signal && !timedOut) receipt.signal = signal; try { cleanup(); resolve(); } catch (e) { reject(e); } });
       timer = setTimeout(() => { timedOut = true; try { cleanup(); } catch (e) { reject(e); } },(config.timeout_seconds ?? 120) * 1000);

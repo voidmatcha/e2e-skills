@@ -25,6 +25,24 @@ bash install.sh --host codex --project /path/to/playwright-project
 
 Use `--host claude` for Claude Code. `--project` names the directory containing playwright.config.*. Omit it to install only the four skills and two dedicated agents. Add `--dry-run` to preview changes without executing installers or project code.
 
+## CLI installer
+
+The npm CLI installs the same skills and agents without a repository clone. Preview the changes, then install and diagnose the selected host:
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.0 e2e-skills doctor --host codex --project /path/to/playwright-project
+```
+
+Use `--host claude` for Claude Code. Installation reuses the host installer described above; it does not create a project or install its dependencies or browsers. The default `doctor` returns structured file checks, missing requirements and next steps without executing project code. Active-session tools and approvals remain unknown.
+
+Existing skill copies must match the package exactly. Older versions and local edits are preserved and stop installation; review the reported paths before retrying.
+
+For a trusted project, explicitly add `--check-server` to `doctor` to start the configured MCP server and check `initialize` and `tools/list`. That check executes project code; it does not invoke MCP tools, launch a browser or run tests. A successful server check does not prove active-session readiness. Complete host restart, project trust and tool approval yourself where needed.
+
+The same entry point forwards `scan PATH` to the existing scanner and `check ...` to the existing discovery, binding and probe CLI. These commands do not install skills or configure MCP. The existing `e2e-skills-scan` and `e2e-skills-check` commands remain available.
+
 ## First Playwright project
 
 If the project has no Playwright runner or configuration, follow the [official initial setup](https://playwright.dev/docs/intro) using its existing package manager. Review and authorize dependency installation, browser downloads and generated files separately; the generator skill does not perform this setup automatically. Confirm the project-native test command, Playwright configuration, required browsers and approved local development stack before rerunning `bash install.sh --host codex --project /path/to/playwright-project` (use `--host claude` for Claude Code).

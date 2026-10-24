@@ -103,6 +103,7 @@ trusted_trio_targets() {
   case "$node_launcher|$node_real|$npm_real|$npx_real" in
     /opt/homebrew/bin/node\|/opt/homebrew/Cellar/node/*/bin/node\|/opt/homebrew/lib/node_modules/npm/bin/npm-cli.js\|/opt/homebrew/lib/node_modules/npm/bin/npx-cli.js) return 0 ;;
     /usr/local/bin/node\|/usr/local/Cellar/node/*/bin/node\|/usr/local/lib/node_modules/npm/bin/npm-cli.js\|/usr/local/lib/node_modules/npm/bin/npx-cli.js) return 0 ;;
+    /usr/local/bin/node\|/usr/local/bin/node\|/usr/local/lib/node_modules/npm/bin/npm-cli.js\|/usr/local/lib/node_modules/npm/bin/npx-cli.js) return 0 ;;
     /usr/bin/node\|/usr/bin/node\|/usr/share/nodejs/npm/bin/npm-cli.js\|/usr/share/nodejs/npm/bin/npx-cli.js) return 0 ;;
     /usr/bin/node\|/usr/bin/node\|/usr/lib/node_modules/npm/bin/npm-cli.js\|/usr/lib/node_modules/npm/bin/npx-cli.js) return 0 ;;
     /bin/node\|/usr/bin/node\|/usr/share/nodejs/npm/bin/npm-cli.js\|/usr/share/nodejs/npm/bin/npx-cli.js) return 0 ;;

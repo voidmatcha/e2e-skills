@@ -183,24 +183,27 @@ def verify_view(view: Path, original: dict, *, installed=False) -> None:
 def prepare_install(view: Path, install: Path) -> None:
     package = json.loads((view / PACKAGE / 'package.json').read_text())
     lock = json.loads((view / PACKAGE / 'package-lock.json').read_text())
-    if package.get('dependencies') != {'typescript': '6.0.3'}:
-        raise GateError('expected exact TypeScript 6.0.3 product dependency')
+    expected = {'typescript': '6.0.3', 'commander': '14.0.3'}
+    if package.get('dependencies') != expected:
+        raise GateError('expected exact TypeScript 6.0.3 and Commander 14.0.3 product dependencies')
     if any(package.get(key) for key in ('devDependencies', 'optionalDependencies',
                                        'peerDependencies', 'workspaces', 'overrides')):
         raise GateError('unexpected additional install inputs')
     entries = lock.get('packages', {})
-    if (lock.get('lockfileVersion') != 3 or set(entries) != {'', 'node_modules/typescript'} or
-            entries[''].get('dependencies') != package['dependencies'] or
-            entries['node_modules/typescript'].get('version') != '6.0.3'):
+    if (lock.get('lockfileVersion') != 3 or set(entries) != {'', *('node_modules/' + name for name in expected)} or
+            entries[''].get('dependencies') != expected):
         raise GateError('unexpected dependency lock shape')
-    dependency = entries['node_modules/typescript']
-    if dependency.get('link'):
-        raise GateError('linked dependencies are not a pinned registry install')
-    location = urlsplit(dependency.get('resolved', ''))
-    if (location.scheme != 'https' or location.netloc != 'registry.npmjs.org' or
-            location.path != '/typescript/-/typescript-6.0.3.tgz' or location.query or location.fragment or
-            not re.fullmatch(r'sha512-[A-Za-z0-9+/]+={0,2}', dependency.get('integrity', ''))):
-        raise GateError('dependency must have a public-registry URL and pinned integrity')
+    for name, version in expected.items():
+        dependency = entries['node_modules/' + name]
+        if dependency.get('version') != version:
+            raise GateError('unexpected dependency lock version')
+        if dependency.get('link'):
+            raise GateError('linked dependencies are not a pinned registry install')
+        location = urlsplit(dependency.get('resolved', ''))
+        if (location.scheme != 'https' or location.netloc != 'registry.npmjs.org' or
+                location.path != f'/{name}/-/{name}-{version}.tgz' or location.query or location.fragment or
+                not re.fullmatch(r'sha512-[A-Za-z0-9+/]+={0,2}', dependency.get('integrity', ''))):
+            raise GateError('dependency must have a public-registry URL and pinned integrity')
     if (view / PACKAGE / 'node_modules').exists():
         raise GateError('publishable snapshot already contains scanner node_modules')
     install.mkdir()
