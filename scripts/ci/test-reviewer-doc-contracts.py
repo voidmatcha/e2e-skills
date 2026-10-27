@@ -1897,7 +1897,23 @@ def verify_cypress_name_and_coverage_scope() -> None:
     assert "a clean review has no coverage-gap list" in skill
 
 
+POLICY_SUMMARY = ROOT / "docs" / "benchmarks" / "test-failure-policy-v1-summary.txt"
+POLICY_RECORD = ROOT / "docs" / "benchmarks" / "test-failure-policy-v1.md"
+
+
+def verify_policy_summary_digest() -> None:
+    # The summary is a verbatim copy; its record must state the copy's exact digest.
+    digest = hashlib.sha256(POLICY_SUMMARY.read_bytes()).hexdigest()
+    record = POLICY_RECORD.read_text(encoding="utf-8")
+    assert f"SHA-256 `{digest}`" in record, (
+        "docs/benchmarks/test-failure-policy-v1.md must state the SHA-256 of "
+        f"test-failure-policy-v1-summary.txt ({digest})"
+    )
+    assert "(test-failure-policy-v1-summary.txt)" in record
+
+
 def verify_current_docs() -> None:
+    verify_policy_summary_digest()
     assert_behavior_preservation_contract(REVIEW_SCOPE.read_text(encoding="utf-8"))
     verify_cypress_name_and_coverage_scope()
     verify_v3_adapter_contract()

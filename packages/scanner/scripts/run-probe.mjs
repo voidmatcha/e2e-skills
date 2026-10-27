@@ -209,7 +209,9 @@ export async function execute(plan,{source,files,deps},output) {
     return lines.some(line => {
       let frame = line.trim();
       if (frame.startsWith('at ')) frame = frame.slice(3).trim().replace(/^async\s+/,'');
-      else if (!hasStackFrame && /^[A-Za-z]*Error:/.test(frame) && frame.includes(' at ')) frame = frame.slice(frame.indexOf(' at ') + 4).trim();
+      // With a real stack present, only its frames are location candidates.
+      else if (hasStackFrame) return false;
+      else if (/^[A-Za-z]*Error:/.test(frame) && frame.includes(' at ')) frame = frame.slice(frame.indexOf(' at ') + 4).trim();
       const wrapped = frame.indexOf(' (');
       if (wrapped >= 0 && frame.endsWith(')')) frame = frame.slice(wrapped + 2,-1);
       else if (frame.startsWith('(') && frame.endsWith(')')) frame = frame.slice(1,-1);

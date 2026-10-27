@@ -6,9 +6,9 @@
 
 ### Added
 
-- Optional [test-authoring memo](docs/test-authoring-memo.md) for a project's `CLAUDE.md` or `AGENTS.md` that targets failure-path behaviours (rejection rollback, validation, server confirmation, duplicate submit, pending state), with a [compact evidence record](docs/benchmarks/test-authoring-memo-v1.md) and its limits. No skill loads the memo.
+- Optional [test-authoring memo](docs/test-authoring-memo.md) for a project's `CLAUDE.md` or `AGENTS.md` that targets failure-path behaviors (rejection rollback, validation, server confirmation, duplicate submit, pending state), with a [compact evidence record](docs/benchmarks/test-authoring-memo-v1.md) and its limits. No skill loads the memo.
 
-- Optional [test-failure policy](docs/test-failure-policy.md) for the workspace-root `CLAUDE.md` or `AGENTS.md`, with a verbatim [measurement summary](docs/benchmarks/test-failure-policy-v1.md). "With the always-loaded test-failure policy, the models we measured mostly stopped rewriting the failing test and reported the app/test mismatch instead (3 apps, 24 pairs over two iterations, 3 models)." Unresolved CI-red cells grew beyond the pre-registered limit; those cells report the mismatch. The same rule inside a skill file did not meet its threshold. No skill loads the policy.
+- Optional [test-failure policy](docs/test-failure-policy.md) for the workspace-root `CLAUDE.md` or `AGENTS.md`, with a [measurement summary](docs/benchmarks/test-failure-policy-v1.md) and the verbatim [session summary](docs/benchmarks/test-failure-policy-v1-summary.txt). "With the always-loaded test-failure policy, the models we measured mostly stopped rewriting the failing test and reported the app/test mismatch instead (3 apps, 24 pairs over two iterations, 3 models)." Unresolved CI-red cells grew beyond the pre-registered limit; a blinded reading found that those cells report the mismatch (coarse check: two blind judges, 126/126, but the rubric did not discriminate). The same rule inside a skill file did not meet its threshold. No skill loads the policy.
 
 - Runtime-probe measurement in the same summary: "In our setup, when the runtime probe actually ran, Claude caught false-green tests that it missed by reading alone (2 of 13 pairs had such misses; direction only)." Limits: one reviewer model; the probe was run through a prepared wrapper and plan, so this measures using the verdict, not finding the probe; few pairs with headroom; static apps only; not a claim about real repositories.
 
@@ -20,13 +20,17 @@
 
 - Source-pinned review tasks for Promise receivers whose fixture import is unresolved. Review checks the surrounding call and Promise handling without changing findings, diagnostics or incomplete exit status.
 
+### Changed
+
+- `expected_failure.location` in a probe plan is resolved against the phase project and must be a project-relative `path:line[:column]` (for example `tests/checkout.spec.ts:12:5`). 3.2.1 matched it as a substring, so a basename or original-checkout absolute location that linked there now returns `CANNOT_VERIFY`. Plans that pinned a basename or absolute location must be rewritten as project-relative.
+
 ### Fixed
 
-- Trust a coordinate written inside an error message only when the text has no real stack frame, and recognize `at async` and `file://` Node frames in text-only stacks, so a message-embedded location cannot mask a frame in another file and valid Node frame shapes still link.
+- Trust a coordinate written inside an error message, inline or in parentheses, only when the text has no real stack frame, so a message-embedded location cannot outrank a frame in another file.
 
 - Link Cypress default-webpack error frames only to exact selected test paths; retain rejection of other files, namespaces and mismatched coordinates.
 
-- Match complete native failure location tokens and phase file paths, and exclude separate source snippets and numbered native code frames from assertion-failure evidence, preventing different files or source context from establishing detection or an inverted-response diagnostic.
+- Match complete native failure location tokens and phase file paths (including `at async` and `file://` Node frames in text-only stacks), and exclude separate source snippets and numbered native code frames from assertion-failure evidence, preventing different files or source context from establishing detection or an inverted-response diagnostic.
 
 - Correct the sidebar-toggle review eval: a verified hidden sidebar does not imply an unverified content-expansion requirement.
 

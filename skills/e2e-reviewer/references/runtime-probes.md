@@ -120,11 +120,15 @@ Write JSON version 1 with these fields:
 | `test` | `{ "argv": ["executable", "argument"], "timeout_seconds": 120, "source": { "path": "included/native-wrapper.mjs", "sha256": "digest" } }` |
 | `observer` | V3 required: command plus `source: { "path", "sha256" }` pinning the included observer script |
 | `report` | `{ "format": "playwright-json" or "cypress-json", "path": "fresh/relative/report.json" }` |
-| `expected_failure` | Nonempty `contains` and `location` strings identifying the intended assertion failure |
+| `expected_failure` | Nonempty `contains` and `location` strings identifying the intended assertion failure; `location` is a phase-project-relative POSIX `path:line[:column]`, such as `tests/checkout.spec.ts:12:5` |
 | `dependency_dirs` | Optional explicit `{ "path", "target" }` dependency links |
 
 Pin `location` to the promise-linked assertion's file and line (and column when
-available), confirmed in the actual native error. Pin `contains` to that
+available), confirmed in the actual native error. Write the file relative to the
+phase project, as it appears in `test_paths`. A basename alone (`checkout.spec.ts:12`)
+or an absolute path from the original checkout does not resolve to the phase copy,
+so the failure does not link and the probe returns `CANNOT_VERIFY`; an absolute path
+can match at most one phase. Pin `contains` to that
 assertion's specific matcher or expected-value message. A generic
 `AssertionError`, filename alone, or unrelated stack frame does not establish
 that link.
@@ -137,8 +141,10 @@ can identify an exact entry in `test_paths`; other webpack namespaces and encode
 paths are not resolved. Separate source snippets and numbered code frames
 inside native errors are context, not proof that their assertions failed.
 The executor excludes these from failure matching. Text-only locations must
-appear as complete location lines, native stack frames, or inline locations in
-recognized error messages; ambiguous prose is not accepted. This textual check
+appear as native stack frames; when the error text has no `at` stack frame, a
+complete location line or an inline location in a recognized error message is
+accepted instead. A coordinate written inside the message never outranks a real
+stack frame in another file. Ambiguous prose is not accepted. This textual check
 does not identify arbitrary assertion expressions. Inspect the native error message and
 raw report before accepting a link.
 

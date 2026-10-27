@@ -98,6 +98,13 @@ for(const format of ['playwright-json','cypress-json']) {
   test(`${format}: a location written in the message cannot outrank a real stack frame in another file`,async t=>{
     noSignal(await probe(t,{format,errors:['AssertionError: expected transfer at test.spec.ts:25:3\n    at Context.run (helpers.ts:3:9)']}));
   });
+  test(`${format}: a parenthesised location in the message cannot outrank a real stack frame in another file`,async t=>{
+    noSignal(await probe(t,{format,errors:['AssertionError: expected transfer (test.spec.ts:25:3)\n    at Context.run (helpers.ts:3:9)']}));
+  });
+  test(`${format}: a parenthesised message location links only when no stack frame exists`,async t=>{
+    const r=await probe(t,{format,errors:['AssertionError: expected transfer (test.spec.ts:25:3)']});
+    assert.equal(r.behavior_comparison?.classification,'INVERTED_RESPONSE');
+  });
   for (const frame of ['at async {project}/test.spec.ts:25:3','at file://{project}/test.spec.ts:25:3'])
     test(`${format}: Node frame shape "${frame.split('{')[0]}" preserves inversion`,async t=>{
       const r=await probe(t,{format,errors:['expected transfer\n    '+frame]});

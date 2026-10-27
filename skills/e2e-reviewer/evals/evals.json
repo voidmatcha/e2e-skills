@@ -1551,6 +1551,17 @@
         "False-positive guard: receipt.spec.ts:5's approved test.fail is unsupported execution evidence, not an automatic adapted_to_bug or catalog finding",
         "Keep execution abstention separate from a true-negative quality verdict and do not treat a missing diagnostic as clearance"
       ]
+    },
+    {
+      "id": 98,
+      "prompt": "Interpret two authored probe scenarios without executing anything. A: a behavior-fault plan pins expected_failure.location to tests/receipt.spec.ts:7, relative to the phase project. In the fault phase the only native error text is 'AssertionError: expected Sent (tests/receipt.spec.ts:7:5)' followed by the real stack frame 'at render (tests/helpers/render.ts:3:9)'; the runner returns CANNOT_VERIFY with no INVERTED_RESPONSE. B: a second plan for the same test pins the location as receipt.spec.ts:7 (basename only) and also returns CANNOT_VERIFY. These are eval inputs, not recorded live runs.",
+      "expected_output": "A: a coordinate written inside the error message is used only when the error has no real stack frame; here the only frame is in tests/helpers/render.ts, so the failure is not linked to tests/receipt.spec.ts:7 and CANNOT_VERIFY is correct. Confirm the intended assertion's location in the native error before re-planning. B: expected_failure.location must be a phase-project-relative path:line[:column]; a basename does not resolve to tests/receipt.spec.ts, so rewrite it as tests/receipt.spec.ts:7. Neither result is DETECTED, SURVIVED or a catalog finding.",
+      "files": [],
+      "assertions": [
+        "True positive: explain that plan B's basename location receipt.spec.ts:7 must be rewritten as the phase-project-relative tests/receipt.spec.ts:7 before the failure can link",
+        "False-positive guard: the coordinate in 'AssertionError: expected Sent (tests/receipt.spec.ts:7:5)' must not count as the failure location while the real stack frame at tests/helpers/render.ts:3:9 is present; do not report DETECTED or INVERTED_RESPONSE for plan A",
+        "Do not execute commands or present these authored eval packets as observed repository runtime evidence"
+      ]
     }
   ]
 }
