@@ -1,6 +1,6 @@
 # Test-failure policy and runtime probe: measurement summary
 
-This record holds the measurement summary for the optional [test-failure policy](../test-failure-policy.md) and for the `e2e-reviewer` runtime probe. The [summary file](test-failure-policy-v1-summary.txt) is copied verbatim from the measurement owner's revision r3 (SHA-256 `e3df8dfda5f08f02e2b4b4c951684ae87cf157bd6edb9657cc70777aa89e9015`, written 2026-10-27, revised 2026-10-28). It supersedes the first copy (`b257defa831e89bd5d2ac3393befecb265f8782eaaa46e97f9ff78809b558c3c`): r2 corrected the Stage-2 selection-bias sentence in B2 and r3 added the global-instructions limit to B. Recorded for the 3.3.0 release.
+This record holds the measurement summary for the optional [test-failure policy](../test-failure-policy.md) and for the `e2e-reviewer` runtime probe. The [summary file](test-failure-policy-v1-summary.txt) is copied verbatim from the measurement owner's revision r4 (SHA-256 `352202daed7b5de8e191fd2a9819c6837152a2dfd16400d401933e90d4408a9f`, written 2026-10-27, revised 2026-10-28). It supersedes the first copy (`b257defa831e89bd5d2ac3393befecb265f8782eaaa46e97f9ff78809b558c3c`): r2 corrected the Stage-2 selection-bias sentence in B2 r3 added the global-instructions limit to B, and r4 corrected the B Reading line about the other pairs. Recorded for the 3.3.0 release.
 
 The underlying run records (pre-registrations, freezes, run directories, transcripts) are local to the measurement machine and are not part of the release. No pair contents, faults or test code are included.
 
@@ -8,7 +8,7 @@ The underlying run records (pre-registrations, freezes, run directories, transcr
 
 "With the always-loaded test-failure policy, the models we measured mostly stopped rewriting the failing test and reported the app/test mismatch instead (3 apps, 24 pairs over two iterations, 3 models)."
 
-- Scope: three open-source web apps, 24 new fault pairs over two iterations, three models. Delivery was checked per cell from logs; the summary reports 108/108 snippet-arm cells delivered, which is the size of one iteration's snippet arm. Outcomes were judged by running the final test on the corrected app and on the faulted app.
+- Scope: three open-source web apps, 24 new fault pairs over two iterations, three models. Delivery was checked per cell from logs; delivery was 108/108 snippet-arm cells in each of the two iterations. Outcomes were judged by running the final test on the corrected app and on the faulted app.
 - Side condition not met: the pre-registered limit on growth of unresolved, CI-red cells was not met by the harness label. A blinded reading shows that those cells report the mismatch instead of hiding it (coarse check: two blind judges, 126/126, but the rubric did not discriminate).
 - Negative result: the same rule placed inside a skill file, which is not always loaded, did not meet the pre-registered threshold. The measured effect belongs to the always-loaded placement.
 - Per-model counts and intervals are in the summary file. They are not pooled across models, and the two iterations used different pairs, so they are not a comparison of policy versions.
@@ -19,7 +19,7 @@ The ON arm used the skill snapshot at `f4cf268d`, a local pre-release commit tha
 
 "In our setup, when the runtime probe actually ran, Claude caught false-green tests that it missed by reading alone (2 of 13 pairs had such misses; direction only)."
 
-Weakened-test detection and control false positives are separate results. Detection: in Stage 1, the ON arm missed 0/54 weakened-test observations and the OFF arm 15/54 (28%, 16-42%). Controls: faithful tests judged weakened 0/9 in both arms in Stage 1 and 0/30 in both arms in Stage 2. Stage 2 took its weakened cases from one kards pair and its controls from ten pairs, so for most of the "11 other pairs" in the summary's Reading line, "both arms caught everything" means neither arm flagged a faithful test, not that a weakened test was detected.
+Weakened-test detection and control false positives are separate results. Detection: in Stage 1, the ON arm missed 0/54 weakened-test observations and the OFF arm 15/54 (28%, 16-42%). Controls: faithful tests judged weakened 0/9 in both arms in Stage 1 and 0/30 in both arms in Stage 2. Stage 2 took its weakened cases from one kards pair and its controls from ten pairs. For the other nine Stage-2 pairs the weakened tests ran only in the OFF calibration (one repetition) and not in the ON arm, so only their controls were compared; the r4 Reading line says the same.
 
 Correction to the first copy of the summary: Stage-2 cases were selected because the OFF arm missed them in a calibration run. That selection favors ON, not the reverse, so Stage 2 is a confirmation on selected cases, not an unbiased rate; corrected B2 in the summary says the same. Effect sizes are cited from Stage 1 only.
 

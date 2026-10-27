@@ -72,7 +72,7 @@ The pre-registered gate was met on both hosts; non-gap detection was 12/12 in bo
 
 ## Limits
 
-- An independent replication by a separate benchmark session, on its own apps and harness (96 valid cells, two models), used this exact memo (same SHA-256) and measured no difference between the memo and no memo, including on the features where the no-memo baseline missed some faults; most features were already fully detected without it (ceiling). The gains reported above were not reproduced in that setup.
+- An independent replication by a separate benchmark session (two other apps, 96 valid cells, two models) measured no difference with this exact memo (same SHA-256), but its faults were ordinary-path behaviours, not the failure-path classes the memo targets; it shows the memo did not change ordinary-path detection there (mostly ceiling) and does not test the memo's targeted claim.
 - Small authored apps with visible source; neutral prompts only; three repetitions per app.
 - One model per host. Results may not transfer to other models, efforts or hosts.
 - In the pooled pairs (harness v3 and v4), Codex cells could not launch a browser in-cell, so every Codex spec there was written without running it. Codex had a browser only in the harness v5 runs: the P8 Codex rerun (P8h), where all 12 cells executed their tests in-cell, and the real-repository runs `round-rr1h` and `round-rr2`.
