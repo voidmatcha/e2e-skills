@@ -2,6 +2,42 @@
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-10-27
+
+### Added
+
+- Optional [test-authoring memo](docs/test-authoring-memo.md) for a project's `CLAUDE.md` or `AGENTS.md` that targets failure-path behaviours (rejection rollback, validation, server confirmation, duplicate submit, pending state), with a [compact evidence record](docs/benchmarks/test-authoring-memo-v1.md) and its limits. No skill loads the memo.
+
+- Optional [test-failure policy](docs/test-failure-policy.md) for the workspace-root `CLAUDE.md` or `AGENTS.md`, with a verbatim [measurement summary](docs/benchmarks/test-failure-policy-v1.md). "With the always-loaded test-failure policy, the models we measured mostly stopped rewriting the failing test and reported the app/test mismatch instead (3 apps, 24 pairs over two iterations, 3 models)." Unresolved CI-red cells grew beyond the pre-registered limit; those cells report the mismatch. The same rule inside a skill file did not meet its threshold. No skill loads the policy.
+
+- Runtime-probe measurement in the same summary: "In our setup, when the runtime probe actually ran, Claude caught false-green tests that it missed by reading alone (2 of 13 pairs had such misses; direction only)." Limits: one reviewer model; the probe was run through a prepared wrapper and plan, so this measures using the verdict, not finding the probe; few pairs with headroom; static apps only; not a claim about real repositories.
+
+- Behavior-fault probes expose an `INVERTED_RESPONSE` review diagnostic when the same test passes with an observed promise violation and fails with the pinned error text and location in both normal and restored phases. The probe remains `CANNOT_VERIFY`; the diagnostic requires assertion review and does not establish assertion execution, a catalog finding or author intent.
+
+- Diff reviews compare changed test evidence with sourced acceptance requirements, distinguish approved requirement changes from bug-conforming expectations, and retain missing-contract uncertainty.
+
+- Source-pinned review tasks for unsupported try/catch and parameterized catch propagation. The `propagation-unsupported` diagnostic identifies these gaps without adding findings or clearing incomplete status.
+
+- Source-pinned review tasks for Promise receivers whose fixture import is unresolved. Review checks the surrounding call and Promise handling without changing findings, diagnostics or incomplete exit status.
+
+### Fixed
+
+- Trust a coordinate written inside an error message only when the text has no real stack frame, and recognize `at async` and `file://` Node frames in text-only stacks, so a message-embedded location cannot mask a frame in another file and valid Node frame shapes still link.
+
+- Link Cypress default-webpack error frames only to exact selected test paths; retain rejection of other files, namespaces and mismatched coordinates.
+
+- Match complete native failure location tokens and phase file paths, and exclude separate source snippets and numbered native code frames from assertion-failure evidence, preventing different files or source context from establishing detection or an inverted-response diagnostic.
+
+- Correct the sidebar-toggle review eval: a verified hidden sidebar does not imply an unverified content-expansion requirement.
+
+- Skip zero-argument action calls when checking force options; calls with options or spread arguments retain receiver diagnostics.
+
+- Clarify that a completed source review task can produce no catalog finding while the scanner remains incomplete.
+
+- Align the README generator description with the shipped workflow (approved project test command, new specs only, stop when issues remain or scanning is incomplete), and correct the AGENTS.md subagent-registration note and skills.sh link.
+
+- Avoid unresolved catch tasks for a helper that only rethrows its identifier-bound error. Immediate finally blocks and generator helpers remain outside this narrow exclusion; enclosing catch/finally evidence is preserved.
+
 ## [3.2.1] - 2026-10-24
 
 ### Added

@@ -107,14 +107,18 @@ export function prepare(plan) {
 function reportRoot(report,project) {
   const value = report.config?.rootDir ?? project; require(typeof value === 'string' && value,'invalid Playwright rootDir'); require(!value.split(path.sep).includes('..'),'Playwright rootDir traversal'); const root = absolute(path.isAbsolute(value) ? value : path.join(project,value)); require(inside(root,project) && fs.statSync(root).isDirectory(),'Playwright rootDir outside phase project or absent'); return root;
 }
-export function parseNative(report,format,selector,testPaths,project) {
+export function parseNative(report,format,selector,testPaths,project,errorDetails = []) {
   const tests = [], root = format === 'playwright-json' ? reportRoot(report,project) : project;
   function specPath(value) {
     require(typeof value === 'string' && value,'reported spec path absent'); require(!value.split(path.sep).includes('..'),'reported spec path traversal'); const candidate = path.isAbsolute(value) ? value : path.join(root,value); noSymlinks(candidate);
     require(inside(candidate,project),'reported spec outside phase project'); const name = path.relative(project,candidate).split(path.sep).join('/'); require(exists(candidate) && fs.statSync(candidate).isFile() && testPaths.includes(name),'reported spec not in test_paths or absent');
   }
   function errorText(value) {
-    if (typeof value === 'string') return value; require(object(value),'invalid native error'); let text = ['message','stack','value','snippet'].map(k => String(value[k] ?? '')).join('\n'); if (object(value.location)) text += '\n' + ['file','line','column'].map(k => String(value.location[k] ?? '')).join(':'); return text;
+    // A surrounding source snippet is context, not evidence that its matcher failed.
+    if (typeof value === 'string') { errorDetails.push({text:value}); return value; }
+    require(object(value),'invalid native error'); let text = ['message','stack','value'].map(k => String(value[k] ?? '')).join('\n');
+    errorDetails.push({text,...(object(value.location) ? {location:value.location} : {})});
+    if (object(value.location)) text += '\n' + ['file','line','column'].map(k => String(value.location[k] ?? '')).join(':'); return text;
   }
   const empty = value => value == null || value === false || value === '' || (Array.isArray(value) && !value.length) || (object(value) && !Object.keys(value).length);
   if (format === 'playwright-json') {
@@ -159,7 +163,7 @@ export async function runCommand(config,project,phase,report,out) {
 }
 function writeJson(filename,value) { fs.writeFileSync(filename,JSON.stringify(value,null,2) + '\n'); }
 export async function execute(plan,{source,files,deps},output) {
-  const phases = {}; let error = null, afterDigest = null; const beforeDigest = digest(canonical(files));
+  const phases = {}, phaseErrors = new Map(); let error = null, afterDigest = null; const beforeDigest = digest(canonical(files));
   try {
     for (const phase of ['normal','fault','restored']) {
       const folder = path.join(output,phase), project = path.join(folder,'project'); fs.mkdirSync(project,{recursive:true});
@@ -167,7 +171,7 @@ export async function execute(plan,{source,files,deps},output) {
       for (const [name,target] of deps) { const dest = path.join(project,name); fs.mkdirSync(path.dirname(dest),{recursive:true}); fs.symlinkSync(target,dest,'dir'); }
       const expected = Object.fromEntries(Object.entries(files).map(([name,info]) => [name,info.sha256]));
       if (phase === 'fault') for (const edit of plan.edits) { const dest = path.join(project,edit.path), data = fs.readFileSync(dest), before = Buffer.from(edit.before), index = data.indexOf(before); fs.writeFileSync(dest,Buffer.concat([data.subarray(0,index),Buffer.from(edit.after),data.subarray(index + before.length)])); expected[edit.path] = digest(fs.readFileSync(dest)); }
-      const report = path.join(project,plan.report.path); fs.mkdirSync(path.dirname(report),{recursive:true}); const testDir = path.join(folder,'test'); fs.mkdirSync(testDir); const native = await runCommand({...plan.test,_selector:plan.test_selector},project,phase,report,testDir); noSymlinks(report); require(exists(report) && fs.statSync(report).isFile(),'native report missing'); const nativeReport = JSON.parse(readText(report)); const [status,errors] = parseNative(nativeReport,plan.report.format,plan.test_selector,plan.test_paths,project); require(native.exit_code === (status === 'passed' ? 0 : 1),'native exit/report mismatch'); const item = {native:status,errors,report_sha256:digest(fs.readFileSync(report)),source_files:expected};
+      const report = path.join(project,plan.report.path); fs.mkdirSync(path.dirname(report),{recursive:true}); const testDir = path.join(folder,'test'); fs.mkdirSync(testDir); const native = await runCommand({...plan.test,_selector:plan.test_selector},project,phase,report,testDir); noSymlinks(report); require(exists(report) && fs.statSync(report).isFile(),'native report missing'); const nativeReport = JSON.parse(readText(report)); const errorDetails = []; const [status,errors] = parseNative(nativeReport,plan.report.format,plan.test_selector,plan.test_paths,project,errorDetails); phaseErrors.set(phase,errorDetails); require(native.exit_code === (status === 'passed' ? 0 : 1),'native exit/report mismatch'); const item = {native:status,errors,report_sha256:digest(fs.readFileSync(report)),source_files:expected};
       if (plan.report.format === 'playwright-json') item.report_rootDir_resolved = reportRoot(nativeReport,project); phases[phase] = item;
       if (plan.observer) { const observerDir = path.join(folder,'observer'); fs.mkdirSync(observerDir); const observed = await runCommand({...plan.observer,_selector:plan.test_selector},project,phase,report,observerDir); require(observed.exit_code === 0,'observer command failed'); const observation = JSON.parse(readText(path.join(observerDir,'stdout.txt'))); require(typeof observation.promised_effect === 'boolean' && typeof observation.fault_reached === 'boolean','invalid observer booleans'); require(observation.project === project,'observer phase provenance mismatch'); require(Array.isArray(observation.evidence) && observation.evidence.length,'observer requires actual evidence files');
         for (const entry of observation.evidence) { keys(entry,['path','sha256'],['path','sha256']); const name = relative(entry.path); require(!Object.hasOwn(files,name) && name !== plan.report.path,'observer evidence must be a fresh observation artifact'); const filename = path.join(project,name); noSymlinks(filename); require(exists(filename) && fs.statSync(filename).isFile() && digest(fs.readFileSync(filename)) === entry.sha256,'observer evidence missing or hash mismatch'); } item.observer = observation;
@@ -177,10 +181,64 @@ export async function execute(plan,{source,files,deps},output) {
     }
   } catch (e) { error = e.message; }
   finally { try { const after = tree(source); afterDigest = digest(canonical(after)); require(canonical(after) === canonical(files),'original source changed'); } catch (e) { error = e.message; } }
-  let verdict = 'CANNOT_VERIFY', linked = false;
+  let verdict = 'CANNOT_VERIFY', linked = false, behaviorComparison;
+  // Compare whole file identities and complete coordinates, never a basename suffix.
+  const coordinates = value => /^(.*?):(\d+)(?::(\d+))?$/.exec(value);
+  const wanted = coordinates(plan.expected_failure.location);
+  function sameLocation(file, line, column, phase, item) {
+    if (!wanted || typeof file !== 'string' || !file || !/^\d+$/.test(String(line)) ||
+        (column != null && !/^\d+$/.test(String(column)))) return false;
+    // Cypress's default webpack stack is a source identity, not a host path.
+    // Accept only its exact root-relative form for an explicitly selected test.
+    if (plan.report.format === 'cypress-json' && file.startsWith('webpack:///./')) {
+      const sourceFile = file.slice('webpack:///./'.length);
+      if (!plan.test_paths.includes(sourceFile)) return false;
+      file = sourceFile;
+    }
+    const project = path.resolve(output,phase,'project');
+    const expectedFile = path.resolve(project,wanted[1]);
+    const actualFile = path.resolve(item.report_rootDir_resolved ?? project,file);
+    return inside(expectedFile,project) && inside(actualFile,project) &&
+      expectedFile === actualFile && Number(line) === Number(wanted[2]) &&
+      (!wanted[3] || Number(column) === Number(wanted[3]));
+  }
+  function locationMatches(text, phase, item) {
+    const lines = text.split('\n');
+    // A coordinate written inside the error message is trusted only when no real stack frame is present.
+    const hasStackFrame = lines.some(line => line.trim().startsWith('at '));
+    return lines.some(line => {
+      let frame = line.trim();
+      if (frame.startsWith('at ')) frame = frame.slice(3).trim().replace(/^async\s+/,'');
+      else if (!hasStackFrame && /^[A-Za-z]*Error:/.test(frame) && frame.includes(' at ')) frame = frame.slice(frame.indexOf(' at ') + 4).trim();
+      const wrapped = frame.indexOf(' (');
+      if (wrapped >= 0 && frame.endsWith(')')) frame = frame.slice(wrapped + 2,-1);
+      else if (frame.startsWith('(') && frame.endsWith(')')) frame = frame.slice(1,-1);
+      if (frame.startsWith('file://')) { try { frame = decodeURIComponent(frame.slice(7)); } catch { return false; } }
+      const parts = coordinates(frame);
+      return parts && sameLocation(parts[1],parts[2],parts[3],phase,item);
+    });
+  }
+  // Native messages/stacks can embed numbered source frames as well as a separate
+  // snippet field. Keep the original errors in the report, but not as matcher proof.
+  const failureEvidence = text => text.replace(/\u001b\[[0-?]*[ -/]*[@-~]/g,'').split('\n').filter(line => !/^\s*(?:>\s*)?(?:\d+\s*\||\|)/.test(line)).join('\n');
+  const linkedFailure = (item, phase) => item.native === 'failed' && phaseErrors.get(phase).some(entry => {
+    const evidence = failureEvidence(entry.text);
+    const linkedLocation = entry.location ? sameLocation(entry.location.file,entry.location.line,entry.location.column,phase,item) : locationMatches(evidence,phase,item);
+    return evidence.includes(plan.expected_failure.contains) && linkedLocation;
+  });
   if (error === null && Object.keys(phases).length === 3) {
     let baseline = ['normal','restored'].every(p => phases[p].native === 'passed'); if (plan.observer) baseline &&= ['normal','restored'].every(p => phases[p].observer.promised_effect); const fault = phases.fault;
-    linked = fault.native === 'failed' && fault.errors.some(text => Object.values(plan.expected_failure).every(s => text.includes(s)));
+    linked = linkedFailure(fault,'fault');
+    // A reversed response is useful review evidence, not a valid V3 baseline.
+    // Require linked failures and consistent observations so unlinked setup failures,
+    // recovery drift and unreached faults do not become regression diagnoses.
+    if (plan.mode === 'behavior-fault' && fault.native === 'passed' && fault.observer.fault_reached && !fault.observer.promised_effect &&
+        ['normal','restored'].every(p => linkedFailure(phases[p],p) && phases[p].observer.promised_effect && !phases[p].observer.fault_reached)) {
+      behaviorComparison = {
+        classification:'INVERTED_RESPONSE',requires_review:true,
+        reason:'The same test passed with the observed promise violation and failed with the pinned failure text and location in both promise-holding phases. Confirm that the reported error is the intended assertion failure and review it against the sourced requirement; text linkage alone does not establish assertion execution, author intent or a catalog finding.',
+      };
+    }
     if (baseline) { if (plan.mode === 'assertion-mutation') { if (linked) verdict = 'ASSERTION_SENSITIVE'; } else if (fault.observer.fault_reached && !fault.observer.promised_effect) { if (linked) verdict = 'DETECTED'; else if (fault.native === 'passed') verdict = 'SURVIVED'; } }
   }
   if (verdict === 'CANNOT_VERIFY' && error === null) {
@@ -188,7 +246,7 @@ export async function execute(plan,{source,files,deps},output) {
     if (plan.mode === 'behavior-fault') { if (!phases.fault.observer.fault_reached) reasons.push('fault was not reached'); if (phases.fault.observer.promised_effect) reasons.push('fault wrong state was not observed'); }
     if (phases.fault.native === 'failed' && !linked) reasons.push('fault failure did not link string and location in the same error'); if (plan.mode === 'assertion-mutation' && !linked) reasons.push('assertion mutation produced no linked failure'); error = reasons.join('; ') || 'incomplete three-phase evidence';
   }
-  return {verdict,error,phases,limitation:LIMITATION,source_before_sha256:beforeDigest,source_after_sha256:afterDigest,original_source_unchanged:beforeDigest === afterDigest,behavior_proof:plan.mode === 'behavior-fault' && ['SURVIVED','DETECTED'].includes(verdict)};
+  return {verdict,error,phases,...(behaviorComparison ? {behavior_comparison:behaviorComparison} : {}),limitation:LIMITATION,source_before_sha256:beforeDigest,source_after_sha256:afterDigest,original_source_unchanged:beforeDigest === afterDigest,behavior_proof:plan.mode === 'behavior-fault' && ['SURVIVED','DETECTED'].includes(verdict)};
 }
 export async function main(argv = process.argv.slice(2)) {
   if (argv.length === 1 && ['--help','-h'].includes(argv[0])) { console.log('Usage: node run-probe.mjs --plan manifest.json --output-dir /fresh/output [--preview | --execute --trust-checkout --approve-sha256 DIGEST]\n' + LIMITATION); return 0; }

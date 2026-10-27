@@ -147,6 +147,18 @@ def require_contract(surface: str, contract: str, name: str) -> None:
     assert contract in surface, f"{name} missing contract: {contract}"
 
 
+def assert_behavior_preservation_contract(scope: str) -> None:
+    # Guard the requirement authority, uncertainty and execution boundaries.
+    for clause in (
+        "neither the current implementation, a green run nor the old test alone establishes correctness",
+        "An evidenced requirement change or equivalent replacement proof can justify it",
+        "When the base or contract is missing or conflicting, record the exact gap in `Limitations/exclusions` without a confirmed regression verdict",
+        "assertion mutation alone cannot establish that the expected value is correct",
+        "Never execute target code without the existing trust and exact-command approval gate",
+    ):
+        require_contract(scope, clause, "review-scope.md behavior preservation")
+
+
 def require_normalized_contract(surface: str, contract: str, name: str) -> None:
     normalized_surface = " ".join(surface.split())
     normalized_contract = " ".join(contract.split())
@@ -1886,6 +1898,7 @@ def verify_cypress_name_and_coverage_scope() -> None:
 
 
 def verify_current_docs() -> None:
+    assert_behavior_preservation_contract(REVIEW_SCOPE.read_text(encoding="utf-8"))
     verify_cypress_name_and_coverage_scope()
     verify_v3_adapter_contract()
     verify_reference_routing_contract()

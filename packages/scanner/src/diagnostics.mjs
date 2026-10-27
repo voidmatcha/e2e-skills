@@ -19,6 +19,10 @@ const PREFIXES = [
   ['source unavailable or syntactically invalid: ', 'provenance-unsupported'],
 ];
 const GROUPS = {
+  'propagation-unsupported': [
+    'unsupported #3 try/catch propagation context',
+    'unsupported #3 parameterized catch propagation context',
+  ],
   'binding-mutable': ['mutable receiver binding', 'mutable receiver alias'],
   'provenance-missing': [
     'valid source and pinned scope are required', 'expression is not in pinned source',
@@ -100,8 +104,10 @@ export function analysisReviewTasks(diagnostics, sources) {
   };
   const tasks = new Map();
   for (const item of diagnostics) {
-    if (!Object.hasOwn(requirements, item?.detector) ||
-        !['binding-mutable', 'analysis-unknown', 'provenance-unsupported', 'type-unsupported'].includes(item.code)) continue;
+    const promiseImport = item?.detector === 'promises' && item.code === 'import-unpinned';
+    const catchPropagation = item?.detector === 'catchHandlers' && item.code === 'propagation-unsupported';
+    if (!promiseImport && !catchPropagation && (!Object.hasOwn(requirements, item?.detector) ||
+        !['binding-mutable', 'analysis-unknown', 'provenance-unsupported', 'type-unsupported'].includes(item.code))) continue;
     const bytes = sources.get(item.file);
     if (!Buffer.isBuffer(bytes) || !Number.isSafeInteger(item.start) || item.start < 0 ||
         !Number.isSafeInteger(item.end) || item.end <= item.start) continue;
@@ -114,7 +120,9 @@ export function analysisReviewTasks(diagnostics, sources) {
     const taskId = `analysis-sha256:${sha(JSON.stringify([sourceSha256, item.file, item.detector, item.code, item.start, item.end]))}`;
     tasks.set(taskId, { taskId, status: 'UNRESOLVED', detector: item.detector, code: item.code,
       file: item.file, start: item.start, end: item.end, line: item.line, column: item.column,
-      sourceSha256, requirements: [...requirements[item.detector]] });
+      sourceSha256, requirements: promiseImport ? ['verify-runtime-binding', 'verify-promise-observation'] :
+        catchPropagation ? ['verify-runtime-binding', 'verify-catch-propagation', 'verify-helper-callers', 'verify-required-test-outcome'] :
+          [...requirements[item.detector]] });
   }
   return [...tasks.values()];
 }

@@ -1,0 +1,22 @@
+--- a/roster-import.cy.ts
++++ b/roster-import.cy.ts
+@@ -1,6 +1,9 @@
+ // SPDX-License-Identifier: Apache-2.0
+ it('handles a TSV roster file', () => {
+-  cy.intercept('POST', '/api/roster-imports').as('importRoster');
++  cy.intercept('POST', '/api/roster-imports', {
++    statusCode: 201,
++    body: { imported: 1 },
++  }).as('importRoster');
+   cy.visit('/roster/import');
+   cy.get('input[type="file"]').selectFile({
+     contents: Cypress.Buffer.from('name\nMorgan\n'),
+@@ -8,6 +11,6 @@
+     mimeType: 'text/tab-separated-values',
+   });
+   cy.contains('button', /^Import$/).click();
+-  cy.get('[role="alert"]').should('have.text', 'Choose a CSV file');
+-  cy.get('@importRoster.all').should('have.length', 0);
++  cy.wait('@importRoster').its('response.statusCode').should('eq', 201);
++  cy.get('[role="status"]').should('have.text', '1 member imported');
+ });

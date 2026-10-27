@@ -166,3 +166,13 @@ test('report-file refuses existing and dangling links and symlink parents', t =>
   assert.equal(fs.readFileSync(existing, 'utf8'), 'untouched');
   assert.equal(fs.existsSync(path.join(root, 'new')), false);
 });
+
+test('catch propagation guidance describes review without claiming a defect', () => {
+  const input = report([], { full: true, errors: ['unsupported analysis'] });
+  input.execution.diagnostics = [{ code: 'propagation-unsupported', detector: 'catchHandlers', file: '/review/example.spec.ts', line: 2 }];
+  const output = formatLegacyReport(input);
+  assert.equal(output.exitCode, 2);
+  assert.match(output.text, /example.spec.ts.*:2: propagation-unsupported/);
+  assert.match(output.text, /Trace catch propagation and helper callers/);
+  assert.match(output.text, /no defect is established/);
+});

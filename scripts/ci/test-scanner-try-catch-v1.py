@@ -31,11 +31,12 @@ SCAN = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
 # Exact unsupported contexts in the unchanged legacy fixtures. These are
 # incomplete analyses, never successful negative classifications. Keep them
 # visible until propagation/provenance support is implemented and verified.
+# The unchanged string/regex nested-try fixtures now have supported inner
+# `catch (inner) { throw inner; }` clauses; their outer swallow candidates remain.
 UNSUPPORTED_CATCHES = {
     "d.spec.ts": 180, "e.spec.ts": 178, "fn1-nested.spec.ts": 279,
     "fp4-sleep-only.spec.ts": 164, "h.spec.ts": 263, "i.spec.ts": 233,
     "k.spec.ts": 218, "comment-gate.spec.ts": 229,
-    "string-brace.spec.ts": 280, "regex-brace.spec.ts": 301,
 }
 
 
@@ -63,7 +64,7 @@ def scan(files: dict[str, str]) -> tuple[int, int, str]:
                           for name in files}, "scanner changed original fixture bytes"
         report = json.loads(result.stdout)
         assert report["schema"] == "e2e-skills-node-scan-v1", result.stdout
-        expected = sorted(("analysis-unknown", "catchHandlers", name, start)
+        expected = sorted(("propagation-unsupported", "catchHandlers", name, start)
                           for name, start in UNSUPPORTED_CATCHES.items() if name in files)
         actual = sorted((item["code"], item.get("detector"),
                          str(Path(item["file"]).relative_to(Path(tmp).resolve())), item.get("start"))

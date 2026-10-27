@@ -1,0 +1,9 @@
+--- a/shipping.spec.ts
++++ b/shipping.spec.ts
+@@ -2,5 +2,5 @@
+ import { test, expect } from '@playwright/test';
+ test('shipping state', async ({ page }) => {
+   await page.goto('/shipping');
+-  await expect(page.getByTestId('shipping-state')).toHaveText('Dispatched');
++  await expect(page.getByTestId('shipping-state')).toHaveText('Sent');
+ });

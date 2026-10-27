@@ -1,0 +1,9 @@
+--- a/profile.cy.ts
++++ b/profile.cy.ts
+@@ -3,6 +3,5 @@
+   it('shows the username and email', () => {
+     cy.visit('/profile');
+     cy.get('[data-cy=username]').should('have.text', 'Mina');
+-    cy.get('[data-cy=email]').should('have.text', 'mina@example.test');
+   });
+ });

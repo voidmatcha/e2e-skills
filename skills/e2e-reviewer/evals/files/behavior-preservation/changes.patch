@@ -1,0 +1,32 @@
+--- a/checkout.spec.ts
++++ b/checkout.spec.ts
+@@ -1,8 +1,8 @@
+ // SPDX-License-Identifier: Apache-2.0
+ import { test, expect } from '@playwright/test';
+ 
+-test('payment completes', async ({ page }) => {
++test('payment is processing', async ({ page }) => {
+   await page.goto('/checkout');
+   await page.getByRole('button', { name: 'Pay', exact: true }).click();
+-  await expect(page.getByTestId('order-status')).toHaveText('Paid');
++  await expect(page.getByTestId('order-status')).toHaveText('Pending');
+ });
+--- a/currency.cy.ts
++++ b/currency.cy.ts
+@@ -2,6 +2,6 @@
+ describe('price label', () => {
+   it('shows the price', () => {
+     cy.visit('/catalog');
+-    cy.get('[data-cy=price]').should('have.text', '$10');
++    cy.get('[data-cy=price]').should('have.text', 'USD 10');
+   });
+ });
+--- a/receipt.spec.ts
++++ b/receipt.spec.ts
+@@ -3,5 +3,5 @@
+ 
+ test('receipt label', async ({ page }) => {
+   await page.goto('/receipt');
+-  await expect(page.getByTestId('receipt-status')).toHaveText('Sent');
++  await expect(page.getByTestId('receipt-status')).toHaveText('Queued');
+ });

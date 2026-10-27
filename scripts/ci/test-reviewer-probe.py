@@ -40,7 +40,7 @@ sha = lambda data: hashlib.sha256(data).hexdigest()
 NATIVE = '''import json,os,pathlib
 p=pathlib.Path.cwd();fault=(p/'app.txt').read_text()=='BROKEN';phase=os.environ['E2E_PROBE_PHASE'];policy=(p/'policy.txt').read_text()
 failed=(fault and policy in ('detected','other')) or (phase=='restored' and policy=='restoredfail')
-message='unrelated failure' if policy=='other' else 'expected transfer at test.spec.ts:25:3'
+message='unrelated failure' if policy=='other' else 'AssertionError: expected transfer at test.spec.ts:25:3'
 if policy=='sourcechanged':(p/'app.txt').write_text('MUTATED')
 status='failed' if failed else 'passed'
 r={'config':{'workers':1},'suites':[{'specs':[{'title':'copies content','file':'test.spec.ts','tests':[{'expectedStatus':'passed','results':[{'status':status,'retry':0,'errors':[{'message':message}] if failed else []}]}]}]}]}

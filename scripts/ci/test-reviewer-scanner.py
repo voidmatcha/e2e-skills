@@ -3200,7 +3200,9 @@ def assert_whitespace_comments_and_shadowed_page_boundaries() -> None:
             encoding="utf-8",
         )
 
-        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('provenance-unsupported', 'actions', 'whitespace.spec.ts', None), ('provenance-unsupported', 'promises', 'whitespace.spec.ts', 253, 'page.locator()')]))
+        # With no arguments, click() cannot carry force options, so the actions
+        # detector needs no receiver proof. Promise provenance remains unknown.
+        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('provenance-unsupported', 'promises', 'whitespace.spec.ts', 253, 'page.locator()')]))
         assert result.returncode == 2, result.stdout
         assert "whitespace.spec.ts:2:" in canonical_section(result.report, "[P0] #7 Focused test committed")
         assert "whitespace.spec.ts:3:" in canonical_section(result.report, "[P0?][LLM-TRIAGE] #5a Conditional branch contains assertion")
@@ -4205,7 +4207,7 @@ def assert_try_catch_rethrow_and_jsx_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 208, 'catch (error) { if (!(error instanceof TimeoutError)) throw error; }'), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 432, 'catch (error) { if (!(error instanceof SlotError)) throw error; }'), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 692, 'catch (error) { if (recover) return; throw error; }'), ('analysis-unknown', 'catchHandlers', 'rethrow.spec.tsx', 808, "catch { const help = <p>Don't throw this away</p>; }")]))
+        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('propagation-unsupported', 'catchHandlers', 'rethrow.spec.tsx', 208, 'catch (error) { if (!(error instanceof TimeoutError)) throw error; }'), ('propagation-unsupported', 'catchHandlers', 'rethrow.spec.tsx', 432, 'catch (error) { if (!(error instanceof SlotError)) throw error; }'), ('propagation-unsupported', 'catchHandlers', 'rethrow.spec.tsx', 692, 'catch (error) { if (recover) return; throw error; }'), ('propagation-unsupported', 'catchHandlers', 'rethrow.spec.tsx', 808, "catch { const help = <p>Don't throw this away</p>; }")]))
         assert result.returncode == 2, result.stdout
         candidates = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
         for line in (5, 7, 15, 17):
@@ -4236,7 +4238,7 @@ def assert_try_catch_named_error_identity_boundaries() -> None:
             "});\n",
             encoding="utf-8",
         )
-        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 164, "catch (e) { if (e.name !== 'TimeoutError') throw e; }"), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 279, 'catch (e) { if (!(e instanceof PaymentError)) throw e; }'), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 399, "catch (e) {\n    if (e.constructor.name !== 'PaymentError') throw e;\n  }"), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 536, "catch (e) { if (!(e.constructor.name === 'BrowserTimeoutError')) throw e; }"), ('analysis-unknown', 'catchHandlers', 'error-identity.spec.ts', 676, 'catch (e) { if (!(e instanceof AssertionError)) throw e; }')]))
+        result = node_scan(target, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(target, [('propagation-unsupported', 'catchHandlers', 'error-identity.spec.ts', 164, "catch (e) { if (e.name !== 'TimeoutError') throw e; }"), ('propagation-unsupported', 'catchHandlers', 'error-identity.spec.ts', 279, 'catch (e) { if (!(e instanceof PaymentError)) throw e; }'), ('propagation-unsupported', 'catchHandlers', 'error-identity.spec.ts', 399, "catch (e) {\n    if (e.constructor.name !== 'PaymentError') throw e;\n  }"), ('propagation-unsupported', 'catchHandlers', 'error-identity.spec.ts', 536, "catch (e) { if (!(e.constructor.name === 'BrowserTimeoutError')) throw e; }"), ('propagation-unsupported', 'catchHandlers', 'error-identity.spec.ts', 676, 'catch (e) { if (!(e instanceof AssertionError)) throw e; }')]))
         assert result.returncode == 2, result.stdout
         candidates = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
         for line in (4, 12, 14):
@@ -5531,7 +5533,7 @@ def assert_v11_final_boundaries() -> None:
         shadow_result = node_scan(shadow, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(shadow, [
             ("analysis-unknown", "focusedTests", "shadow.spec.ts", None),
             ("analysis-unknown", "promises", "shadow.spec.ts", 170, 'expect'),
-            ("analysis-unknown", "catchHandlers", "shadow.spec.ts", 233, 'catch (expect) {\n  expect({}).toBeVisible();\n}'),
+            ("propagation-unsupported", "catchHandlers", "shadow.spec.ts", 233, 'catch (expect) {\n  expect({}).toBeVisible();\n}'),
         ]))
         assert "shadow.spec.ts:4:" not in all_finding_locations(shadow_result.report)
         assert "shadow.spec.ts:5:" not in all_finding_locations(shadow_result.report)

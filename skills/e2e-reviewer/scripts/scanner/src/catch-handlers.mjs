@@ -779,6 +779,19 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
     const access = member(node.expression);
     return access?.name === 'reject' && ts.isIdentifier(unwrap(access.object)) && unwrap(access.object).text === 'Promise';
   }
+  // Local completion proof only; do not infer helper callers or outer handling.
+  function trivialRethrow(clause) {
+    if (!ts.isTryStatement(clause.parent) || clause.parent.finallyBlock ||
+        !clause.variableDeclaration || !ts.isIdentifier(clause.variableDeclaration.name) ||
+        clause.block.statements.length !== 1) return false;
+    const line = clause.block.statements[0];
+    if (!ts.isThrowStatement(line) || !line.expression || !ts.isIdentifier(line.expression) ||
+        line.expression.text !== clause.variableDeclaration.name.text) return false;
+    for (let parent = clause.parent; parent; parent = parent.parent) {
+      if (ts.isFunctionLike(parent)) return !parent.asteriskToken;
+    }
+    return true;
+  }
   // Only prove simple lexical all-path throws. A return before the final throw
   // can resolve the catch; a nested callback throw says nothing about this one.
   // Promise.reject needs additional global/mutation proof and stays a gap.
@@ -815,7 +828,9 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
       directTry(node); dependentTry(node); responseTry(node); synchronousTry(node); typedHelperTry(node); timeoutTry(node); namedErrorTry(node); sourceCatchOutcome(node); cypressManualTry(node);
     }
     if (ts.isCatchClause(node)) {
-      if (!supported.has(node)) diagnostic(node, 'unsupported #3 try/catch propagation context');
+      // This catch alone preserves the same thrown value. Outer catch/finally
+      // constructs are still visited and keep their independent evidence.
+      if (!supported.has(node) && !trivialRethrow(node)) diagnostic(node, 'unsupported #3 try/catch propagation context');
       return;
     }
     if (ts.isTryStatement(node) && node.finallyBlock && !supported.has(node.finallyBlock)) diagnostic(node.finallyBlock, 'unsupported #3 finally context');

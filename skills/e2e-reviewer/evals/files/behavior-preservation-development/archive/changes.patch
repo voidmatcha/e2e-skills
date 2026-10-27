@@ -1,0 +1,12 @@
+--- a/archive.spec.ts
++++ b/archive.spec.ts
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: Apache-2.0
+ import { test, expect } from '@playwright/test';
+-test('archives the document', async ({ page }) => {
++test('retains the document', async ({ page }) => {
+   await page.goto('/documents/a');
+   await page.getByRole('button', { name: 'Archive', exact: true }).click();
+-  await expect(page.getByTestId('document-state')).toHaveText('Archived');
++  await expect(page.getByTestId('document-state')).toHaveText('Retained');
+ });

@@ -21,6 +21,8 @@ export function actions(bytes, filename, {scope} = {}) {
     if (!ts.isCallExpression(node) || node.questionDotToken) return;
     const method=member(node.expression);
     if (!method || !ts.isPropertyAccessExpression(node.expression) || node.expression.questionDotToken || !OPTIONS.has(method.name)) return;
+    // No arguments can contain a force option, regardless of receiver provenance.
+    if (!node.arguments.length) return;
     let options;
     const cypress=CYPRESS_REQUIRED.has(method.name) ? chains.expression(method.object) : null;
     if (cypress && !cypress.complete) {diagnostics.push({message:cypress.reasons.join('; ')});return;}

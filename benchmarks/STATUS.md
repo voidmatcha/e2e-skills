@@ -6,6 +6,12 @@ The historical evidence is preserved on [Hugging Face](https://huggingface.co/da
 
 The [source-pinned verification record](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/547146b579f9105a72ed2b90837bab5d89340b08/releases/v3.1.0/pre-release-20261023/README.md) adds full local CI (669 Node tests passed, 0 failed, 1 skipped), installed-package and skill checks, Linux shipped-suite checks, and one prepared SvelteKit V3 probe with normal/fault/restored controls. It records the source snapshot before the final documentation update, not a released commit. Linux and live-probe environment limits are stated in the record. This adds execution evidence, not a new reviewer accuracy benchmark; the historical results below remain unchanged.
 
+## 3.3.0 optional test-authoring memo
+
+The [test-authoring memo record](../docs/benchmarks/test-authoring-memo-v1.md) measures an optional project instruction, not a skill. In five pre-registered pairs of small authored apps, failure-path fault detection rose from 12/89 to 80/92 for Codex (`gpt-6-sol`) and from 31/93 to 74/86 for Claude (`claude-sonnet-5-5`); fixed gates were met in 4/5 and 3/5 pairs. One public example app is reported separately as an external-validity check. Development-stage evidence with stated limits, not a sealed benchmark.
+
+The [test-failure policy and runtime-probe summary](../docs/benchmarks/test-failure-policy-v1.md) records two further measurements with their allowed wording and limits; the underlying run records are local and not part of the release.
+
 ## Results and scope
 
 | Component | Observed result | What the result covers |

@@ -13,7 +13,7 @@ const native = `import fs from 'node:fs';
 const broken=fs.readFileSync('app.txt','utf8')==='BROKEN'||fs.readFileSync('test.spec.ts','utf8')==='assert impossible';
 const failed=broken&&fs.readFileSync('policy.txt','utf8')==='detected';
 const status=failed?'failed':'passed';
-fs.writeFileSync(process.env.E2E_PROBE_REPORT,JSON.stringify({config:{workers:1},suites:[{specs:[{title:'copies content',file:'test.spec.ts',tests:[{expectedStatus:'passed',results:[{status,retry:0,errors:failed?[{message:'expected transfer at test.spec.ts:25:3'}]:[]}]}]}]}]}));
+fs.writeFileSync(process.env.E2E_PROBE_REPORT,JSON.stringify({config:{workers:1},suites:[{specs:[{title:'copies content',file:'test.spec.ts',tests:[{expectedStatus:'passed',results:[{status,retry:0,errors:failed?[{message:'AssertionError: expected transfer at test.spec.ts:25:3'}]:[]}]}]}]}]}));
 process.exitCode=failed?1:0;`;
 const observer = `import fs from 'node:fs';import {createHash} from 'node:crypto';
 const broken=fs.readFileSync('app.txt','utf8')==='BROKEN';fs.writeFileSync('observed.json',JSON.stringify({actual_content:broken?'old':'transferred'}));
@@ -37,6 +37,32 @@ test('Node-only CLI separates assertion sensitivity from behavior proof',t=>{
 test('Node-only probe reports survived behavior fault without claiming detection',t=>{
   const f=fixture(t);fs.writeFileSync(path.join(f.source,'policy.txt'),'survived');const result=f.execute();assert.equal(result.verdict,'SURVIVED');assert.equal(result.verification.V3.verdict,'FAIL');assert.equal(result.original_source_unchanged,true);
 });
+function invertedFixture(t, {unlinked=false, restoredPass=false, noFault=false, mutate=false} = {}) {
+  const f=fixture(t);
+  let script=native.replace("const failed=broken&&fs.readFileSync('policy.txt','utf8')==='detected';",
+    `const failed=!broken${restoredPass ? "&&process.env.E2E_PROBE_PHASE!=='restored'" : ''};`);
+  if(unlinked) script=script.replace('AssertionError: expected transfer at test.spec.ts:25:3','unrelated setup failure');
+  if(mutate) script+="\nfs.writeFileSync('app.txt','changed');\n";
+  fs.writeFileSync(path.join(f.source,'native.mjs'),script);f.plan.test.source.sha256=sha(script);
+  if(noFault) {const text=observer.replace('fault_reached:broken','fault_reached:false');fs.writeFileSync(path.join(f.source,'observer.mjs'),text);f.plan.observer.source.sha256=sha(text);}
+  return f;
+}
+test('inverted assertion response is review evidence, never a successful V3 probe',t=>{
+  const result=invertedFixture(t).execute();
+  assert.equal(result.verdict,'CANNOT_VERIFY');assert.equal(result.code,2);
+  assert.equal(result.verification.V3.verdict,'CANNOT_VERIFY');assert.equal(result.behavior_proof,false);
+  assert.deepEqual(result.behavior_comparison,{
+    classification:'INVERTED_RESPONSE',requires_review:true,
+    reason:'The same test passed with the observed promise violation and failed with the pinned failure text and location in both promise-holding phases. Confirm that the reported error is the intended assertion failure and review it against the sourced requirement; text linkage alone does not establish assertion execution, author intent or a catalog finding.',
+  });
+  assert.equal(result.original_source_unchanged,true);
+});
+for(const [name,options] of Object.entries({unrelated_failure:{unlinked:true},unstable_recovery:{restoredPass:true},unreached_fault:{noFault:true},source_mutation:{mutate:true}})) {
+  test(`no inverted-response diagnosis for ${name}`,t=>{
+    const result=invertedFixture(t,options).execute();
+    assert.equal(result.verdict,'CANNOT_VERIFY');assert.equal(result.behavior_comparison,undefined);
+  });
+}
 test('strict manifest, stale approval, excluded paths and symlinks fail closed',t=>{
   const f=fixture(t);const preview=f.invoke();fs.writeFileSync(path.join(f.source,'policy.txt'),'changed');assert.equal(f.invoke(['--execute','--trust-checkout','--approve-sha256',preview.approval_sha256]).verdict,'ERROR');
   for (const bad of [{...f.plan,unexpected:true},{...f.plan,version:true},{...f.plan,test_paths:'test.spec.ts'},{...f.plan,test:{...f.plan.test,timeout_seconds:true}},{...f.plan,edits:[{...f.plan.edits[0],path:'../app.txt'}]},{...f.plan,report:{format:'playwright-json',path:'node_modules/report.json'}}]) assert.throws(()=>prepare(bad));

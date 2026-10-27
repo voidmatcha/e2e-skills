@@ -129,6 +129,19 @@ assertion's specific matcher or expected-value message. A generic
 `AssertionError`, filename alone, or unrelated stack frame does not establish
 that link.
 
+Failure locations must match complete line/column tokens: line 7 is not line 70,
+and column 3 is not column 30. A relative file anchor cannot match a different
+directory's file with the same basename; absolute locations must identify the
+corresponding phase file. For Cypress only, a `webpack:///./<test-path>` frame
+can identify an exact entry in `test_paths`; other webpack namespaces and encoded
+paths are not resolved. Separate source snippets and numbered code frames
+inside native errors are context, not proof that their assertions failed.
+The executor excludes these from failure matching. Text-only locations must
+appear as complete location lines, native stack frames, or inline locations in
+recognized error messages; ambiguous prose is not accepted. This textual check
+does not identify arbitrary assertion expressions. Inspect the native error message and
+raw report before accepting a link.
+
 Use `{project}`, `{report}`, `{selector}`, and `{phase}` argument placeholders
 where supported by the executor. Commands run with the phase project as their
 working directory. Use existing executables, not an implicit package downloader.
@@ -207,6 +220,14 @@ runs, correct only an evidenced setup problem, and use a fresh output directory.
 
 Attach the plan/digest, exact commands, native reports, observer raw artifacts,
 source hashes, retained workspace paths, and limitations to `Runtime evidence`.
+For changed tests, retain the Phase 0 requirement and causal test diff. A
+`behavior_comparison.classification` of `INVERTED_RESPONSE` means the unchanged
+test passed with the observed promise violation but failed with the pinned error
+text and location in both promise-holding phases. Confirm that the error came
+from the intended assertion, then inspect that assertion against the
+sourced requirement; report a catalog finding only when its contract is met.
+Keep the probe verdict `CANNOT_VERIFY`: this diagnostic neither repairs a failing
+baseline nor proves author intent. Missing comparison evidence is not clearance.
 Apply `verification-rules.md`'s structured V1–V6 result: V2 sensitivity verifies V2
 only; V3 detection verifies V3 only, survival fails V3, and missing proof is
 `CANNOT_VERIFY` or `ERROR`. Keep all unmeasured V-rules explicitly unverified.

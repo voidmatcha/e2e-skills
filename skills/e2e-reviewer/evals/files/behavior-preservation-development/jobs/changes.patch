@@ -1,0 +1,9 @@
+--- a/jobs-page.ts
++++ b/jobs-page.ts
+@@ -2,5 +2,5 @@
+ export class JobsPage {
+   constructor(page) { this.page = page; }
+   async start() { await this.page.getByTestId('start-job-a').click(); }
+-  completion() { return this.page.getByTestId('job-a').getByText('Done', { exact: true }); }
++  completion() { return this.page.getByText('Done', { exact: true }); }
+ }

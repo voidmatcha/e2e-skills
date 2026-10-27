@@ -2,21 +2,21 @@
 
 Static Playwright and Cypress test review with configuration context and explicitly approved probes. The scanner finds candidates; an LLM reviews context, selects checks and interprets the evidence. Scanning never starts a probe.
 
-The commands below pin version `3.2.1`.
+The commands below pin version `3.3.0`.
 
-Requires Node.js 22+. Neither CLI requires Python. Probe execution additionally requires a trusted, prepared project.
+Requires Node.js 22+. The scan, check and unified CLIs do not require Python. Probe execution additionally requires a trusted, prepared project.
 
 ## Run with npx
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills-scan --scan /absolute/project/tests --format text
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills-scan --scan /absolute/project/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
 ```
 
 Or install locally:
 
 ```bash
-npm install --save-dev @voidmatcha/e2e-skills-scanner@3.2.1
+npm install --save-dev @voidmatcha/e2e-skills-scanner@3.3.0
 npx e2e-skills-scan --scan ./tests --format json
 npx e2e-skills-check --help
 ```
@@ -29,14 +29,14 @@ The reviewer skill includes its own scanner, so reviewing an existing project do
 
 ## Unified CLI
 
-Version 3.2.0 adds `e2e-skills install`, `doctor`, `scan` and `check`:
+The unified CLI provides `e2e-skills install`, `doctor`, `scan` and `check`:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills install --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills doctor --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills scan /absolute/playwright-project/tests --format json
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.2.1 e2e-skills check --help
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills scan /absolute/playwright-project/tests --format json
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills check --help
 ```
 
 Command and option parsing for `install` and `doctor` uses the pinned MIT-licensed [Commander.js](https://github.com/tj/commander.js) package. Scanner and check arguments are passed through to their existing CLIs.
@@ -114,6 +114,8 @@ A direct awaited state read through `wrapper.page.locator('literal')` can remain
 
 
 Unresolved state-read and conditional-assertion diagnostics with valid source ranges also populate `review.analysisTasks`: stable task IDs, source SHA-256, UTF-16 ranges and review requirements. These tasks require contextual review even without a retained finding. Verify the source hash before adjudication, retain source citations separately, and rescan changed inputs. Tasks do not remove diagnostics, change finding counts or clear exit 2.
+
+**Added in 3.3.0:** the pinned commands above include tasks for unpinned-import Promise receivers and catch propagation. For Promise import tasks, inspect the containing call and its Promise handling: the range may identify only its receiver. For catch propagation tasks, trace the catch body, helper callers and required test outcome before deciding whether an error is swallowed. Other unsupported catch shapes do not create these tasks. A helper catch that only rethrows its identifier-bound error needs no task; immediate finally blocks and generator helpers are excluded from that narrow proof, and enclosing catch/finally diagnostics remain. These tasks also preserve finding counts, diagnostics and incomplete status.
 
 Release validation requires source-candidate and negative controls, policy exits, suppressions, inventory, project ESLint, text/JSON consumers, and installed execution on macOS and Linux with the old analyzer unavailable. The 69 authored legacy call variants are regression inputs, not independent defects or a detection-rate benchmark. Real-project location comparisons are separate evidence. This contract does not claim that the final release gates have passed.
 

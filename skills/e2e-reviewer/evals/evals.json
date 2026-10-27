@@ -53,7 +53,7 @@
         "Does NOT infer #12 P0 solely from page.goto('/dashboard'): the fixture supplies no route implementation proving protection or a login/wrong surface that can satisfy the assertions",
         "Flags name-assertion mismatch: 'display correct user name' uses querySelector truthiness, doesn't check actual name (#1, P0)",
         "Flags missing then: 'export dashboard as PDF' just clicks export buttons, no download verification (#2, P0)",
-        "Flags missing then: 'toggle sidebar' checks sidebar hidden but not that main content expanded (#2, P0)",
+        "Does NOT flag 'toggle sidebar' as #2 merely because main content expansion is unchecked: line 38 meaningfully verifies the sidebar is hidden, and no sourced requirement promises content expansion",
         "Does NOT flag page.locator('.chart-container').toBeVisible() on line 16 as always-passing — toBeVisible is a proper web-first assertion",
         "Structured output with P0/P1/P2",
         "Summary table included",
@@ -1281,6 +1281,275 @@
         "False-positive guard: NO_SUPPORTED_CANDIDATE does not clear the test and absence of the npm helper does not block the bundled static scanner or a source-backed manual plan.",
         "False-positive guard: auth.spec.ts:17-18 uses a one-shot boolean, outside the literal toHaveText helper; do not claim that helper can mutate it merely because the source is Playwright.",
         "Do not download npm packages or run both executors for one plan; discovery and binding are not runtime proof."
+      ]
+    },
+    {
+      "id": 79,
+      "prompt": "Review evals/files/unresolved-fixture-action.spec.ts. The scanner returned INCOMPLETE and a source-pinned promises/import-unpinned analysis task for the page receiver on line 5. Its fixture module is not supplied. Explain the required source review without executing the fixture or installing dependencies.",
+      "expected_output": "Retain the unresolved task and original incomplete status. Inspect the containing call, request the missing fixture definition, and establish runtime Page identity before confirming #16. Keep the already-awaited action separate from the unobserved call.",
+      "files": [
+        "evals/files/unresolved-fixture-action.spec.ts"
+      ],
+      "assertions": [
+        "True positive: line 5 needs source review for its unobserved call; verify the task sourceSha256 and range, and trace the fixture definition before a catalog verdict.",
+        "False-positive guard: line 6 explicitly awaits its call and must not be reported as a missing-await #16 finding.",
+        "False-positive guard: the page name and fixture import alone do not establish runtime Page or Promise semantics; keep UNRESOLVED when the fixture definition is unavailable.",
+        "Do not clear INCOMPLETE, count an analysis task as a finding, claim a runtime failure, or install packages to resolve the missing module."
+      ]
+    },
+    {
+      "id": 80,
+      "prompt": "Review evals/files/unresolved-catch-propagation.spec.ts. A source-pinned catchHandlers/propagation-unsupported task points to line 4. Do not execute this fixture.",
+      "expected_output": "Trace propagation and helper callers against the required outcome. Once the required source checks are complete, record SOURCE_CONTEXT_ESTABLISHED even if there is no catalog finding. Missing required source evidence stays UNRESOLVED. Keep the original scanner INCOMPLETE status and exit 2; neither disposition proves runtime behavior.",
+      "files": [
+        "evals/files/unresolved-catch-propagation.spec.ts"
+      ],
+      "assertions": [
+        "True positive: line 4 needs source-hash verification and contextual review of its swallowed error and caller at line 10 before a catalog verdict.",
+        "False-positive guard: line 7 unconditionally rethrows the original error; do not report it as swallowed merely because it catches and logs. It may also have an unresolved analysis task; that is not a finding.",
+        "False-positive guard: the supplied caller returns a constant and establishes no required browser outcome; do not invent a confirmed #3 defect or clear scanner INCOMPLETE.",
+        "Completed-task guard: after verifying the source hash and supplied constant-returning caller, record the taskId and source/caller citations as SOURCE_CONTEXT_ESTABLISHED with no confirmed #3 finding; a finding is not required to complete source review. If a required source check remains unavailable, state it and retain UNRESOLVED instead."
+      ]
+    },
+    {
+      "id": 81,
+      "prompt": "Review evals/files/trivial-rethrow.spec.ts without execution. Distinguish a same-error rethrow from an empty helper catch.",
+      "expected_output": "Line 4 preserves the caught error and needs no swallowed-error finding or catch analysis task. Line 7 requires contextual review of the helper caller and required outcome; an unresolved task is not itself a confirmed defect.",
+      "files": [
+        "evals/files/trivial-rethrow.spec.ts"
+      ],
+      "assertions": [
+        "True positive: line 7 retains the source-pinned catch-propagation task; inspect its caller at line 9 and the required test outcome before a catalog verdict.",
+        "False-positive guard: line 4 only throws its identifier-bound error and has no immediate finally; do not report it as swallowed or request catch-propagation review for that clause.",
+        "Do not generalize the narrow rethrow exclusion to logging, conditional or generator catches or claim whole-file completeness while line 7 remains unresolved."
+      ]
+    },
+    {
+      "id": 82,
+      "prompt": "Review the checkout.spec.ts change in evals/files/behavior-preservation/changes.patch in diff mode against the supplied README.md contract and current checkout.spec.ts. Static review only.",
+      "expected_output": "Confirm a causally worsened #2 missing required final payment outcome at checkout.spec.ts:6. Cite the unchanged Paid acceptance requirement and the Paid-to-Pending assertion change at line 7; the renamed title does not authorize dropping completion proof. Pending proves processing, not the required completed state. Deduplicate the same missing outcome rather than adding #1. Do not claim a live faulty/corrected replay occurred.",
+      "files": [
+        "evals/files/behavior-preservation/README.md",
+        "evals/files/behavior-preservation/changes.patch",
+        "evals/files/behavior-preservation/checkout.spec.ts"
+      ],
+      "assertions": [
+        "True positive: cite checkout.spec.ts:6 and changes.patch plus the Checkout contract; the new Pending assertion no longer proves the required final Paid outcome.",
+        "False-positive guard: do not report solely because an expectation or title changed; the unchanged independent acceptance contract is necessary evidence.",
+        "Use existing #2 and severity rules, causal worsened attribution (the Pay action is unchanged while the assertion hunk removes its required completion proof) and evidence header; do not invent a new pattern or duplicate #1.",
+        "Do not propose renaming the title as a fix, treat green or assertion sensitivity as requirement proof, execute target code, or claim runtime results."
+      ]
+    },
+    {
+      "id": 83,
+      "prompt": "Review only the currency.cy.ts change in evals/files/behavior-preservation/changes.patch against the supplied README.md contract and current currency.cy.ts. Static diff review only.",
+      "expected_output": "No confirmed behavior-preservation regression: the approved requirement revision explains $10 to USD 10 and the exact price assertion is retained. Keep checkout and receipt out of the requested scan scope.",
+      "files": [
+        "evals/files/behavior-preservation/README.md",
+        "evals/files/behavior-preservation/changes.patch",
+        "evals/files/behavior-preservation/currency.cy.ts"
+      ],
+      "assertions": [
+        "False-positive guard: an approved requirement change justifies the exact expected price-label update; do not assume the old test is correct.",
+        "False-positive guard: do not import checkout completion requirements into a Cypress price-label test or report an assertion weakening just because expected text changed.",
+        "Scan only the changed currency.cy.ts artifact, retain mandatory evidence fields and state runtime not executed."
+      ]
+    },
+    {
+      "id": 84,
+      "prompt": "Review only the receipt.spec.ts change in evals/files/behavior-preservation/changes.patch against the supplied README.md context and current receipt.spec.ts. Static diff review only.",
+      "expected_output": "No confirmed bug-conforming regression can be established. The exact expectation changed, but no receipt acceptance contract or approved change is available. Record that precise uncertainty in Limitations/exclusions; neither old Sent nor new Queued is independently known correct. Do not borrow the checkout contract.",
+      "files": [
+        "evals/files/behavior-preservation/README.md",
+        "evals/files/behavior-preservation/changes.patch",
+        "evals/files/behavior-preservation/receipt.spec.ts"
+      ],
+      "assertions": [
+        "False-positive guard: missing independent receipt requirements is a limitation, not evidence that the expected value is wrong.",
+        "Do not claim the patch is behavior-preserving or regression-free; report no confirmed catalog finding with the contract gap explicit.",
+        "Do not infer author intent, execute target code or prescribe Sent as the correct value without supporting evidence."
+      ]
+    },
+    {
+      "id": 85,
+      "prompt": "Review the supplied archive scenario in static diff mode. Review its supplied patch and current E2E artifacts against the local scenario context. Do not execute target projects.",
+      "expected_output": "Confirm #2 for the unverified archive outcome at archive.spec.ts:5, with worsened attribution from the changed assertion at line 6. The title rename does not remove the independently sourced requirement. Do not claim a live adapted_to_bug replay.",
+      "files": [
+        "evals/files/behavior-preservation-development/archive/README.md",
+        "evals/files/behavior-preservation-development/archive/archive.spec.ts",
+        "evals/files/behavior-preservation-development/archive/changes.patch"
+      ],
+      "assertions": [
+        "True positive: use the unchanged Archive contract and the Retained assertion diff, not the old test alone.",
+        "False-positive guard: do not count a renamed title as a separate #1 finding for the same missing outcome; apply existing severity and anchor rules."
+      ]
+    },
+    {
+      "id": 86,
+      "prompt": "Review the supplied invoices scenario in static diff mode. Review its supplied patch and current E2E artifacts against the local scenario context. Do not execute target projects.",
+      "expected_output": "Confirm #23 P0 at data.ts:2: paid=true suppresses the required unpaid invoice through the supplied render guard. Cite the consumer and unchanged fixture contract. Avoid duplicate missing-outcome findings for that same guard mismatch and do not invent #22.",
+      "files": [
+        "evals/files/behavior-preservation-development/invoices/README.md",
+        "evals/files/behavior-preservation-development/invoices/invoices.spec.ts",
+        "evals/files/behavior-preservation-development/invoices/data.ts",
+        "evals/files/behavior-preservation-development/invoices/render.ts",
+        "evals/files/behavior-preservation-development/invoices/changes.patch"
+      ],
+      "assertions": [
+        "True positive: trace data.ts:2 through the route and render.ts:2 before confirming the fixture/render-guard mismatch.",
+        "False-positive guard: a positive empty-state counterpart does not excuse #23 when source proves guard-suppressed required input; consolidate the #4i lead under #23 rather than reporting it twice, and do not invent #22.",
+        "Do not classify every changed mock as #23; this case supplies an actual render guard and required input."
+      ]
+    },
+    {
+      "id": 87,
+      "prompt": "Review the supplied jobs scenario in static diff mode. Review its supplied patch and current E2E artifacts against the local scenario context. Do not execute target projects.",
+      "expected_output": "Confirm a causally worsened #2 gap at the unchanged jobs.spec.ts:7 action, linked to the jobs-page.ts:5 scope removal. Read the unchanged spec as context; only the changed POM is a Phase 1 scan target. The current assertion can observe job b rather than required job a.",
+      "files": [
+        "evals/files/behavior-preservation-development/jobs/README.md",
+        "evals/files/behavior-preservation-development/jobs/jobs.spec.ts",
+        "evals/files/behavior-preservation-development/jobs/jobs-page.ts",
+        "evals/files/behavior-preservation-development/jobs/changes.patch"
+      ],
+      "assertions": [
+        "True positive: trace the changed POM observation and supplied two-job context to the missing job-a completion proof.",
+        "False-positive guard: no positional method or accessible-name substring matcher exists; do not invent #10a/#10c from broad scope alone.",
+        "Do not scan unchanged jobs.spec.ts as a diff target or label the existing spec defect as pre-existing without considering causal POM change."
+      ]
+    },
+    {
+      "id": 88,
+      "prompt": "Review the supplied profile scenario in static diff mode. Review its supplied patch and current E2E artifacts against the local scenario context. Do not execute target projects.",
+      "expected_output": "Confirm #1 P1 at profile.cy.ts:3: username is still meaningfully verified, while the promised email assertion was removed. Do not force P0 or call this adapted_to_bug without a faulty/corrected execution pair.",
+      "files": [
+        "evals/files/behavior-preservation-development/profile/README.md",
+        "evals/files/behavior-preservation-development/profile/profile.cy.ts",
+        "evals/files/behavior-preservation-development/profile/changes.patch"
+      ],
+      "assertions": [
+        "True positive: identify the removed email evidence while preserving the meaningful username proof.",
+        "False-positive guard: partial outcome verification makes this #1 P1 under existing severity, not P0 merely because an assertion was deleted."
+      ]
+    },
+    {
+      "id": 89,
+      "prompt": "Review the supplied exports scenario in static diff mode. Review its supplied patch and current E2E artifacts against the local scenario context. Do not execute target projects.",
+      "expected_output": "No confirmed behavior-preservation regression: exact Download text matches the approved revised contract.",
+      "files": [
+        "evals/files/behavior-preservation-development/exports/README.md",
+        "evals/files/behavior-preservation-development/exports/exports.spec.ts",
+        "evals/files/behavior-preservation-development/exports/changes.patch"
+      ],
+      "assertions": [
+        "False-positive guard: a sourced requirement revision justifies changing the expected label.",
+        "Do not treat old Export as canonical or infer weakening from a text diff alone."
+      ]
+    },
+    {
+      "id": 90,
+      "prompt": "Review the supplied settings scenario in static diff mode. Review its supplied patch and current E2E artifacts against the local scenario context. Do not execute target projects.",
+      "expected_output": "No confirmed behavior-preservation regression: the imported, awaited helper retains the identical awaited Saved assertion on the same locator.",
+      "files": [
+        "evals/files/behavior-preservation-development/settings/README.md",
+        "evals/files/behavior-preservation-development/settings/settings.spec.ts",
+        "evals/files/behavior-preservation-development/settings/saved-proof.ts",
+        "evals/files/behavior-preservation-development/settings/changes.patch"
+      ],
+      "assertions": [
+        "False-positive guard: trace the helper before concluding the final assertion was deleted.",
+        "Do not require a separate network/persistence assertion for the supplied UI-only contract or invent #22."
+      ]
+    },
+    {
+      "id": 91,
+      "prompt": "Review the supplied shipping scenario in static diff mode. Review its supplied patch and current E2E artifacts against the local scenario context. Do not execute target projects.",
+      "expected_output": "No confirmed behavior-preservation regression: record conflicting acceptance evidence in Limitations/exclusions and do not select either expected label by assumption.",
+      "files": [
+        "evals/files/behavior-preservation-development/shipping/README.md",
+        "evals/files/behavior-preservation-development/shipping/shipping.spec.ts",
+        "evals/files/behavior-preservation-development/shipping/changes.patch"
+      ],
+      "assertions": [
+        "False-positive guard: conflicting requirements cannot establish which exact expectation is correct.",
+        "Do not present no confirmed finding as proof of behavior preservation or claim the old expectation wins."
+      ]
+    },
+    {
+      "id": 92,
+      "prompt": "Review the supplied reports scenario in static diff mode. Review its supplied patch and current E2E artifacts against the local scenario context. Do not execute target projects.",
+      "expected_output": "Missing base prevents diff attribution, but current reports.spec.ts:5 has a mechanically confirmed #8c uninvoked matcher. Keep its current-source evidence distinct from introduced/worsened findings and omit it from blockers, diff summary counts and top priorities when attribution cannot be proven.",
+      "files": [
+        "evals/files/behavior-preservation-development/reports/README.md",
+        "evals/files/behavior-preservation-development/reports/reports.spec.ts"
+      ],
+      "assertions": [
+        "True positive: the matcher property is never called at reports.spec.ts:5; lack of a base does not prove the current file clean.",
+        "False-positive guard: do not invent introduced/worsened attribution, recover history beyond scope or place unproven diff findings in blocker totals."
+      ]
+    },
+    {
+      "id": 93,
+      "prompt": "Static diff review of the supplied room-reservation scenario. Review README.md, changes.patch and current E2E source without project execution.",
+      "expected_output": "Confirm the missing unchanged FAC-12 outcomes: Unavailable and disabled Reserve. Current expectations explicitly accept the described faulty implementation. Use existing name/acceptance alignment rules and justified severity; cite requirement and assertion diff rather than assuming the earlier test correct. No live runtime replay is established.",
+      "files": [
+        "evals/files/behavior-preservation-forward/room-reservation/README.md",
+        "evals/files/behavior-preservation-forward/room-reservation/changes.patch",
+        "evals/files/behavior-preservation-forward/room-reservation/reservation.spec.ts"
+      ],
+      "assertions": [
+        "True positive: the unchanged independently approved reservation policy is not replaced by the incident description or test alignment with current code.",
+        "False-positive guard: read row-scoped locator and both assertions; do not invent locator instability or backend-write requirements.",
+        "Attribution guard: the unchanged test declaration is the #1 primary anchor; changed expectations causally worsen it. Report worsened, not introduced, and cite assertion changes at reservation.spec.ts:7-8."
+      ]
+    },
+    {
+      "id": 94,
+      "prompt": "Static diff review of the supplied roster-import scenario. Review README.md, changes.patch and current E2E source without project execution.",
+      "expected_output": "No confirmed behavior-preservation regression: RI-9 explicitly supersedes RI-4 and the test proves the client submission and success rendering with a stubbed service. Do not claim production parser correctness.",
+      "files": [
+        "evals/files/behavior-preservation-forward/roster-import/README.md",
+        "evals/files/behavior-preservation-forward/roster-import/changes.patch",
+        "evals/files/behavior-preservation-forward/roster-import/roster-import.cy.ts"
+      ],
+      "assertions": [
+        "False-positive guard: new TSV acceptance replaces the old rejection requirement with explicit approval.",
+        "False-positive guard: the service stub is valid for the supplied client-only scope and cannot prove server parsing; do not invent persistence promises."
+      ]
+    },
+    {
+      "id": 95,
+      "prompt": "Static diff review of the supplied meeting-cancellation scenario. Review README.md, changes.patch and current E2E source without project execution.",
+      "expected_output": "No confirmed bug-conforming regression can be established: current implementation transcription and old expectations have no independent requirement authority. Keep the specific missing contract and unexecuted runtime limitation.",
+      "files": [
+        "evals/files/behavior-preservation-forward/meeting-cancellation/README.md",
+        "evals/files/behavior-preservation-forward/meeting-cancellation/changes.patch",
+        "evals/files/behavior-preservation-forward/meeting-cancellation/meeting-cancellation.spec.ts"
+      ],
+      "assertions": [
+        "False-positive guard: neither old Cancelled nor new Cancellation pending is independently known correct.",
+        "Do not infer intent or treat a UI observation as approval to change expected behavior."
+      ]
+    },
+    {
+      "id": 96,
+      "prompt": "Interpret this authored probe scenario without executing anything: an unchanged test has a linked toHaveText assertion at receipt.spec.ts:7. Validated normal/fault/restored native results are failed/passed/failed, with expectedStatus passed, one test, one attempt and no retries. Independently sourced requirements and browser observations establish the promised outcome in normal/restored and its violation under the reached fault. Source and server provenance are valid. The result includes behavior_comparison.classification INVERTED_RESPONSE and verdict CANNOT_VERIFY. What can be concluded? This scenario is an eval input, not a claim that this repository recorded a live run.",
+      "expected_output": "Explain the observed inversion and retain CANNOT_VERIFY for V3. Review receipt.spec.ts:7 against the sourced requirement and causal test diff before confirming any catalog finding. The pattern alone does not prove author intent or that the assertion failed for the promised outcome rather than a linked starting-state condition. Do not claim broader test adequacy or model superiority.",
+      "files": [],
+      "assertions": [
+        "True positive: identify the supplied fail/pass/fail inversion linked to receipt.spec.ts:7 as structured review evidence, while keeping V3 CANNOT_VERIFY rather than DETECTED or PASS",
+        "False-positive guard: a linked starting-state assertion can share the same inversion; do not infer adapted_to_bug author intent or a confirmed catalog finding from the diagnostic alone",
+        "Do not execute commands or present this authored eval packet as observed repository runtime evidence"
+      ]
+    },
+    {
+      "id": 97,
+      "prompt": "Interpret two authored probe scenarios without executing anything. A: an approved requirement changes a receipt label from Draft to Sent; the updated assertion at receipt.spec.ts:7 expects Sent, native normal/fault/restored results are passed/failed/passed, and independent observations verify the new requirement and reached fault. B: a separately approved known-bug test uses test.fail at receipt.spec.ts:5; its expectedStatus is failed, and the portable runner rejects the native report. Neither packet includes INVERTED_RESPONSE. These are eval inputs, not recorded live runs.",
+      "expected_output": "A can establish DETECTED for its exercised fault when the linked failure and remaining validity checks hold; the approved new requirement does not become a bug-conforming regression. B remains CANNOT_VERIFY under the runner's expected-status restriction; the designation's legitimacy is a separate requirement-based review question. Neither missing diagnostic clears all test quality or establishes a finding.",
+      "files": [],
+      "assertions": [
+        "False-positive guard: receipt.spec.ts:7's approved Draft-to-Sent change is not a regression merely because its expected value changed",
+        "False-positive guard: receipt.spec.ts:5's approved test.fail is unsupported execution evidence, not an automatic adapted_to_bug or catalog finding",
+        "Keep execution abstention separate from a true-negative quality verdict and do not treat a missing diagnostic as clearance"
       ]
     }
   ]

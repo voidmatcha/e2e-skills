@@ -73,3 +73,42 @@ test('analysis tasks pin unresolved ranges without copying source or inventing f
     assert.deepEqual(analysisReviewTasks([{...item,...patch}], sources), []);
   assert.deepEqual(analysisReviewTasks([item], new Map()), []);
 });
+
+test('only unpinned promise imports become source-pinned handoff tasks', () => {
+  const file = '/alias.spec.ts', bytes = Buffer.from('page.goto(url);');
+  const item = analysisDiagnostic({ start: 0, length: 4, message: 'unsupported package/path alias: @fixture' }, 'promises', file, bytes);
+  const sources = new Map([[file, bytes]]);
+  const tasks = analysisReviewTasks([item, item], sources);
+  assert.equal(tasks.length, 1);
+  assert.deepEqual(tasks[0].requirements, ['verify-runtime-binding', 'verify-promise-observation']);
+  assert.equal(tasks[0].status, 'UNRESOLVED');
+  assert.ok(!('patternId' in tasks[0]) && !('severity' in tasks[0]));
+  assert.notEqual(analysisReviewTasks([item], new Map([[file, Buffer.from('page.goto(alt);')]]))[0].taskId, tasks[0].taskId);
+  for (const patch of [{detector:'actions'}, {detector:'conditionalAssertions'}, {code:'analysis-unknown'}, {code:'import-missing'}, {end:99}, {end:0}, {line:2}, {column:2}]) {
+    assert.deepEqual(analysisReviewTasks([{...item,...patch}], sources), []);
+  }
+});
+
+test('only explicit catch propagation gaps become source-pinned review tasks', () => {
+  const file = '/catch.spec.ts', bytes = Buffer.from('catch (error) {}');
+  const sources = new Map([[file, bytes]]);
+  for (const message of ['unsupported #3 try/catch propagation context', 'unsupported #3 parameterized catch propagation context']) {
+    const item = analysisDiagnostic({ start: 0, length: 16, message }, 'catchHandlers', file, bytes);
+    assert.equal(item.code, 'propagation-unsupported');
+    const tasks = analysisReviewTasks([item, item], sources);
+    assert.equal(tasks.length, 1);
+    assert.deepEqual(tasks[0].requirements, ['verify-runtime-binding', 'verify-catch-propagation', 'verify-helper-callers', 'verify-required-test-outcome']);
+    assert.equal(tasks[0].status, 'UNRESOLVED');
+    assert.match(tasks[0].sourceSha256, /^[a-f0-9]{64}$/);
+    assert.deepEqual(analysisReviewTasks([item], sources), tasks);
+    for (const patch of [{ end: 99 }, { line: 2 }, { column: 2 }, { detector: 'promises' }])
+      assert.deepEqual(analysisReviewTasks([{ ...item, ...patch }], sources), []);
+  }
+  for (const message of ['unsupported #3 finally context', 'unsupported #3 Promise.allSettled context',
+    'unsupported #3 catch access or argument layout', 'pinned scope is required for catch provenance',
+    'unsupported #3 try/catch propagation context; untrusted suffix']) {
+    const item = analysisDiagnostic({ start: 0, length: 16, message }, 'catchHandlers', file, bytes);
+    assert.notEqual(item.code, 'propagation-unsupported');
+    assert.deepEqual(analysisReviewTasks([item], sources), []);
+  }
+});

@@ -74,6 +74,7 @@ export function formatLegacyReport(report, { root } = {}) {
   );
   const gaps = report.execution.diagnostics ?? [];
   const guidance = {
+    'propagation-unsupported': 'Trace catch propagation and helper callers against the required test outcome; no defect is established.',
     'binding-mutable': 'Verify receiver identity and writes before treating it as a framework object.',
     'analysis-unknown': 'Review the unsupported source shape and its runtime context.',
     'provenance-unsupported': 'Verify the runtime binding and callback propagation where applicable; static provenance is unsupported.',

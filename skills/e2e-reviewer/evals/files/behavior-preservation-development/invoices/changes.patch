@@ -1,0 +1,20 @@
+--- a/invoices.spec.ts
++++ b/invoices.spec.ts
+@@ -1,8 +1,9 @@
+ // SPDX-License-Identifier: Apache-2.0
+ import { test, expect } from '@playwright/test';
+ import { invoices } from './data';
+-test('shows unpaid invoices', async ({ page }) => {
++test('shows no unpaid invoices', async ({ page }) => {
+   await page.route('**/api/invoices', route => route.fulfill({ json: invoices }));
+   await page.goto('/invoices');
+-  await expect(page.getByTestId('invoice-a')).toBeVisible();
++  await expect(page.getByTestId('invoice-a')).toHaveCount(0);
++  await expect(page.getByTestId('empty-invoices')).toHaveText('No unpaid invoices');
+ });
+--- a/data.ts
++++ b/data.ts
+@@ -1,2 +1,2 @@
+ // SPDX-License-Identifier: Apache-2.0
+-export const invoices = [{ id: 'a', paid: false }];
++export const invoices = [{ id: 'a', paid: true }];
