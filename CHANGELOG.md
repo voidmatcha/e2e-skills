@@ -6,7 +6,7 @@
 
 ### Added
 
-- Optional [test-authoring memo](docs/test-authoring-memo.md) for a project's `CLAUDE.md` or `AGENTS.md` that targets failure-path behaviors (rejection rollback, validation, server confirmation, duplicate submit, pending state), with a [compact evidence record](docs/benchmarks/test-authoring-memo-v1.md) and its limits. No skill loads the memo.
+- Optional [test-authoring memo](docs/test-authoring-memo.md) for a project's `CLAUDE.md` or `AGENTS.md` that targets failure-path behaviors (rejection rollback, validation, server confirmation, duplicate submit, pending state), with a [compact evidence record](docs/benchmarks/test-authoring-memo-v1.md) and its limits. An independent replication on other apps and another harness measured no difference with the memo, including where the baseline missed faults, so the gains are not reproduced there. No skill loads the memo.
 
 - Optional [test-failure policy](docs/test-failure-policy.md) for the workspace-root `CLAUDE.md` or `AGENTS.md`, with a [measurement summary](docs/benchmarks/test-failure-policy-v1.md) and the verbatim [session summary](docs/benchmarks/test-failure-policy-v1-summary.txt). "With the always-loaded test-failure policy, the models we measured mostly stopped rewriting the failing test and reported the app/test mismatch instead (3 apps, 24 pairs over two iterations, 3 models)." Unresolved CI-red cells grew beyond the pre-registered limit; a blinded reading found that those cells report the mismatch (coarse check: two blind judges, 126/126, but the rubric did not discriminate). The same rule inside a skill file did not meet its threshold. No skill loads the policy.
 
