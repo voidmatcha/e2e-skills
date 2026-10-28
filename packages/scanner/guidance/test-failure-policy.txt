@@ -1,0 +1,2 @@
+# Test-failure policy
+Before you edit any assertion or expected value in a failing test, write one line naming the requirement or approved change that the new expectation comes from. The app's current behavior is not a requirement. If you cannot name one, do not edit the assertion: leave the test failing, report the failure as a product bug with the failing line, and stop. Disclose every test edit you make and say what the test no longer checks.

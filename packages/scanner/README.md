@@ -29,23 +29,26 @@ The reviewer skill includes its own scanner, so reviewing an existing project do
 
 ## Unified CLI
 
-The unified CLI provides `e2e-skills install`, `doctor`, `scan` and `check`:
+The unified CLI provides `e2e-skills install`, `doctor`, `guidance`, `scan` and `check`:
 
 ```bash
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /absolute/playwright-project
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills guidance --host codex --project /absolute/playwright-project --memo --policy --dry-run
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills scan /absolute/playwright-project/tests --format json
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills check --help
 ```
 
-Command and option parsing for `install` and `doctor` uses the pinned MIT-licensed [Commander.js](https://github.com/tj/commander.js) package. Scanner and check arguments are passed through to their existing CLIs.
+Command and option parsing for `install`, `doctor` and `guidance` uses the pinned MIT-licensed [Commander.js](https://github.com/tj/commander.js) package. Scanner and check arguments are passed through to their existing CLIs.
 
 Use `--host claude` for Claude Code. The setup commands require Node.js 22.20 or newer and reuse the existing installer from a bundled payload. The payload includes the four skills, dedicated agent definitions and pinned installer dependencies; no extra source archive is fetched. Installation can download the verified skills CLI and its locked dependencies. `--dry-run` previews installation without writes or project execution. Unknown conflicting files are preserved and require manual resolution.
 
 Existing skill copies must match this package exactly. Older versions and local edits stop installation; review the reported paths before retrying.
 
 The default `doctor` returns JSON file checks, missing requirements and next steps without installing anything, executing project code or contacting MCP. Add `--check-server` only for an explicitly approved trusted-project check: it starts the configured local MCP server and performs initialization and tool listing. Server tools, active-session tools, host approval and browser readiness are distinct; the CLI cannot complete or establish the last three. It never changes host trust, grants permissions or restarts the host. See the [installation guide](https://github.com/voidmatcha/e2e-skills/blob/main/docs/installation.md#cli-installer) for setup details.
+
+`guidance` is opt-in: it writes only what `--memo` (the [test-authoring memo](https://github.com/voidmatcha/e2e-skills/blob/main/docs/test-authoring-memo.md)) or `--policy` (the [test-failure policy](https://github.com/voidmatcha/e2e-skills/blob/main/docs/test-failure-policy.md)) requests, into `AGENTS.md` (codex) or `CLAUDE.md` (claude) in the `--project` directory. The bundled texts are byte-identical to the documented blocks and are inserted unchanged between HTML comment markers; a rerun replaces only the text between the markers and never changes other bytes. Symlinked, hard-linked or non-regular instruction files and malformed markers are refused. `--dry-run` prints the JSON report and the text without writing. `install` and `doctor` never write either text.
 
 `scan` and `check` delegate to the existing implementations. Neither command installs skills or starts setup. The separate `e2e-skills-scan` and `e2e-skills-check` commands remain available.
 

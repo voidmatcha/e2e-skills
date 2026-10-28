@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=f970d4f2214f92a7b84ed85946f0813e47703b9d9b84845c3160678f0dc1ec24; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=06266367ac087c0a9d1effa9916fa24002225835316e074711eb7292ed49002d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。四个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及诊断失败原因。
 
@@ -252,7 +252,7 @@ debugger 和 probe 执行需要可信项目，以及对包括环境变量和 fla
 
 详情请参阅[执行步骤和准备条件](skills/e2e-reviewer/references/runtime-probes.md)及[两个 OSS 工作流程验证案例](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)。
 
-可选：如果希望代理编写测试时也覆盖失败路径，请将[测试编写备忘](docs/test-authoring-memo.md)原样粘贴到项目的 `CLAUDE.md` 或 `AGENTS.md` 中。没有任何技能会加载它；请先阅读其测量结果和局限。可选的[测试失败策略](docs/test-failure-policy.md)是放入同一文件的另一段片段，要求代理在说不出依据的需求时不要改写失败的测试。
+可选：如果希望代理编写测试时也覆盖失败路径，请将[测试编写备忘](docs/test-authoring-memo.md)原样粘贴到项目的 `CLAUDE.md` 或 `AGENTS.md` 中。没有任何技能会加载它；请先阅读其测量结果和局限。可选的[测试失败策略](docs/test-failure-policy.md)是放入同一文件的另一段片段，要求代理在说不出依据的需求时不要改写失败的测试。也可以不手动粘贴，运行 `e2e-skills guidance --host claude|codex --project PATH --memo --policy`：仅在明确指定时，才会将其中一项或两项原样写入 HTML 注释标记之间。详见[安装说明](docs/installation.md#optional-memo-and-failure-policy)。
 
 ## 证据与限制
 

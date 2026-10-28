@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=f970d4f2214f92a7b84ed85946f0813e47703b9d9b84845c3160678f0dc1ec24; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=06266367ac087c0a9d1effa9916fa24002225835316e074711eb7292ed49002d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 네 종류의 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하며, 실패 원인을 분석합니다.
 

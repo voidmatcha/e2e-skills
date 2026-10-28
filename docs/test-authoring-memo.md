@@ -22,6 +22,8 @@ Finally, ask of each assertion: if this behavior broke, would this line fail? St
 
 Paste the memo unchanged into the project's always-loaded instruction file: `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex. Then ask for tests as you normally would. The measured effect applies to this exact text; edited wording is untested.
 
+Instead of pasting, you can run `e2e-skills guidance --host claude --project /path/to/project --memo` (use `--host codex` for `AGENTS.md`, and add `--dry-run` to preview). It inserts the same text unchanged between two HTML comment markers; see [installation](installation.md#optional-memo-and-failure-policy). Writing the file does not show that the memo works for you; still check your own tests as described below.
+
 ## What it targets
 
 In our authored-app runs, agent-written E2E tests often stayed green when a failure path broke. The memo targets five such behaviors:

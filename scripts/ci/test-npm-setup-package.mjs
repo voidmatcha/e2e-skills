@@ -73,7 +73,7 @@ try {
     if (type !== 53) { assert.ok(!entries.has(name), 'no duplicate tar paths'); entries.set(name, { bytes: Buffer.from(tar.subarray(offset, offset + size)), mode }); }
     offset += Math.ceil(size / 512) * 512;
   }
-  const required = ['package.json', 'src/setup-cli.mjs', 'src/cli.mjs', 'src/check-cli.mjs', 'setup-runtime/inventory.json', 'setup-runtime/install.sh', 'setup-runtime/LICENSE', 'setup-runtime/NOTICE', 'setup-runtime/scripts/dev/setup.mjs', 'setup-runtime/scripts/dev/reinstall-skills.sh', 'setup-runtime/scripts/dev/vendor/smol-toml/index.cjs', 'setup-runtime/scripts/dev/vendor/smol-toml/LICENSE', 'setup-runtime/scripts/dev/vendor/smol-toml/provenance.json'];
+  const required = ['package.json', 'src/setup-cli.mjs', 'src/cli.mjs', 'src/check-cli.mjs', 'setup-runtime/inventory.json', 'setup-runtime/install.sh', 'setup-runtime/LICENSE', 'setup-runtime/NOTICE', 'setup-runtime/scripts/dev/setup.mjs', 'setup-runtime/scripts/dev/reinstall-skills.sh', 'setup-runtime/scripts/dev/vendor/smol-toml/index.cjs', 'setup-runtime/scripts/dev/vendor/smol-toml/LICENSE', 'setup-runtime/scripts/dev/vendor/smol-toml/provenance.json', 'guidance/test-authoring-memo.txt', 'guidance/test-failure-policy.txt'];
   for (const name of ['e2e-finding-verifier', 'e2e-failure-classifier']) required.push(`setup-runtime/.codex/agents/${name}.toml`, `setup-runtime/agents/${name}.md`);
   for (const name of ['cypress-debugger', 'e2e-reviewer', 'playwright-debugger', 'playwright-test-generator']) required.push(`setup-runtime/skills/${name}/SKILL.md`);
   for (const name of required) assert.ok(entries.has('package/' + name), 'packed closure missing ' + name);
@@ -96,7 +96,11 @@ try {
     for (const key of ['session_tools', 'approval', 'browser']) assert.equal(report[key], 'UNKNOWN');
     assert.equal(report.server, 'NOT_CHECKED'); assert.deepEqual(fs.readdirSync(home), [], `${host} doctor leaves HOME untouched`);
   }
-  console.log(`npm setup package: ${entries.size} actual packed files; integrity, help, both host dry-runs and read-only doctors passed`);
+  const guided = path.join(temporary, 'guided-project'); fs.mkdirSync(guided);
+  const preview = JSON.parse(run([cli, 'guidance', '--host', 'claude', '--project', guided, '--memo', '--policy', '--dry-run']));
+  assert.equal(preview.file, 'CREATED'); assert.equal(preview.blocks.length, 2); assert.deepEqual(fs.readdirSync(guided), [], 'guidance dry-run writes nothing');
+  run([cli, 'guidance', '--host', 'claude', '--project', guided], 2); assert.deepEqual(fs.readdirSync(guided), [], 'guidance without --memo/--policy writes nothing');
+  console.log(`npm setup package: ${entries.size} actual packed files; integrity, help, both host dry-runs, read-only doctors and guidance dry-run passed`);
 } finally {
   if (keep) console.log('Retained owned package fixture: ' + temporary);
   else fs.rmSync(temporary, { recursive: true, force: true });

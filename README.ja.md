@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=f970d4f2214f92a7b84ed85946f0813e47703b9d9b84845c3160678f0dc1ec24; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=06266367ac087c0a9d1effa9916fa24002225835316e074711eb7292ed49002d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。4 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、失敗原因の診断を行います。
 
@@ -253,7 +253,7 @@ debugger と probe の実行には、信頼するプロジェクトと、環境�
 
 詳細は[実行手順と準備条件](skills/e2e-reviewer/references/runtime-probes.md)、[OSS 2 例の作業手順検証](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)を参照してください。
 
-任意で、エージェントがテストを書く際に失敗経路もテストさせたい場合は、[テスト作成メモ](docs/test-authoring-memo.md)を変更せずにプロジェクトの `CLAUDE.md` または `AGENTS.md` に貼り付けてください。このメモを読み込むスキルはありません。先に測定結果と限界を確認してください。任意の[テスト失敗ポリシー](docs/test-failure-policy.md)は同じファイルに入れる別のスニペットで、根拠となる要件を示さずに失敗したテストを書き換えないようエージェントに求めます。
+任意で、エージェントがテストを書く際に失敗経路もテストさせたい場合は、[テスト作成メモ](docs/test-authoring-memo.md)を変更せずにプロジェクトの `CLAUDE.md` または `AGENTS.md` に貼り付けてください。このメモを読み込むスキルはありません。先に測定結果と限界を確認してください。任意の[テスト失敗ポリシー](docs/test-failure-policy.md)は同じファイルに入れる別のスニペットで、根拠となる要件を示さずに失敗したテストを書き換えないようエージェントに求めます。 貼り付ける代わりに `e2e-skills guidance --host claude|codex --project PATH --memo --policy` を実行すると、指定した場合にのみ、どちらか一方または両方を変更せずに HTML コメントのマーカーの間へ書き込みます。詳しくは[インストール手順](docs/installation.md#optional-memo-and-failure-policy)を参照してください。
 
 ## 根拠と限界
 

@@ -15,6 +15,8 @@ Before you edit any assertion or expected value in a failing test, write one lin
 
 Paste the policy unchanged into the always-loaded instruction file at the workspace root: `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex. Iteration 2 measured this exact text in that placement.
 
+Instead of pasting, you can run `e2e-skills guidance --host claude --project /path/to/workspace-root --policy` (use `--host codex` for `AGENTS.md`, and add `--dry-run` to preview). It inserts the same text unchanged between two HTML comment markers; see [installation](installation.md#optional-memo-and-failure-policy). Writing the file does not show that the policy works for you; still check your own tests.
+
 Expect more tests to stay red. With the policy, an agent that cannot name a requirement leaves the failing test unchanged and reports the mismatch, so CI stays red until a person decides whether the app or the test is wrong.
 
 ## Measured result and limits

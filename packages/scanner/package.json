@@ -18,6 +18,7 @@
   },
   "files": [
     "src/",
+    "guidance/",
     "scripts/run-probe.mjs",
     "examples/",
     "LICENSE",

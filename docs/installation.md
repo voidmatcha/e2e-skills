@@ -43,6 +43,17 @@ For a trusted project, explicitly add `--check-server` to `doctor` to start the 
 
 The same entry point forwards `scan PATH` to the existing scanner and `check ...` to the existing discovery, binding and probe CLI. These commands do not install skills or configure MCP. The existing `e2e-skills-scan` and `e2e-skills-check` commands remain available.
 
+## Optional memo and failure policy
+
+The [test-authoring memo](test-authoring-memo.md) and the [test-failure policy](test-failure-policy.md) are not installed by `install` and not checked by `doctor`. To write them into a project's `CLAUDE.md` or `AGENTS.md` without pasting by hand, ask for them explicitly:
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills guidance --host claude --project /path/to/project --memo --policy --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills guidance --host claude --project /path/to/project --memo --policy
+```
+
+`--memo`, `--policy` or both are required. `--host claude` writes `CLAUDE.md` and `--host codex` writes `AGENTS.md` in the `--project` directory, creating the file if it is missing. Each text is inserted unchanged between two HTML comments, such as `<!-- e2e-skills:test-authoring-memo sha256=... -->` and `<!-- /e2e-skills:test-authoring-memo -->`. A rerun leaves a matching block alone (`CURRENT`), replaces only the text between the markers when it differs (`UPDATED`), and otherwise appends the block after one blank line (`ADDED`); bytes outside the markers are never changed. The command refuses a symlinked, hard-linked or non-regular instruction file and malformed markers, and writes nothing in that case. `--dry-run` prints the JSON report, including the text it would insert, and writes nothing.
+
 ## First Playwright project
 
 If the project has no Playwright runner or configuration, follow the [official initial setup](https://playwright.dev/docs/intro) using its existing package manager. Review and authorize dependency installation, browser downloads and generated files separately; the generator skill does not perform this setup automatically. Confirm the project-native test command, Playwright configuration, required browsers and approved local development stack before rerunning `bash install.sh --host codex --project /path/to/playwright-project` (use `--host claude` for Claude Code).

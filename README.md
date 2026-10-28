@@ -251,7 +251,7 @@ For example: “Check whether this test catches a broken save operation.” The 
 
 See the [execution procedure and requirements](skills/e2e-reviewer/references/runtime-probes.md) and [two OSS workflow examples](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration).
 
-Optionally, to have agents also test failure paths when they write tests, paste the [test-authoring memo](docs/test-authoring-memo.md) unchanged into your project's `CLAUDE.md` or `AGENTS.md`. No skill loads it; read its measured effect and limits first. The optional [test-failure policy](docs/test-failure-policy.md) is a separate snippet for the same files that asks agents not to rewrite a failing test without a named requirement.
+Optionally, to have agents also test failure paths when they write tests, paste the [test-authoring memo](docs/test-authoring-memo.md) unchanged into your project's `CLAUDE.md` or `AGENTS.md`. No skill loads it; read its measured effect and limits first. The optional [test-failure policy](docs/test-failure-policy.md) is a separate snippet for the same files that asks agents not to rewrite a failing test without a named requirement. Instead of pasting, `e2e-skills guidance --host claude|codex --project PATH --memo --policy` writes either or both unchanged between HTML comment markers, only when asked; see [installation](docs/installation.md#optional-memo-and-failure-policy).
 
 ## Evidence and limits
 
