@@ -115,6 +115,48 @@ test('Claude projection is required; missing Codex shadow remains optional', asy
   const codex = JSON.parse((await capture(() => main(['doctor', '--host', 'codex'], f))).output);
   assert.equal(codex.requirements.filter(entry => entry.path.includes('/.codex/skills/')).length, 0);
 });
+test('doctor marks only host-required skill paths MISSING; a present shadow is still checked', async () => {
+  const f = fixture(), codexHome = path.join(f.home, 'codex-home'), hooks = { ...f, cleanEnv: () => ({ HOME: f.home, CODEX_HOME: codexHome, PATH: '/usr/bin:/bin' }) };
+  const statuses = (report, fragment) => [...new Set(report.skills.filter(entry => entry.path.includes(fragment)).map(entry => entry.status))];
+  const claude = JSON.parse((await capture(() => main(['doctor', '--host', 'claude'], hooks))).output);
+  assert.deepEqual(statuses(claude, '/.agents/skills/'), ['MISSING']); assert.deepEqual(statuses(claude, '/.claude/skills/'), ['MISSING']);
+  assert.deepEqual(statuses(claude, '/.codex/skills/'), ['NOT_USED_BY_HOST']); assert.deepEqual(statuses(claude, '/codex-home/skills/'), ['NOT_USED_BY_HOST']);
+  const codex = JSON.parse((await capture(() => main(['doctor', '--host', 'codex'], hooks))).output);
+  assert.deepEqual(statuses(codex, '/.agents/skills/'), ['MISSING']); assert.equal(statuses(codex, '/.claude/skills/').length, 0);
+  assert.deepEqual(statuses(codex, '/.codex/skills/'), ['ABSENT_OPTIONAL']); assert.deepEqual(statuses(codex, '/codex-home/skills/'), ['ABSENT_OPTIONAL']);
+  for (const report of [claude, codex]) {
+    assert.equal(report.requirements.some(entry => entry.path.includes('/.codex/skills/') || entry.path.includes('/codex-home/skills/')), false);
+    assert.equal(report.skills.every(entry => entry.required === (entry.path.includes('/.agents/skills/') || entry.path.includes('/.claude/skills/'))), true);
+  }
+  const shadow = path.join(f.home, '.codex/skills/e2e-reviewer'); fs.mkdirSync(shadow, { recursive: true }); fs.writeFileSync(path.join(shadow, 'SKILL.md'), 'stale');
+  for (const host of ['claude', 'codex']) {
+    const report = JSON.parse((await capture(() => main(['doctor', '--host', host], hooks))).output);
+    assert.deepEqual(report.requirements.filter(entry => entry.path === shadow), [{ path: shadow, status: 'FOREIGN_OR_MODIFIED' }]);
+    await assert.rejects(main(['install', '--host', host, '--dry-run'], hooks), /foreign or modified/);
+  }
+});
+test('symlinked ancestors of HOME are resolved; symlinked HOME and host destinations still fail closed', async () => {
+  const real = path.join(temp, 'ancestor-real'), link = path.join(temp, 'ancestor-link'); fs.mkdirSync(path.join(real, 'home'), { recursive: true }); fs.symlinkSync(real, link);
+  const home = path.join(link, 'home'), hooks = { ...fixture(), cleanEnv: () => ({ HOME: home, PATH: '/usr/bin:/bin' }) };
+  for (const host of ['claude', 'codex']) {
+    const dry = await capture(() => main(['install', '--host', host, '--dry-run'], hooks));
+    assert.equal(dry.result, 0); assert.match(dry.output, /Dry run: no files changed/);
+    const report = JSON.parse((await capture(() => main(['doctor', '--host', host], hooks))).output);
+    assert.equal(report.agents.every(entry => entry.status === 'MISSING' && entry.path.startsWith(path.join(real, 'home') + path.sep)), true);
+  }
+  assert.deepEqual(fs.readdirSync(path.join(real, 'home')), []);
+  const outside = path.join(temp, 'ancestor-outside'); fs.mkdirSync(outside);
+  for (const [host, folder] of [['claude', '.claude'], ['codex', '.codex']]) {
+    const f = fixture(); fs.symlinkSync(outside, path.join(f.home, folder));
+    await assert.rejects(main(['install', '--host', host, '--dry-run'], f), /refusing symlinked destination/);
+    assert.equal(JSON.parse((await capture(() => main(['doctor', '--host', host], f))).output).agents.every(entry => entry.status === 'UNSAFE'), true);
+    const agents = fixture(), dir = path.join(agents.home, folder); fs.mkdirSync(dir); fs.symlinkSync(outside, path.join(dir, 'agents'));
+    await assert.rejects(main(['install', '--host', host, '--dry-run'], agents), /refusing symlinked destination/);
+  }
+  const linkedHome = path.join(temp, 'linked-home'); fs.symlinkSync(path.join(real, 'home'), linkedHome);
+  await assert.rejects(main(['install', '--host', 'claude', '--dry-run'], { ...fixture(), cleanEnv: () => ({ HOME: linkedHome, PATH: '/usr/bin:/bin' }) }), /refusing symlinked destination/);
+  assert.deepEqual(fs.readdirSync(outside), []);
+});
 test('project official agent presence is reported without execution; config conflict guidance is specific', async () => {
   const f = fixture(), project = path.join(f.home, 'project'); fs.mkdirSync(project);
   fs.writeFileSync(path.join(project, 'playwright.config.cjs'), 'throw Error("never execute")');

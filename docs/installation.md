@@ -30,9 +30,9 @@ Use `--host claude` for Claude Code. `--project` names the directory containing 
 The npm CLI installs the same skills and agents without a repository clone. Preview the changes, then install and diagnose the selected host:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills doctor --host codex --project /path/to/playwright-project
 ```
 
 Use `--host claude` for Claude Code. Installation reuses the host installer described above; it does not create a project or install its dependencies or browsers. The default `doctor` returns structured file checks, missing requirements and next steps without executing project code. Active-session tools and approvals remain unknown.
@@ -48,8 +48,8 @@ The same entry point forwards `scan PATH` to the existing scanner and `check ...
 The [test-authoring memo](test-authoring-memo.md) and the [test-failure policy](test-failure-policy.md) are not installed by `install` and not checked by `doctor`. To write them into a project's `CLAUDE.md` or `AGENTS.md` without pasting by hand, ask for them explicitly:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills guidance --host claude --project /path/to/project --memo --policy --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills guidance --host claude --project /path/to/project --memo --policy
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills guidance --host claude --project /path/to/project --memo --policy --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills guidance --host claude --project /path/to/project --memo --policy
 ```
 
 `--memo`, `--policy` or both are required. `--host claude` writes `CLAUDE.md` and `--host codex` writes `AGENTS.md` in the `--project` directory, creating the file if it is missing. Each text is inserted unchanged between two HTML comments, such as `<!-- e2e-skills:test-authoring-memo sha256=... -->` and `<!-- /e2e-skills:test-authoring-memo -->`. A rerun leaves a matching block alone (`CURRENT`), replaces only the text between the markers when it differs (`UPDATED`), and otherwise appends the block after one blank line (`ADDED`); bytes outside the markers are never changed. The command refuses a symlinked, hard-linked or non-regular instruction file and malformed markers, and writes nothing in that case. `--dry-run` prints the JSON report, including the text it would insert, and writes nothing.

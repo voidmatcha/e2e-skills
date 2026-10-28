@@ -79,19 +79,21 @@ const exists = target => { try { fs.lstatSync(target); return true; } catch (err
 function sameTree(a, b) { return JSON.stringify(inventory(a)) === JSON.stringify(inventory(b)); }
 export function skillStatus(root, host, env) {
   return skills.flatMap(name => {
+    // Both hosts read the canonical store; Claude also needs its projection. The installer never
+    // writes the legacy Codex locations, but checks a present copy because it can shadow the store.
     const canonical = path.join(env.HOME, '.agents/skills', name);
-    const destinations = [canonical, path.join(env.HOME, '.codex/skills', name)];
-    if (env.CODEX_HOME && env.CODEX_HOME !== path.join(env.HOME, '.codex')) destinations.push(path.join(env.CODEX_HOME, 'skills', name));
-    if (host === 'claude') destinations.push(path.join(env.CLAUDE_CONFIG_DIR ?? path.join(env.HOME, '.claude'), 'skills', name));
-    return destinations.map(target => {
-      if (!exists(target)) return { name, path: target, status: 'MISSING' };
+    const destinations = [[canonical, true], [path.join(env.HOME, '.codex/skills', name), false]];
+    if (env.CODEX_HOME && env.CODEX_HOME !== path.join(env.HOME, '.codex')) destinations.push([path.join(env.CODEX_HOME, 'skills', name), false]);
+    if (host === 'claude') destinations.push([path.join(env.CLAUDE_CONFIG_DIR ?? path.join(env.HOME, '.claude'), 'skills', name), true]);
+    return destinations.map(([target, required]) => {
+      if (!exists(target)) return { name, path: target, required, status: required ? 'MISSING' : host === 'codex' ? 'ABSENT_OPTIONAL' : 'NOT_USED_BY_HOST' };
       try {
         // CLI-managed projections may link only to the canonical installed tree.
         const linked = fs.lstatSync(target).isSymbolicLink();
         if (linked && (target === canonical || fs.realpathSync(target) !== fs.realpathSync(canonical))) throw Error('foreign projection');
         const resolved = linked ? fs.realpathSync(target) : target;
-        return { name, path: target, status: sameTree(resolved, path.join(root, 'skills', name)) ? 'CURRENT' : 'FOREIGN_OR_MODIFIED' };
-      } catch { return { name, path: target, status: 'FOREIGN_OR_MODIFIED' }; }
+        return { name, path: target, required, status: sameTree(resolved, path.join(root, 'skills', name)) ? 'CURRENT' : 'FOREIGN_OR_MODIFIED' };
+      } catch { return { name, path: target, required, status: 'FOREIGN_OR_MODIFIED' }; }
     });
   });
 }
@@ -122,7 +124,7 @@ export async function doctor(root, setup, opts, env, check = setup.checkSetup) {
     } catch (error) { report.project = { path: project, status: /MCP differs|configuration|MCP TOML/.test(error.message) ? 'CONFIG_CONFLICT' : 'DEPENDENCIES_MISSING', detail: error.message }; }
     if (opts.checkServer) { report.server_check = await check(project, opts.host, env); report.server = report.server_check.server; }
   }
-  for (const entry of [...installed.filter(entry => entry.path === path.join(env.HOME, '.agents/skills', entry.name) || (opts.host === 'claude' && entry.path === path.join(env.CLAUDE_CONFIG_DIR ?? path.join(env.HOME, '.claude'), 'skills', entry.name)) || !['CURRENT', 'MISSING'].includes(entry.status)), ...agents]) if (entry.status !== 'CURRENT') report.requirements.push({ path: entry.path, status: entry.status });
+  for (const entry of [...installed.filter(entry => entry.required || entry.status === 'FOREIGN_OR_MODIFIED'), ...agents]) if (entry.status !== 'CURRENT') report.requirements.push({ path: entry.path, status: entry.status });
   for (const entry of report.project_agents ?? []) if (entry.status !== 'PRESENT_UNVERIFIED') report.requirements.push({ component: 'project_agent', ...entry });
   if (!['CURRENT', 'NOT_REQUESTED'].includes(report.project.status)) report.requirements.push({ component: 'project', ...report.project });
   if (report.requirements.length) report.next_steps.push(`Review conflicts, then run e2e-skills install --host ${opts.host}${opts.project ? ' --project ' + JSON.stringify(opts.project) : ''}.`);
@@ -219,7 +221,7 @@ export async function main(args = process.argv.slice(2), hooks = {}) {
   requireSetupNode(hooks.nodeVersion);
   const root = verifyRuntime(hooks.runtimeRoot);
   const setup = await import(pathToFileURL(path.join(root, 'scripts/dev/setup.mjs')).href);
-  const env = (hooks.cleanEnv ?? setup.cleanEnv)();
+  const env = setup.canonicalEnv((hooks.cleanEnv ?? setup.cleanEnv)());
   if (command === 'doctor') {
     const report = await doctor(root, setup, opts, env, hooks.checkSetup);
     console.log(JSON.stringify(report, null, 2));

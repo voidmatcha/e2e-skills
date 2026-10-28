@@ -229,3 +229,18 @@ test('public installer enforces the documented Node 22.20 minimum', () => {
     assert.equal(code, expected, version);
   }
 });
+test('symlinked env ancestors resolve; the base itself and destinations below it stay refused', () => {
+  const f = fixture(), real = path.join(f.root, 'real'), link = path.join(f.root, 'link'); fs.mkdirSync(path.join(real, 'home'), { recursive: true }); fs.symlinkSync(real, link);
+  assert.equal(setup.resolveAncestors(path.join(link, 'home')), path.join(real, 'home'));
+  assert.equal(setup.resolveAncestors(path.join(link, 'missing/codex-home')), path.join(real, 'missing/codex-home'));
+  assert.equal(setup.resolveAncestors('relative/home'), 'relative/home');
+  fs.symlinkSync(path.join(f.root, 'nowhere'), path.join(real, 'dangling'));
+  assert.equal(setup.resolveAncestors(path.join(link, 'dangling/home')), path.join(real, 'dangling/home'));
+  const env = setup.canonicalEnv({ HOME: path.join(link, 'home'), CODEX_HOME: path.join(link, 'home/.codex'), PATH: '/usr/bin:/bin' });
+  assert.deepEqual(env, { HOME: path.join(real, 'home'), CODEX_HOME: path.join(real, 'home/.codex'), PATH: '/usr/bin:/bin' });
+  for (const host of ['codex', 'claude']) setup.dedicatedPreflight(host, env);
+  assert.throws(() => setup.dedicatedPreflight('codex', setup.canonicalEnv({ HOME: path.join(link, 'dangling/home') })), /refusing symlinked destination/);
+  assert.throws(() => setup.dedicatedPreflight('codex', setup.canonicalEnv({ HOME: link })), /refusing symlinked destination/);
+  fs.symlinkSync(f.root, path.join(real, 'home/.claude'));
+  assert.throws(() => setup.dedicatedPreflight('claude', env), /refusing symlinked destination/);
+});

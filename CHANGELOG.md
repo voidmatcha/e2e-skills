@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [3.3.1] - 2026-10-28
+
+### Fixed
+
+- `e2e-skills install` and `doctor` no longer refuse a `HOME`, `CODEX_HOME` or `CLAUDE_CONFIG_DIR` whose ancestors are symlinks, such as a macOS `/var/folders` temporary path where `/var` links to `/private/var`. Those ancestors are resolved first; a symlinked base directory itself and symlinks at or below the skills, agents and configuration destinations are still refused.
+
+- `e2e-skills doctor` reports only the skill paths the selected host reads as `MISSING`. Each skill entry now carries `required`; an absent legacy Codex location is `NOT_USED_BY_HOST` for `--host claude` and `ABSENT_OPTIONAL` for `--host codex`. A present copy there is still checked and reported as `FOREIGN_OR_MODIFIED` when it differs, because it can shadow the canonical skill.
+
 ## [3.3.0] - 2026-10-27
 
 ### Added

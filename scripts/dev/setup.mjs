@@ -37,10 +37,29 @@ export function safePath(target) {
     part = parent;
   }
 }
+// Resolve symlinked ancestors (macOS /var -> /private/var) but keep the last
+// component, so safePath still refuses a symlinked base or destination.
+export function resolveAncestors(target) {
+  if (typeof target !== 'string' || !path.isAbsolute(target)) return target;
+  const rest = [path.basename(path.resolve(target))];
+  let parent = path.dirname(path.resolve(target));
+  while (true) {
+    try { return path.join(fs.realpathSync(parent), ...rest); }
+    catch (error) {
+      if (error.code !== 'ENOENT' || path.dirname(parent) === parent) throw error;
+      rest.unshift(path.basename(parent)); parent = path.dirname(parent);
+    }
+  }
+}
+export function canonicalEnv(env) {
+  const result = { ...env };
+  for (const key of ['HOME', 'CODEX_HOME', 'CLAUDE_CONFIG_DIR']) if (result[key] !== undefined) result[key] = resolveAncestors(result[key]);
+  return result;
+}
 export function cleanEnv() {
   const env = { PATH: '/usr/bin:/bin:/usr/sbin:/sbin', HOME: os.homedir(), LANG: 'en_US.UTF-8' };
   for (const key of ['CODEX_HOME', 'CLAUDE_CONFIG_DIR']) if (process.env[key] !== undefined) env[key] = process.env[key];
-  return env;
+  return canonicalEnv(env);
 }
 export function run(command, cwd, env) {
   const result = spawnSync(command[0], command.slice(1), { cwd, env, encoding: 'utf8', timeout: 120000, maxBuffer: 16 * 1024 * 1024 });
@@ -307,7 +326,7 @@ export async function main(argv = process.argv.slice(2), hooks = {}) {
   }
   if (!['codex', 'claude'].includes(opts.host)) throw Error('--host must be codex or claude');
   if (opts.check && (!opts.project || opts.dryRun)) throw Error('--check requires --project and cannot be combined with --dry-run');
-  const env = (hooks.cleanEnv ?? cleanEnv)();
+  const env = canonicalEnv((hooks.cleanEnv ?? cleanEnv)());
   const project = opts.project ? fs.realpathSync(opts.project) : null;
   if (project && !fs.statSync(project).isDirectory()) throw Error('--project is not an existing directory');
   if (opts.check) {

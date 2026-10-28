@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=225a1cbe0244551e913b5c882036e5def4958425264aa6c857b9621b11d16eaf; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=934e889d3620fe8f00cff4a6287cead440a4d97119b4877ddd079a9d2e9dddd6; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。4 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、失敗原因の診断を行います。
 
@@ -143,7 +143,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 Claude Code または Codex に次のプロンプトを貼り付けてください。テスト生成も使う場合は既存のローカル Playwright プロジェクトを伝え、レビューと失敗分析だけならプロジェクト設定なしでインストールします。
 
 ```text
-Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
+Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
 ```
 
 agent は `e2e-skills` インストーラーを実行し、スキル 4 つと専用エージェント 2 つをインストールします。プロジェクトを指定すると、公式 Playwright test agent とプロジェクトの MCP 設定も準備します。再起動が必要なら agent を自分で再起動し、プロジェクトの MCP サーバーを承認してください。現在のセッションで `generator_write_test` が見えれば生成を始められます。Cursor や Gemini CLI など他の agent を使う場合は、下の skills.sh でスキルをインストールしてください。
@@ -173,9 +173,9 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 どのディレクトリからでも実行でき、既存のローカル Playwright プロジェクトを指定します。Claude Code では `codex` を `claude` に置き換えてください。インストーラーには Node.js 22.20 以上が必要です。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills doctor --host codex --project /path/to/playwright-project
 ```
 
 `--project` を指定すると、そのプロジェクトで公式の `playwright init-agents --loop=codex`（または `--loop=claude`）を実行し、MCP 設定を書き込みます。Playwright をアップグレードした後はインストールをやり直してください。`--project` なしではスキル 4 つと専用エージェント 2 つだけをインストールします。信頼するプロジェクトでは、`doctor` に `--check-server` を付けると、設定された MCP サーバーを起動して `initialize` と `tools/list` を確認できます。この確認はプロジェクトのコードを実行しますが、ツール呼び出し、ブラウザー起動、テスト実行は行わず、サーバーだけを確認します。必要なら agent を自分で再起動し、プロジェクトの MCP サーバーを承認してください。現在のセッションで `generator_write_test` が見えれば生成を始められます。
@@ -369,7 +369,7 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 AI agent に依頼せず、コードスキャナーだけを直接実行できます。レビューする問題候補を探す道具であり、テストの実行や、意図した動作を検証しているかの判断は行いません。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills-scan --scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills-scan --scan path/to/tests --format text
 ```
 
 Node.js 22 以降が必要で、TypeScript パーサーは同梱されています。npx はキャッシュにない package と依存関係をダウンロードします。scan はテストやプロジェクト設定を実行しません。構造化された出力には `--format json`、レポートの保存には `--report-file <new-file>` を使います。既存ファイルは上書きしません。
