@@ -1,16 +1,16 @@
 # Test-failure policy and runtime probe: measurement summary
 
-This record holds the measurement summary for the optional [test-failure policy](../test-failure-policy.md) and for the `e2e-reviewer` runtime probe. The [summary file](test-failure-policy-v1-summary.txt) is copied verbatim from the measurement owner's revision r4 (SHA-256 `352202daed7b5de8e191fd2a9819c6837152a2dfd16400d401933e90d4408a9f`, written 2026-10-27, revised 2026-10-28). It supersedes the first copy (`b257defa831e89bd5d2ac3393befecb265f8782eaaa46e97f9ff78809b558c3c`): r2 corrected the Stage-2 selection-bias sentence in B2 r3 added the global-instructions limit to B, and r4 corrected the B Reading line about the other pairs. Recorded for the 3.3.0 release.
+This record holds the measurement summary for the optional [test-failure policy](../test-failure-policy.md) and for the `e2e-reviewer` runtime probe. The [summary file](test-failure-policy-v1-summary.txt) is copied verbatim from the measurement owner's revision r5 (SHA-256 `933ba056e2b0947dbf8097cd0cc75204c45ff1a863092e2e6e487090d0d713ca`, written 2026-10-27, revised 2026-10-28). It supersedes the first copy (`b257defa831e89bd5d2ac3393befecb265f8782eaaa46e97f9ff78809b558c3c`): r2 corrected the Stage-2 selection-bias sentence in B2, r3 added the global-instructions limit to B, r4 corrected the B Reading line about the other pairs, and r5 narrowed the A wording and the placement claim after an independent review. Recorded for the 3.3.0 release.
 
 The underlying run records (pre-registrations, freezes, run directories, transcripts) are local to the measurement machine and are not part of the release. No pair contents, faults or test code are included.
 
 ## A. Test-failure policy in an always-loaded instruction file
 
-"With the always-loaded test-failure policy, the models we measured mostly stopped rewriting the failing test and reported the app/test mismatch instead (3 apps, 24 pairs over two iterations, 3 models)."
+"With the always-loaded test-failure policy, the models we measured rewrote the failing test much less often, and when they left it unchanged they reported the app/test mismatch (3 apps, 24 pairs over two iterations, 3 models; the reduction differed by model, e.g. gpt-5.6-sol still had 69% risk with snippet v1)."
 
 - Scope: three open-source web apps, 24 new fault pairs over two iterations, three models. Delivery was checked per cell from logs; delivery was 108/108 snippet-arm cells in each of the two iterations. Outcomes were judged by running the final test on the corrected app and on the faulted app.
 - Side condition not met: the pre-registered limit on growth of unresolved, CI-red cells was not met by the harness label. A blinded reading shows that those cells report the mismatch instead of hiding it (coarse check: two blind judges, 126/126, but the rubric did not discriminate).
-- Negative result: the same rule placed inside a skill file, which is not always loaded, did not meet the pre-registered threshold. The measured effect belongs to the always-loaded placement.
+- Negative result: the same rule text placed inside a skill file, which is not always loaded, did not meet the pre-registered threshold (a -9 pp reduction, 21 other pairs and partly different models). The two experiments used different pairs, so placement was not isolated: the result is consistent with placement mattering but does not show it, and the skill-file result is a reduction that missed the threshold, not evidence of no effect.
 - Per-model counts and intervals are in the summary file. They are not pooled across models, and the two iterations used different pairs, so they are not a comparison of policy versions.
 
 ## B. e2e-reviewer runtime probe

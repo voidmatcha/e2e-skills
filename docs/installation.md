@@ -3,7 +3,7 @@
 
 ## Recommended setup
 
-Use the [all-in-one installation prompt](../README.md#install-with-your-coding-agent-recommended) in Claude Code or Codex and identify your existing Playwright project. The installer prepares the four skills, the two dedicated agents for the selected host, and the official Playwright agents and project MCP configuration when a project is supplied.
+For reviewing and debugging in any agent, [install the skills with skills.sh](../README.md#review-and-debug-install-the-skills-recommended). For test generation in Claude Code or Codex, use the [e2e-skills installer](../README.md#test-generation-claude-code-and-codex) with your existing Playwright project, directly or through the paste-in prompt there. The installer prepares the four skills, the two dedicated subagents for the selected host, and the official Playwright agents and project MCP configuration when a project is supplied.
 
 After installation, run the printed diagnostic command when authorized for that exact command. If needed, restart the host yourself, complete project trust and MCP approval, then ask the agent to resume verification in the new session. It reports installation, server tools, session tools and approval separately. It must see `generator_write_test` in the active session before proceeding with generation. Installation does not create your application, its API or database, install project dependencies or browsers, or run tests.
 
@@ -80,7 +80,7 @@ A successful check verifies the server's advertised tools, including `generator_
 
 ## Manual generator setup
 
-If you installed only the skills or plugin, you can use the all-in-one installer to prepare the remaining setup. The generator skill itself installs nothing and changes no agent or MCP configuration.
+If you installed only the skills or plugin, you can use the [e2e-skills installer](../README.md#test-generation-claude-code-and-codex) to prepare the remaining setup. The generator skill itself installs nothing and changes no agent or MCP configuration.
 
 ### Claude Code
 

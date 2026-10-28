@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=06266367ac087c0a9d1effa9916fa24002225835316e074711eb7292ed49002d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=95bfd9725d95f8d8ff0b910d9845204d23cd5235e74a667bb4e8ce2210b2325d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。4 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、失敗原因の診断を行います。
 
@@ -138,68 +138,69 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 ## インストールして試す
 
-### コーディング agent にインストールを依頼する（推奨）
+目的に合わせてインストール方法を選んでください。レビューと失敗分析はどの agent でも動作します。テスト生成には公式 Playwright test agent とプロジェクトの MCP サーバーも必要で、Claude Code と Codex ではインストーラーがこれを準備します。
 
-テスト生成も使う場合は、Claude Code または Codex に次のプロンプトを入力し、使用する既存のローカル Playwright プロジェクトを伝えてください。
+| やりたいこと | agent | インストール方法 | インストールされるもの | 含まれないもの |
+| --- | --- | --- | --- | --- |
+| 既存の Playwright/Cypress テストのレビューと失敗分析 | [対応するすべての agent](https://github.com/vercel-labs/skills#supported-agents) | 下の skills.sh | スキル 4 つ | 専用エージェント 2 つ（任意。なくてもスキルは同じ判定を出します）と generator の設定 |
+| 新しい Playwright テストの生成も行う | Claude Code、Codex | 下の e2e-skills インストーラー | スキル 4 つ、専用エージェント 2 つ、公式 Playwright test agent、プロジェクトの MCP 設定 | 生成に必要なものはすべて含まれます |
 
-```text
-Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project. Run the printed --check command when authorized for that exact command, then verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
-```
+### レビューと失敗分析: スキルをインストール（推奨）
 
-1. 既存のローカル Playwright プロジェクトを agent に伝えてください。インストーラーがスキル、専用 agent、公式 Playwright agent とプロジェクトの MCP 設定を準備し、診断コマンドを表示します。
-2. 信頼するプロジェクトで、この正確なコマンドの実行を承認してください: `bash install.sh --host codex --project /path/to/playwright-project --check`（Claude Code は `--host claude`）。インストールと設定の書き込みをスキップし、設定されたローカル MCP サーバーを起動して `initialize` と `tools/list` のみ確認します。プロジェクトのコードと設定は実行しますが、ツール呼び出し、ブラウザー起動、テスト実行は行いません。
-3. 必要ならコーディング agent を自分で再起動し、host の信頼と承認の手続きを済ませて、検証の再開を依頼してください。生成に進むには、現在のセッションで `generator_write_test` が見える必要があります。
-
-診断はサーバーが提供するツールのみ確認します。現在のセッションでのツールの利用可否や承認状態は確認できません。ツールが見えないだけで承認の問題とは判断できません。
-
-この方法で設定した後は、手動インストールを繰り返す必要はありません。[詳細ガイド](docs/installation.md)は、前提条件の確認、競合の解決、手動設定が必要な場合に参照してください。
-
-**レビューや失敗分析だけを使う場合:** Playwright generator の設定なしで、スキルと専用 agent だけをインストールするよう依頼してください。公式 Playwright agent と `playwright-test` MCP は生成に必要であり、既存の Playwright/Cypress テストのレビューや失敗分析には不要です。
-
-### CLIから直接インストール
-
-リポジトリのcloneは不要です。Claude Codeでは`codex`を`claude`に置き換え、変更内容を確認するには`--dry-run`を追加してください。診断方法、前提条件、設定の競合については[インストールガイド](docs/installation.md#cli-installer)を参照してください。
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project
-```
-
-<details>
-<summary>その他のインストール方法: skills.sh とプラグイン</summary>
-
-### skills.sh でスキルをインストール
-
-[skills.sh](https://skills.sh/voidmatcha/e2e-skills) が対応する全ホストに、4 つのスキルを 1 コマンドでインストールします。
+[skills.sh](https://skills.sh/voidmatcha/e2e-skills) でスキル 4 つをインストールします。
 
 ```bash
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
 
-スキルのみのインストールです。専用エージェントと Playwright generator の設定は別途必要です。対象を 1 ホストに絞る場合は、`--all` を[対応一覧](https://github.com/vercel-labs/skills#supported-agents)の `-a <agent>` に置き換えてください。CLI のバージョンは固定されています。
+特定の agent だけに入れるには、`--all` を[対応一覧](https://github.com/vercel-labs/skills#supported-agents)の `-a <agent>` に置き換えてください。CLI のバージョンは固定されています。インストールされるのはスキル 4 つだけです。確認するには、agent のスキル一覧（Claude Code では `/skills`）に `e2e-reviewer`、`playwright-debugger`、`cypress-debugger`、`playwright-test-generator` があるか見てください。
+
+### テスト生成: Claude Code と Codex
+
+どのディレクトリからでも実行でき、既存のローカル Playwright プロジェクトを指定します。Claude Code では `codex` を `claude` に置き換えてください。インストーラーには Node.js 22.20 以上が必要です。
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --host codex --project /path/to/playwright-project
+```
+
+`--project` を指定すると、そのプロジェクトで公式の `playwright init-agents --loop=codex`（または `--loop=claude`）を実行し、MCP 設定を書き込みます。Playwright をアップグレードした後はインストールをやり直してください。`--project` なしではスキル 4 つと専用エージェント 2 つだけをインストールします。信頼するプロジェクトでは、`doctor` に `--check-server` を付けると、設定された MCP サーバーを起動して `initialize` と `tools/list` を確認できます。この確認はプロジェクトのコードを実行しますが、ツール呼び出し、ブラウザー起動、テスト実行は行わず、サーバーだけを確認します。必要なら agent を自分で再起動し、プロジェクトの MCP サーバーを承認してください。現在のセッションで `generator_write_test` が見えれば生成を始められます。
+
+これらの手順とセッションの確認を agent に任せるには、Claude Code または Codex に次のプロンプトを貼り付けてください。
+
+```text
+Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
+```
+
+前提条件、競合、手動設定は[詳細ガイド](docs/installation.md)を参照してください。
+
+<details>
+<summary>その他のインストール方法: プラグイン</summary>
 
 ### Claude Code
 
-4 つのスキルと 2 つの専用エージェントを含むプラグインでもインストールできます。
+スキル 4 つと専用エージェント 2 つを含むプラグインでもインストールできます。
 
 ```text
 /plugin marketplace add voidmatcha/e2e-skills
 /plugin install e2e-skills@voidmatcha
 ```
 
-生成機能は上記の All-in-one インストールを使うか、[設定ガイド](docs/installation.md)に従って準備してください。
+生成には上のインストーラーを使うか、[設定ガイド](docs/installation.md)に従ってください。
 
 ### Codex
 
-プラグインマーケットプレイスからも 4 つのスキルをインストールできます。
+プラグインマーケットプレイスでもスキル 4 つをインストールできます。
 
 ```text
 codex plugin marketplace add voidmatcha/e2e-skills
 codex plugin add e2e-skills@voidmatcha
 ```
 
-プラグインは 2 つの専用エージェントをインストールしません。専用エージェントも必要な場合は、この checkout から `bash scripts/dev/install-codex-agents.sh` を実行してください。レビューと失敗分析は専用エージェントなしでもインラインで動作します。
+プラグインは専用エージェント 2 つをインストールしません。追加するには、このリポジトリを clone して `bash scripts/dev/install-codex-agents.sh` を実行してください。レビューと失敗分析は専用エージェントなしでもインラインで動作します。
 
-生成機能は上記の All-in-one インストールを使うか、[設定ガイド](docs/installation.md#codex)に従って準備してください。
+生成には上のインストーラーを使うか、[設定ガイド](docs/installation.md#codex)に従ってください。
 
 </details>
 

@@ -1546,8 +1546,8 @@ def check_codex_install_and_delegation_contract(path, text, errors):
     end = text.find("\n### ", start + len(codex_heading))
     section = text[start:end if end >= 0 else len(text)]
     install_prompt = (
-        "Install https://github.com/voidmatcha/e2e-skills using its install.sh "
-        "for my current host and Playwright project."
+        "Install e2e-skills for my current host and Playwright project with "
+        "`npx --yes --package=@voidmatcha/e2e-skills-scanner@"
     )
     shared_cli = "npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all"
     if text.count(install_prompt) != 1 or text.count(shared_cli) != 1:

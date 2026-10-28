@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=06266367ac087c0a9d1effa9916fa24002225835316e074711eb7292ed49002d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=95bfd9725d95f8d8ff0b910d9845204d23cd5235e74a667bb4e8ce2210b2325d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。四个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及诊断失败原因。
 
@@ -137,68 +137,69 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 ## 安装并试用
 
-### 让编程 agent 安装（推荐）
+请按需要选择安装方式。审查和失败分析可在任何 agent 中使用。测试生成还需要官方 Playwright test agent 和项目 MCP 服务器，安装器会在 Claude Code 和 Codex 中准备好它们。
 
-如需同时使用测试生成，请在 Claude Code 或 Codex 中输入以下提示，并告知要使用的现有本地 Playwright 项目：
+| 想要做的事 | agent | 安装方式 | 安装内容 | 不包含 |
+| --- | --- | --- | --- | --- |
+| 审查和分析现有 Playwright/Cypress 测试的失败 | [所有受支持的 agent](https://github.com/vercel-labs/skills#supported-agents) | 下方的 skills.sh | 4 个技能 | 2 个专用代理（可选；没有它们技能也会给出相同结论）和 generator 设置 |
+| 同时生成新的 Playwright 测试 | Claude Code、Codex | 下方的 e2e-skills 安装器 | 4 个技能、2 个专用代理、官方 Playwright test agent 和项目 MCP 配置 | 生成所需内容均已包含 |
 
-```text
-Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project. Run the printed --check command when authorized for that exact command, then verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
-```
+### 审查和失败分析：安装技能（推荐）
 
-1. 告诉 agent 要使用哪个现有本地 Playwright 项目。安装程序会准备技能、专用 agent、官方 Playwright agent 和项目 MCP 配置，然后输出诊断命令。
-2. 在可信项目中批准执行这一确切命令：`bash install.sh --host codex --project /path/to/playwright-project --check`（Claude Code 使用 `--host claude`）。它跳过安装和配置写入，启动已配置的本地 MCP 服务器，仅检查 `initialize` 和 `tools/list`。它会执行项目代码和配置，但不会调用工具、打开浏览器或运行测试。
-3. 如有需要，请自行重启编程 agent，完成 host 的信任和审批流程，然后让 agent 继续验证。开始生成前，当前会话必须能看到 `generator_write_test`。
-
-诊断只验证服务器提供的工具，无法确认当前会话的工具可用性或审批状态。仅凭工具不可见，不能断定是审批问题。
-
-通过此方式完成设置后，无需重复手动安装步骤。[详细安装指南](docs/installation.md)用于检查前提条件、解决冲突或手动设置。
-
-**只需要审查或失败分析？** 请让 agent 仅安装技能和专用 agent，不配置 Playwright generator。官方 Playwright agent 和 `playwright-test` MCP 是生成功能所需，审查或诊断现有 Playwright/Cypress 测试不需要这些设置。
-
-### 通过 CLI 直接安装
-
-无需克隆仓库。使用 Claude Code 时，将 `codex` 替换为 `claude`；添加 `--dry-run` 可预览更改。诊断、前提条件和配置冲突请参阅[安装指南](docs/installation.md#cli-installer)。
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project
-```
-
-<details>
-<summary>其他安装方式：skills.sh 和插件</summary>
-
-### 通过 skills.sh 安装技能
-
-使用一条命令，在 [skills.sh](https://skills.sh/voidmatcha/e2e-skills) 支持的所有 host 中安装 4 个技能：
+使用 [skills.sh](https://skills.sh/voidmatcha/e2e-skills) 安装 4 个技能：
 
 ```bash
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
 
-此方式仅安装技能；专用代理和 Playwright generator 需要单独设置。仅安装到某个 host 时，将 `--all` 替换为[支持列表](https://github.com/vercel-labs/skills#supported-agents)中的 `-a <agent>`。CLI 版本已固定。
+如只为一个 agent 安装，请将 `--all` 替换为[支持列表](https://github.com/vercel-labs/skills#supported-agents)中的 `-a <agent>`。CLI 版本已固定。此方式只安装 4 个技能。安装后可查看 agent 的技能列表（Claude Code 中为 `/skills`），确认有 `e2e-reviewer`、`playwright-debugger`、`cypress-debugger` 和 `playwright-test-generator`。
+
+### 测试生成：Claude Code 和 Codex
+
+可在任意目录运行，并指定现有的本地 Playwright 项目。在 Claude Code 中将 `codex` 替换为 `claude`。安装器需要 Node.js 22.20 或更高版本。
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --host codex --project /path/to/playwright-project
+```
+
+`--project` 会为该项目运行官方的 `playwright init-agents --loop=codex`（或 `--loop=claude`）设置并写入 MCP 配置；升级 Playwright 后请重新运行安装。不加 `--project` 时，只安装 4 个技能和 2 个专用代理。对于受信任的项目，可在 `doctor` 后加 `--check-server`，启动已配置的 MCP 服务器并检查 `initialize` 和 `tools/list`；该检查会执行项目代码，但不调用工具、不打开浏览器、不运行测试，只检查服务器。如有需要，请自行重启 agent 并批准项目的 MCP 服务器；当前会话中出现 `generator_write_test` 后即可开始生成。
+
+如需让 agent 代为执行这些步骤和会话检查，请将以下提示词粘贴到 Claude Code 或 Codex：
+
+```text
+Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
+```
+
+前提条件、冲突和手动设置请参阅[安装指南](docs/installation.md)。
+
+<details>
+<summary>其他安装方式：插件</summary>
 
 ### Claude Code
 
-也可安装包含 4 个技能和 2 个专用代理的插件：
+也可以安装包含 4 个技能和 2 个专用代理的插件：
 
 ```text
 /plugin marketplace add voidmatcha/e2e-skills
 /plugin install e2e-skills@voidmatcha
 ```
 
-生成测试可使用上方的 All-in-one 安装，或按照[配置指南](docs/installation.md)准备。
+生成功能请使用上方的安装器，或按照[安装指南](docs/installation.md)进行设置。
 
 ### Codex
 
-也可通过插件市场安装 4 个技能：
+也可以通过插件市场安装 4 个技能：
 
 ```text
 codex plugin marketplace add voidmatcha/e2e-skills
 codex plugin add e2e-skills@voidmatcha
 ```
 
-插件不会安装 2 个专用代理。如需安装，在本仓库中运行 `bash scripts/dev/install-codex-agents.sh`。审查和失败分析在没有专用代理时也可内联执行。
+插件不会安装 2 个专用代理。如需添加，请 clone 本仓库后运行 `bash scripts/dev/install-codex-agents.sh`。审查和失败分析在没有专用代理时也可内联执行。
 
-生成测试可使用上方的 All-in-one 安装，或按照[配置指南](docs/installation.md#codex)准备。
+生成功能请使用上方的安装器，或按照[安装指南](docs/installation.md#codex)进行设置。
 
 </details>
 

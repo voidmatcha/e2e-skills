@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=06266367ac087c0a9d1effa9916fa24002225835316e074711eb7292ed49002d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=95bfd9725d95f8d8ff0b910d9845204d23cd5235e74a667bb4e8ce2210b2325d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 네 종류의 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하며, 실패 원인을 분석합니다.
 
@@ -138,44 +138,45 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 ## 설치하고 사용해 보기
 
-### agent에게 설치 맡기기 (권장)
+하려는 일에 따라 설치 방법을 고르세요. 리뷰와 실패 분석은 어떤 agent에서도 동작합니다. 테스트 생성에는 공식 Playwright test agent와 프로젝트 MCP 서버가 추가로 필요하며, 설치기가 Claude Code와 Codex에서 이를 준비합니다.
 
-테스트 생성까지 사용하려면 Claude Code 또는 Codex에 아래 프롬프트를 입력하고, 사용할 기존 로컬 Playwright 프로젝트를 알려주세요.
+| 하려는 일 | agent | 설치 방법 | 설치되는 것 | 포함되지 않는 것 |
+| --- | --- | --- | --- | --- |
+| 기존 Playwright/Cypress 테스트 리뷰와 실패 분석 | [지원되는 모든 agent](https://github.com/vercel-labs/skills#supported-agents) | 아래 skills.sh 설치 | skill 4개 | 전용 agent 2개(선택 사항이며, 없어도 skill이 같은 판정을 냅니다)와 generator 설정 |
+| 새 Playwright 테스트 생성까지 | Claude Code, Codex | 아래 e2e-skills 설치기 | skill 4개, 전용 agent 2개, 공식 Playwright test agent와 프로젝트 MCP 설정 | 생성에 필요한 것은 모두 포함 |
 
-```text
-Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project. Run the printed --check command when authorized for that exact command, then verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
-```
+### 리뷰와 실패 분석: skill 설치 (권장)
 
-1. 기존 로컬 Playwright 프로젝트를 agent에 알려주세요. 설치기가 skill, 전용 agent, 공식 Playwright agent와 프로젝트 MCP 설정을 준비한 뒤 진단 명령을 출력합니다.
-2. 신뢰하는 프로젝트에서 정확히 이 명령의 실행을 승인하세요. `bash install.sh --host codex --project /path/to/playwright-project --check` (Claude Code는 `--host claude`). 설치와 설정 파일 쓰기를 스킵하고, 설정된 로컬 MCP 서버를 시작해 `initialize`와 `tools/list`만 확인합니다. 프로젝트 코드와 설정을 실행하지만 tool call, 브라우저 실행, 테스트 실행은 하지 않습니다.
-3. 필요하면 코딩 agent를 직접 다시 시작하고 host의 신뢰 및 승인 절차를 마친 뒤 검증을 이어 달라고 하세요. agent는 테스트 생성을 진행하기 전에 현재 세션에서 `generator_write_test`를 반드시 확인해야 합니다.
-
-진단은 MCP 서버가 제공하는 tool 목록만 확인합니다. 현재 세션에서 tool을 사용할 수 있는지나 승인 여부는 확인하지 못합니다. tool이 보이지 않는다는 이유만으로 승인 문제라고 판단할 수는 없습니다.
-
-이 방법으로 설정했다면 수동 설치 절차를 반복할 필요가 없습니다. [상세 설치 안내](docs/installation.md)는 준비 조건 확인, 충돌 해결, 수동 설치가 필요할 때 참고해주세요.
-
-**리뷰나 실패 분석만 사용하나요?** agent에 Playwright generator 설정 없이 skill과 전용 agent만 설치해 달라고 하세요. 공식 Playwright agent와 `playwright-test` MCP는 생성 기능에 필요하며, 기존 Playwright/Cypress 테스트의 리뷰나 실패 분석에는 필요하지 않습니다.
-
-### CLI로 직접 설치하기
-
-저장소를 clone하지 않고 설치할 수 있습니다. Claude Code에서는 `codex`를 `claude`로 바꾸고, 변경 내용을 먼저 확인하려면 `--dry-run`을 추가해주세요. 진단 방법과 사전 준비, 설정 충돌은 [설치 안내](docs/installation.md#cli-installer)를 참고해주세요.
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project
-```
-
-<details>
-<summary>다른 설치 방법: skills.sh와 plugin</summary>
-
-### skills.sh로 skill 설치
-
-[skills.sh](https://skills.sh/voidmatcha/e2e-skills)가 지원하는 모든 host에 명령 하나로 skill 4개를 설치합니다.
+[skills.sh](https://skills.sh/voidmatcha/e2e-skills)로 skill 4개를 설치합니다.
 
 ```bash
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
 
-skill만 설치하므로 전용 agent와 Playwright generator는 별도 설정이 필요합니다. 특정 host에만 설치하려면 `--all`을 [지원 목록](https://github.com/vercel-labs/skills#supported-agents)의 `-a <agent>`로 바꾸세요. CLI 버전은 고정되어 있습니다.
+특정 agent에만 설치하려면 `--all`을 [지원 목록](https://github.com/vercel-labs/skills#supported-agents)의 `-a <agent>`로 바꾸세요. CLI 버전은 고정되어 있습니다. skill 4개만 설치됩니다. 설치를 확인하려면 agent의 skill 목록(Claude Code에서는 `/skills`)에서 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger`, `playwright-test-generator`가 보이는지 확인해주세요.
+
+### 테스트 생성: Claude Code와 Codex
+
+어느 디렉터리에서든 실행할 수 있고, 기존 로컬 Playwright 프로젝트 경로를 지정합니다. Claude Code에서는 `codex`를 `claude`로 바꿔주세요. 설치기는 Node.js 22.20 이상이 필요합니다.
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --host codex --project /path/to/playwright-project
+```
+
+`--project`를 지정하면 해당 프로젝트에 공식 `playwright init-agents --loop=codex`(또는 `--loop=claude`) 설정을 실행하고 MCP 설정을 기록합니다. Playwright를 업그레이드한 뒤에는 설치를 다시 실행해주세요. `--project` 없이 실행하면 skill 4개와 전용 agent 2개만 설치합니다. 신뢰하는 프로젝트라면 `doctor`에 `--check-server`를 추가해 설정된 MCP 서버를 시작하고 `initialize`와 `tools/list`를 확인할 수 있습니다. 이 확인은 프로젝트 코드를 실행하지만 tool call, 브라우저 실행, 테스트 실행은 하지 않으며, 서버만 확인합니다. 필요하면 agent를 직접 다시 시작하고 프로젝트의 MCP 서버를 승인해주세요. 현재 세션에서 `generator_write_test`가 보이면 테스트 생성을 시작할 수 있습니다.
+
+이 단계와 세션 확인을 agent에 맡기려면 Claude Code 또는 Codex에 아래 프롬프트를 붙여 넣어주세요.
+
+```text
+Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
+```
+
+준비 조건, 설정 충돌, 수동 설정은 [설치 안내](docs/installation.md)를 참고해주세요.
+
+<details>
+<summary>다른 설치 방법: plugin</summary>
 
 ### Claude Code
 
@@ -186,7 +187,7 @@ skill 4개와 전용 agent 2개를 포함한 plugin으로도 설치할 수 있�
 /plugin install e2e-skills@voidmatcha
 ```
 
-생성 기능은 위 All-in-one 설치를 이용하거나 [설정 안내](docs/installation.md)를 따라 준비하세요.
+생성 기능은 위 설치기를 이용하거나 [설정 안내](docs/installation.md)를 따라 준비해주세요.
 
 ### Codex
 
@@ -197,9 +198,9 @@ codex plugin marketplace add voidmatcha/e2e-skills
 codex plugin add e2e-skills@voidmatcha
 ```
 
-plugin은 전용 agent 2개를 설치하지 않습니다. 전용 agent도 설치하려면 이 저장소에서 `bash scripts/dev/install-codex-agents.sh`를 실행하세요. 리뷰와 실패 분석은 전용 agent 없이도 현재 세션에서 동작합니다.
+plugin은 전용 agent 2개를 설치하지 않습니다. 전용 agent도 설치하려면 이 저장소를 clone한 뒤 `bash scripts/dev/install-codex-agents.sh`를 실행해주세요. 리뷰와 실패 분석은 전용 agent 없이도 현재 세션에서 동작합니다.
 
-생성 기능은 위 All-in-one 설치를 이용하거나 [설정 안내](docs/installation.md#codex)를 따라 준비하세요.
+생성 기능은 위 설치기를 이용하거나 [설정 안내](docs/installation.md#codex)를 따라 준비해주세요.
 
 </details>
 
@@ -242,7 +243,7 @@ debugger와 probe 실행에는 프로젝트를 신뢰하고 환경 변수와 플
 
 ## 생성한 테스트가 버그를 잡는지 확인하기
 
-공식 Playwright agent가 테스트를 생성하면 generator skill이 `e2e-reviewer`가 설치된 경우 scanner로 검사하고 P0/P1 항목을 최대 세 차례 수정합니다. 문제가 남거나 검사가 미완료면 중단하고, 검사를 통과하면 승인된 프로젝트 테스트 명령으로 새 spec만 실행합니다. reviewer가 없거나 검사 또는 실행을 스킵하면 미완료로 보고합니다. 테스트가 의도한 동작을 확인하는지까지 리뷰하려면 `e2e-reviewer`에 별도로 요청하세요.
+공식 Playwright agent가 테스트를 생성하면, `e2e-reviewer`가 설치된 경우 generator skill이 scanner로 검사하고 P0/P1 항목을 최대 세 차례 수정합니다. 문제가 남거나 검사를 끝내지 못하면 중단하고, 그렇지 않으면 승인된 프로젝트 테스트 명령으로 새 spec만 실행합니다. reviewer가 없거나 검사 또는 실행을 스킵하면 미완료로 보고합니다. 테스트가 의도한 동작을 확인하는지까지 리뷰하려면 `e2e-reviewer`에 별도로 요청하세요.
 
 먼저 일반적인 `e2e-reviewer` 리뷰로 테스트가 의도한 동작을 확인하는지 살펴보세요. 코드 리뷰만으로 판단하기 어려운 부분이 남으면 해당 assertion이나 동작에 probe를 추가해 실행으로 확인할 수 있습니다. mutation과 fault injection probe는 추가 토큰과 실행 시간이 드는 선택 사항이며, 매 리뷰마다 자동으로 실행하지는 않습니다.
 
@@ -253,7 +254,7 @@ debugger와 probe 실행에는 프로젝트를 신뢰하고 환경 변수와 플
 
 자세한 내용은 [실행 절차와 준비 조건](skills/e2e-reviewer/references/runtime-probes.md), [OSS 사례 두 개의 작업 절차 검증](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)을 참고해주세요.
 
-선택 사항으로, 에이전트가 테스트를 작성할 때 실패 경로도 테스트하게 하려면 [테스트 작성 메모](docs/test-authoring-memo.md)를 수정하지 말고 프로젝트의 `CLAUDE.md` 또는 `AGENTS.md`에 붙여 넣어주세요. 어떤 스킬도 이 메모를 불러오지 않습니다. 먼저 측정 결과와 한계를 확인해주세요. 선택 사항인 [테스트 실패 정책](docs/test-failure-policy.md)은 같은 파일에 넣는 별도 스니펫으로, 근거가 되는 요구 사항을 밝히지 않고서는 실패한 테스트를 고쳐 쓰지 않도록 에이전트에 요청합니다.
+선택 사항으로, agent가 테스트를 작성할 때 실패 경로도 테스트하게 하려면 [테스트 작성 메모](docs/test-authoring-memo.md)를 고치지 않은 그대로 프로젝트의 `CLAUDE.md` 또는 `AGENTS.md`에 붙여 넣어주세요. 어떤 skill도 이 메모를 불러오지 않습니다. 먼저 측정 결과와 한계를 확인해주세요. 선택 사항인 [테스트 실패 정책](docs/test-failure-policy.md)은 같은 파일에 넣는 별도 snippet으로, 근거가 되는 요구 사항을 밝히지 않고는 실패한 테스트를 고쳐 쓰지 않도록 agent에 요청합니다. 붙여 넣는 대신 `e2e-skills guidance --host claude|codex --project PATH --memo --policy`를 실행하면, 요청한 것만 고치지 않은 그대로 HTML 주석 마커 사이에 기록합니다. 자세한 내용은 [설치 안내](docs/installation.md#optional-memo-and-failure-policy)를 참고해주세요.
 
 ## 근거와 한계
 

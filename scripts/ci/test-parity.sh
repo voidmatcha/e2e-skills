@@ -1311,8 +1311,8 @@ file="README.md"
 backup "$file"
 mutate \
   "$file" \
-  "for my current host and Playwright project." \
-  "for every host and Playwright project."
+  "for my current host and Playwright project with" \
+  "for every host and Playwright project with"
 assert_fails \
   "README all-in-one install — current-host prompt rejects all-host installation" \
   "README.md install must keep one current-host all-in-one prompt"
