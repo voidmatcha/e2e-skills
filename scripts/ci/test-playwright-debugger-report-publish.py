@@ -483,7 +483,7 @@ class SafeReportPublishTests(unittest.TestCase):
 
     def test_publish_eval_grades_the_exit_status_one_contract(self) -> None:
         evals = json.loads(
-            (ROOT / "skills/playwright-debugger/evals/evals.json").read_text(
+            (ROOT / "scripts/evals/skills/playwright-debugger/evals.json").read_text(
                 encoding="utf-8"
             )
         )["evals"]

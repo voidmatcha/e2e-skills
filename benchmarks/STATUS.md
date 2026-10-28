@@ -49,3 +49,7 @@ bash scripts/dev/fetch-benchmark-evidence.sh --verify-only --output /absolute/ne
 The fetcher refuses an existing destination and verifies archive and metadata SHA-256, every original file, Git blob ID and executable mode. `bash scripts/ci/ci-evidence.sh /absolute/new/evidence-root` downloads the pinned source archive and replays that commit's historical CI in a temporary workspace. It does not evaluate the current product. Read each study's frozen protocol before running live models or browsers.
 
 Removing evidence from the current Git tree reduces checkout size, not existing Git history. Local originals are preserved; the migration does not rewrite commits.
+
+## Historical documentation archive
+
+The [2026-10-28 documentation archive](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/a8279e972f2ae5b7628ac9ec8ccfc4cdac380a1d/releases/v3.3.1/docs-archive-20261028/README.md) preserves the earlier AI-reviewer pilot and per-case JSON, shell-scanner self-audit, debugger protocol, September evidence plan and lint guide. Its [manifest](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/a8279e972f2ae5b7628ac9ec8ccfc4cdac380a1d/releases/v3.3.1/docs-archive-20261028/MANIFEST.json) records the original paths and file hashes. The archive was downloaded and verified before consolidation; it adds no new benchmark result. Current lint setup is documented in [installation](../docs/installation.md#optional-project-lint).

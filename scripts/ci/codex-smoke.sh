@@ -44,7 +44,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)" || {
   exit 1
 }
 FIXTURES="$REPO_ROOT/scripts/ci/fixtures/codex-smoke"
-PLAYWRIGHT_FIXTURE_ROOT="$REPO_ROOT/skills/playwright-debugger/evals/files"
+PLAYWRIGHT_FIXTURE_ROOT="$REPO_ROOT/scripts/evals/skills/playwright-debugger/files"
 PLAYWRIGHT_FIXTURE="$PLAYWRIGHT_FIXTURE_ROOT/results-selector-timeout.json"
 TIMEOUT_SECS="${CODEX_SMOKE_TIMEOUT_SECS:-180}"
 

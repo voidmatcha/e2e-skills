@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / "skills/e2e-reviewer/scripts/check.py"
+SCRIPT = ROOT / "scripts/evals/hybrid-check-pilot/check.py"
 SPEC = importlib.util.spec_from_file_location("reviewer_check", SCRIPT)
 assert SPEC and SPEC.loader
 CHECK = importlib.util.module_from_spec(SPEC)

@@ -467,7 +467,7 @@ RISK_PATTERNS = (
         r"|\bignore\b[^.;]{0,25}?\b(?:previous|above|prior|earlier|other|all|any)\b|/work/skill|SKILL\.md|thin-rules")),
 )
 
-# Patterns the e2e-reviewer scanner flags (see skills/e2e-reviewer/references/grep-patterns.md). A rule may mention one only
+# Patterns the e2e-reviewer scanner flags (see skills/e2e-reviewer/references/pattern-reference.md). A rule may mention one only
 # to forbid it; a positive directive to use one would train the generator toward a flagged smell.
 FLAGGED_PATTERNS = (
     re.compile(r"waitForTimeout|waitForSelector|networkidle|\bsleep\b|setTimeout"),

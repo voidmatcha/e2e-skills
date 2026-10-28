@@ -16,7 +16,7 @@ const repository = fileURLToPath(new URL('../../../', import.meta.url));
 test('#17 unchanged legacy regression and explicit candidate extensions', { timeout: 90000 }, () => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-page-read-diff-')));
   const originalName = 'missing-await-contexts.spec.ts';
-  const originalPath = path.join(repository, 'skills/e2e-reviewer/evals/files', originalName);
+  const originalPath = path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', originalName);
   const original = fs.readFileSync(originalPath);
   const aliasText = [
     "import {test,type Page} from '@playwright/test';",

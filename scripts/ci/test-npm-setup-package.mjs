@@ -78,6 +78,11 @@ try {
   for (const name of ['cypress-debugger', 'e2e-reviewer', 'playwright-debugger', 'playwright-test-generator']) required.push(`setup-runtime/skills/${name}/SKILL.md`);
   for (const name of required) assert.ok(entries.has('package/' + name), 'packed closure missing ' + name);
   for (const name of entries.keys()) assert.ok(!/(?:^|\/)(?:node_modules|__pycache__|\.git|\.cache|\.pytest_cache|testbed|test-results|playwright-report|setup-runtime\.tmp)(?:\/|$)|^package\/test\/|\.local\.md$|\.py[co]$|(?:^|\/)\.DS_Store$|(?:^|\/)(?:auth\.json|\.npmrc)$/.test(name), 'private/development file packed: ' + name);
+  for (const name of entries.keys()) {
+    assert.ok(!/^package\/setup-runtime\/skills\/[^/]+\/evals(?:\/|$)/.test(name), 'skill evaluation fixtures must stay development-only: ' + name);
+    assert.ok(!/(?:^|\/)(?:grep-patterns\.md|v3-adapter\.md|check\.py)$/.test(name), 'retired lookup or fixed-project pilot packed: ' + name);
+  }
+  assert.ok(entries.has('package/setup-runtime/skills/e2e-reviewer/scripts/run-probe.mjs'), 'portable mutation/fault executor remains installed');
   assert.deepEqual([...entries.keys()].sort(), result[0].files.map(file => 'package/' + file.path).sort(), 'npm file report matches actual tar');
   for (const [name, { bytes, mode }] of entries) {
     const target = path.join(extract, name); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, bytes, { flag: 'wx', mode }); fs.chmodSync(target, mode);

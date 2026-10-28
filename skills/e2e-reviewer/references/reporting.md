@@ -78,7 +78,7 @@ When `review.analysisTasks` is present, include its task IDs, source-backed disp
 
 For an executed portable probe, include its mode, frozen plan/digest, exact native selector, normal/changed/restored results, linked failure or observer artifacts, phase app provenance, approved commands/environment, original-input checks, and retained workspace paths in `Runtime evidence`. V2 `ASSERTION_SENSITIVE` proves assertion sensitivity only; it is not V3 `DETECTED`. Leave unmeasured V1–V6 rules explicitly unverified. Missing prepared runner or evidence means `recommended/unexecuted` or `CANNOT_VERIFY`, not a fabricated result.
 
-For an executed V3 adapter check, include its adapter ID, sourced behavior promise, exact test selector, normal/fault/restored phase results, independent observer evidence, approved commands/environment, retained output path, and `DETECTED` / `SURVIVED` / `CANNOT_VERIFY` in `Runtime evidence`. Report missing promise, adapter, or approval as `recommended/unexecuted`; do not manufacture a runtime result. `SURVIVED` alone never creates a catalog finding or changes severity. A valid `DETECTED` result proves only the exercised fault. Keep inconclusive runs and non-catalog observations in the evidence header rather than inventing a finding.
+For V3, include the sourced behavior promise and `DETECTED` / `SURVIVED` / `CANNOT_VERIFY`. Missing promise, approval or evidence means `recommended/unexecuted` or `CANNOT_VERIFY`; do not manufacture a runtime result. `SURVIVED` alone never creates a catalog finding or changes severity. A valid `DETECTED` result proves only the exercised fault. Keep inconclusive runs and non-catalog observations in the evidence header rather than inventing a finding.
 
 Present findings grouped by severity:
 

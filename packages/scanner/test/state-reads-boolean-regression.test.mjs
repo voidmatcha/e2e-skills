@@ -17,7 +17,7 @@ const scenario = expression => "import {test,expect} from '@playwright/test';\n"
   `test('status',async({page})=>{ const a=page.getByTestId('ready'); const b=page.getByTestId('cached'); ${expression} });`;
 
 test('original either-status assertion retains its exact source anchor as a candidate', () => {
-  const bytes = fs.readFileSync(new URL('../../../skills/e2e-reviewer/evals/files/assertion-contracts.spec.ts', import.meta.url));
+  const bytes = fs.readFileSync(new URL('../../../scripts/evals/skills/e2e-reviewer/files/assertion-contracts.spec.ts', import.meta.url));
   const result = run(bytes.toString('utf8'));
   assert.ok(result.findings.some(f => f.patternId === '#4c-4e' && f.line === 17 && f.disposition === 'candidate'));
   assert.deepEqual(result.diagnostics, []);
@@ -40,6 +40,6 @@ test('AND and OR state reads remain candidates, while retries and custom values 
 });
 
 test('the original custom FeatureFlagService is not a Locator state-read candidate', () => {
-  const bytes = fs.readFileSync(new URL('../../../skills/e2e-reviewer/evals/files/documented-exclusions.spec.ts', import.meta.url));
+  const bytes = fs.readFileSync(new URL('../../../scripts/evals/skills/e2e-reviewer/files/documented-exclusions.spec.ts', import.meta.url));
   assert.ok(!run(bytes.toString('utf8')).findings.some(f => f.line === 24));
 });

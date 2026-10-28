@@ -370,7 +370,7 @@ class ViewTests(unittest.TestCase):
                       "import { test, expect } from '@playwright/test';\n"
                       "test.only('new focused test', async ({ page }) => {\n"
                       " await expect(page.locator('#ready')).toBeVisible();\n});\n")
-        self.add_file("skills/e2e-reviewer/evals/files/intentional.spec.ts",
+        self.add_file("scripts/evals/skills/e2e-reviewer/files/intentional.spec.ts",
                       "import { test } from '@playwright/test';\ntest.only('fixture', () => {});\n")
         original = HELPER.inventory(self.source)
         result = subprocess.run(

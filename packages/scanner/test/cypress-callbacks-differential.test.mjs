@@ -15,7 +15,7 @@ const repository = fileURLToPath(new URL('../../../', import.meta.url));
 test('actual unchanged Cypress fixtures preserve legacy candidates; binding/body false positives are separate', { timeout: 90000 }, () => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-cy-callback-diff-')));
   const names = ['cypress-command-model.cy.ts', 'cypress-action-statement-boundaries.cy.ts'];
-  const originals = new Map(names.map(name => [name, fs.readFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name))]));
+  const originals = new Map(names.map(name => [name, fs.readFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name))]));
   for (const [name, bytes] of originals) fs.writeFileSync(path.join(root, name), bytes);
   const falseName = 'legacy-false-positive.cy.ts';
   fs.writeFileSync(path.join(root, falseName), "function f(cy){cy.get('x').click().should('exist');}\nit('deferred',async()=>{const helper=()=>cy.get('x');});\n");
@@ -59,6 +59,6 @@ test('actual unchanged Cypress fixtures preserve legacy candidates; binding/body
   assert.deepEqual(legacy[falseName], { '#10d': [2], '#10f': [1] }, 'separate lexical-scope/body false positives');
   for (const [name, bytes] of originals) {
     assert.ok(fs.readFileSync(path.join(root, name)).equals(bytes));
-    assert.ok(fs.readFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name)).equals(bytes));
+    assert.ok(fs.readFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name)).equals(bytes));
   }
 });

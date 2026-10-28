@@ -1,6 +1,6 @@
 ---
 name: e2e-finding-verifier
-description: Use after e2e-reviewer or scan.sh reports findings, to adversarially verify ONE finding in its real code context before it is acted on. Give it the pattern ID, file:line, and the flagged snippet; it reads the surrounding spec, project config, and the pattern contract, tries to REFUTE the finding first, and returns CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT with evidence and a concrete fix. Read-only; never edits files. Spawn one per finding to verify a large scan in parallel.
+description: Use after e2e-reviewer or the Node scanner reports findings, to adversarially verify ONE finding in its real code context before it is acted on. Give it the pattern ID, file:line, and the flagged snippet; it reads the surrounding spec, project config, and the pattern contract, tries to REFUTE the finding first, and returns CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT with evidence and a concrete fix. Read-only; never edits files. Spawn one per finding to verify a large scan in parallel.
 tools: Read, Grep, Glob
 ---
 

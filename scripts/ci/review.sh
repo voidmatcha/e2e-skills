@@ -74,14 +74,14 @@ allowed_entry_keys = {
     'files',
     'assertions',
 }
-for path in sorted(pathlib.Path('skills').glob('*/evals/evals.json')):
+for path in sorted(pathlib.Path('scripts/evals/skills').glob('*/evals.json')):
     data = load_strict(path)
     require_exact_keys(
         data,
         {'skill_name', 'evals'},
         context=str(path),
     )
-    skill = path.parts[1]
+    skill = path.parent.name
     if data.get('skill_name') != skill:
         errors.append(f"{path}: skill_name must be {skill!r}")
     if not isinstance(data['evals'], list):
@@ -277,7 +277,7 @@ from skill_metadata_contract import collect_trigger_fixture_errors
 errors = []
 for skill_dir in sorted(path for path in pathlib.Path('skills').iterdir() if path.is_dir()):
     errors.extend(
-        collect_trigger_fixture_errors(skill_dir / 'evals' / 'trigger-evals.json')
+        collect_trigger_fixture_errors(pathlib.Path('scripts/evals/skills') / skill_dir.name / 'trigger-evals.json')
     )
 
 if errors:
@@ -379,7 +379,6 @@ from reviewer_taxonomy_contract import REVIEWER_TAXONOMY
 errors = []
 
 skill_text = pathlib.Path('skills/e2e-reviewer/SKILL.md').read_text(encoding='utf-8')
-grep_text = pathlib.Path('skills/e2e-reviewer/references/grep-patterns.md').read_text(encoding='utf-8')
 patref_text = pathlib.Path('skills/e2e-reviewer/references/pattern-reference.md').read_text(encoding='utf-8')
 scan_text = pathlib.Path('skills/e2e-reviewer/scripts/scan.sh').read_text(encoding='utf-8')
 docs_text = pathlib.Path('docs/e2e-test-smells.md').read_text(encoding='utf-8')
@@ -416,7 +415,6 @@ def matches_qr(s):
     return s in qr_ids or base_id(s) in qr_ids
 
 # Check 1: every pattern id in subordinate sources must map back to a QR base id
-grep_ids = sorted(set(re.findall(r'\|\s*#(\d+[a-z]?(?:-\d+[a-z]?)?)', grep_text)))
 scan_ids = sorted(set(re.findall(r"run_check\s+P[012]\s+'#(\d+[a-z]?(?:-\d+[a-z]?)?)", scan_text)))
 # The Node analyzer declares the actual slices it reports. An empty extraction
 # must fail, rather than silently passing when scan.sh becomes a thin launcher.
@@ -439,7 +437,6 @@ if not scan_ids and not node_ids:
     errors.append('Scanner: no rule IDs extracted from either runtime')
 docs_ids = sorted(set(re.findall(r'\|\s*#(\d+[a-z]?)\s*\|', docs_text)))
 for label, ids in (
-    ('skills/e2e-reviewer/references/grep-patterns.md', grep_ids),
     ('skills/e2e-reviewer/scripts/scan.sh', scan_ids),
     ('packages/scanner/src/cli.mjs', node_ids),
     ('docs/e2e-test-smells.md', docs_ids),
@@ -493,26 +490,8 @@ for number, line in enumerate(docs_text.splitlines(), 1):
             f"docs/e2e-test-smells.md:{number}: taxonomy row must have 4 non-empty columns"
         )
 
-# Check 1d: the changelog's scanner budget note must match the measured audit
-# document. This is not a benchmark claim; it protects a small public prose
-# contract from drifting by one number while both files still read plausibly.
-audit_budget = re.search(
-    r'preregistered 123,000 reference tokens\s+—\s+([a-z]+) tokens of headroom',
-    pathlib.Path('docs/rule-self-audit.md').read_text(encoding='utf-8'),
-)
-changelog_budget = re.search(
-    r'frozen review packet with ([a-z]+) tokens\s+of headroom',
-    pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8'),
-)
-if not audit_budget:
-    errors.append("docs/rule-self-audit.md: missing scanner headroom statement")
-elif not changelog_budget:
-    errors.append("CHANGELOG.md: missing scanner headroom statement")
-elif changelog_budget.group(1) != audit_budget.group(1):
-    errors.append(
-        "CHANGELOG.md: scanner headroom must match docs/rule-self-audit.md "
-        f"({changelog_budget.group(1)} != {audit_budget.group(1)})"
-    )
+# Historical scanner-budget prose is preserved in the documentation archive;
+# it is not a contract of the current Node scanner.
 
 # Check 1e: roadmap campaign summaries must equal the rows in their own
 # false-green tables. Reviewer-informed maintenance is a separate contribution
@@ -790,7 +769,7 @@ if section_only:
 # Check 4: debugger evals.json may only reference F-codes from SKILL.md F-table
 for skill in ('playwright-debugger', 'cypress-debugger'):
     md_path = pathlib.Path('skills') / skill / 'SKILL.md'
-    evals_path = pathlib.Path('skills') / skill / 'evals' / 'evals.json'
+    evals_path = pathlib.Path('scripts/evals/skills') / skill / 'evals.json'
     md_text = md_path.read_text(encoding='utf-8')
     evals = json.loads(evals_path.read_text(encoding='utf-8'))
     skill_codes = set(re.findall(r'\|\s*(F\d+)\s*\|', md_text))
@@ -1634,7 +1613,7 @@ def check_readme_intro_contract(path, text, merged_heading, false_green_heading,
 
 scanner_transcript_re = re.compile(
     r"^```console\n"
-    r"\$ /bin/bash -p skills/e2e-reviewer/scripts/scan\.sh tests/\n\n"
+    r"\$ npx --yes --package=@voidmatcha/e2e-skills-scanner@[0-9]+\.[0-9]+\.[0-9]+ e2e-skills scan tests/\n\n"
     r"(.*?)"
     r"^```$",
     re.M | re.S,
@@ -1757,15 +1736,15 @@ contract_re = re.compile(
     re.S,
 )
 contract_hashes = {
-    "README.md": "cbbd4e1b91f895b712d8d3aa042b1fccb8d76de80bcf4cd505388b9c51c99232",
-    "README.ko.md": "8f6f8bc1aeceef6dd52379ac7ddcf20ee687c30063a38d0998f392d66ef85af2",
-    "README.ja.md": "1495195118011f8c46f2ca210c708aecb1bf65dcbe15730376b7c67f672e0b60",
-    "README.zh-cn.md": "5a5f90af2b35f7ddae068f6618a5efc1f7106e230ac6a89a5c97493542782b3b"
+    "README.md": "e384d5bf89f43deabaa23335f5d548b88f87159ab7f7da56522e80dac430ba2f",
+    "README.ko.md": "f51e96db05992e9d75aff4a7d63bd48b2ebb837864c3d08275cfe0baeb4048d1",
+    "README.ja.md": "b0fccb288f3c7f8b45024a87fcb78e0cb6dd069b6bd57fde003bd5a512e70a79",
+    "README.zh-cn.md": "5ce9fb7d4be14d678addba0f29b00b54e152266f5c10b0cb9280574402221588"
 }
 contract_tokens = (
     "24",
     "P0/P1/P2",
-    "scan.sh",
+    "e2e-skills scan",
     "F1–F15",
     "--isolation-wrapper",
 )

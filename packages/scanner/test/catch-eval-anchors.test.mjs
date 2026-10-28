@@ -35,7 +35,7 @@ test('unchanged original eval sources retain positive anchors and improved negat
     ['support/draft-helper.ts', [16], []],
     ['profile-mixed.spec.ts', [], [11]],
   ]) {
-    const path = new URL('../../../skills/e2e-reviewer/evals/files/' + file, import.meta.url);
+    const path = new URL('../../../scripts/evals/skills/e2e-reviewer/files/' + file, import.meta.url);
     const before = fs.readFileSync(path), result = run(before.toString(), file);
     for (const line of positives) {
       const items = result.findings.filter(f => f.line === line);

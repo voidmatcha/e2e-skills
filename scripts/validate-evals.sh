@@ -10,9 +10,13 @@ import sys
 sys.path.insert(0, sys.argv[1])
 from strict_json import load_strict, require_exact_keys
 
-files = sorted(pathlib.Path('.').glob('skills/*/evals/evals.json'))
+files = sorted(pathlib.Path('.').glob('scripts/evals/skills/*/evals.json'))
 if not files:
     sys.exit('no eval files found')
+expected = {path.parent.name for path in pathlib.Path('skills').glob('*/SKILL.md')}
+actual = {path.parent.name for path in files}
+if actual != expected:
+    sys.exit(f'eval directories differ from skills: missing={sorted(expected - actual)!r}, unknown={sorted(actual - expected)!r}')
 
 total = 0
 for path in files:
@@ -22,6 +26,8 @@ for path in files:
         context=str(path),
     )
     skill = data['skill_name']
+    if skill != path.parent.name:
+        sys.exit(f'{path}: skill_name must match eval directory {path.parent.name}')
     evals = data['evals']
     if not isinstance(skill, str) or not skill:
         sys.exit(f"{path}: skill_name must be a non-empty string")
@@ -76,7 +82,7 @@ for path in files:
         # Assertions cite exact file:line — a missing fixture makes the eval unrunnable
         # from a fresh clone (and nothing else in CI would notice).
         for rel in entry['files']:
-            fixture = path.parent.parent / rel
+            fixture = path.parent / rel
             if not fixture.is_file():
                 sys.exit(f"{path}: eval {entry['id']} references missing fixture {rel}")
 

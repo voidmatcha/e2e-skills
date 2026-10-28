@@ -259,13 +259,6 @@ PY
 
 echo "-- Drift smoke test --"
 
-# Case 1: bogus pattern id in grep-patterns.md (Check 1)
-file="skills/e2e-reviewer/references/grep-patterns.md"
-backup "$file"
-mutate "$file" "| #3 Error Swallowing |" "| #99 Error Swallowing |"
-assert_fails "Check 1 — bogus grep pattern id #99" "pattern #99 has no matching base id"
-restore "$file"
-
 # Node rule IDs remain checked when the installed scanner is a thin launcher.
 if [ -f packages/scanner/src/cli.mjs ]; then
   file="packages/scanner/src/cli.mjs"
@@ -320,15 +313,6 @@ mutate \
   "during parallel execution." \
   'during parallel \| concurrent execution.'
 assert_passes "Check 1c — escaped pipe remains table-cell content"
-restore "$file"
-
-# Case 2e: changelog scanner-budget prose must match the measured audit note.
-file="CHANGELOG.md"
-backup "$file"
-mutate "$file" 'with eighteen tokens of headroom' 'with nineteen tokens of headroom'
-assert_fails \
-  "Check 1d — changelog scanner headroom matches rule self-audit" \
-  "scanner headroom must match docs/rule-self-audit.md"
 restore "$file"
 
 # Case 2f: the roadmap summary must count only rows in the false-green Merged
@@ -726,7 +710,7 @@ restore "$file"
 
 # Case 13b-6: trigger fixtures must remain balanced, unique, typed, exact,
 # and realistic enough to exercise the skill-creator trigger workflow.
-TRIGGER_FIXTURE_FILE="skills/e2e-reviewer/evals/trigger-evals.json"
+TRIGGER_FIXTURE_FILE="scripts/evals/skills/e2e-reviewer/trigger-evals.json"
 TRIGGER_FIXTURE_CREATED=0
 if [ -f "$TRIGGER_FIXTURE_FILE" ]; then
   backup "$TRIGGER_FIXTURE_FILE"

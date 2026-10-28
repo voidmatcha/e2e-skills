@@ -16,7 +16,7 @@ const repository = fileURLToPath(new URL('../../../', import.meta.url));
 test('unchanged legacy #4c-4e direct-read fixtures match, with long retry difference explicit', { timeout: 90_000 }, t => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-state-reads-diff-')));
   for (const name of ['widened-reads.spec.ts', 'awaited-locator-truthiness.spec.ts', 'settings.spec.ts']) {
-    fs.copyFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name), path.join(root, name));
+    fs.copyFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name), path.join(root, name));
   }
   const retries = {
     'long-retry.spec.ts': "import {test,expect} from '@playwright/test';\ntest('x',async({page})=>{\nawait expect(async()=>{\n" +

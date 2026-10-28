@@ -42,7 +42,7 @@ A passing test can still miss a broken feature. `e2e-skills` helps check whether
 | Review Playwright/Cypress tests or PR/diff changes | [`e2e-reviewer`](skills/e2e-reviewer/SKILL.md) | Problems ranked by severity, with evidence and suggested fixes; for changes, whether each problem is new, worsened, or pre-existing |
 | Debug a failed Playwright run | [`playwright-debugger`](skills/playwright-debugger/SKILL.md) | Likely cause, supporting evidence, and a suggested fix |
 | Debug a failed Cypress run | [`cypress-debugger`](skills/cypress-debugger/SKILL.md) | Likely cause, supporting evidence, and a suggested fix |
-| Run a deterministic local scan | `skills/e2e-reviewer/scripts/scan.sh` | Possible code problems without installing the target project’s packages |
+| Run a deterministic local scan | `e2e-skills scan` | Possible code problems without installing the target project’s packages |
 
 Review results use P0/P1/P2 for severity: P0 means a test can pass despite a broken feature, P1 concerns reliability or diagnosis, and P2 concerns maintenance. Debuggers use F1–F15 to label 15 failure categories, such as timing, selectors, and authentication.
 
@@ -101,7 +101,7 @@ test('shows the welcome message', async ({ page }) => {
 The bundled scanner catches the false-green assertions without project configuration. Here is the relevant output:
 
 ```console
-$ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan tests/
 
 [P0][CONFIRMED] #4f Static finding (2 hits)
   "login.spec.ts":5: #4f
@@ -112,7 +112,7 @@ AST-origin total: 2 hit(s); retained findings, not ast-grep execution.
 Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 2 AST-origin hit(s), canonical retained findings.
 ```
 
-Because this run reports P0 findings, `scan.sh` exits 1.
+Because this run reports P0 findings, `e2e-skills scan` exits 1.
 
 `eslint-plugin-playwright` also flags this shape via `no-unnecessary-assertions`; enable it so commit-time lint owns what it can and the scanner fills the gaps.
 
@@ -245,7 +245,7 @@ Version history and the previous generator workflow are documented in [CHANGELOG
 
 ## Check whether generated tests catch bugs
 
-The official Playwright agents handle generation. The generator skill then runs the `e2e-reviewer` scanner when installed and fixes P0/P1 findings in at most three passes. It stops if issues remain or scanning is incomplete; otherwise, it runs the approved project test command on new specs only. Missing or skipped checks are reported as incomplete. Request `e2e-reviewer` separately for a semantic review of the generated tests.
+The official Playwright agents handle generation. The generator skill then runs the `e2e-reviewer` scanner when installed and fixes P0/P1 findings in at most three passes. It stops if issues remain or scanning is incomplete; otherwise, it runs new specs only with either the approved project test command or the existing official `test_run` tool, with exact approved `locations` and projects (or the sole project confirmed). It uses one execution method and reports native passed/failed/skipped counts. Missing or skipped checks are reported as incomplete. Request `e2e-reviewer` separately for a semantic review of the generated tests.
 
 Start with a regular `e2e-reviewer` review of whether the tests check the intended behavior. When a specific question needs runtime evidence, add a probe for only that assertion or behavior. You choose where to spend the extra tokens and execution time; mutation and app-fault probes do not run automatically on every review:
 
@@ -367,16 +367,12 @@ The debuggers classify product regressions separately from brittle tests and ret
 Run the code scanner directly without asking an AI agent. It reports possible problems for review; it does not run your tests or decide whether they prove the intended behavior.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills-scan --scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan path/to/tests --format text
 ```
 
-Requires Node.js 22 or newer; the TypeScript parser is bundled. npx downloads the package and its dependencies if they are not already cached. Scanning does not execute tests or project configuration. Use `--format json` for structured output or `--report-file <new-file>` to save a full report without overwriting an existing file.
+Requires Node.js 22 or newer; the TypeScript parser is bundled. npx downloads the package and its dependencies if they are not already cached. The scanner itself does not download tools or load executable project configuration, and it does not execute tests. Use `--format json` for structured output or `--report-file <new-file>` to save a full report without overwriting an existing file.
 
-The reviewer already includes an offline copy of the scanner; no npm installation is needed. By default, this bundled scanner does not download tools or load project configuration. From an installed skill or source checkout, use:
-
-```bash
-/bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
-```
+The reviewer includes the same Node scanner and runs it without a separate npm installation. For its offline launcher and runtime requirements, see the [scanner guide](packages/scanner/README.md#installed-scanner).
 
 Scanning does not start assertion mutation or fault injection. Those checks require a trusted, prepared project; see the [CLI and probe guide](packages/scanner/README.md).
 
@@ -421,9 +417,9 @@ Point `e2e-reviewer` at the relevant spec directory. It combines deterministic c
 <summary>Review coverage and execution safety details</summary>
 
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
-The `e2e-reviewer` skill reviews all 24 catalog patterns with stable IDs and P0/P1/P2 severity. Its standalone `scan.sh` scanner covers only a deterministic mechanical subset. Scanner matches are candidates, not final findings; the skill checks intent and surrounding code before reporting a verdict.
+The `e2e-reviewer` skill reviews all 24 catalog patterns with stable IDs and P0/P1/P2 severity. Its standalone `e2e-skills scan` scanner covers only a deterministic mechanical subset. Scanner matches are candidates, not final findings; the skill checks intent and surrounding code before reporting a verdict.
 
-The debuggers classify failures against the stable F1–F15 taxonomy. They execute target-controlled code only after you trust the repository and approve the exact command, including its environment and flags. The generator runs only the reviewer scanner and the project's own test command on the specs it wrote.
+The debuggers classify failures against the stable F1–F15 taxonomy. They execute target-controlled code only after you trust the repository and approve the exact command, including its environment and flags. The generator runs the reviewer scanner, then executes only the specs it wrote using one approved method: the project's test command or the existing official `test_run` tool with exact approved `locations` and projects (or the sole project confirmed).
 
 For non-public benchmark runs, `--isolation-wrapper` is a required hook, not proof of isolation. Continuous integration (CI) validates the wrapper contract but does not attest filesystem, process, or network isolation.
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
@@ -456,9 +452,9 @@ Yes, when you provide the local report artifacts or a supported GitHub Actions r
 - [Historical AI reviewer pilot](docs/ai-reviewer-benchmark.md)
 - [Debugger benchmark protocol](docs/debugger-benchmark/README.md)
 - [Framework scope](docs/framework-scope.md)
-- [Local E2E rule bridge and recommended lint](docs/recommended-lint.md)
+- [Local E2E rule bridge and recommended lint](docs/installation.md#optional-project-lint)
 - [Roadmap](docs/roadmap.md)
-- [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
+- [Archived reviewer evidence plan](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/a8279e972f2ae5b7628ac9ec8ccfc4cdac380a1d/releases/v3.3.1/docs-archive-20261028/README.md)
 
 </details>
 

@@ -124,7 +124,7 @@ test('unresolved and visibly mutated namespaces stay incomplete instead of clean
 
 test('original catch outcome fixture has no missing await and keeps independent #3 review candidates', () => {
   const name = 'catch-outcome-boundaries.spec.ts';
-  const text = fs.readFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name), 'utf8');
+  const text = fs.readFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name), 'utf8');
   const result = analyze(text, name);
   assert.deepEqual(result.findings.filter(f => f.patternId === '#15'), []);
   assert.deepEqual(result.diagnostics, []);

@@ -17,7 +17,7 @@ const fixtures = ['uncalled-matcher.spec.ts', 'always-true-locator.spec.ts', 'aw
 
 test('confirmed #8c and direct Locator #4f match actual legacy fixtures', { timeout: 90_000 }, () => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-assertions-diff-')));
-  for (const name of fixtures) fs.copyFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name), path.join(root, name));
+  for (const name of fixtures) fs.copyFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name), path.join(root, name));
   const manifest = inventory(root);
   const sources = new Map(manifest.candidates.map(item => [item.path, fs.readFileSync(item.path)]));
   const scope = createScope({ manifest, sources });

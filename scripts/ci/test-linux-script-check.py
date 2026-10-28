@@ -28,6 +28,7 @@ NODE_INPUTS = (
     "scripts/ci/fixtures/legacy-scanner/manifest.json",
     "scripts/ci/lib/legacy_scanner_oracle.py",
     "scripts/evals/files/holdout/example.spec.ts",
+    "scripts/evals/skills/e2e-reviewer/files/example.spec.ts",
     "scripts/dev/build-scanner-runtime.py",
     "scripts/dev/scanner-launcher.sh",
 )
@@ -159,7 +160,7 @@ def main() -> None:
             repo / "skills/cypress-debugger/references/report-acquisition.md",
             "# Report acquisition\n",
         )
-        write(repo / "skills/playwright-debugger/evals/evals.json", "{}\n")
+        write(repo / "scripts/evals/skills/playwright-debugger/evals.json", "{}\n")
         write(repo / "scripts/ci/test-reviewer-scanner.py", "# fixture\n")
         for relative in NODE_INPUTS:
             write(repo / relative, '# Node validation input fixture\n')
@@ -230,7 +231,7 @@ def main() -> None:
         run(str(GIT), "restore", "--", "skills/e2e-reviewer/scripts/scan.sh", cwd=repo)
         for relative in (
             "skills/cypress-debugger/references/report-acquisition.md",
-            "skills/playwright-debugger/evals/evals.json",
+            "scripts/evals/skills/playwright-debugger/evals.json",
         ):
             with (repo / relative).open("a", encoding="utf-8") as stream:
                 stream.write("dirty skill input\n")

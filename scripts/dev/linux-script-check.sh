@@ -61,6 +61,7 @@ LINUX_INPUT_PATHS=(
   ':(glob)scripts/ci/fixtures/legacy-scanner/**'
   ':(glob)scripts/ci/lib/**'
   ':(glob)scripts/evals/files/**'
+  ':(glob)scripts/evals/skills/**'
   scripts/dev/build-scanner-runtime.py
   scripts/dev/scanner-launcher.sh
   scripts/ci/test-debugger-contracts.py
@@ -84,6 +85,7 @@ print_input_scope() {
   echo "  scripts/ci/fixtures/legacy-scanner/**"
   echo "  scripts/ci/lib/**"
   echo "  scripts/evals/files/**"
+  echo "  scripts/evals/skills/**"
   echo "  scripts/dev/build-scanner-runtime.py"
   echo "  scripts/dev/scanner-launcher.sh"
   echo "  scripts/ci/test-debugger-contracts.py"

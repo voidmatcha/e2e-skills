@@ -91,7 +91,7 @@ test('known Playwright fixtures remain confirmed; uncertain options never become
 });
 
 test('original LoginPage fixture retains line 33 as candidate and CLI remains INCOMPLETE', () => {
-  const original = new URL('../../../skills/e2e-reviewer/evals/files/pages/login-page.ts', import.meta.url);
+  const original = new URL('../../../scripts/evals/skills/e2e-reviewer/files/pages/login-page.ts', import.meta.url);
   const bytes = fs.readFileSync(original);
   fixture(bytes, (result, file) => {
     assert.deepEqual(result.findings.map(f => [f.patternId, f.line, f.disposition]), [['#9c', 33, 'candidate']]);

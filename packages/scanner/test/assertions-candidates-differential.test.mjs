@@ -16,7 +16,7 @@ const repository = fileURLToPath(new URL('../../../', import.meta.url));
 test('#4a/#4b candidate parity on unchanged fixtures with explicit foreign-expect guards', { timeout: 90_000 }, t => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-candidates-diff-')));
   for (const name of ['count-contracts.spec.ts', 'dashboard.spec.ts', 'settings.spec.ts']) {
-    fs.copyFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name), path.join(root, name));
+    fs.copyFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name), path.join(root, name));
   }
   // The legacy e2e gate admits this file through its Playwright test import;
   // the matcher filters do not establish the local expect binding's identity.

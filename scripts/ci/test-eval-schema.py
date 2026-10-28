@@ -43,9 +43,11 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-eval-schema-") as temp:
         workspace = Path(temp)
         skill = workspace / "skills/demo"
-        eval_dir = skill / "evals"
+        eval_dir = workspace / "scripts/evals/skills/demo"
+        skill.mkdir(parents=True)
+        (skill / "SKILL.md").write_text("# Demo skill\n")
         eval_dir.mkdir(parents=True)
-        (skill / "fixture.spec.ts").write_text("test.only('x', () => {});\n")
+        (eval_dir / "fixture.spec.ts").write_text("test.only('x', () => {});\n")
         metadata = eval_dir / "evals.json"
 
         metadata.write_text(json.dumps(valid_payload()), encoding="utf-8")
@@ -96,7 +98,28 @@ def main() -> None:
             assert result.returncode != 0, result.stdout
             assert marker in result.stdout, result.stdout
 
-    print("eval schema: pass (strict JSON, exact keys, duplicate IDs)")
+        mismatch_payload = valid_payload()
+        mismatch_payload['skill_name'] = 'wrong-skill'
+        metadata.write_text(json.dumps(mismatch_payload), encoding="utf-8")
+        mismatch = run_validator(workspace)
+        assert mismatch.returncode != 0, mismatch.stdout
+        assert "skill_name must match eval directory" in mismatch.stdout
+
+        metadata.write_text(json.dumps(valid_payload()), encoding="utf-8")
+        (eval_dir / "fixture.spec.ts").unlink()
+        missing_fixture = run_validator(workspace)
+        assert missing_fixture.returncode != 0, missing_fixture.stdout
+        assert "references missing fixture" in missing_fixture.stdout
+
+        # Old shipped metadata cannot mask an absent developer eval tree.
+        old_dir = skill / "evals"
+        old_dir.mkdir()
+        (old_dir / "evals.json").write_text(json.dumps(valid_payload()))
+        metadata.unlink()
+        missing_suite = run_validator(workspace)
+        assert missing_suite.returncode != 0, missing_suite.stdout
+
+    print("eval schema: pass (strict JSON, exact keys, duplicate IDs, directory identity, relocated fixtures, missing suites)")
 
 
 if __name__ == "__main__":

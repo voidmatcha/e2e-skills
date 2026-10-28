@@ -28,70 +28,59 @@ REPORTING = ROOT / "skills" / "e2e-reviewer" / "references" / "reporting.md"
 PATTERN_REFERENCE = (
     ROOT / "skills" / "e2e-reviewer" / "references" / "pattern-reference.md"
 )
-GREP_PATTERNS = (
-    ROOT / "skills" / "e2e-reviewer" / "references" / "grep-patterns.md"
-)
 APPLYING_FIXES = (
     ROOT / "skills" / "e2e-reviewer" / "references" / "applying-fixes.md"
 )
 RTL_JEST_DOM_FIXES = (
     ROOT / "skills" / "e2e-reviewer" / "references" / "rtl-jest-dom-fixes.md"
 )
-EVALS = ROOT / "skills" / "e2e-reviewer" / "evals" / "evals.json"
+EVALS = ROOT / "scripts/evals/skills/e2e-reviewer" / "evals.json"
 SWALLOW_FIXTURE = (
     ROOT
-    / "skills"
-    / "e2e-reviewer"
-    / "evals"
+    / "scripts/evals/skills/e2e-reviewer"
     / "files"
     / "swallowed-dependent-gate.spec.ts"
 )
 SWALLOW_HELPER = (
     ROOT
-    / "skills"
-    / "e2e-reviewer"
-    / "evals"
+    / "scripts/evals/skills/e2e-reviewer"
     / "files"
     / "support"
     / "draft-helper.ts"
 )
 ASSERTION_SWALLOW_FIXTURE = (
     ROOT
-    / "skills"
-    / "e2e-reviewer"
-    / "evals"
+    / "scripts/evals/skills/e2e-reviewer"
     / "files"
     / "invoice-approval.spec.ts"
 )
 POM_MISSING_METHOD_FIXTURE = (
-    ROOT / "skills/e2e-reviewer/evals/files/pom-missing-method.spec.ts"
+    ROOT / "scripts/evals/skills/e2e-reviewer/files/pom-missing-method.spec.ts"
 )
 POM_MISSING_METHOD_PAGE = (
-    ROOT / "skills/e2e-reviewer/evals/files/pages/notification-settings-page.ts"
+    ROOT / "scripts/evals/skills/e2e-reviewer/files/pages/notification-settings-page.ts"
 )
 ZOMBIE_COPY_FIXTURE = (
-    ROOT / "skills/e2e-reviewer/evals/files/checkout-nightly-copy.spec.ts"
+    ROOT / "scripts/evals/skills/e2e-reviewer/files/checkout-nightly-copy.spec.ts"
 )
 ZOMBIE_SMOKE_FIXTURE = (
-    ROOT / "skills/e2e-reviewer/evals/files/checkout-release-smoke.spec.ts"
+    ROOT / "scripts/evals/skills/e2e-reviewer/files/checkout-release-smoke.spec.ts"
 )
 OPTIMISTIC_WRITE_FIXTURE = (
-    ROOT / "skills/e2e-reviewer/evals/files/optimistic-write-contract.spec.ts"
+    ROOT / "scripts/evals/skills/e2e-reviewer/files/optimistic-write-contract.spec.ts"
 )
 OPTIMISTIC_HANDLER_FIXTURE = (
-    ROOT / "skills/e2e-reviewer/evals/files/support/optimistic-profile-handler.ts"
+    ROOT / "scripts/evals/skills/e2e-reviewer/files/support/optimistic-profile-handler.ts"
 )
 CONVENTION_BOUNDARY_FIXTURE = (
-    ROOT / "skills/e2e-reviewer/evals/files/convention-boundaries.spec.ts"
+    ROOT / "scripts/evals/skills/e2e-reviewer/files/convention-boundaries.spec.ts"
 )
 COUNT_CONTRACT_FIXTURE = (
-    ROOT / "skills/e2e-reviewer/evals/files/count-contracts.spec.ts"
+    ROOT / "scripts/evals/skills/e2e-reviewer/files/count-contracts.spec.ts"
 )
 ABSENCE_FIXTURE = (
     ROOT
-    / "skills"
-    / "e2e-reviewer"
-    / "evals"
+    / "scripts/evals/skills/e2e-reviewer"
     / "files"
     / "absence-assertion.spec.ts"
 )
@@ -100,7 +89,7 @@ POM_CANDIDATES = ROOT / "skills/e2e-reviewer/scripts/pom-ownership-candidates.py
 VERIFICATION_RULES = (
     ROOT / "skills" / "e2e-reviewer" / "references" / "verification-rules.md"
 )
-V3_ADAPTER = VERIFICATION_RULES.with_name("v3-adapter.md")
+V3_ADAPTER = ROOT / "scripts/evals/hybrid-check-pilot/registered-adapter.md"
 README = ROOT / "README.md"
 BENCHMARK_STATUS = ROOT / "benchmarks" / "STATUS.md"
 REVIEWER_HOLDOUT_V6_README = (
@@ -727,12 +716,10 @@ def verify_pattern_4i_direction_neutral() -> None:
     # Every surface that restates #4i's SKIP criterion must stay direction-
     # neutral too, or the taxonomy contradicts itself across surfaces.
     semantic_review = normalized(SEMANTIC_REVIEW)
-    grep_patterns = normalized(GREP_PATTERNS)
     scanner_source = SCANNER.read_text(encoding="utf-8")
 
     for surface, text, name in (
         ("semantic review", semantic_review, "semantic-review.md #4i row"),
-        ("grep", grep_patterns, "grep-patterns.md #4i row"),
     ):
         assert "acted on earlier in the test" not in text, (
             f"{name} still restricts #4i proof to *earlier* in the test"
@@ -795,7 +782,6 @@ def verify_pattern_4i_direction_neutral() -> None:
 def assert_pattern_3_assertion_boundary(
     pattern_reference: str,
     skill: str,
-    grep_patterns: str,
     semantic_review: str,
     scanner: str,
 ) -> None:
@@ -807,9 +793,6 @@ def assert_pattern_3_assertion_boundary(
     )
     require_normalized_contract(skill, boundary, "SKILL.md #3 assertion boundary")
     require_normalized_contract(
-        grep_patterns, boundary, "grep-patterns.md #3 assertion boundary"
-    )
-    require_normalized_contract(
         semantic_review, boundary, "semantic-review.md #3 assertion boundary"
     )
     assert pattern_reference.count(boundary) == 2, (
@@ -817,14 +800,13 @@ def assert_pattern_3_assertion_boundary(
         "Rule (spec) and Scanner tiering"
     )
     # The Node port emits only review candidates here, never a confirmed P0.
-    # Semantic re-check/intent exceptions remain pinned above in all four docs.
+    # Semantic re-check/intent exceptions remain pinned above in all three docs.
     emitted = re.findall(r"findings\.push\(\{\s*patternId:\s*'#3',\s*severity:\s*'P0',\s*disposition:\s*'([^']+)'", scanner)
     assert emitted and set(emitted) == {"candidate"}, "#3 scanner must retain candidate-only disposition"
     attached_only = "synchronous matcher followed by an attached Promise `.catch()`"
     surrounding_try = "synchronous assertion inside a surrounding `try/catch` is swallowed"
     for text, label in (
         (skill, "SKILL.md"),
-        (grep_patterns, "grep-patterns.md"),
         (pattern_reference, "pattern-reference.md"),
         (semantic_review, "semantic-review.md"),
     ):
@@ -834,7 +816,7 @@ def assert_pattern_3_assertion_boundary(
 
 def assert_eval_40_boundary(case: dict[str, object]) -> None:
     assert case["prompt"] == (
-        "Review evals/files/catch-outcome-boundaries.spec.ts. Phase 1 reports "
+        "Review scripts/evals/skills/e2e-reviewer/files/catch-outcome-boundaries.spec.ts. Phase 1 reports "
         "twelve `#3` candidates: eleven attached `.catch(() => {})` candidates "
         "and one surrounding `try/catch` candidate, all as [P0?][LLM-TRIAGE]. "
         "Resolve each one: say which catches leave the test "
@@ -882,7 +864,6 @@ def verify_pattern_3_swallow_scope() -> None:
     """
     pattern_reference = normalized(PATTERN_REFERENCE)
     skill = normalized(SKILL)
-    grep_patterns = normalized(GREP_PATTERNS)
     semantic_review = normalized(SEMANTIC_REVIEW)
     scanner = normalized(ROOT / "packages/scanner/src/catch-handlers.mjs")
 
@@ -894,7 +875,7 @@ def verify_pattern_3_swallow_scope() -> None:
         pattern_reference, consequence_rule, "pattern-reference.md #3 exemption"
     )
     assert_pattern_3_assertion_boundary(
-        pattern_reference, skill, grep_patterns, semantic_review, scanner
+        pattern_reference, skill, semantic_review, scanner
     )
     boundary = (
         "unless the identical check is re-asserted unswallowed later, control "
@@ -903,11 +884,11 @@ def verify_pattern_3_swallow_scope() -> None:
         "does not excuse it"
     )
     for index, surface in enumerate(
-        (pattern_reference, skill, grep_patterns, semantic_review)
+        (pattern_reference, skill, semantic_review)
     ):
         mutated = surface.replace(boundary, "when the catch does not rethrow", 1)
         assert mutated != surface, f"#3 boundary mutation {index} was a no-op"
-        surfaces = [pattern_reference, skill, grep_patterns, semantic_review, scanner]
+        surfaces = [pattern_reference, skill, semantic_review, scanner]
         surfaces[index] = mutated
         try:
             assert_pattern_3_assertion_boundary(*surfaces)
@@ -924,7 +905,6 @@ def verify_pattern_3_swallow_scope() -> None:
         assert_pattern_3_assertion_boundary(
             pattern_reference,
             skill,
-            grep_patterns,
             semantic_review,
             mutated_scanner,
         )
@@ -956,7 +936,6 @@ def verify_pattern_3_swallow_scope() -> None:
 
     for surface, name in (
         (skill, "e2e-reviewer/SKILL.md #3 row"),
-        (grep_patterns, "grep-patterns.md #3 row"),
     ):
         require_normalized_contract(
             surface, "imported helper", f"{name} location coverage"
@@ -1022,7 +1001,7 @@ def verify_pattern_3_swallow_scope() -> None:
     assert f"line {cleanup_line}" in text and "Does NOT flag" in text, (
         "eval 43 must retain the best-effort non-assertion cleanup guard"
     )
-    assert "evals/files/invoice-approval.spec.ts" in case["files"], (
+    assert "files/invoice-approval.spec.ts" in case["files"], (
         "eval 43 must reference its new fixture"
     )
 
@@ -1322,7 +1301,7 @@ def verify_failed_write_reread_note() -> None:
         raise AssertionError("failed-write re-read note survived a mutation")
     evals = {case["id"]: case for case in json.loads(EVALS.read_text(encoding="utf-8"))["evals"]}
     case = evals[41]
-    assert case["files"] == ["evals/files/failed-write-absence.spec.ts"]
+    assert case["files"] == ["files/failed-write-absence.spec.ts"]
     assert any("line 12" in a for a in case["assertions"])
     assert any("line 21" in a and "False-positive guard" in a for a in case["assertions"])
 
@@ -1463,7 +1442,6 @@ def assert_fable_reviewer_policy_contracts(
     review_scope: str,
     pattern_reference: str,
     semantic_review: str,
-    grep_patterns: str,
 ) -> None:
     for contract in (
         "first apply the pattern's exclusions and refute candidates whose actual behavior does not satisfy the pattern",
@@ -1490,24 +1468,14 @@ def assert_fable_reviewer_policy_contracts(
         "#4b-e/#4g-k variants are P1",
         "semantic-review.md complete #4 P1 range",
     )
-    for contract in (
-        "plus `cy\\.wait\\([[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\\)` for one bare identifier",
-        "a bare identifier is `[P1?][LLM-TRIAGE]` until Phase 2 resolves its value",
-        "Dotted/member expressions such as `cy.wait(delays.render)` are handled by the mandatory opening-token sweep, not Phase 1",
-        "Alias waits such as `cy.wait('@request')` are excluded",
-    ):
-        require_normalized_contract(
-            grep_patterns, contract, "grep-patterns.md #9b scanner parity"
-        )
 
 
 def verify_fable_reviewer_policy_contracts() -> None:
     review_scope = REVIEW_SCOPE.read_text(encoding="utf-8")
     pattern_reference = PATTERN_REFERENCE.read_text(encoding="utf-8")
     semantic_review = SEMANTIC_REVIEW.read_text(encoding="utf-8")
-    grep_patterns = GREP_PATTERNS.read_text(encoding="utf-8")
     assert_fable_reviewer_policy_contracts(
-        review_scope, pattern_reference, semantic_review, grep_patterns
+        review_scope, pattern_reference, semantic_review
     )
     mutations = (
         (
@@ -1518,7 +1486,6 @@ def verify_fable_reviewer_policy_contracts() -> None:
             ),
             pattern_reference,
             semantic_review,
-            grep_patterns,
         ),
         (
             review_scope,
@@ -1528,7 +1495,6 @@ def verify_fable_reviewer_policy_contracts() -> None:
                 1,
             ),
             semantic_review,
-            grep_patterns,
         ),
         (
             review_scope,
@@ -1538,16 +1504,8 @@ def verify_fable_reviewer_policy_contracts() -> None:
                 1,
             ),
             semantic_review,
-            grep_patterns,
         ),
-        (
-            review_scope,
-            pattern_reference,
-            semantic_review,
-            grep_patterns.replace(
-                "for one bare identifier", "for numeric literals only", 1
-            ),
-        ),
+
     )
     for mutation in mutations:
         try:
@@ -1763,7 +1721,7 @@ def verify_reasoned_skip_boundary() -> None:
     contract = "A concrete reason is sufficient to avoid a #11c finding; recommend a revisit anchor for long-lived skips, but do not require one to clear #11c."
     require_normalized_contract(source, contract, "#11c reason boundary")
     require_normalized_contract(semantic, "A reason without a ticket or date still clears #11c", "#11c semantic boundary")
-    fixture = (ROOT / "skills/e2e-reviewer/evals/files/reasonless-skip.spec.ts").read_text(encoding="utf-8")
+    fixture = (ROOT / "scripts/evals/skills/e2e-reviewer/files/reasonless-skip.spec.ts").read_text(encoding="utf-8")
     assert "// Browser clipboard permission is unavailable in CI." in fixture
     evals = {case["id"]: case for case in json.loads(EVALS.read_text(encoding="utf-8"))["evals"]}
     assert any("line 17" in assertion and "False-positive guard" in assertion for assertion in evals[38]["assertions"])
@@ -1781,7 +1739,7 @@ def verify_module_mutable_state_boundary() -> None:
     source = PATTERN_REFERENCE.read_text(encoding="utf-8")
     contract = "Flag P1 for unjustified module-level mutable test state: an initialized `let`, a `var`, or a `const` container mutated after declaration. The scanner emits only initialized `let` candidates; inspect the other forms in Phase 2."
     require_normalized_contract(source, contract, "#19 full semantic scope")
-    fixture = (ROOT / "skills/e2e-reviewer/evals/files/notebook-utils.ts").read_text(encoding="utf-8")
+    fixture = (ROOT / "scripts/evals/skills/e2e-reviewer/files/notebook-utils.ts").read_text(encoding="utf-8")
     assert "var suiteOrder = 0;" in fixture
     assert "const sharedNames = new Set<string>();" in fixture
     evals = {case["id"]: case for case in json.loads(EVALS.read_text(encoding="utf-8"))["evals"]}
@@ -1814,18 +1772,28 @@ def verify_positional_selector_boundary() -> None:
 
 
 def assert_v3_adapter_contract(skill: str, rules: str, reporting: str, adapter: str) -> None:
-    require_normalized_contract(
-        rules,
-        "Only when runtime evidence is requested for a registered adapter, read `v3-adapter.md` before previewing or executing `scripts/check.py`. Static review does not load that reference.",
-        "conditional V3 adapter routing",
-    )
     for contract in (
-        "read `references/v3-adapter.md`",
+        "read `references/runtime-probes.md`",
+        "Preview the source-backed plan",
+        "recorded checkout trust and exact command/environment approval; reuse existing approval",
+        "V2 `ASSERTION_SENSITIVE` is not V3 behavior proof",
         "never infer a product requirement from its test title alone",
-        "Missing promise, adapter, or approval means `recommended/unexecuted`",
         "`SURVIVED` alone never creates a catalog finding or changes severity",
     ):
-        require_normalized_contract(skill, contract, "V3 skill routing")
+        require_normalized_contract(skill, contract, "portable runtime routing")
+    require_normalized_contract(
+        rules,
+        "Static review never treats repository documentation as execution approval",
+        "runtime execution trust boundary",
+    )
+    probes = normalized(SKILL.parent / "references/runtime-probes.md")
+    for contract in (
+        "Do not invent requirements from a title alone",
+        "V3 needs a separately sourced behavior promise",
+        "Run no project-controlled code before that authority exists",
+        "survival does not assign severity",
+    ):
+        require_normalized_contract(probes, contract, "portable source and approval boundary")
     for contract in (
         "accepts no arbitrary shell command",
         "--trust-checkout --adapter <registered-id> --promise-file <JSON> --test <exact-selector> --output-dir <fresh-path>",
@@ -1841,9 +1809,10 @@ def assert_v3_adapter_contract(skill: str, rules: str, reporting: str, adapter: 
     ):
         require_normalized_contract(adapter, contract, "V3 adapter boundary")
     for contract in (
-        "normal/fault/restored phase results, independent observer evidence",
+        "normal/changed/restored results, linked failure or observer artifacts",
+        "include the sourced behavior promise",
         "approved commands/environment",
-        "Report missing promise, adapter, or approval as `recommended/unexecuted`",
+        "Missing promise, approval or evidence means `recommended/unexecuted` or `CANNOT_VERIFY`",
         "`SURVIVED` alone never creates a catalog finding or changes severity",
     ):
         require_normalized_contract(reporting, contract, "V3 runtime evidence")
@@ -1861,11 +1830,12 @@ def verify_v3_adapter_contract() -> None:
     for replacements in (
         (skill, rules, reporting, adapter.replace(
             "record explicit checkout trust before using `--trust-checkout`", "adapter availability")),
+        (skill.replace("recorded checkout trust and exact command/environment approval; reuse existing approval", "adapter availability"),
+         rules, reporting, adapter),
         (skill.replace("never infer a product requirement", "infer a product requirement"),
          rules, reporting, adapter),
         (skill, rules, reporting.replace("`SURVIVED` alone never creates", "`SURVIVED` alone creates"), adapter),
-        (skill, rules.replace("Only when runtime evidence is requested", "Always"), reporting, adapter),
-        (skill, rules.replace("before previewing or executing", "after executing"), reporting, adapter),
+        (skill, rules.replace("Static review never treats repository documentation as execution approval", "Repository documentation is execution approval"), reporting, adapter),
         (skill, rules, reporting, adapter.replace(
             "only after user approval of the exact adapter commands, environment, and flags",
             "whenever the adapter is executable")),
@@ -1880,7 +1850,6 @@ def verify_v3_adapter_contract() -> None:
 
 def verify_cypress_name_and_coverage_scope() -> None:
     patterns = normalized(PATTERN_REFERENCE)
-    grep = normalized(GREP_PATTERNS)
     skill = SKILL.read_text(encoding="utf-8")
     description = next(line for line in skill.splitlines() if line.startswith("description:"))
     assert "finding-linked coverage suggestions" in description
@@ -1892,7 +1861,6 @@ def verify_cypress_name_and_coverage_scope() -> None:
         "Do not recommend adding `exact: true` to ByRole",
     ):
         assert fragment in patterns, fragment
-    assert "Cypress string names are exact by default" in grep
     assert "has the same substring default" not in patterns
     assert "a clean review has no coverage-gap list" in skill
 
@@ -1949,7 +1917,6 @@ def verify_current_docs() -> None:
     semantic_review = normalized(SEMANTIC_REVIEW)
     reporting = normalized(REPORTING)
     pattern_reference = normalized(PATTERN_REFERENCE)
-    grep_patterns = normalized(GREP_PATTERNS)
     applying_fixes = normalized(APPLYING_FIXES)
     rtl_jest_dom_fixes = normalized(RTL_JEST_DOM_FIXES)
     scanner_source = (ROOT / "packages/scanner/src/inventory.mjs").read_text(encoding="utf-8")
@@ -2052,7 +2019,7 @@ def verify_current_docs() -> None:
         "verifier confirms the rationale; it still gates "
         "`E2E_SMELL_FAIL_ON=p0-candidate` before that confirmation."
     )
-    for surface in (scanner_workflow, grep_patterns):
+    for surface in (scanner_workflow,):
         assert suppression_contract in surface
         assert p0_candidate_contract in surface
         assert "Focused Test Leak is never suppressible" in surface
@@ -2064,11 +2031,6 @@ def verify_current_docs() -> None:
         "callback"
     ) in scanner_workflow
     assert "within the scanner's bounded 24-line lexical window" in scanner_workflow
-    assert "`\\btoBeAttached\\b` name candidate" in grep_patterns
-    assert "drops quoted/comment-only names" in grep_patterns
-    assert "bounded 24-line/500-character whitespace gap" in grep_patterns
-    assert "excludes `.not` chains across whitespace/comments/lines" in grep_patterns
-    assert "finite lexical scan, not unbounded parser semantics" in grep_patterns
     assertion_source = normalized(ROOT / "packages/scanner/src/assertions.mjs")
     assert re.search(r"record\(matcher.name === 'toBeAttached' \? '#4b'.*?'candidate'", assertion_source), "#4b must remain a review candidate"
     assert (
@@ -2135,14 +2097,14 @@ def verify_current_docs() -> None:
         require_contract(review_scope, contract, "review-scope.md")
         assert contract in eval_30_text
     phase_zero_eval_files = [
-        "evals/files/phase0-transitive-unit.spec.ts",
-        "evals/files/phase0-transitive-review.spec.ts",
-        "evals/files/phase0-transitive-barrel.ts",
-        "evals/files/phase0-transitive-support.ts",
-        "evals/files/phase0-transitive-fixture.ts",
+        "files/phase0-transitive-unit.spec.ts",
+        "files/phase0-transitive-review.spec.ts",
+        "files/phase0-transitive-barrel.ts",
+        "files/phase0-transitive-support.ts",
+        "files/phase0-transitive-fixture.ts",
     ]
     assert eval_30["prompt"] == (
-        "Review the candidate test root in evals/files/phase0-transitive-*. "
+        "Review the candidate test root in scripts/evals/skills/e2e-reviewer/files/phase0-transitive-*. "
         "Determine framework scope and report the findings."
     )
     assert eval_30["files"] == phase_zero_eval_files
@@ -2211,7 +2173,7 @@ def verify_current_docs() -> None:
         "rendered or reordered by viewport, feature flags, permissions, or "
         "state, inspect those render conditions before resolving the candidate."
     )
-    for surface in (semantic_review, pattern_reference, grep_patterns):
+    for surface in (semantic_review, pattern_reference):
         assert positional_scope_contract in surface
         assert positional_pom_contract in surface
         assert positional_name_contract in surface
@@ -2225,8 +2187,8 @@ def verify_current_docs() -> None:
     ):
         assert contract in eval_34_text
     assert eval_34["files"] == [
-        "evals/files/positional-pom/admin-rooms.ts",
-        "evals/files/positional-pom/responsive-rooms-table.tsx",
+        "files/positional-pom/admin-rooms.ts",
+        "files/positional-pom/responsive-rooms-table.tsx",
     ]
     positional_fixture_dir = EVALS.parent / "files" / "positional-pom"
     positional_pom = (
@@ -2336,13 +2298,13 @@ def verify_current_docs() -> None:
     assert source_line_number(orders_page, "nth(2)") == 11
     assert source_line_number(legacy_spec, "test.only") == 3
     assert eval_35["files"] == [
-        "evals/files/diff-review/changed-orders.spec.ts",
-        "evals/files/diff-review/orders-page.ts",
-        "evals/files/diff-review/legacy.spec.ts",
-        "evals/files/diff-review/README.md",
+        "files/diff-review/changed-orders.spec.ts",
+        "files/diff-review/orders-page.ts",
+        "files/diff-review/legacy.spec.ts",
+        "files/diff-review/README.md",
     ]
     assert eval_36["files"] == [
-        "evals/files/diff-review/profile-panel.tsx",
+        "files/diff-review/profile-panel.tsx",
     ]
     for contract in (
         "diff mode",

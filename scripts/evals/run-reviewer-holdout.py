@@ -1247,7 +1247,6 @@ def canonical_severities(
     pattern_reference = (
         skill_dir / "references/pattern-reference.md"
     ).read_text(encoding="utf-8")
-    lookup = (skill_dir / "references/grep-patterns.md").read_text(encoding="utf-8")
     mixed: dict[str, str] = {}
     # The two mixed-severity families document their split explicitly. Never
     # infer a severity from a scanner implementation or from a mention alone.
@@ -1264,7 +1263,24 @@ def canonical_severities(
     for header in re.findall(r"^#### .+$", pattern_reference, re.MULTILINE):
         for pattern, severity in re.findall(r"\b([0-9]+[a-z]) (P[012])\b", header):
             mixed[f"#{pattern}"] = severity
-    for pattern_id in re.findall(r"^\|\s*(#[0-9]+[a-z]?(?:-[0-9]+[a-z]?)?)\b", lookup, re.MULTILINE):
+    # Enumerate definitions and explicit variant declarations in the same
+    # evaluated reference that owns their semantics. Cross-references alone
+    # must not invent a reportable ID.
+    documented_ids = set(re.findall(
+        r"^\*\*([0-9]+[a-z])\.", pattern_reference, re.MULTILINE,
+    ))
+    for declaration in re.findall(
+        r"^(?:\*\*Sub-IDs:\*\*|Sub-variants share this entry:)(.+)$",
+        pattern_reference, re.MULTILINE,
+    ):
+        documented_ids.update(re.findall(
+            r"`#([0-9]+[a-z]?(?:-[0-9]+[a-z]?)?)`", declaration,
+        ))
+    # #11a/#11b describe the YAGNI/zombie subcases scored under #11;
+    # #11c is an independently reportable skip check. Preserve the existing
+    # scoring vocabulary when replacing the retired lookup table.
+    documented_ids.difference_update({"11a", "11b"})
+    for pattern_id in sorted("#" + item for item in documented_ids):
         # #4c/#4d/#4e are one combined reportable check in the contract.
         if pattern_id in {"#4c", "#4d", "#4e"}:
             if "`#4c-4e`" not in pattern_reference:

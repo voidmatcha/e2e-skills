@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=934e889d3620fe8f00cff4a6287cead440a4d97119b4877ddd079a9d2e9dddd6; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=233d6cc983e1b74418005a7ffadc0cbf7d67ed6347f45ddb40f2b3591dda816e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。四个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及诊断失败原因。
 
@@ -43,7 +43,7 @@
 | 审查 Playwright/Cypress 测试或 PR/diff 变更 | [`e2e-reviewer`](skills/e2e-reviewer/SKILL.md) | 按严重程度排列的问题、判断依据和修复建议；对变更区分新增、恶化和已有问题 |
 | 调试失败的 Playwright 运行 | [`playwright-debugger`](skills/playwright-debugger/SKILL.md) | 推测原因、判断依据和具体修复建议 |
 | 调试失败的 Cypress 运行 | [`cypress-debugger`](skills/cypress-debugger/SKILL.md) | 推测原因、判断依据和具体修复建议 |
-| 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 无需安装目标项目 package 即可发现的候选问题 |
+| 运行确定性本地扫描 | `e2e-skills scan` | 无需安装目标项目 package 即可发现的候选问题 |
 
 P0/P1/P2 表示审查的严重程度：P0 是功能损坏仍通过的问题，P1 影响可靠性或诊断，P2 涉及维护改进。debugger 的 F1–F15 是时序、selector、认证等 15 类失败原因的分类代码。
 
@@ -102,7 +102,7 @@ test('shows the welcome message', async ({ page }) => {
 内置扫描器无需项目配置即可捕获这些 false-green 断言。下面摘录相关输出：
 
 ```console
-$ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan tests/
 
 [P0][CONFIRMED] #4f Static finding (2 hits)
   "login.spec.ts":5: #4f
@@ -113,7 +113,7 @@ AST-origin total: 2 hit(s); retained findings, not ast-grep execution.
 Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 2 AST-origin hit(s), canonical retained findings.
 ```
 
-由于这次运行报告了 P0 发现，`scan.sh` 会以 exit 1 结束。
+由于这次运行报告了 P0 发现，`e2e-skills scan` 会以 exit 1 结束。
 
 `eslint-plugin-playwright` 也会通过 `no-unnecessary-assertions` 标记这种写法。请启用该规则，让提交时的 lint 负责它能捕获的问题，其余由扫描器补充。
 
@@ -246,7 +246,7 @@ debugger 和 probe 执行需要可信项目，以及对包括环境变量和 fla
 
 ## 检查生成的测试能否发现缺陷
 
-生成由官方 Playwright agent 负责。之后，generator skill 会在安装了 `e2e-reviewer` 时运行扫描器，最多三轮修复 P0/P1 项。如果仍有问题或扫描未完成，则停止；否则，仅对新 spec 运行已获批准的项目测试命令。缺失或跳过的检查会报告为未完成。需要审查生成测试是否真正验证了预期行为时，请另行请求 `e2e-reviewer`。
+生成由官方 Playwright agent 负责。之后，generator skill 会在安装了 `e2e-reviewer` 时运行扫描器，最多三轮修复 P0/P1 项。如果仍有问题或扫描未完成，则停止；通过后，仅对新 spec 使用已获批准的项目测试命令或现有的官方 `test_run` 工具。`test_run` 需要批准精确的 `locations`，并指定已批准的项目或确认只有一个项目。只使用一种执行方式，并报告测试运行原生的 passed/failed/skipped 数量。缺失或跳过的检查会报告为未完成。需要审查生成测试是否真正验证了预期行为时，请另行请求 `e2e-reviewer`。
 
 先用常规的 `e2e-reviewer` 审查确认测试是否检查了预期行为。如果某个问题需要运行证据，再只针对该断言或行为添加 probe。你可以选择在哪里投入额外的 token 和执行时间；mutation 与应用 fault probe 不会在每次审查中自动运行。
 
@@ -368,16 +368,12 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 无需请求 AI agent，即可直接运行代码扫描器。它查找待审查的候选问题，不会执行测试，也不会判断测试是否证明了预期行为。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills-scan --scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan path/to/tests --format text
 ```
 
-需要 Node.js 22 或更新版本；TypeScript parser 已随附。npx 会下载尚未缓存的 package 及其依赖。scan 不执行测试或项目配置。使用 `--format json` 获取结构化输出，或用 `--report-file <new-file>` 保存完整报告；不会覆盖已有文件。
+需要 Node.js 22 或更新版本；TypeScript parser 已随附。npx 会下载尚未缓存的 package 及其依赖。scanner 本身不会下载 tool、加载可执行的项目配置或运行测试。使用 `--format json` 获取结构化输出，或用 `--report-file <new-file>` 保存完整报告；不会覆盖已有文件。
 
-reviewer 已内置可离线运行的 scanner，无需安装 npm。该内置 scanner 默认不下载工具或执行项目配置。在已安装的 skill 或源码 checkout 中，使用以下命令：
-
-```bash
-/bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
-```
+reviewer 已内置相同的 Node scanner，无需单独通过 npm 安装。离线 launcher 和运行要求请参阅 [scanner 指南](packages/scanner/README.md#installed-scanner)。
 
 仅运行 scan 不会执行 assertion mutation 或 fault injection。这些检查需要可信且准备就绪的项目。详见 [CLI 与 probe 指南](packages/scanner/README.md)。
 
@@ -422,9 +418,9 @@ linter 可以捕获直接的 Locator 真值断言或缺失的 `await`。它无�
 <summary>审查范围和执行安全条件详情</summary>
 
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
-`e2e-reviewer` Skill 会用稳定 IDs 和 P0/P1/P2 severity 审查目录中的全部 24 个模式。它的独立 `scan.sh` 扫描器只覆盖确定性的机械子集。扫描器命中是候选项，不是最终发现；该 Skill 会先检查意图和周边代码，再报告 verdict。
+`e2e-reviewer` Skill 会用稳定 IDs 和 P0/P1/P2 severity 审查目录中的全部 24 个模式。它的独立 `e2e-skills scan` 扫描器只覆盖确定性的机械子集。扫描器命中是候选项，不是最终发现；该 Skill 会先检查意图和周边代码，再报告 verdict。
 
-debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你信任该仓库并批准精确命令（包括其 environment 和 flags）之后，它们才会执行 target-controlled code。generator 只会对自己写的 spec 运行审查器扫描器和项目自己的测试命令。
+debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你信任该仓库并批准精确命令（包括其 environment 和 flags）之后，它们才会执行 target-controlled code。generator 先运行审查器扫描器，再使用一种已批准的方式，仅执行自己写的 spec：项目测试命令，或现有的官方 `test_run` 工具。使用工具时，需要批准精确的 `locations`，并指定已批准的项目或确认只有一个项目。
 
 对于非公开 benchmark runs，`--isolation-wrapper` 是必需 hook，而不是 isolation proof。Continuous integration (CI) 会验证 wrapper contract，但不会证明 filesystem、process 或 network isolation。
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
@@ -457,9 +453,9 @@ debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你�
 - [历史 AI 审查器基准](docs/ai-reviewer-benchmark.md)
 - [调试器基准协议](docs/debugger-benchmark/README.md)
 - [框架范围](docs/framework-scope.md)
-- [本地 E2E 规则桥接与推荐 lint](docs/recommended-lint.md)
+- [本地 E2E 规则桥接与推荐 lint](docs/installation.md#optional-project-lint)
 - [路线图](docs/roadmap.md)
-- [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
+- [Archived reviewer evidence plan](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/a8279e972f2ae5b7628ac9ec8ccfc4cdac380a1d/releases/v3.3.1/docs-archive-20261028/README.md)
 
 </details>
 

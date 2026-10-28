@@ -14,7 +14,7 @@ const repository = fileURLToPath(new URL('../../../', import.meta.url));
 test('unchanged absence and assertion-loop fixtures preserve legacy raw candidates', { timeout:90000 }, () => {
   const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'e2e-collections-diff-')));
   const originals=new Map(['absence-assertion.spec.ts','assertion-loop.spec.ts'].map(name=>
-    [name,fs.readFileSync(path.join(repository,'skills/e2e-reviewer/evals/files',name))]));
+    [name,fs.readFileSync(path.join(repository,'scripts/evals/skills/e2e-reviewer/files',name))]));
   for(const [name,bytes] of originals) fs.writeFileSync(path.join(root,name),bytes);
   const manifest=inventory(root),sources=new Map(manifest.candidates.map(item=>[item.path,fs.readFileSync(item.path)]));
   const scope=createScope({manifest,sources}),native=[];
@@ -43,6 +43,6 @@ test('unchanged absence and assertion-loop fixtures preserve legacy raw candidat
   assert.equal(native.length,9);assert.deepEqual([...new Set(legacy)].sort(),native.sort(),output);
   for(const [name,bytes] of originals) {
     assert.ok(fs.readFileSync(path.join(root,name)).equals(bytes));
-    assert.ok(fs.readFileSync(path.join(repository,'skills/e2e-reviewer/evals/files',name)).equals(bytes));
+    assert.ok(fs.readFileSync(path.join(repository,'scripts/evals/skills/e2e-reviewer/files',name)).equals(bytes));
   }
 });

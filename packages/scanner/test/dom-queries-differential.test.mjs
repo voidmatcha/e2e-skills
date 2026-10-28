@@ -16,7 +16,7 @@ const repository = fileURLToPath(new URL('../../../', import.meta.url));
 test('unchanged real legacy fixtures match after shared suppression; legacy false positives stay separate', { timeout: 90000 }, () => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-dom-diff-')));
   const names = ['raw-dom-context.spec.ts', 'dashboard.spec.ts', 'products.cy.ts'];
-  const originals = new Map(names.map(name => [name, fs.readFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name))]));
+  const originals = new Map(names.map(name => [name, fs.readFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name))]));
   for (const [name, bytes] of originals) fs.writeFileSync(path.join(root, name), bytes);
   const falseName = 'legacy-false-positive.spec.ts';
   fs.writeFileSync(path.join(root, falseName), "import {test} from '@playwright/test';\nconst database={query:()=>({first(){}})};\ndatabase.query().first();\nfunction f(document){document.querySelector('.custom');}\n");
@@ -68,6 +68,6 @@ test('unchanged real legacy fixtures match after shared suppression; legacy fals
   assert.deepEqual(legacy[falseName], { '#6': [4], '#10a': [3] }, 'intentional legacy binding false positives');
   for (const [name, bytes] of originals) {
     assert.ok(fs.readFileSync(path.join(root, name)).equals(bytes));
-    assert.ok(fs.readFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name)).equals(bytes));
+    assert.ok(fs.readFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name)).equals(bytes));
   }
 });

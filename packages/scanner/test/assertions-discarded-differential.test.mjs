@@ -16,7 +16,7 @@ const fixtures = ['auth.spec.ts', 'dashboard.spec.ts', 'fp-guards.spec.ts'];
 
 test('legacy #8a/#8b fixture candidates match with explicit shadow false-positive guards', { timeout: 90_000 }, t => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-discarded-diff-')));
-  for (const name of fixtures) fs.copyFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name), path.join(root, name));
+  for (const name of fixtures) fs.copyFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name), path.join(root, name));
   const shadow = "import {test} from '@playwright/test';\nasync function custom(page){\npage.locator('x');\nawait page.isVisible('x');\n}\n";
   fs.writeFileSync(path.join(root, 'shadow.spec.ts'), shadow);
   // The existing multiline-consumer regression ends with this inline typed

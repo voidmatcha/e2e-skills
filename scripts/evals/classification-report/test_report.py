@@ -45,7 +45,7 @@ class Measurements(unittest.TestCase):
         self.assertFalse({"#4c", "#4d", "#4e", "#4", "#5"} & canonical.keys())
         with tempfile.TemporaryDirectory() as directory:
             skill = Path(directory)
-            for name in ("SKILL.md", "references/pattern-reference.md", "references/grep-patterns.md"):
+            for name in ("SKILL.md", "references/pattern-reference.md"):
                 target = skill / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes((runner.DEFAULT_SKILL_DIR / name).read_bytes())

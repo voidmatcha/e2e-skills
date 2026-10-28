@@ -19,7 +19,7 @@ MOCHAWESOME = FIXTURE_ROOT / "mochawesome.json"
 PLAYWRIGHT_LAUNCHER = (
     ROOT / "skills/playwright-debugger/scripts/run-artifact-reader.sh"
 )
-PLAYWRIGHT_FIXTURE_ROOT = ROOT / "skills/playwright-debugger/evals/files"
+PLAYWRIGHT_FIXTURE_ROOT = ROOT / "scripts/evals/skills/playwright-debugger/files"
 PLAYWRIGHT_FIXTURE = PLAYWRIGHT_FIXTURE_ROOT / "results-selector-timeout.json"
 CYPRESS_READER = (
     ROOT / "skills/cypress-debugger/scripts/read-cypress-artifact.py"

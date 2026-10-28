@@ -502,7 +502,7 @@ def assert_reformatted_oracle_hints_rejected(temp: Path, cases: list[dict]) -> N
             "severity=P1, pattern=#6\n",
         ),
         (
-            Path("references/grep-patterns.md"),
+            Path("references/semantic-review.md"),
             (
                 "\nReview note: "
                 f"{Path(dynamic_label['file']).name} maps "

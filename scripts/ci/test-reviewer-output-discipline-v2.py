@@ -29,7 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SKILL = ROOT / "skills" / "e2e-reviewer" / "SKILL.md"
 REPORTING = ROOT / "skills" / "e2e-reviewer" / "references" / "reporting.md"
-EVALS = ROOT / "skills" / "e2e-reviewer" / "evals" / "evals.json"
+EVALS = ROOT / "scripts" / "evals" / "skills" / "e2e-reviewer" / "evals.json"
 
 
 def normalized(text: str) -> str:

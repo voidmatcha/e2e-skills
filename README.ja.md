@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=934e889d3620fe8f00cff4a6287cead440a4d97119b4877ddd079a9d2e9dddd6; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=233d6cc983e1b74418005a7ffadc0cbf7d67ed6347f45ddb40f2b3591dda816e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。4 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、失敗原因の診断を行います。
 
@@ -44,7 +44,7 @@
 | Playwright/Cypress テストまたは PR/diff 変更をレビュー | [`e2e-reviewer`](skills/e2e-reviewer/SKILL.md) | 重要度別の問題、判断根拠、修正案。変更では新規・悪化・既存の問題を区別 |
 | 失敗した Playwright 実行をデバッグ | [`playwright-debugger`](skills/playwright-debugger/SKILL.md) | 推定原因、判断根拠、具体的な修正案 |
 | 失敗した Cypress 実行をデバッグ | [`cypress-debugger`](skills/cypress-debugger/SKILL.md) | 推定原因、判断根拠、具体的な修正案 |
-| 決定論的なローカルスキャンを実行 | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package をインストールせずに見つけた問題候補 |
+| 決定論的なローカルスキャンを実行 | `e2e-skills scan` | 対象プロジェクトの package をインストールせずに見つけた問題候補 |
 
 P0/P1/P2 はレビューの重要度です。P0 は機能が壊れても成功する問題、P1 は信頼性や診断の問題、P2 は保守性の改善です。debugger の F1–F15 は、タイミング、selector、認証など 15 種類の失敗原因を示す分類コードです。
 
@@ -103,7 +103,7 @@ test('shows the welcome message', async ({ page }) => {
 同梱スキャナーは、プロジェクト設定なしで false-green assertion を検出します。以下は関連部分を抜粋した出力です。
 
 ```console
-$ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan tests/
 
 [P0][CONFIRMED] #4f Static finding (2 hits)
   "login.spec.ts":5: #4f
@@ -114,7 +114,7 @@ AST-origin total: 2 hit(s); retained findings, not ast-grep execution.
 Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 2 AST-origin hit(s), canonical retained findings.
 ```
 
-この実行は P0 指摘を報告するため、`scan.sh` は exit 1 で終了します。
+この実行は P0 指摘を報告するため、`e2e-skills scan` は exit 1 で終了します。
 
 `eslint-plugin-playwright` も `no-unnecessary-assertions` でこの形を検出します。コミット時の lint が扱える問題を担当し、残りをスキャナーが補えるよう、このルールを有効にしてください。
 
@@ -247,7 +247,7 @@ debugger と probe の実行には、信頼するプロジェクトと、環境�
 
 ## 生成したテストがバグを検出するか確認する
 
-生成は公式 Playwright agent が担当します。その後、generator skill は `e2e-reviewer` がインストールされていればスキャナーを実行し、最大 3 回で P0/P1 の検出項目を修正します。問題が残る場合やスキャンが未完了の場合は停止し、それ以外の場合は承認済みのプロジェクトのテストコマンドで新しい spec のみ実行します。欠けた確認やスキップは未完了として報告します。生成したテストが意味のある検証になっているかのレビューは、`e2e-reviewer` に別途依頼してください。
+生成は公式 Playwright agent が担当します。その後、generator skill は `e2e-reviewer` がインストールされていればスキャナーを実行し、最大 3 回で P0/P1 の検出項目を修正します。問題が残る場合やスキャンが未完了の場合は停止します。通過した場合、承認済みのプロジェクトのテストコマンド、または既存の公式 `test_run` ツールで新しい spec のみ実行します。`test_run` では正確な `locations` の承認が必要です。承認済みのプロジェクトを指定するか、プロジェクトが 1 つだけであることを確認します。実行方法は 1 つに絞り、テスト実行結果の passed/failed/skipped 件数を報告します。欠けた確認やスキップは未完了として報告します。生成したテストが意味のある検証になっているかのレビューは、`e2e-reviewer` に別途依頼してください。
 
 まず通常の `e2e-reviewer` レビューで、テストが意図した動作を確認しているか調べます。実行による根拠が必要な問いが残れば、そのアサーションや動作だけに probe を追加できます。追加のトークンと実行時間をどこに使うかを選べます。mutation とアプリの fault probe を毎回のレビューで自動実行するわけではありません。
 
@@ -369,16 +369,12 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 AI agent に依頼せず、コードスキャナーだけを直接実行できます。レビューする問題候補を探す道具であり、テストの実行や、意図した動作を検証しているかの判断は行いません。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills-scan --scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan path/to/tests --format text
 ```
 
-Node.js 22 以降が必要で、TypeScript パーサーは同梱されています。npx はキャッシュにない package と依存関係をダウンロードします。scan はテストやプロジェクト設定を実行しません。構造化された出力には `--format json`、レポートの保存には `--report-file <new-file>` を使います。既存ファイルは上書きしません。
+Node.js 22 以降が必要で、TypeScript パーサーは同梱されています。npx はキャッシュにない package と依存関係をダウンロードします。scanner 自体は tool のダウンロード、プロジェクト設定コードの読み込み、テストの実行を行いません。構造化された出力には `--format json`、レポートの保存には `--report-file <new-file>` を使います。既存ファイルは上書きしません。
 
-reviewer にはオフラインで使える scanner が同梱されているため、npm のインストールは不要です。この scanner はデフォルトでツールのダウンロードやプロジェクト設定の実行を行いません。インストール済み skill またはソース checkout では、次のコマンドを使います。
-
-```bash
-/bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
-```
+reviewer には同じ Node scanner が同梱されており、別途 npm でインストールする必要はありません。オフライン launcher と実行要件は [scanner ガイド](packages/scanner/README.md#installed-scanner)を参照してください。
 
 scan だけでは assertion mutation や fault injection は実行されません。これらの検査には、信頼でき準備済みのプロジェクトが必要です。[CLI と probe のガイド](packages/scanner/README.md)を参照してください。
 
@@ -423,9 +419,9 @@ linter は直接的な Locator truthiness assertion や missing `await` を検�
 <summary>レビュー範囲と実行安全条件の詳細</summary>
 
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
-`e2e-reviewer` skill は、安定した ID と P0/P1/P2 severity を持つ 24 個すべての catalog patterns をレビューします。standalone の `scan.sh` scanner が扱うのは、決定論的で機械的な subset のみです。scanner matches は候補であり、final findings ではありません。skill は verdict を報告する前に intent と surrounding code を確認します。
+`e2e-reviewer` skill は、安定した ID と P0/P1/P2 severity を持つ 24 個すべての catalog patterns をレビューします。standalone の `e2e-skills scan` scanner が扱うのは、決定論的で機械的な subset のみです。scanner matches は候補であり、final findings ではありません。skill は verdict を報告する前に intent と surrounding code を確認します。
 
-debugger は、安定した F1–F15 taxonomy に照らして failures を分類します。debugger は、repository を信頼し、environment と flags を含む exact command を承認した後にのみ target-controlled code を実行します。generator は、自身が書いた仕様に対してレビュアーのスキャナーとプロジェクトのテストコマンドのみを実行します。
+debugger は、安定した F1–F15 taxonomy に照らして failures を分類します。debugger は、repository を信頼し、environment と flags を含む exact command を承認した後にのみ target-controlled code を実行します。generator はレビュアーのスキャナーで確認した後、承認済みの方法を 1 つ使い、自身が書いた spec のみ実行します。実行方法はプロジェクトのテストコマンド、または既存の公式 `test_run` ツールです。ツールでは正確な `locations` の承認が必要です。承認済みのプロジェクトを指定するか、プロジェクトが 1 つだけであることを確認します。
 
 non-public benchmark runs では、`--isolation-wrapper` は required hook であり、isolation の証明ではありません。Continuous integration (CI) は wrapper contract を検証しますが、filesystem、process、network isolation は attestation しません。
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
@@ -458,9 +454,9 @@ non-public benchmark runs では、`--isolation-wrapper` は required hook で�
 - [過去の AI レビューベンチマーク](docs/ai-reviewer-benchmark.md)
 - [デバッガーベンチマーク手順](docs/debugger-benchmark/README.md)
 - [フレームワークの対象範囲](docs/framework-scope.md)
-- [ローカル E2E ルールブリッジと推奨 lint](docs/recommended-lint.md)
+- [ローカル E2E ルールブリッジと推奨 lint](docs/installation.md#optional-project-lint)
 - [ロードマップ](docs/roadmap.md)
-- [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
+- [Archived reviewer evidence plan](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/a8279e972f2ae5b7628ac9ec8ccfc4cdac380a1d/releases/v3.3.1/docs-archive-20261028/README.md)
 
 </details>
 

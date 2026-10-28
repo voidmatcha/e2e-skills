@@ -16,7 +16,7 @@ const fixtures = ['products.cy.ts', 'reasonless-skip.spec.ts'];
 
 test('legacy fixture candidates match; unrelated and dynamic event differences stay explicit', { timeout: 90_000 }, t => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-control-flow-diff-')));
-  for (const name of fixtures) fs.copyFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name), path.join(root, name));
+  for (const name of fixtures) fs.copyFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name), path.join(root, name));
   const differenceSource = "Cypress.on('window:before:load',()=>{});\nCypress.on(eventName,()=>false);\n";
   fs.writeFileSync(path.join(root, 'event-boundaries.cy.ts'), differenceSource);
   const manifest = inventory(root);

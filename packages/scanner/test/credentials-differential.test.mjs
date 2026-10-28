@@ -13,7 +13,7 @@ const repository = fileURLToPath(new URL('../../../', import.meta.url));
 test('unchanged actual auth fixtures preserve the legacy #14 candidate locations', { timeout: 90000 }, () => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-credentials-diff-')));
   const names = ['auth.spec.ts','cy-env-login.cy.ts','login-request.cy.ts','pages/login-page.ts'];
-  const originals = new Map(names.map(name => [name, fs.readFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name))]));
+  const originals = new Map(names.map(name => [name, fs.readFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name))]));
   const native = {};
   for (const [name, bytes] of originals) {
     const file = path.join(root, name);
@@ -51,6 +51,6 @@ test('unchanged actual auth fixtures preserve the legacy #14 candidate locations
   assert.deepEqual(native, legacy, 'credential candidate locations differ');
   for (const [name, bytes] of originals) {
     assert.ok(fs.readFileSync(path.join(root, name)).equals(bytes));
-    assert.ok(fs.readFileSync(path.join(repository, 'skills/e2e-reviewer/evals/files', name)).equals(bytes));
+    assert.ok(fs.readFileSync(path.join(repository, 'scripts/evals/skills/e2e-reviewer/files', name)).equals(bytes));
   }
 });

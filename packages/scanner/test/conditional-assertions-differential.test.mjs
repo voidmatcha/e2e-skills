@@ -15,7 +15,7 @@ const repository = fileURLToPath(new URL('../../../', import.meta.url));
 test('four legacy #5a calls agree on unchanged stored and native-regression fixtures', { timeout: 90_000 }, t => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-conditional-diff-')));
   for (const name of ['conditional-postcondition.spec.ts','auth.spec.ts','documented-exclusions.spec.ts'])
-    fs.copyFileSync(path.join(repository,'skills/e2e-reviewer/evals/files',name),path.join(root,name));
+    fs.copyFileSync(path.join(repository,'scripts/evals/skills/e2e-reviewer/files',name),path.join(root,name));
   // Read literal fixtures from the authoritative native regression source without executing it.
   const extraction = spawnSync('python3', ['-c', `import ast,json,sys
 tree=ast.parse(open(sys.argv[1]).read())

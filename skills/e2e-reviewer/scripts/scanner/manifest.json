@@ -90,8 +90,8 @@
       "sha256": "0044cd5e077b8a3453448e18a0d068525448791fa2311bb85141342bca3323b4"
     },
     "src/inventory.mjs": {
-      "bytes": 10984,
-      "sha256": "2974dabaeae7c1e3a5579e559cd3d5bc7ccd7c402d6906ab47ed6aeb92ecc190"
+      "bytes": 11114,
+      "sha256": "1fe7ce4c1dd35a544703461c467fb4fd2baa23fb9b33465672cf3998f9ec0af2"
     },
     "src/justified.mjs": {
       "bytes": 7095,
@@ -806,10 +806,10 @@
     },
     {
       "output": "src/inventory.mjs",
-      "output_sha256": "2974dabaeae7c1e3a5579e559cd3d5bc7ccd7c402d6906ab47ed6aeb92ecc190",
+      "output_sha256": "1fe7ce4c1dd35a544703461c467fb4fd2baa23fb9b33465672cf3998f9ec0af2",
       "rewrite": null,
       "source": "src/inventory.mjs",
-      "source_sha256": "2974dabaeae7c1e3a5579e559cd3d5bc7ccd7c402d6906ab47ed6aeb92ecc190"
+      "source_sha256": "1fe7ce4c1dd35a544703461c467fb4fd2baa23fb9b33465672cf3998f9ec0af2"
     },
     {
       "output": "src/justified.mjs",

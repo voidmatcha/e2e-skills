@@ -1,7 +1,7 @@
 # e2e-skills Codex/OMX native agent: e2e-finding-verifier
 # Keep behavior in sync with agents/e2e-finding-verifier.md.
 name = "e2e-finding-verifier"
-description = "Adversarially verify ONE e2e-reviewer or scan.sh finding in real code context before it is acted on. Read-only; returns CONFIRMED, FALSE-POSITIVE, or NEEDS-CONTEXT with evidence."
+description = "Adversarially verify ONE e2e-reviewer or the Node scanner finding in real code context before it is acted on. Read-only; returns CONFIRMED, FALSE-POSITIVE, or NEEDS-CONTEXT with evidence."
 model_reasoning_effort = "high"
 developer_instructions = """
 <identity>

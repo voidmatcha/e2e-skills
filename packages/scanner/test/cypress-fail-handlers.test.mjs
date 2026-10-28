@@ -23,7 +23,7 @@ const ids = result => result.findings.map(finding => [finding.patternId, finding
 const candidate = [['#3b', 'P0', 'candidate']];
 
 test('existing eval63 restores only line2; the named ResizeObserver allowlist remains negative', () => {
-  const file = new URL('../../../skills/e2e-reviewer/evals/files/cypress/support/fail-handlers.ts', import.meta.url);
+  const file = new URL('../../../scripts/evals/skills/e2e-reviewer/files/cypress/support/fail-handlers.ts', import.meta.url);
   const bytes = fs.readFileSync(file), result = scan(bytes.toString());
   assert.deepEqual(result.findings.map(finding => [finding.patternId, finding.line]), [['#3b', 2]]);
   assert.deepEqual(ids(result), candidate);

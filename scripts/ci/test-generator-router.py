@@ -33,7 +33,8 @@ THIN_MAX_BYTES = 2500
 # postrelease-20261021/generator-official-alignment-v1; no quality lift claimed.
 THIN_SHA256 = "4dff3e824f42681e99b0673b6ed22be99885863d1605bacf7246b57ccec6a798"
 
-ALLOWED_TOP_LEVEL = {"SKILL.md", "thin-rules.md", "setup-guide.md", "agents", "evals", "LICENSE", "NOTICE"}
+EVAL_DIR = ROOT / "scripts/evals/skills/playwright-test-generator"
+ALLOWED_TOP_LEVEL = {"SKILL.md", "thin-rules.md", "setup-guide.md", "agents", "LICENSE", "NOTICE"}
 REMOVED_REFERENCES = (
     "best-practices.md", "code-rules.md", "scenario-design.md",
     "verification-rules.md", "exploration-preflight.md", "playwright-agents.md",
@@ -260,7 +261,7 @@ def main() -> None:
     if "reviewed" in openai.lower():
         fail("agents/openai.yaml must not promise review the router does not perform")
 
-    data = json.loads((SKILL_DIR / "evals/evals.json").read_text(encoding="utf-8"))
+    data = json.loads((EVAL_DIR / "evals.json").read_text(encoding="utf-8"))
     evals = data["evals"]
     if data["skill_name"] != "playwright-test-generator" or len(evals) < 8:
         fail("evals.json must hold at least 8 router evals")
@@ -269,7 +270,7 @@ def main() -> None:
         if not guards or len(entry["assertions"]) < 2:
             fail(f"eval {entry['id']} needs a true positive and a false-positive guard")
         for rel in entry["files"]:
-            if not (SKILL_DIR / rel).is_file():
+            if not (EVAL_DIR / rel).is_file():
                 fail(f"eval {entry['id']} references missing fixture {rel}")
         blob = json.dumps(entry)
         for name in REMOVED_REFERENCES:
@@ -317,7 +318,7 @@ def main() -> None:
         if topic not in titles + " " + " ".join(json.dumps(e).lower() for e in evals):
             fail(f"evals do not cover {topic}")
 
-    triggers = json.loads((SKILL_DIR / "evals/trigger-evals.json").read_text(encoding="utf-8"))
+    triggers = json.loads((EVAL_DIR / "trigger-evals.json").read_text(encoding="utf-8"))
     positive = sum(1 for t in triggers if t["should_trigger"])
     if positive < 8 or len(triggers) - positive < 8:
         fail("trigger evals need at least 8 positive and 8 negative cases")

@@ -37,10 +37,7 @@ class ReviewerRuntimeSurfaceTest(unittest.TestCase):
         self.skill.mkdir()
         # Real prompt material keeps the output legend and profile checks live;
         # small runtime fixtures make repeated rejection/mutation tests cheap.
-        # Taxonomy lookup is snapshot material even though no prompt profile embeds it.
-        prompt_paths = set().union(*self.runner.PROMPT_SKILL_PROFILES.values()) | {
-            "references/grep-patterns.md"
-        }
+        prompt_paths = set().union(*self.runner.PROMPT_SKILL_PROFILES.values())
         for relative in prompt_paths:
             target = self.skill / relative
             target.parent.mkdir(parents=True, exist_ok=True)

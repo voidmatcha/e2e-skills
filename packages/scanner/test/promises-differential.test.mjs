@@ -12,7 +12,7 @@ import { createScope } from '../src/scope.mjs';
 
 const repository = fileURLToPath(new URL('../../../', import.meta.url));
 test('actual legacy missing-await fixture: direct slice, consumed guards and declared POM gap', { timeout: 90000 }, t => {
-  const file = path.join(repository, 'skills/e2e-reviewer/evals/files/missing-await-contexts.spec.ts');
+  const file = path.join(repository, 'scripts/evals/skills/e2e-reviewer/files/missing-await-contexts.spec.ts');
   const bytes = fs.readFileSync(file), text = bytes.toString('utf8');
   const manifest = inventory(file), scope = createScope({ manifest, sources: new Map([[file, bytes]]) });
   const actual = promises(bytes, file, { scope });

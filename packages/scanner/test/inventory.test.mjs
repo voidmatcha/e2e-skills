@@ -147,6 +147,7 @@ test('self repository exclusions use scanned project fingerprint and direct fixt
   put('package.json', '{}');
   const normal = put('tests/normal.spec.ts');
   const fixtureFile = put('some/evals/files/intentional.spec.ts');
+  const relocatedFixture = put('scripts/evals/skills/e2e-reviewer/files/intentional.spec.ts');
   put('scripts/ci/fixtures/intentional.spec.ts');
   const result = inventory(root);
   assert.equal(result.complete, true, JSON.stringify(result.errors));
@@ -154,6 +155,9 @@ test('self repository exclusions use scanned project fingerprint and direct fixt
   assert.deepEqual(result.candidates.map(x => x.path), [normal]);
   assert.deepEqual(inventory(path.dirname(fixtureFile)).candidates.map(x => x.path), [fixtureFile]);
   assert.deepEqual(inventory(fixtureFile).candidates.map(x => x.path), [fixtureFile]);
+  assert.deepEqual(inventory(path.dirname(relocatedFixture)).candidates.map(x => x.path), [relocatedFixture]);
+  assert.deepEqual(inventory(relocatedFixture).candidates.map(x => x.path), [relocatedFixture]);
+  assert.deepEqual(inventory(path.join(root, 'scripts/evals/skills')).candidates, []);
   put('nested/package.json', '{}');
   const nested = put('nested/evals/files/real.spec.ts');
   const nestedResult = inventory(path.join(root, 'nested'));
@@ -166,11 +170,13 @@ test('third-party fixture names remain source and opaque config changes invalida
   const { root, put } = fixture(t);
   put('package.json', '{}');
   const normal = put('evals/files/real.spec.ts');
+  const relocatedName = put('scripts/evals/skills/e2e-reviewer/files/real.spec.ts');
   const config = put('eslint.config.mjs', 'throw new Error("never execute");');
   const baseline = inventory(root);
   assert.equal(baseline.complete, true);
   assert.equal(baseline.projectContext.selfRepository, false);
   assert.ok(baseline.candidates.some(x => x.path === normal));
+  assert.ok(baseline.candidates.some(x => x.path === relocatedName));
   fs.writeFileSync(config, 'throw new Error("changed but never execute");');
   const changed = revalidate(baseline);
   assert.equal(changed.complete, false);

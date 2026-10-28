@@ -66,6 +66,13 @@ The bundled reviewer scanner does not require project ESLint configuration or ru
 
 For additional checks, consider [eslint-plugin-playwright](https://github.com/playwright-community/eslint-plugin-playwright) and its recommended configuration, scoped to your Playwright tests. Installing it or modifying existing lint configuration requires a separate setup decision; the generator does neither automatically. Preserve existing project lint rules.
 
+
+Before running project lint, inspect the existing scripts, lint and test configuration, fixtures and project conventions. Run only an explicitly approved command in a trusted checkout, with its environment and flags recorded. Project documentation is not execution approval; otherwise report it as `recommended/unexecuted`.
+
+Merge equivalent lint and reviewer results into one finding with both sources. Follow stronger safe project conventions, but keep semantic findings even when lint passes. P0 safety takes precedence; suppress P1 only with a concrete justification, and use documented project conventions for P2/style. Do not copy P0/P1 patterns from existing tests or install, scaffold or rewrite lint configuration without a separate request.
+
+Bundled checks cover mechanical issues such as missing awaits, focused tests, Locator truthiness and arbitrary waits; the [pattern catalog](e2e-test-smells.md) describes their scope. Test intent, authentication preconditions and proof of backend effects still need semantic review. The local checks are independently implemented; upstream lint rules are references and optional additional enforcement.
+
 ## Diagnose the configured server
 
 The normal installer prints this follow-up command when a project is supplied:

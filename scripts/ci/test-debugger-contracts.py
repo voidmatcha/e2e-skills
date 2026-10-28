@@ -37,6 +37,9 @@ def _hang_guard(seconds: int) -> int:
 
 
 ROOT = Path(__file__).resolve().parents[2]
+EVAL_ROOT = ROOT / "scripts/evals/skills"
+CYPRESS_EVALS = EVAL_ROOT / "cypress-debugger"
+PLAYWRIGHT_EVALS = EVAL_ROOT / "playwright-debugger"
 CYPRESS_SKILL = ROOT / "skills/cypress-debugger"
 PLAYWRIGHT_SKILL = ROOT / "skills/playwright-debugger/SKILL.md"
 
@@ -312,7 +315,7 @@ def assert_repair_and_retry_provenance_contracts() -> None:
             pass
         else:
             raise AssertionError(f"{skill}: plan-only generated trigger escaped")
-        evals = json.loads((skill_dir / "evals/evals.json").read_text(encoding="utf-8"))["evals"]
+        evals = json.loads((EVAL_ROOT / skill_dir.name / "evals.json").read_text(encoding="utf-8"))["evals"]
         titles = {case.get("title") for case in evals}
         assert "Approved handwritten repair plan does not establish generated provenance" in titles
         assert "Explicit generated provenance preserves approved expected value" in titles
@@ -333,7 +336,7 @@ def assert_repair_and_retry_provenance_contracts() -> None:
             pass
         else:
             raise AssertionError(f"Missing retry provenance rule escaped: {clause}")
-    retry_evals = json.loads((CYPRESS_SKILL / "evals/evals.json").read_text(encoding="utf-8"))["evals"]
+    retry_evals = json.loads((CYPRESS_EVALS / "evals.json").read_text(encoding="utf-8"))["evals"]
     retry_titles = {case.get("title") for case in retry_evals}
     assert {
         "Historical screenshot leaves current retry history unknown",
@@ -361,8 +364,8 @@ def assert_classification_evidence_contract() -> None:
     assert "retrying DOM assertion may already wait" in cypress
 
     for relative, eval_id in (
-        ("skills/playwright-debugger/evals/evals.json", 14),
-        ("skills/cypress-debugger/evals/evals.json", 16),
+        ("scripts/evals/skills/playwright-debugger/evals.json", 14),
+        ("scripts/evals/skills/cypress-debugger/evals.json", 16),
     ):
         payload = json.loads((ROOT / relative).read_text(encoding="utf-8"))
         case = next(item for item in payload["evals"] if item["id"] == eval_id)
@@ -372,7 +375,7 @@ def assert_classification_evidence_contract() -> None:
         assert "does not prove" in assertions, relative
 
     cypress_evals = json.loads(
-        (ROOT / "skills/cypress-debugger/evals/evals.json").read_text(
+        (ROOT / "scripts/evals/skills/cypress-debugger/evals.json").read_text(
             encoding="utf-8"
         )
     )["evals"]
@@ -412,7 +415,7 @@ def assert_debugger_input_and_gate_contracts() -> None:
         cases = {
             entry["id"]: entry
             for entry in json.loads(
-                (ROOT / "skills" / skill / "evals/evals.json").read_text(
+                (EVAL_ROOT / skill / "evals.json").read_text(
                     encoding="utf-8"
                 )
             )["evals"]
@@ -437,7 +440,7 @@ def assert_debugger_input_and_gate_contracts() -> None:
     evals = {
         entry["id"]: entry
         for entry in json.loads(
-            (ROOT / "skills/playwright-debugger/evals/evals.json").read_text(
+            (ROOT / "scripts/evals/skills/playwright-debugger/evals.json").read_text(
                 encoding="utf-8"
             )
         )["evals"]
@@ -695,7 +698,7 @@ def assert_debugger_repository_commands_use_empty_environment() -> None:
             assert retries_off in command, (skill, command)
 
         evals = json.loads(
-            (ROOT / "skills" / skill / "evals/evals.json").read_text(encoding="utf-8")
+            (EVAL_ROOT / skill / "evals.json").read_text(encoding="utf-8")
         )["evals"]
         for entry in evals:
             for value in (entry["prompt"], entry["expected_output"], *entry["assertions"]):
@@ -769,7 +772,7 @@ def assert_isolation_probe_waits_for_safety_and_trust_gates() -> None:
         evals = {
             entry["id"]: entry
             for entry in json.loads(
-                (ROOT / "skills" / skill / "evals/evals.json").read_text(
+                (EVAL_ROOT / skill / "evals.json").read_text(
                     encoding="utf-8"
                 )
             )["evals"]
@@ -828,7 +831,7 @@ def assert_artifact_reader_launcher_boundary() -> None:
     cases = (
         (
             playwright_skill / "scripts/run-artifact-reader.sh",
-            playwright_skill / "evals/files/results-selector-timeout.json",
+            PLAYWRIGHT_EVALS / "files/results-selector-timeout.json",
             "playwright-report/results.json",
             (),
             (
@@ -840,7 +843,7 @@ def assert_artifact_reader_launcher_boundary() -> None:
         ),
         (
             CYPRESS_SKILL / "scripts/run-artifact-reader.sh",
-            CYPRESS_SKILL / "evals/files/mochawesome-selector-timeout.json",
+            CYPRESS_EVALS / "files/mochawesome-selector-timeout.json",
             "cypress/reports/mochawesome.json",
             (),
             (
@@ -852,7 +855,7 @@ def assert_artifact_reader_launcher_boundary() -> None:
         ),
         (
             CYPRESS_SKILL / "scripts/run-artifact-reader.sh",
-            CYPRESS_SKILL / "evals/files/junit-mixed-suites.xml",
+            CYPRESS_EVALS / "files/junit-mixed-suites.xml",
             "cypress/reports/results.xml",
             ("--reader", "extract-junit-failures.py"),
             (
@@ -3023,7 +3026,7 @@ def main() -> None:
     assert_arrow_assignment_redaction_matches_the_gate()
     assert_benign_artifact_text_is_not_flagged()
     extractor = CYPRESS_SKILL / "scripts/extract-junit-failures.py"
-    fixture = CYPRESS_SKILL / "evals/files/junit-mixed-suites.xml"
+    fixture = CYPRESS_EVALS / "files/junit-mixed-suites.xml"
     missing_root = run_extractor(extractor, None, fixture)
     assert missing_root.returncode != 0
     assert "--report-root" in missing_root.stderr
@@ -3547,7 +3550,7 @@ def main() -> None:
         ] == ["outer before", "outer after", "inner"]
 
     cypress_reader = CYPRESS_SKILL / "scripts/read-cypress-artifact.py"
-    cypress_fixtures = CYPRESS_SKILL / "evals/files"
+    cypress_fixtures = CYPRESS_EVALS / "files"
     mochawesome_result = run_cypress_reader(
         cypress_reader,
         "mochawesome",
@@ -3851,7 +3854,7 @@ def main() -> None:
         # guards the other side: finite fractional stats (passPercent 66.66)
         # stay valid.
         assert '"passPercent": 66.66' in (
-            CYPRESS_SKILL / "evals/files/mochawesome-retries.json"
+            CYPRESS_EVALS / "files/mochawesome-retries.json"
         ).read_text(encoding="utf-8")
         for mode, fixture_name in (
             ("mochawesome", "mochawesome-selector-timeout.json"),
@@ -3859,7 +3862,7 @@ def main() -> None:
             ("run-results", "cypress-run-results-retries.json"),
         ):
             fixture_text = (
-                CYPRESS_SKILL / "evals/files" / fixture_name
+                CYPRESS_EVALS / "files" / fixture_name
             ).read_text(encoding="utf-8")
             baseline = reports / f"finite-{fixture_name}"
             baseline.write_text(fixture_text, encoding="utf-8")
@@ -5566,7 +5569,7 @@ def main() -> None:
         playwright_evals = {
             entry["id"]: entry
             for entry in json.loads(
-                (PLAYWRIGHT_SKILL.parent / "evals/evals.json").read_text(
+                (PLAYWRIGHT_EVALS / "evals.json").read_text(
                     encoding="utf-8"
                 )
             )["evals"]

@@ -44,7 +44,7 @@ test('shows the welcome message', async ({ page }) => {
 The deterministic scanner reports the load-bearing line:
 
 ```console
-$ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan tests/
 [P0][CONFIRMED] #4f Static finding (1 hit)
   "login.spec.ts":5: #4f
 
@@ -126,13 +126,7 @@ Sources: [Cypress AI Skills](https://docs.cypress.io/app/tooling/ai-skills), the
 
 ## Run the deterministic scanner
 
-The bundled scanner finds the mechanically detectable subset without loading the target project's packages:
-
-```bash
-/bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
-```
-
-Scanner matches are candidates, not final findings. Context-dependent problems such as missing authentication, name/assertion mismatch, and optimistic UI without network proof require semantic review.
+Use the [standalone Node scanner](../README.md#standalone-scanner) for mechanical candidates, then review the test intent and surrounding code. Scanning does not execute tests or fault probes.
 
 ## Evidence and claim boundary
 
@@ -145,34 +139,14 @@ This project has behavior-backed development evidence and [15 merged upstream fi
 
 The executable [React optimistic-write example](../examples/react-optimistic-write/README.md) demonstrates why a visible optimistic state does not by itself prove that a request was sent or persisted.
 
-## Install and start a review
+## Start a review
 
-Install the four skills for all supported agents:
-
-```bash
-npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
-```
-
-Then start with one scoped request:
+[Install the skills](../README.md#install-and-try-it), then ask:
 
 ```text
 Review the AI-generated Playwright tests in tests/e2e with e2e-reviewer.
 ```
 
-Review and failure debugging support both Playwright and Cypress. New-test generation currently targets Playwright only.
+See [supported environments](../README.md#supported-environments) for framework scope and [scanner limits](../README.md#standalone-scanner) for what static checks can prove.
 
-## Frequently asked questions
-
-### What is a false-green E2E test?
-
-A false-green E2E test passes even when the behavior named in its title is broken. Common causes include asserting a Locator object, swallowing application errors, skipping coverage with a focused test, or checking optimistic UI without proving the side effect.
-
-### Can the deterministic scanner replace semantic review?
-
-No. The scanner finds mechanically detectable candidates. `e2e-reviewer` checks project context, verifies each candidate, and reviews semantic risks that have no reliable grep or abstract syntax tree rule.
-
-### Does `e2e-reviewer` support Playwright and Cypress?
-
-Yes. Review and failure debugging support Playwright and Cypress. New-test generation supports Playwright only.
-
-_Sources and product behavior on this page were rechecked on 2026-09-01._
+_External sources were last checked on 2026-09-01; CLI links follow the 3.3.1 documentation._

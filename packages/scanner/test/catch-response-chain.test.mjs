@@ -34,7 +34,7 @@ function gap(text) {
 
 test('unchanged original response sources retain exactly linked missing anchors', () => {
   for (const [file,line] of [['swallowed-try-catch.spec.ts',50],['swallowed-dependent-gate.spec.ts',23]]) {
-    const path = new URL('../../../skills/e2e-reviewer/evals/files/' + file, import.meta.url);
+    const path = new URL('../../../scripts/evals/skills/e2e-reviewer/files/' + file, import.meta.url);
     const before = fs.readFileSync(path), result = run(before.toString(),file);
     const item = candidate({ findings:result.findings.filter(f => f.line === line) });
     assert.match(before.toString().slice(item.start,item.end), /^catch/);

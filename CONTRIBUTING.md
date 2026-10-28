@@ -169,14 +169,13 @@ Pattern and failure-code semantics live in several files that must move together
 - `skills/e2e-reviewer/references/pattern-reference.md` (the per-pattern contract),
 - `docs/e2e-test-smells.md`,
 - the `README.md` pattern table,
-- `skills/e2e-reviewer/references/grep-patterns.md`,
 - the detector and report mappings in `packages/scanner/src/` (rebuild the installed bundle with `scripts/dev/build-scanner-runtime.py`; do not hand-edit generated files),
 - `scripts/ci/lib/reviewer_taxonomy_contract.py` (the stable reviewer ID/title/severity order).
 
 Then:
 
 1. **Re-run the drift smoke test** (`scripts/ci/test-parity.sh`) and keep it green.
-2. **Add or update evals.** Each behavior change needs at least two assertions in the skill's `evals/evals.json`: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
+2. **Add or update evals.** Each behavior change needs at least two assertions in `scripts/evals/skills/<skill>/evals.json`: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 3. **Respect the severity contract.** P0 entries are silent-always-pass smells; do not downgrade them or promote P1/P2 into P0 just because they are easier to grep.
 4. **Preserve evaluated snapshot digests.** Product edits do not refresh old evidence. Run current contract tests; record a new evaluated-skill digest only in a new study or explicit evidence revision, keeping earlier results unchanged.
 5. **Run the shipped scripts on Linux.** `ci-local.sh` runs on macOS. After changes to shipped skills or their Linux suites are in a local commit, run `/bin/bash -p scripts/dev/linux-script-check.sh` from a worktree with no relevant dirty or untracked inputs. The default command archives `HEAD` and refuses worktree changes in `skills/**`, `README*.md`, `.github/workflows/e2e-smell-scan.yml`, `scripts/ci/ci-local.sh`, `scripts/ci/test-reviewer-scanner.py`, `scripts/ci/test-debugger-contracts.py`, `scripts/ci/test-*-debugger-*.py`, or `scripts/dev/linux-script-check.sh` rather than silently testing the previous commit. These paths are the product, documentation, workflow contract, and suites that the pinned Linux run actually reads. Passing an explicit `<revision>` intentionally validates only that immutable commit, which is how the pre-push hook checks the pushed revision. `--validate-inputs-only` checks this snapshot contract without Docker or network but does not run the Linux suites.

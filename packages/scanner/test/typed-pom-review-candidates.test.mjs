@@ -28,7 +28,7 @@ test('original typed POM fixtures retain exact positional review anchors without
     ['positional-pom/admin-rooms.ts', [11]],
     ['pages/checkout-page.ts', [28, 34]],
   ]) {
-    const text = fs.readFileSync(new URL('../../../skills/e2e-reviewer/evals/files/' + relative, import.meta.url), 'utf8');
+    const text = fs.readFileSync(new URL('../../../scripts/evals/skills/e2e-reviewer/files/' + relative, import.meta.url), 'utf8');
     scan(text, (result, { bytes, file, scope }) => {
       const findings = result.findings.filter(item => item.patternId === '#10a');
       assert.deepEqual(findings.map(item => item.line), lines, relative);
@@ -94,7 +94,7 @@ test('original typed Page parameters and Locator fields retain remaining eval an
     ['missing-await-contexts.spec.ts', [['#10c', 7], ['#16', 11]]],
     ['swallowed-try-catch.spec.ts', [['#10c', 13]]],
   ]) {
-    const text = fs.readFileSync(new URL('../../../skills/e2e-reviewer/evals/files/' + relative, import.meta.url), 'utf8');
+    const text = fs.readFileSync(new URL('../../../scripts/evals/skills/e2e-reviewer/files/' + relative, import.meta.url), 'utf8');
     const result = scan(text);
     for (const [pattern, line] of required) {
       const hits = result.findings.filter(item => item.patternId === pattern && item.line === line);

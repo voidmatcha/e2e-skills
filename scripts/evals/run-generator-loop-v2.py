@@ -513,11 +513,6 @@ def review_candidate(campaign, iteration):
         target = checkout / "skills/playwright-test-generator"
         shutil.rmtree(target)
         copy_skill(directory / "candidate", target)
-        # Include the public skill's unchanged eval metadata in repository review;
-        # it is product verification metadata, never benchmark eval task material.
-        skill_evals = ROOT / "skills/playwright-test-generator/evals"
-        if skill_evals.exists():
-            shutil.copytree(skill_evals, target / "evals")
         for cmd in (["git", "init", "-q"], ["git", "add", "-A"]):
             disposable_git(cmd, checkout, {})
         done = subprocess.run(["/bin/bash", "-p", "scripts/ci/review.sh"], cwd=checkout,

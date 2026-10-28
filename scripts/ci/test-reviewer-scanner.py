@@ -20,7 +20,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 SCANNER = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
-EVAL_FILES = ROOT / "skills/e2e-reviewer/evals/files"
+EVAL_FILES = ROOT / "scripts/evals/skills/e2e-reviewer/files"
 WORKFLOW = ROOT / ".github/workflows/e2e-smell-scan.yml"
 CI_LOCAL = ROOT / "scripts/ci/ci-local.sh"
 SCANNER_WORKFLOW = ROOT / "skills/e2e-reviewer/references/scanner-workflow.md"
@@ -6595,6 +6595,7 @@ def assert_fixture_path_exclusions_are_self_repo_only() -> None:
         targets = (
             root / "evals" / "files" / "focused.spec.ts",
             root / "scripts" / "ci" / "fixtures" / "focused.spec.ts",
+            root / "scripts/evals/skills/e2e-reviewer/files/focused.spec.ts",
         )
         for target in targets:
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -6663,6 +6664,7 @@ def assert_self_repo_scan_is_decided_by_the_scanned_project() -> None:
     assert_complete_report(copied, exit_code=0)
     for result in (in_repo, copied):
         assert "evals/files" not in all_finding_locations(result), result
+        assert "scripts/evals/skills" not in all_finding_locations(result), result
     assert in_repo["counts"] == copied["counts"], (
         in_repo["counts"],
         copied["counts"],
@@ -6688,7 +6690,7 @@ def assert_symlinked_invocation_matches_real_path() -> None:
         assert len(assignments) == 1, assignments
         assert "SCANNER_DIR_REAL" in assignments[0], assignments[0]
 
-    ancestor = ROOT / "skills/e2e-reviewer/evals"
+    ancestor = ROOT / "scripts/evals/skills/e2e-reviewer"
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-symlink-") as temp:
         link = Path(temp) / "scan-link.sh"
         link.symlink_to(SCANNER)
@@ -6703,6 +6705,7 @@ def assert_symlinked_invocation_matches_real_path() -> None:
     assert_complete_report(linked, exit_code=0)
     for result in (real, linked):
         assert "evals/files" not in all_finding_locations(result), result
+        assert "scripts/evals/skills" not in all_finding_locations(result), result
     assert real["counts"] == linked["counts"], (
         real["counts"],
         linked["counts"],
