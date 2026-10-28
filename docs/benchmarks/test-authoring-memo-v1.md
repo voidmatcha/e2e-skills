@@ -72,6 +72,7 @@ The pre-registered gate was met on both hosts; non-gap detection was 12/12 in bo
 
 ## Limits
 
+- Scope: the memo targets failure paths of flows that write to a server; it adds nothing where there are none. The measured fault classes were chosen by the memo's author, the out-of-class result is one pair, and no measurement with independently chosen faults exists yet.
 - An independent replication by a separate benchmark session (two other apps, 96 valid cells, two models) measured no difference with this exact memo (same SHA-256), but its faults were ordinary-path behaviours, not the failure-path classes the memo targets; it shows the memo did not change ordinary-path detection there (mostly ceiling) and does not test the memo's targeted claim.
 - Small authored apps with visible source; neutral prompts only; three repetitions per app.
 - One model per host. Results may not transfer to other models, efforts or hosts.

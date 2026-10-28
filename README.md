@@ -136,14 +136,27 @@ Starting with cases where tests pass despite bugs, the talk covers combining lin
 
 ## Install and try it
 
+### Install with your coding agent (recommended)
+
+Paste the prompt below into Claude Code or Codex. For test generation, name your existing local Playwright project; for reviewing and debugging only, the agent installs without project setup.
+
+```text
+Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
+```
+
+The agent runs the `e2e-skills` installer, which sets up the four skills, two dedicated subagents and, with a project, the official Playwright test agents and project MCP configuration. If a restart is needed, restart your agent yourself and approve the project's MCP server; generation can start once the active session shows `generator_write_test`. Using another agent such as Cursor or Gemini CLI? Install the skills with skills.sh below.
+
+<details>
+<summary>Other installation methods: skills.sh, the CLI and plugins</summary>
+
 Choose by what you need. Reviewing and debugging work in any agent. Test generation also needs the official Playwright test agents and a project MCP server, which the installer sets up for Claude Code and Codex.
 
 | You want to | Agents | Install | You get | Not included |
 | --- | --- | --- | --- | --- |
-| Review and debug existing Playwright/Cypress tests | Any [supported agent](https://github.com/vercel-labs/skills#supported-agents) | [skills.sh](#review-and-debug-install-the-skills-recommended) | The four skills | The two dedicated subagents (optional: the skills reach the same verdicts inline) and generator setup |
+| Review and debug existing Playwright/Cypress tests | Any [supported agent](https://github.com/vercel-labs/skills#supported-agents) | [skills.sh](#review-and-debug-install-the-skills) | The four skills | The two dedicated subagents (optional: the skills reach the same verdicts inline) and generator setup |
 | Also generate new Playwright tests | Claude Code, Codex | [e2e-skills installer](#test-generation-claude-code-and-codex) | The four skills, two dedicated subagents, official Playwright test agents and project MCP configuration | Nothing needed for generation |
 
-### Review and debug: install the skills (recommended)
+### Review and debug: install the skills
 
 Install the four skills with [skills.sh](https://skills.sh/voidmatcha/e2e-skills):
 
@@ -165,16 +178,7 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --hos
 
 `--project` runs the official `playwright init-agents --loop=codex` (or `--loop=claude`) setup for that project and writes its MCP configuration; rerun the install after upgrading Playwright. Without `--project`, the installer adds only the four skills and two dedicated subagents. For a trusted project, add `--check-server` to `doctor` to start the configured MCP server and check `initialize` and `tools/list`; it executes project code, without calling tools, opening a browser or running tests. That check covers the server only. If needed, restart your agent yourself and approve the project's MCP server; generation can start once the active session shows `generator_write_test`.
 
-To have your agent run these steps and the session check for you, paste this into Claude Code or Codex:
-
-```text
-Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
-```
-
 See the [installation guide](docs/installation.md) for prerequisites, conflicts and manual setup.
-
-<details>
-<summary>Other installation methods: plugins</summary>
 
 ### Claude Code
 

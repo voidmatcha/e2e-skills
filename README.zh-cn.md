@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=95bfd9725d95f8d8ff0b910d9845204d23cd5235e74a667bb4e8ce2210b2325d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=225a1cbe0244551e913b5c882036e5def4958425264aa6c857b9621b11d16eaf; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。四个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及诊断失败原因。
 
@@ -137,6 +137,19 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 ## 安装并试用
 
+### 让编程 agent 安装（推荐）
+
+将以下提示词粘贴到 Claude Code 或 Codex。如需测试生成，请告知现有的本地 Playwright 项目；只做审查和失败分析时，无需项目设置即可安装。
+
+```text
+Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
+```
+
+agent 会运行 `e2e-skills` 安装器，安装 4 个技能和 2 个专用代理；指定项目时，还会准备官方 Playwright test agent 和项目 MCP 配置。如需重启，请自行重启 agent 并批准项目的 MCP 服务器；当前会话中出现 `generator_write_test` 后即可开始生成。如果使用 Cursor 或 Gemini CLI 等其他 agent，请用下方的 skills.sh 安装技能。
+
+<details>
+<summary>其他安装方式：skills.sh、CLI 和插件</summary>
+
 请按需要选择安装方式。审查和失败分析可在任何 agent 中使用。测试生成还需要官方 Playwright test agent 和项目 MCP 服务器，安装器会在 Claude Code 和 Codex 中准备好它们。
 
 | 想要做的事 | agent | 安装方式 | 安装内容 | 不包含 |
@@ -144,7 +157,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 | 审查和分析现有 Playwright/Cypress 测试的失败 | [所有受支持的 agent](https://github.com/vercel-labs/skills#supported-agents) | 下方的 skills.sh | 4 个技能 | 2 个专用代理（可选；没有它们技能也会给出相同结论）和 generator 设置 |
 | 同时生成新的 Playwright 测试 | Claude Code、Codex | 下方的 e2e-skills 安装器 | 4 个技能、2 个专用代理、官方 Playwright test agent 和项目 MCP 配置 | 生成所需内容均已包含 |
 
-### 审查和失败分析：安装技能（推荐）
+### 审查和失败分析：安装技能
 
 使用 [skills.sh](https://skills.sh/voidmatcha/e2e-skills) 安装 4 个技能：
 
@@ -166,16 +179,7 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --hos
 
 `--project` 会为该项目运行官方的 `playwright init-agents --loop=codex`（或 `--loop=claude`）设置并写入 MCP 配置；升级 Playwright 后请重新运行安装。不加 `--project` 时，只安装 4 个技能和 2 个专用代理。对于受信任的项目，可在 `doctor` 后加 `--check-server`，启动已配置的 MCP 服务器并检查 `initialize` 和 `tools/list`；该检查会执行项目代码，但不调用工具、不打开浏览器、不运行测试，只检查服务器。如有需要，请自行重启 agent 并批准项目的 MCP 服务器；当前会话中出现 `generator_write_test` 后即可开始生成。
 
-如需让 agent 代为执行这些步骤和会话检查，请将以下提示词粘贴到 Claude Code 或 Codex：
-
-```text
-Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
-```
-
 前提条件、冲突和手动设置请参阅[安装指南](docs/installation.md)。
-
-<details>
-<summary>其他安装方式：插件</summary>
 
 ### Claude Code
 

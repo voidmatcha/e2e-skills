@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=95bfd9725d95f8d8ff0b910d9845204d23cd5235e74a667bb4e8ce2210b2325d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=225a1cbe0244551e913b5c882036e5def4958425264aa6c857b9621b11d16eaf; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 네 종류의 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하며, 실패 원인을 분석합니다.
 
@@ -138,6 +138,19 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 ## 설치하고 사용해 보기
 
+### agent에게 설치 맡기기 (권장)
+
+Claude Code 또는 Codex에 아래 프롬프트를 붙여 넣어주세요. 테스트 생성까지 쓰려면 기존 로컬 Playwright 프로젝트를 알려주고, 리뷰와 실패 분석만 쓰려면 프로젝트 설정 없이 설치하면 됩니다.
+
+```text
+Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
+```
+
+agent는 `e2e-skills` 설치기를 실행해 skill 4개와 전용 agent 2개를 설치하고, 프로젝트를 지정하면 공식 Playwright test agent와 프로젝트 MCP 설정까지 준비합니다. 다시 시작이 필요하면 agent를 직접 다시 시작하고 프로젝트의 MCP 서버를 승인해주세요. 현재 세션에서 `generator_write_test`가 보이면 테스트 생성을 시작할 수 있습니다. Cursor나 Gemini CLI 같은 다른 agent를 쓴다면 아래 skills.sh로 skill을 설치해주세요.
+
+<details>
+<summary>다른 설치 방법: skills.sh, CLI, plugin</summary>
+
 하려는 일에 따라 설치 방법을 고르세요. 리뷰와 실패 분석은 어떤 agent에서도 동작합니다. 테스트 생성에는 공식 Playwright test agent와 프로젝트 MCP 서버가 추가로 필요하며, 설치기가 Claude Code와 Codex에서 이를 준비합니다.
 
 | 하려는 일 | agent | 설치 방법 | 설치되는 것 | 포함되지 않는 것 |
@@ -145,7 +158,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 | 기존 Playwright/Cypress 테스트 리뷰와 실패 분석 | [지원되는 모든 agent](https://github.com/vercel-labs/skills#supported-agents) | 아래 skills.sh 설치 | skill 4개 | 전용 agent 2개(선택 사항이며, 없어도 skill이 같은 판정을 냅니다)와 generator 설정 |
 | 새 Playwright 테스트 생성까지 | Claude Code, Codex | 아래 e2e-skills 설치기 | skill 4개, 전용 agent 2개, 공식 Playwright test agent와 프로젝트 MCP 설정 | 생성에 필요한 것은 모두 포함 |
 
-### 리뷰와 실패 분석: skill 설치 (권장)
+### 리뷰와 실패 분석: skill 설치
 
 [skills.sh](https://skills.sh/voidmatcha/e2e-skills)로 skill 4개를 설치합니다.
 
@@ -167,16 +180,7 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills doctor --hos
 
 `--project`를 지정하면 해당 프로젝트에 공식 `playwright init-agents --loop=codex`(또는 `--loop=claude`) 설정을 실행하고 MCP 설정을 기록합니다. Playwright를 업그레이드한 뒤에는 설치를 다시 실행해주세요. `--project` 없이 실행하면 skill 4개와 전용 agent 2개만 설치합니다. 신뢰하는 프로젝트라면 `doctor`에 `--check-server`를 추가해 설정된 MCP 서버를 시작하고 `initialize`와 `tools/list`를 확인할 수 있습니다. 이 확인은 프로젝트 코드를 실행하지만 tool call, 브라우저 실행, 테스트 실행은 하지 않으며, 서버만 확인합니다. 필요하면 agent를 직접 다시 시작하고 프로젝트의 MCP 서버를 승인해주세요. 현재 세션에서 `generator_write_test`가 보이면 테스트 생성을 시작할 수 있습니다.
 
-이 단계와 세션 확인을 agent에 맡기려면 Claude Code 또는 Codex에 아래 프롬프트를 붙여 넣어주세요.
-
-```text
-Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
-```
-
 준비 조건, 설정 충돌, 수동 설정은 [설치 안내](docs/installation.md)를 참고해주세요.
-
-<details>
-<summary>다른 설치 방법: plugin</summary>
 
 ### Claude Code
 

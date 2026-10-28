@@ -40,6 +40,8 @@ In five pre-registered pairs of small authored apps, specs written with the memo
 
 An independent replication by a separate benchmark session (two other apps, 96 valid cells, two models) measured no difference with this exact memo (same SHA-256), but its faults were ordinary-path behaviours, not the failure-path classes the memo targets; it shows the memo did not change ordinary-path detection there (mostly ceiling) and does not test the memo's targeted claim.
 
+Scope: the memo targets failure paths of flows that write to a server; it adds nothing where there are none. The measured fault classes were chosen by the memo's author, the out-of-class result is one pair, and no measurement with independently chosen faults exists yet.
+
 These are development-stage results on authored apps with visible source, one model per host and a few repetitions. Claude cells also loaded the operator's user-level `CLAUDE.md` in both arms. They are not a sealed benchmark and do not show that the memo works on your project. See the [evidence record](benchmarks/test-authoring-memo-v1.md) for the method, per-pair results and limits.
 
 ## Check your own tests

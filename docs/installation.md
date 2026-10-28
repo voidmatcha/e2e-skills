@@ -3,7 +3,7 @@
 
 ## Recommended setup
 
-For reviewing and debugging in any agent, [install the skills with skills.sh](../README.md#review-and-debug-install-the-skills-recommended). For test generation in Claude Code or Codex, use the [e2e-skills installer](../README.md#test-generation-claude-code-and-codex) with your existing Playwright project, directly or through the paste-in prompt there. The installer prepares the four skills, the two dedicated subagents for the selected host, and the official Playwright agents and project MCP configuration when a project is supplied.
+For reviewing and debugging in any agent, [install the skills with skills.sh](../README.md#review-and-debug-install-the-skills). For test generation in Claude Code or Codex, use the [paste-in prompt](../README.md#install-with-your-coding-agent-recommended) or the [e2e-skills installer](../README.md#test-generation-claude-code-and-codex) directly with your existing Playwright project. The installer prepares the four skills, the two dedicated subagents for the selected host, and the official Playwright agents and project MCP configuration when a project is supplied.
 
 After installation, run the printed diagnostic command when authorized for that exact command. If needed, restart the host yourself, complete project trust and MCP approval, then ask the agent to resume verification in the new session. It reports installation, server tools, session tools and approval separately. It must see `generator_write_test` in the active session before proceeding with generation. Installation does not create your application, its API or database, install project dependencies or browsers, or run tests.
 
