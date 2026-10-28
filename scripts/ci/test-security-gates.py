@@ -27,6 +27,7 @@ HOL_SCANNER_FALSE_POSITIVE_PATHS = {
     "scripts/evals/node-scanner-spike/local-eslint/run.mjs",
     "packages/scanner/test/credentials.test.mjs",
     "packages/scanner/test/config-context.test.mjs",
+    "packages/scanner/test/probe-error-linkage.test.mjs",
     # Fixed Node programs receive argv arrays and JSON-serialized fixture paths.
     "scripts/ci/test-all-in-one-install-node.mjs",
     "packages/scanner/test/probe-runtime.test.mjs",

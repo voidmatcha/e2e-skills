@@ -16,6 +16,8 @@ ignore_paths = [
   "packages/scanner/test/credentials.test.mjs",
   # eval is source text parsed as a fixture, never executed by this test.
   "packages/scanner/test/config-context.test.mjs",
+  # Context.eval( is part of a literal Cypress stack-frame string in fixture data, never executed.
+  "packages/scanner/test/probe-error-linkage.test.mjs",
   # Fixed test programs use argv arrays; the oracle shell policy is hash-pinned.
   # These Node fixtures use fixed programs and JSON-serialized temporary paths,
   # never shell strings or untrusted project input.
