@@ -51,25 +51,36 @@ test('finally return stays a candidate for a direct assertion and unresolved for
   assert.ok(multiple.diagnostics.some(diagnostic => diagnostic.message.includes('finally')));
 });
 
-test('catch clauses, control flow and unsupported cleanup syntax retain diagnostics', () => {
+test('a finally that can complete abruptly keeps a diagnostic; a catch clause keeps its own', () => {
   for (const tail of [
-    'catch {} finally { stop(); }',
+    'finally { label: { break label; } }',
+    'finally { while (ready) { continue; } }',
+    'finally { if (ready) return; }',
+  ]) {
+    const result = run(scenario(`try { ${navigation} ${assertion} } ${tail}`));
+    assert.deepEqual(result.findings, [], tail);
+    assert.ok(result.diagnostics.some(diagnostic => diagnostic.message.includes('finally')), tail);
+  }
+  const caught = run(scenario(`try { ${navigation} ${assertion} } catch {} finally { stop(); }`));
+  assert.deepEqual(caught.findings, []);
+  assert.ok(caught.diagnostics.some(diagnostic => diagnostic.message.includes('try/catch')));
+});
+
+test('a finally with no return, break or continue rethrows the pending error and needs no diagnostic', () => {
+  // Any statements may run; if they complete normally the original failure
+  // still propagates, and a throw from them still fails the test.
+  for (const tail of [
     'finally { await stop(); }',
     'finally { if (ready) stop(); }',
     'finally { stop(); other(); }',
     'finally { stop?.(); }',
     'finally { server["stop"](); }',
     'finally { (async () => { await stop(); })(); }',
-    'finally { label: { break label; } }',
-    'finally { while (ready) { continue; } }',
-  ]) {
-    const result = run(scenario(`try { ${navigation} ${assertion} } ${tail}`));
-    assert.deepEqual(result.findings, [], tail);
-    assert.ok(result.diagnostics.some(diagnostic => diagnostic.message.includes('finally')), tail);
-  }
+    'finally { const cleanup = () => { return; }; cleanup(); }',
+  ]) assert.deepEqual(run(scenario(`try { ${navigation} ${assertion} } ${tail}`)), { findings: [], diagnostics: [] }, tail);
 });
 
-test('cleanup exemption retains framework registration and direct callback boundaries', () => {
+test('a plain finally needs no framework registration; an abrupt one keeps its diagnostic anywhere', () => {
   for (const [body, prefix] of [
     [`other('navigation', async ({page}) => { try { ${navigation} } finally { stop(); } });`, header],
     [scenario(`async function nested() { try { ${navigation} } finally { stop(); } }`), header],
@@ -78,6 +89,40 @@ test('cleanup exemption retains framework registration and direct callback bound
   ]) {
     const result = run(body, prefix);
     assert.deepEqual(result.findings, [], body);
-    assert.ok(result.diagnostics.length, body);
+    assert.ok(!result.diagnostics.some(diagnostic => diagnostic.message.includes('finally')), body);
+    // An abrupt finally stays unresolved (an unpinned test import is already).
+    const abrupt = run(body.replace('finally { stop(); }', 'finally { if (ready) return; }'), prefix);
+    assert.ok(abrupt.diagnostics.length, body);
   }
+});
+
+test('a caught error pushed to a local array that is later asserted empty is re-reported, not swallowed', () => {
+  // Round 7: eighteen field false positives collected cleanup errors this way.
+  const collect = (chain, after = 'expect(errors).toEqual([]);', before = '') => scenario(`const errors = [];${before}
+    try { ${assertion} } finally {
+      await page.request.post('/reset')${chain};
+      for (const error of errors) console.log(String(error));
+    }
+    ${after}`);
+  for (const [chain, after] of [['.catch((error) => { errors.push(error); })', undefined],
+    ['.then((r) => expect(r.ok()).toBe(true)).catch(error => errors.push(error))', 'expect(errors).toHaveLength(0);'],
+    ['.catch(e => { errors.push(e); })', 'expect(errors).toStrictEqual([]);']]) {
+    assert.deepEqual(run(collect(chain, after)).findings, [], chain);
+  }
+  // No later assertion, a non-empty or soft-skippable check, a return before
+  // it, another use of the array, or a pushed value other than the error
+  // keeps the #3 candidate.
+  for (const [chain, after, before] of [['.catch(e => { errors.push(e); })', 'console.log(errors);'],
+    ['.catch(e => { errors.push(e); })', "expect(errors).toEqual(['x']);"],
+    ['.catch(e => { errors.push(e); })', 'if (flag) return; expect(errors).toEqual([]);'],
+    ['.catch(e => { errors.push(e); })', 'errors.length = 0; expect(errors).toEqual([]);'],
+    ['.catch(e => { errors.push(String(e)); })', 'expect(errors).toEqual([]);'],
+    ['.catch(e => { errors.push(e); })', 'if (flag) { expect(errors).toEqual([]); }'],
+    ['.catch(e => { errors.push(e); })', 'expect(errors).toEqual([]);', 'const other = errors;']]) {
+    const result = run(collect(chain, after, before));
+    assert.ok(result.findings.some(f => f.patternId === '#3'), `${chain} ${after} ${before ?? ''}`);
+  }
+  // Unawaited, the push can land after the assertion.
+  assert.ok(run(scenario(`const errors = []; page.request.post('/reset').catch(e => { errors.push(e); }); expect(errors).toEqual([]);`))
+    .findings.some(f => f.patternId === '#3'));
 });

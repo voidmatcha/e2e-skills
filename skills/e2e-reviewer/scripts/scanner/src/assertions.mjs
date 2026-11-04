@@ -388,6 +388,77 @@ export function assertions(bytes, filename, { scope } = {}) {
     return null;
   }
 
+  function searchResult(node, depth = 0) {
+    node = unwrap(node);
+    if (depth > 8) return false;
+    if (ts.isIdentifier(node)) {
+      const symbol = receivers.checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      return Boolean(declaration && ts.isVariableDeclaration(declaration) && ts.isIdentifier(declaration.name) &&
+        declaration.initializer && declaration.parent.flags & ts.NodeFlags.Const &&
+        !isWritten(source, receivers.checker, symbol) && searchResult(declaration.initializer, depth + 1));
+    }
+    const SEARCH = ['indexOf', 'lastIndexOf', 'findIndex', 'findLastIndex', 'search'];
+    // `await locator.evaluateAll(items => items.findIndex(...))`: the browser
+    // callback searches its Element array, which yields -1 on no match.
+    if (ts.isAwaitExpression(node)) {
+      const call = unwrap(node.expression), access = ts.isCallExpression(call) && member(call.expression);
+      const callback = access?.name === 'evaluateAll' && call.arguments.length >= 1 && unwrap(call.arguments[0]);
+      if (!callback || !(ts.isArrowFunction(callback) || ts.isFunctionExpression(callback)) ||
+          !callback.parameters[0] || !ts.isIdentifier(callback.parameters[0].name)) return false;
+      const owner = receivers.expression(access.object);
+      if (!owner.complete || !['page', 'locator'].includes(owner.kind)) return false;
+      const items = callback.parameters[0].name.text, values = [];
+      if (!ts.isBlock(callback.body)) values.push(callback.body);
+      else {
+        const last = callback.body.statements.at(-1);
+        if (!last || !ts.isReturnStatement(last)) return false;
+        let bare = false;
+        (function returns(item) {
+          if (item !== callback.body && ts.isFunctionLike(item)) return;
+          if (ts.isReturnStatement(item)) { if (item.expression) values.push(item.expression); else bare = true; }
+          ts.forEachChild(item, returns);
+        })(callback.body);
+        if (bare) return false;
+      }
+      return values.every(value => {
+        value = unwrap(value);
+        const search = ts.isCallExpression(value) && member(value.expression);
+        const receiver = search && unwrap(search.object);
+        return Boolean(search && SEARCH.includes(search.name) && ts.isIdentifier(receiver) && receiver.text === items);
+      });
+    }
+    if (!ts.isCallExpression(node)) return false;
+    const access = member(node.expression);
+    return Boolean(access && SEARCH.includes(access.name) && receivers.data(access.object));
+  }
+  // `box.x` / `box.y` of `const box = await locator.boundingBox()`: Playwright
+  // reports page coordinates, which are negative for an element scrolled or
+  // positioned off-screen, so `>= 0` can fail and is not a #4a invariant.
+  function boxCoordinate(node) {
+    node = unwrap(node);
+    if (!ts.isPropertyAccessExpression(node) || !['x', 'y'].includes(node.name.text)) return false;
+    const box = unwrap(node.expression);
+    if (!ts.isIdentifier(box)) return false;
+    const symbol = receivers.checker.getSymbolAtLocation(box);
+    const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+    if (!declaration || !ts.isVariableDeclaration(declaration) || !ts.isIdentifier(declaration.name) || !declaration.initializer ||
+        !(declaration.parent.flags & ts.NodeFlags.Const) || isWritten(source, receivers.checker, symbol, { properties: true })) return false;
+    const awaited = unwrap(declaration.initializer);
+    const call = ts.isAwaitExpression(awaited) && unwrap(awaited.expression);
+    const access = call && ts.isCallExpression(call) && !call.questionDotToken && !call.arguments.length && dot(call.expression);
+    if (!access || access.name !== 'boundingBox') return false;
+    const owner = receivers.expression(access.object);
+    return owner.complete && owner.kind === 'locator';
+  }
+  // expect.poll(fn).toBeGreaterThanOrEqual(0) passes on its first sample
+  // when the polled value cannot be negative, so it never waits.
+  function pollCall(node) {
+    node = unwrap(node);
+    if (!ts.isCallExpression(node) || node.questionDotToken || !node.arguments.length || node.arguments.length > 2) return false;
+    const access = member(node.expression);
+    return Boolean(access?.name === 'poll' && ts.isIdentifier(unwrap(access.object)) && proven(access.object, 'expect'));
+  }
   function matcherCandidate(node) {
     if (!ts.isCallExpression(node) || node.questionDotToken) return;
     const matcher = dot(node.expression);
@@ -404,7 +475,12 @@ export function assertions(bytes, filename, { scope } = {}) {
       if (node.arguments.length !== 1 || !ts.isNumericLiteral(node.arguments[0]) ||
           node.arguments[0].getText(source) !== '0') return;
     } else if (modifiers.includes('not')) return;
-    if (!expectCall(base, { soft: true })) return;
+    const call = expectCall(base, { soft: true });
+    if (!call && !(matcher.name === 'toBeGreaterThanOrEqual' && pollCall(base))) return;
+    // A built-in search result on plain data is -1 when nothing matches, so
+    // `>= 0` can fail and is not a #4a invariant.
+    if (call && matcher.name === 'toBeGreaterThanOrEqual' && !modifiers.length &&
+        (searchResult(call.arguments[0]) || boxCoordinate(call.arguments[0]))) return;
     record(matcher.name === 'toBeAttached' ? '#4b' : '#4a', unwrap(node.expression).name,
       node.end, 'candidate', matcher.name === 'toBeAttached' ? 'P1' : 'P0');
   }

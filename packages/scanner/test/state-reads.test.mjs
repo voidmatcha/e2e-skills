@@ -83,11 +83,13 @@ test('retry closures use proven bindings without line-window limits', () => {
   assert.deepEqual(result.diagnostics, []);
   assert.equal(result.findings.length, 1, 'shadowed retry helper does not suppress genuine inner assertion');
 });
-test('wrappers, type-only receivers and POMs are explicit bounded gaps', () => {
+test('wrapped scalar reads on proven receivers are candidates; type-only receivers and POMs are explicit bounded gaps', () => {
+  // pattern-reference.md: wrapped forms such as Number(await ...) and
+  // (await ...).trim() are #4c-4e one-shot reads.
   const result = run(body("expect(Number(await page.getByText('x').count())).toBe(1);\n" +
     "expect((await page.textContent('x')).trim()).toBe('x');"));
-  assert.deepEqual(result.findings, []);
-  assert.equal(result.diagnostics.length, 2);
+  assert.deepEqual(result.findings.map(f => [f.patternId, f.disposition]), [['#4c-4e', 'candidate'], ['#4c-4e', 'candidate']]);
+  assert.deepEqual(result.diagnostics, []);
   const typed = run("import {expect,type Locator} from '@playwright/test';async function helper(item:Locator){expect(await item.count()).toBe(1);}");
   assert.equal(typed.findings.length, 0);
   assert.match(typed.diagnostics[0].message, /type-only/);

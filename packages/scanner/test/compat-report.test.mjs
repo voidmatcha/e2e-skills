@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { summarize } from '../src/report.mjs';
 import { formatLegacyReport, writeLegacyReportFile } from '../src/compat-report.mjs';
+import { spawnSync } from 'node:child_process';
 
 function finding(patternId = '#3', extra = {}) {
   return { patternId, file: '/review/tests/example.spec.ts', line: 2,
@@ -175,4 +176,67 @@ test('catch propagation guidance describes review without claiming a defect', ()
   assert.match(output.text, /example.spec.ts.*:2: propagation-unsupported/);
   assert.match(output.text, /Trace catch propagation and helper callers/);
   assert.match(output.text, /no defect is established/);
+});
+
+test('#10c hits are grouped per file in the default text view; verbose and the report file list each hit', t => {
+  const other = '/review/tests/other.spec.ts';
+  const findings = [3, 7, 9].map(line => finding('#10c', { line, severity: 'P1' }))
+    .concat([finding('#10c', { file: other, line: 5, severity: 'P1' }), finding('#3', { line: 12 })]);
+  const data = report(findings, { full: true });
+  const grouped = formatLegacyReport(data, { root: '/review' });
+  assert.match(grouped.text, /^\[P1\?\]\[LLM-TRIAGE\] #10c Static candidate \(4 hits\)$/m);
+  assert.match(grouped.text, /^  "tests\/example.spec.ts": 3 hits, lines 3, 7, 9: #10c$/m);
+  assert.match(grouped.text, /^  "tests\/other.spec.ts": 1 hit, line 5: #10c$/m);
+  assert.doesNotMatch(grouped.text, /example.spec.ts":7: #10c/);
+  // Other patterns keep one line per hit; counts and exit code are unchanged.
+  assert.match(grouped.text, /^  "tests\/example.spec.ts":12: #3$/m);
+  const verbose = formatLegacyReport(data, { root: '/review', verbose: true });
+  for (const line of [3, 7, 9]) assert.match(verbose.text, new RegExp(`^  "tests/example.spec.ts":${line}: #10c$`, 'm'));
+  assert.equal(verbose.exitCode, grouped.exitCode);
+  assert.equal(grouped.text.match(/^Summary: .*$/m)[0], verbose.text.match(/^Summary: .*$/m)[0]);
+  const file = path.join(temporary(t), 'report.txt');
+  writeLegacyReportFile(data, file, { root: '/review' });
+  assert.match(fs.readFileSync(file, 'utf8'), /^  "tests\/example.spec.ts":7: #10c$/m);
+});
+
+test('the CLI accepts --verbose only with the text report', t => {
+  const root = temporary(t);
+  fs.writeFileSync(path.join(root, 'case.spec.ts'), "import { test } from '@playwright/test';\n" +
+    "test('t', async ({ page }) => {\n  page.getByRole('link', { name: 'A' });\n  page.getByRole('link', { name: 'B' });\n});\n");
+  const cli = new URL('../src/cli.mjs', import.meta.url).pathname;
+  const run = (...args) => spawnSync(process.execPath, [cli, '--scan', root, '--fail-on', 'none', ...args], { encoding: 'utf8', timeout: 30_000 });
+  const grouped = run('--format', 'text'), verbose = run('--format', 'text', '--verbose');
+  assert.equal(grouped.status, 0, grouped.stderr);
+  assert.match(grouped.stdout, /^  "case.spec.ts": 2 hits, lines 3, 4: #10c$/m);
+  assert.match(verbose.stdout, /^  "case.spec.ts":3: #10c\n  "case.spec.ts":4: #10c$/m);
+  const json = run('--verbose', '--format', 'json');
+  assert.equal(json.status, 2);
+  assert.match(json.stderr, /--verbose requires the text report/);
+});
+
+test('a single-file scan root shows the file name, not "."', () => {
+  const output = formatLegacyReport(report([finding('#3')], { full: true }), { root: '/review/tests/example.spec.ts' });
+  assert.match(output.text, /^  "example.spec.ts":2: #3$/m);
+  assert.doesNotMatch(output.text, /"\.":/);
+});
+
+test('allowed incomplete reports keep the unchecked warning in the final text and digest summary', () => {
+  const rawReason = 'analysis incomplete: /project/tests/check.spec.ts: PRIVATE_REASON at line 7';
+  const canonical = report([], { full: true, errors: [rawReason] });
+  canonical.execution.exitCode = 0;
+  canonical.execution.allowIncomplete = { applied: true, unanalyzed: { files: 1, locations: 1 } };
+  canonical.execution.diagnostics = [{ code: 'analysis-unknown', file: '/project/tests/check.spec.ts', line: 7 }];
+  const before = JSON.stringify(canonical);
+  const output = formatLegacyReport(canonical, { root: '/project' });
+  assert.equal(output.exitCode, 0);
+  for (const text of [output.text, output.digest]) {
+    const last = text.trimEnd().split('\n').at(-1);
+    assert.match(last, /^Summary \[INCOMPLETE\]: 0 total hit\(s\)/);
+    assert.match(last, /ALLOW-INCOMPLETE: unanalyzed code is NOT checked; exit status covers analyzed findings only\.$/);
+    assert.match(text, /"tests\/check\.spec\.ts":7: analysis-unknown/);
+    assert.doesNotMatch(text, /PRIVATE_REASON/);
+  }
+  assert.equal(JSON.stringify(canonical), before, 'formatting preserves canonical raw reasons and locations');
+  assert.equal(canonical.status, 'INCOMPLETE');
+  assert.equal(canonical.execution.complete, false);
 });

@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # Generator setup guidance
 
-Read this when generation prerequisites are missing or the project has no E2E/lint setup. Explain the relevant path; do not execute setup commands, install packages, or write configuration under this skill. Report generation, scan and execution as not done when prerequisites are absent. A separately requested installation task can prepare the environment under its own authority.
+Read this when generation prerequisites are missing, the project has no E2E/lint setup, or its instruction file lacks the test-authoring memo. Explain the relevant path; do not execute setup commands, install packages, or write configuration under this skill, except the memo command below after the user's explicit yes. Report generation, scan and execution as not done when prerequisites are absent. A separately requested installation task can prepare the environment under its own authority.
 
 ## No E2E setup versus no tests
 
@@ -19,14 +19,26 @@ Mocking is an optional project/scenario choice, never a prerequisite imposed by 
 
 ## Official agents and session tools
 
+Read `references/readiness.md` before deciding which prerequisites are missing. The same registration, approval and session-tool checks apply; setup guidance does not clear them.
+
+When blocked, report together: `BLOCKED: <observed reason>. Needed: <specific input or approval>. NOT done: <unrun checks>.` Include all already-confirmed blockers, without inventing unknown prerequisites or restarting a completed setup step. For a remote target, explicitly request a disposable loopback URL and the relevant config/stack information. Existing approved facts need no repeated questions.
+
 1. In the project: `npx --no-install playwright init-agents --loop=<claude|codex>`. Writes repo files (agents, `specs/README.md`, seed spec); this skill never runs it.
 2. Declare `playwright-test` (`npx --no-install playwright run-test-mcp-server`) in the host with tool approval. Claude Code: `init-agents` wrote `.mcp.json`; approve its prompt. Codex: `init-agents` declares it only inside the agent file; declare it in trusted-project `.codex/config.toml` or user `~/.codex/config.toml` yourself. Headless, existing config; expose `generator_write_test` and, for MCP execution, `test_run`. Missing tools: check server errors; `required = true`, `mcp_optional_startup_grace_ms = 0` wait for startup. Keep Codex sessions persistent.
 3. Start a new session and ask again.
 
 Tool absence alone is not approval evidence. Distinguish missing configuration, disabled server/tools, startup failure, and tools not exposed in the active session. The installer's `--check` verifies server discovery only, not host approval or session visibility; use it only as a separately authorized setup diagnostic. Never change host trust/approval or global settings to make this skill proceed.
 
+## Test-authoring memo in the instruction file
+
+Every delegated planner/generator prompt already carries the text of `test-authoring-memo.md`, pasted unchanged. Offer the memo for an instruction file only when the requested feature has a server write or an optimistic UI update; for a feature without either, such as a read-only page, do not offer it. Placement depends on the host: for Claude Code, `CLAUDE.md` in the project's E2E test directory (the directory holding the specs, such as the Playwright `testDir`); for Codex, `AGENTS.md` in the repository root. An instruction file is loaded in sessions that work there, including those that do not use this skill; on some hosts sub-agents do not inherit the project instruction file, which is why the skill also passes the memo in the delegated prompt.
+
+In a dev pilot, Claude caught about as many failure-path faults with the memo in the E2E test directory as in the root (52/54 vs 53/54), while Codex caught fewer with it in the test directory (30/54 vs 44/54) even though it opened that `AGENTS.md` in every cell, so Codex keeps the root placement. Alternatively, a memo in the E2E test directory's `AGENTS.md` also works for Codex when the Codex session is started in that directory, where it loads at startup (in a dev pilot the memo reached the main agent and every sub-agent in 9 of 9 runs, and 41/54 failure-path faults were caught vs 44/54 with the root file); relative paths then resolve from that directory (one of nine runs wrote the spec to `tests/tests/...`), so give paths relative to the session's directory.
+
+If that file is missing or has neither the `# Test authoring notes` heading nor an `<!-- e2e-skills:test-authoring-memo` marker, tell the user and show the exact command, with `--dry-run` first: `e2e-skills guidance --host claude --project <abs E2E test dir> --memo` for Claude Code, or `e2e-skills guidance --host codex --project <abs repository root> --memo` for Codex. Ask for a yes before anything writes to `CLAUDE.md` or `AGENTS.md`. Without a yes, write nothing to either file, do not paste or edit the memo there yourself, and report the offer as an optional follow-up; delegation does not wait for it. With a yes, run the installed `e2e-skills` command, never a downloading `npx`; when it is not installed, give the user the command from the installation guide to run themselves.
+
 ## No project lint rules
 
-Missing ESLint configuration or `eslint-plugin-playwright` does not block generation or the bundled scanner. Keep the section 5 pinned scanner invocation unchanged: it disables target-controlled ESLint and downloads. Report optional ESLint as skipped, not lint-clean; bundled scan results do not establish lint coverage. A missing scanner prerequisite or failed scan still follows section 5's blocked/incomplete handling.
+Missing ESLint configuration or `eslint-plugin-playwright` does not block generation or the bundled scanner. Keep the pinned scanner invocation in `references/execution-and-report.md` unchanged: it disables target-controlled ESLint and downloads. Report optional ESLint as skipped, not lint-clean; bundled scan results do not establish lint coverage. A missing scanner prerequisite or failed scan still follows that execution contract's blocked/incomplete handling.
 
 Follow existing lint conventions when present. When Playwright lint rules are absent, recommend the [eslint-plugin-playwright recommended configuration](https://github.com/playwright-community/eslint-plugin-playwright) as optional follow-up, scoped to E2E files. Reuse an installed plugin; recommend enabling its preset rather than installing it again. Show proposed setup for a separately requested configuration task; do not install plugins, create lint files or replace existing rules during generation. Lint setup is not a prerequisite and cannot replace the scanner or native test execution, or a separately requested semantic review.

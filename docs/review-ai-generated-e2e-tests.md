@@ -44,7 +44,7 @@ test('shows the welcome message', async ({ page }) => {
 The deterministic scanner reports the load-bearing line:
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan tests/
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan tests/
 [P0][CONFIRMED] #4f Static finding (1 hit)
   "login.spec.ts":5: #4f
 
@@ -149,4 +149,4 @@ Review the AI-generated Playwright tests in tests/e2e with e2e-reviewer.
 
 See [supported environments](../README.md#supported-environments) for framework scope and [scanner limits](../README.md#standalone-scanner) for what static checks can prove.
 
-_External sources were last checked on 2026-09-01; CLI links follow the 3.3.1 documentation._
+_External sources were last checked on 2026-09-01; CLI links follow the 3.4.0 documentation._

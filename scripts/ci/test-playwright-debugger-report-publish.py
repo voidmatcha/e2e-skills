@@ -473,7 +473,15 @@ class SafeReportPublishTests(unittest.TestCase):
         self.assertIn("do not replace it with `mkdir` plus shell", acquisition)
         self.assertIn("--pass-env PATH", acquisition)
         self.assertIn("/usr/bin/env -i PATH=\"$PATH\"", acquisition)
-        self.assertIn("name and current value of every variable", acquisition)
+        self.assertIn(
+            "Before any execution, browser request, or artifact write in this procedure, "
+            "read `references/safety-procedures.md` and apply its gates.",
+            acquisition,
+        )
+        safety = (
+            ROOT / "skills/playwright-debugger/references/safety-procedures.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("name and current value of every variable", safety)
         self.assertIn(
             "The one accepted non-zero exit is status 1, which `playwright test` "
             "returns when tests fail, and only when the captured report then passes "

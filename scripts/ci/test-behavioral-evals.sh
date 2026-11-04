@@ -156,14 +156,17 @@ class Process:
 class CleanupStream:
     def __init__(self, fd):
         self.fd = fd
+        self.closed = False
     def fileno(self):
         return self.fd
+    def close(self):
+        self.closed = True
 
 class CleanupProcess:
     pid = 24680
-    stdout = CleanupStream(10)
-    stderr = CleanupStream(11)
     def __init__(self):
+        self.stdout = CleanupStream(10)
+        self.stderr = CleanupStream(11)
         self.wait_calls = 0
     def wait(self, timeout=None):
         self.wait_calls += 1
@@ -293,6 +296,8 @@ with patch.object(
     else:
         raise AssertionError("oversized output unexpectedly completed")
 assert output_signals == [module.signal.SIGTERM, module.signal.SIGKILL]
+for process in (timeout_process, terminating_process, successful_process, output_process):
+    assert process.stdout.closed and process.stderr.closed
 
 case = {
     "id": "reviewer-always-true-locator",
@@ -392,6 +397,7 @@ for reference in (
     "classification-procedure.md",
     "fix-verification.md",
     "report-acquisition.md",
+    "report-and-repair.md",
 ):
     assert (
         "BEGIN_TRUSTED_SKILL_SNAPSHOT "
@@ -413,10 +419,11 @@ with tempfile.TemporaryDirectory() as prompt_dir:
 assert (
     "BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/thin-rules.md"
 ) in generator_prompt
-# The router ships its thin rules and on-demand setup guide; retired pipeline
+# The router ships its thin rules, the delegated memo and on-demand setup guide; retired pipeline
 # references live in the archive and must not be snapshotted into prompts.
 assert "BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/setup-guide.md" in generator_prompt
-assert generator_prompt.count("BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/") == 3
+assert "BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/test-authoring-memo.md" in generator_prompt
+assert generator_prompt.count("BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/") == 4
 assert "BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/SKILL.md" in generator_prompt
 for removed in ("best-practices.md", "verification-rules.md", "scenario-design.md"):
     assert f"playwright-test-generator/{removed}" not in generator_prompt

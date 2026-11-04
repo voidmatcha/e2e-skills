@@ -88,5 +88,10 @@
     "id": "ko-playwright-not-cypress",
     "query": "Playwright 테스트가 실패했어. playwright-report를 보고 원인을 분석해줘.",
     "should_trigger": false
+  },
+  {
+    "id": "extract-existing-report-only",
+    "query": "Only extract the errors and counts from the existing Cypress report; no diagnosis or fix, even if the report has zero failures.",
+    "should_trigger": true
   }
 ]

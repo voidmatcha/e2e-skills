@@ -51,7 +51,7 @@ MAX_SELECTED_ENTRY_BYTES = 32 * 1024 * 1024
 MAX_ZIP_TOTAL_BYTES = 512 * 1024 * 1024
 MAX_COMPRESSION_RATIO = 200
 MAX_NDJSON_LINE_BYTES = 1024 * 1024
-EXPECTED_TRACE_ENTRY = re.compile(r"(?:[0-9]+-)?trace\.(?:trace|network)\Z")
+EXPECTED_TRACE_ENTRY = re.compile(r"(?:(?:[0-9]+-)?trace\.(?:trace|network)|test\.trace)\Z")
 REDACTED = "[REDACTED]"
 SENSITIVE_KEY_FRAGMENTS = (
     "apikey",
@@ -1286,6 +1286,13 @@ def project_trace_record(record: object, entry: str) -> dict[str, object] | None
         )
 
     record_type = record.get("type")
+    if entry == "test.trace":
+        if record_type != "error":
+            return None
+        message = trace_string(record.get("message"))
+        if message is None:
+            return None
+        return redact_sensitive({"kind": "test-error", "message": message})
     if record_type == "after" and record.get("error") is not None:
         return redact_sensitive(
             {
@@ -1336,7 +1343,7 @@ def read_trace_entry(
     if not EXPECTED_TRACE_ENTRY.fullmatch(entry):
         raise ValueError(
             "entry is not an expected trace entry "
-            "(trace.trace, trace.network, or a numeric-prefixed equivalent)"
+            "(test.trace, trace.trace, trace.network, or a numeric-prefixed equivalent)"
         )
     archive, infos = open_trace_archive(data)
     try:

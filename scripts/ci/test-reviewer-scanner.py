@@ -2966,6 +2966,88 @@ def assert_cy_env_credentials_are_not_candidates() -> None:
     assert "cy-env-login.cy.ts:6:" in findings, result.stdout
 
 
+def assert_same_file_helpers_and_literal_loops_resolve() -> None:
+    """A closed same-file helper called only with the fixture Page, and a loop
+    over a literal string array, are resolved instead of making the run
+    INCOMPLETE. A weak matcher reached through the helper is still a P0."""
+    result = node_scan_fixture("helper-provenance.spec.ts")
+    assert result.returncode == 1, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert [(item["patternId"], item["severity"], item["disposition"], item["line"])
+            for item in result.report["findings"]] == [("#4f", "P0", "confirmed", 23)], result.report
+
+
+def assert_generated_spec_shapes_resolve() -> None:
+    """Template names, plain data from text.match() and page.evaluate(), and a
+    reassigned let Locator resolve instead of making the run INCOMPLETE. A
+    weak matcher on a Locator with a template name is still a P0."""
+    result = node_scan_fixture("generated-shapes.spec.ts")
+    assert result.returncode == 1, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert [(item["patternId"], item["severity"], item["disposition"], item["line"])
+            for item in result.report["findings"]] == [("#4f", "P0", "confirmed", 25)], result.report
+
+
+def assert_p0_candidates_skip_provably_safe_shapes() -> None:
+    """An indexOf result can be -1 and a gate fixed by literal loop constants or
+    literal helper arguments is not app state: neither is a #4a/#5a candidate.
+    count() >= 0 stays #4a. The action-only visibility gate on line 11 is not
+    a #5a candidate either (round-6 #5a contract)."""
+    result = node_scan_fixture("p0-candidate-narrowing.spec.ts")
+    assert result.returncode == 0, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert [(item["patternId"], item["line"]) for item in result.report["findings"]
+            if item["patternId"] in {"#4a", "#5a"}] == [("#4a", 26)], result.report
+
+
+def assert_helper_objects_and_read_only_data_resolve() -> None:
+    """A field of an object-of-Locators helper and plain data that is rewritten,
+    mapped, or passed to a read-only same-file helper resolve instead of making
+    the run INCOMPLETE. A weak matcher on a helper field is still a P0."""
+    result = node_scan_fixture("helper-objects-and-data.spec.ts")
+    assert result.returncode == 1, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert [(item["patternId"], item["severity"], item["disposition"], item["line"])
+            for item in result.report["findings"]] == [("#4f", "P0", "confirmed", 33)], result.report
+
+
+def assert_field_scan_shapes_narrow_p0_candidates() -> None:
+    """A swallowed wait re-checked on the same locator, a cleanup catch in a
+    test's final finally, an evaluateAll findIndex >= 0 check, a data-row gate
+    that runs, and a self-checking gate are not P0 candidates; a polled
+    count() >= 0 and a swallowed reload before a later assertion still are."""
+    result = node_scan_fixture("field-scan-shapes.spec.ts")
+    assert result.returncode == 0, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert sorted((item["patternId"], item["line"]) for item in result.report["findings"]
+                  if item["severity"] == "P0") == [("#3", 33), ("#4a", 32)], result.report
+
+
+def assert_conditional_paths_need_one_sided_assertions() -> None:
+    """#5a contract: an if/else asserting on both paths and a visibility gate
+    around an assertion-free branch are not candidates; a visibility gate around
+    the only assertion of a test still is."""
+    result = node_scan_fixture("conditional-paths.spec.ts")
+    assert result.returncode == 0, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert sorted((item["patternId"], item["line"], item.get("variant")) for item in result.report["findings"]
+                  if item["severity"] == "P0") == [("#5a", 16, "conditional-assertion"),
+                                                    ("#5a", 16, "inline-visibility-condition")], result.report
+
+
+def assert_round7_shapes_resolve_and_narrow() -> None:
+    """Round 7: an attribute-guaranteed getAttribute gate, a boundingBox x/y
+    check, a collected-and-asserted cleanup error and page.route helper calls
+    are not P0 candidates; an always-true count check and a one-shot
+    visibility gate around the only assertion still are."""
+    result = node_scan_fixture("round7-shapes.spec.ts")
+    assert result.returncode == 0, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert sorted((item["patternId"], item["line"], item.get("variant")) for item in result.report["findings"]
+                  if item["severity"] == "P0") == [("#4a", 16, None), ("#5a", 36, "conditional-assertion"),
+                                                    ("#5a", 36, "inline-visibility-condition")], result.report
+
+
 def assert_uncalled_matchers_are_p0() -> None:
     """#8c: a matcher that is read but never called, or a bare expect(x), runs no
     assertion, so the statement passes whatever x is. The fixture pairs each hit
@@ -4074,7 +4156,9 @@ def assert_multiline_boolean_consumers() -> None:
         for consumed_line in (5, 8, 11, 13):
             assert f"boolean-consumers.spec.ts:{consumed_line}:" not in discarded
         conditional = canonical_section(result.report, "[P0?][LLM-TRIAGE] #5a Conditional assertion bypass")
-        assert "boolean-consumers.spec.ts:5:" in conditional
+        # The if branch on line 6 holds no assertion, so line 5 is not a #5a
+        # candidate since the round-6 contract (legacy flagged it).
+        assert "boolean-consumers.spec.ts:5:" not in conditional
         assert "boolean-consumers.spec.ts:8:" not in conditional
         assert result.report["counts"]["p0"] == 0
 
@@ -4280,12 +4364,13 @@ def assert_empty_catch_best_effort_and_lifecycle_exemptions() -> None:
             not canonical_section(result.report, "[P0] #3")
         ), result.stdout
 
-        # The Node report retains all six candidates without claiming the old
-        # best-effort versus outcome-sensitive semantic partition. Check its
-        # exact union and P0 role; keep the cleanup-only gate below unchanged.
+        # The afterEach/afterAll cleanup catches (lines 3 and 9) are not
+        # candidates: they run after the test's assertions and no expect
+        # follows them. Setup and in-test catches stay candidates; the old
+        # best-effort versus outcome-sensitive partition is still not claimed.
         assert sorted((Path(item["file"]).name, item["line"]) for item in result.report["findings"]
                       if item["patternId"] == "#3" and item["disposition"] == "candidate") == [
-            ("empty-catch.spec.ts", line) for line in (3, 6, 9, 12, 13, 14)
+            ("empty-catch.spec.ts", line) for line in (6, 12, 13, 14)
         ], result.report
 
         cleanup_only = root / "cleanup-only.spec.ts"
@@ -4303,7 +4388,7 @@ def assert_empty_catch_best_effort_and_lifecycle_exemptions() -> None:
         cleanup_gate = node_scan(cleanup_only, {"E2E_SMELL_FAIL_ON": "p0"})
         assert cleanup_gate.returncode == 0, cleanup_gate.stdout
         assert cleanup_gate.report["counts"]["p0"] == 0
-        assert cleanup_gate.report["counts"]["p0Candidate"] == 2
+        assert cleanup_gate.report["counts"]["p0Candidate"] == 0
 
 
 def assert_empty_catch_syntax_requires_semantic_confirmation() -> None:
@@ -4341,7 +4426,9 @@ def assert_empty_catch_syntax_requires_semantic_confirmation() -> None:
         target.write_text(source, encoding="utf-8")
         expected_lines = {3, 4, 5, 6, 7, 10, 11, 14, 19, 24}
         for policy in ("p0", "p0-candidate"):
-            result = node_scan(target, {"E2E_SMELL_FAIL_ON": policy}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'catchHandlers', 'semantic.spec.ts', 782, "{ throw new Error('still fails'); }"), ('analysis-unknown', 'softAssertions', 'semantic.spec.ts', 173, "expect.soft(page.getByRole('main'))")]))
+            # A finally that throws still fails the test, so only the soft
+            # assertion's ownership stays unresolved.
+            result = node_scan(target, {"E2E_SMELL_FAIL_ON": policy}, expected_diagnostics=source_diagnostics(target, [('analysis-unknown', 'softAssertions', 'semantic.spec.ts', 173, "expect.soft(page.getByRole('main'))")]))
             assert result.returncode == 2, result.stdout  # Exact retained diagnostics take precedence over policy.
             assert not canonical_section(result.report, "[P0] #3"), result.stdout
             candidates = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved test-outcome impact")
@@ -4378,12 +4465,10 @@ def assert_empty_catch_assertions_and_actions_remain_candidates() -> None:
             encoding="utf-8",
         )
 
-        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"}, expected_diagnostics=source_diagnostics(root, [
-            ("provenance-unsupported", "actions", "oracle.spec.ts", None),
-            ("provenance-unsupported", "promises", "oracle.spec.ts", 291, 'page.keyboard'),
-            ("provenance-unsupported", "pageReads", "oracle.spec.ts", 291, 'page.keyboard'),
-        ]))
-        assert result.returncode == 2, result.stdout
+        # Round 7: page.keyboard on a proven Page is a Playwright helper
+        # object, not an unresolved receiver, so this scan is complete.
+        result = node_scan(root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
         assert not canonical_section(result.report, "[P0] #3"), result.stdout
 
         unresolved = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible empty catch with unresolved "
@@ -4566,7 +4651,8 @@ def assert_promise_and_control_flow_triage() -> None:
 
 
 def assert_swallowed_assertion_triage() -> None:
-    # Finally cleanup can change the outcome; retain exact unresolved control-flow diagnostic.
+    # A finally return can change the outcome and stays a candidate; a finally
+    # that completes normally rethrows the pending error, so it is resolved.
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-swallowed-assertion-") as temp:
         root = Path(temp)
         target = root / "swallowed.spec.ts"
@@ -4594,8 +4680,8 @@ def assert_swallowed_assertion_triage() -> None:
             encoding="utf-8",
         )
 
-        result = node_scan(root, expected_diagnostics=source_diagnostics(root, [('analysis-unknown', 'catchHandlers', 'swallowed.spec.ts', 447, '{\n    await cleanup();\n  }')]))
-        assert result.returncode == 2, result.stdout
+        result = node_scan(root)
+        assert result.returncode == 0, result.stdout
         all_settled = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible assertion failure swallowed by Promise.allSettled")
         finally_return = canonical_section(result.report, "[P0?][LLM-TRIAGE] #3 Possible assertion failure masked by finally return")
         assert "swallowed.spec.ts:3:" in all_settled
@@ -7391,19 +7477,21 @@ def assert_main_inline_contract() -> None:
         ('analysis-unknown', 'stateReads', 'documented-exclusions.spec.ts', 942, 'flags'),
     ]))
     assert exclusions.returncode == 2
-    assert {item['line'] for item in exclusions.report['findings'] if item['patternId'] == '#5a'} == {15, 64}
+    # Line 15 only dismisses an optional banner (no assertion in the branch):
+    # not a #5a candidate since the round-6 #5a contract change.
+    assert {item['line'] for item in exclusions.report['findings'] if item['patternId'] == '#5a'} == {64}
     assert all(item['disposition'] == 'candidate' for item in exclusions.report['findings'])
     assert not any(item['patternId'] == '#16' or item['line'] == 33 for item in exclusions.report['findings'])
     # The custom flags.isEnabled call at line 24 is not a proven Locator read;
     # its original uncertainty remains diagnostic rather than an invented hit.
-    assert exclusions.report['counts'] == dict(total=8, p0=0, p1p2=0, triage=8, p0Candidate=3, ast=8, confirmed=0)
+    assert exclusions.report['counts'] == dict(total=7, p0=0, p1p2=0, triage=7, p0Candidate=2, ast=7, confirmed=0)
 
     contexts_path = EVAL_FILES / 'missing-await-contexts.spec.ts'
+    # returnDispatchedChange(page: Page) is a closed same-file helper called
+    # only with the fixture Page, so its actions/pageReads provenance resolves.
+    # The multi-line page.getByRole(...) at line 114 is a #10c candidate.
     contexts = node_scan(contexts_path, expected_diagnostics=source_diagnostics(contexts_path, [
-        ('provenance-unsupported', 'actions', 'missing-await-contexts.spec.ts', None),
-        ('provenance-unsupported', 'pageReads', 'missing-await-contexts.spec.ts', 397, "page.locator('#return-dispatch')"),
         ('analysis-unknown', 'catchHandlers', 'missing-await-contexts.spec.ts', 5069, "Promise.allSettled([page.locator('#settled-preview').screenshot()])"),
-        ('analysis-unknown', 'accessibleNames', 'missing-await-contexts.spec.ts', 3422, "page\n      .getByRole('button', { name: 'Open details' })"),
     ]))
     assert contexts.returncode == 2
     def lines(pattern, disposition):
@@ -7426,7 +7514,9 @@ def assert_main_inline_contract() -> None:
         assert source.count('\n', 0, item['start']) + 1 == start_line
         assert source.count('\n', 0, item['end']) + 1 == method_line
     assert lines('#17', 'confirmed') == set(range(175,190))
-    assert contexts.report['counts'] == dict(total=48, p0=0, p1p2=27, triage=21, p0Candidate=1, ast=48, confirmed=27)
+    # Line 46 only closes an optional dialog: not a #5a candidate (round-6 contract).
+    assert contexts.report['counts'] == dict(total=48, p0=0, p1p2=27, triage=21, p0Candidate=0, ast=48, confirmed=27)
+    assert lines('#10c', 'candidate') >= {114}
     assert_node_action_vocabulary()
 
 
@@ -7487,6 +7577,13 @@ def main() -> None:
         assert_form_literal_credential_filter,
         assert_cy_env_credentials_are_not_candidates,
         assert_uncalled_matchers_are_p0,
+        assert_same_file_helpers_and_literal_loops_resolve,
+        assert_generated_spec_shapes_resolve,
+        assert_p0_candidates_skip_provably_safe_shapes,
+        assert_helper_objects_and_read_only_data_resolve,
+        assert_field_scan_shapes_narrow_p0_candidates,
+        assert_conditional_paths_need_one_sided_assertions,
+        assert_round7_shapes_resolve_and_narrow,
         assert_playwright_rules_skip_cypress_only_files_but_allow_mixed_files,
         assert_initialized_module_state_only,
         assert_positional_selector_is_always_triage,

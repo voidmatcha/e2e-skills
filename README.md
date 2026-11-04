@@ -101,7 +101,7 @@ test('shows the welcome message', async ({ page }) => {
 The bundled scanner catches the false-green assertions without project configuration. Here is the relevant output:
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan tests/
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan tests/
 
 [P0][CONFIRMED] #4f Static finding (2 hits)
   "login.spec.ts":5: #4f
@@ -136,12 +136,29 @@ Starting with cases where tests pass despite bugs, the talk covers combining lin
 
 ## Install and try it
 
+### Quick start: scan, then add the memo
+
+Start with two commands. First, scan your existing E2E tests for tests that pass without proving anything:
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text
+```
+
+Then add the [test-authoring memo](docs/test-authoring-memo.md) to the instruction file your agent loads. For Claude Code, use your E2E test directory; for Codex, use the repository root, or the E2E test directory if you start Codex there. Add `--dry-run` first to preview:
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host codex --project path/to/repository --memo
+```
+
+In our dev pilot the memo file made the biggest difference: without it the skills caught fewer failure-path faults (Claude 42/54, Codex 27/54) than with the memo in the root instruction file (53/54, 45/54).
+
 ### Install with your coding agent (recommended)
 
 Paste the prompt below into Claude Code or Codex. For test generation, name your existing local Playwright project; for reviewing and debugging only, the agent installs without project setup.
 
 ```text
-Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
+Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
 ```
 
 The agent runs the `e2e-skills` installer, which sets up the four skills, two dedicated subagents and, with a project, the official Playwright test agents and project MCP configuration. If a restart is needed, restart your agent yourself and approve the project's MCP server; generation can start once the active session shows `generator_write_test`. Using another agent such as Cursor or Gemini CLI? Install the skills with skills.sh below.
@@ -164,16 +181,16 @@ Install the four skills with [skills.sh](https://skills.sh/voidmatcha/e2e-skills
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
 
-To target one agent, replace `--all` with `-a <agent>` from the [supported agents](https://github.com/vercel-labs/skills#supported-agents). The CLI version is pinned. This installs the four skills only. To check, list your agent's skills (for example `/skills` in Claude Code) and look for `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` and `playwright-test-generator`.
+To target one agent, replace `--all` with `-a <agent>` from the [supported agents](https://github.com/vercel-labs/skills#supported-agents). The CLI version is pinned. This installs the four skills only. `playwright-test-generator` also needs the official Playwright test agents (`playwright init-agents`) and the project's `playwright-test` MCP server, which this command does not set up; until they are present it shows the setup guide and stops instead of writing tests. Use the [installer below](#test-generation-claude-code-and-codex) or the [installation guide](docs/installation.md#manual-generator-setup) for that. To check, list your agent's skills (for example `/skills` in Claude Code) and look for `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` and `playwright-test-generator`.
 
 ### Test generation: Claude Code and Codex
 
 Run these from any directory, naming your existing local Playwright project. Replace `codex` with `claude` for Claude Code. The installer needs Node.js 22.20+.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /path/to/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills doctor --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills doctor --host codex --project /path/to/playwright-project
 ```
 
 `--project` runs the official `playwright init-agents --loop=codex` (or `--loop=claude`) setup for that project and writes its MCP configuration; rerun the install after upgrading Playwright. Without `--project`, the installer adds only the four skills and two dedicated subagents. For a trusted project, add `--check-server` to `doctor` to start the configured MCP server and check `initialize` and `tools/list`; it executes project code, without calling tools, opening a browser or running tests. That check covers the server only. If needed, restart your agent yourself and approve the project's MCP server; generation can start once the active session shows `generator_write_test`.
@@ -231,7 +248,7 @@ Use the skills alongside a real application and its E2E suite. Review and debugg
 
 The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
-The generator prepends `thin-rules.md` and safety instructions to the official planner and generator, then runs the reviewer scanner and the new tests. It installs nothing, changes no agent or MCP configuration, and uses no CLI fallback or healer. Missing configuration is reported with setup guidance.
+The generator prepends `thin-rules.md`, the test-authoring memo and safety instructions to the official planner and generator, then runs the reviewer scanner and the new tests. It installs nothing, changes no agent or MCP configuration, and uses no CLI fallback or healer. Missing configuration is reported with setup guidance.
 
 Generation uses the loopback addresses common in local development (`localhost`, `127.0.0.1`, or `::1`). Reuse your approved development server and its existing test backend or mocks. Before browser work, confirm only the services the scenario uses. Writes require isolated test data and cleanup or reset; read-only scenarios need no reset. A new mock server or deployment is not required. Unused API or database services are N/A; shared or production data remain ineligible. Executable navigation and request destinations must resolve to approved origins, matching scheme, hostname and effective port; separately approved loopback API destinations are allowed. Other or unresolved destinations are BLOCKED. These checks do not provide browser-wide origin containment.
 
@@ -256,7 +273,7 @@ For example: “Check whether this test catches a broken save operation.” The 
 
 See the [execution procedure and requirements](skills/e2e-reviewer/references/runtime-probes.md) and [two OSS workflow examples](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration).
 
-Optionally, to have agents also test failure paths when they write tests, paste the [test-authoring memo](docs/test-authoring-memo.md) unchanged into your project's `CLAUDE.md` or `AGENTS.md`. No skill loads it; read its measured effect and limits first. The optional [test-failure policy](docs/test-failure-policy.md) is a separate snippet for the same files that asks agents not to rewrite a failing test without a named requirement. Instead of pasting, `e2e-skills guidance --host claude|codex --project PATH --memo --policy` writes either or both unchanged between HTML comment markers, only when asked; see [installation](docs/installation.md#optional-memo-and-failure-policy).
+Optionally, to have agents also test failure paths when they write tests, paste the [test-authoring memo](docs/test-authoring-memo.md) unchanged into your project's `CLAUDE.md` or `AGENTS.md`. That always-loaded file is its supported place. On some hosts sub-agents do not inherit it, so the generator skill also passes the memo to the official agents it delegates to, and offers the `guidance` command below when the file lacks it, writing nothing without your yes. No other skill loads it; read its measured effect and limits first. The optional [test-failure policy](docs/test-failure-policy.md) is a separate snippet for the same files that asks agents not to rewrite a failing test without a named requirement. Instead of pasting, `e2e-skills guidance --host claude|codex --project PATH --memo --policy` writes either or both unchanged between HTML comment markers, only when asked; see [installation](docs/installation.md#optional-memo-and-failure-policy).
 
 ## Evidence and limits
 
@@ -294,7 +311,7 @@ Tests pass when the feature is broken. No real verification is happening.
 | 2 | **Missing Then** | Cancel action, verify text restored: but input still visible? | Verify both restored state and dismissed state |
 | 3 | **Error swallowing** | `try/catch` in spec, `.catch(() => {})` in POM | Let errors fail; remove silent catch from POM methods |
 | 3b | **Cypress `uncaught:exception` suppression** | `cy.on('uncaught:exception', () => false)` blanket-swallows app errors; a `fail` handler that never rethrows passes every failing test | Scope handler to specific known errors; re-throw unknown errors; end `fail` handlers with `throw error` |
-| 4 | **Vacuous or retry-weakening assertion** (P0/P1) | P0: invariant predicates and Locator truthiness. P1: weak attachment proof; one-shot values/URL; zero-timeout retry/deadline hazards; unproven absence; assertion loops over possibly empty collections; ARIA snapshots that omit a promised accessible name | Use meaningful bounds and web-first auto-retrying assertions; prove presence before absence, prove collections non-empty before assertion loops, and keep promised accessible names load-bearing |
+| 4 | **Vacuous or retry-weakening assertion** (P0/P1) | P0: invariant predicates and Locator truthiness. P1: weak attachment proof; one-shot values/URL; zero-timeout retry/deadline hazards; unproven absence; assertion loops over possibly empty collections; ARIA snapshots that omit a promised accessible name | Use meaningful bounds and web-first auto-retrying assertions; validate absence using same-locator evidence or exact selector/fixture mapping plus a relevant positive state check, preserve the scenario, prove collections non-empty before assertion loops, and keep promised accessible names load-bearing |
 | 5 | **Bypass patterns** (5a P0, 5b P1) | `if (await el.isVisible()) { expect(...) }`; `{ force: true }` without comment | Always assert; move env checks to `beforeEach`; add `// JUSTIFIED:` to force:true |
 | 7 | **Focused test leak** | `test.only(...)` committed: CI runs one test, silently skips the rest | Delete `.only`; use `--grep` or `--spec` for local focus |
 | 8 | **Missing assertion** | Discarded locator/boolean is the scenario's only verification; `expect(x).toBeVisible;` never calls the matcher | Add `await expect(locator).toBeVisible()`; skip 8a/8b when independent verification/failure evidence already exists |
@@ -367,7 +384,7 @@ The debuggers classify product regressions separately from brittle tests and ret
 Run the code scanner directly without asking an AI agent. It reports possible problems for review; it does not run your tests or decide whether they prove the intended behavior.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text
 ```
 
 Requires Node.js 22 or newer; the TypeScript parser is bundled. npx downloads the package and its dependencies if they are not already cached. The scanner itself does not download tools or load executable project configuration, and it does not execute tests. Use `--format json` for structured output or `--report-file <new-file>` to save a full report without overwriting an existing file.
@@ -390,7 +407,7 @@ To run installed project ESLint with its configuration, add `--project-eslint --
 Bundled checks read `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs` sources.
 <!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
-The default `p0` policy exits 1 for confirmed mechanical P0 findings. Choose `--fail-on p0-candidate` to also gate retained P0 candidates; `any` gates confirmed findings and `none` is report-only. Exit 0 means only that the selected threshold was not reached. Retained candidates and review obligations still need review, including when execution completed with P0=0. Missing inputs, source-integrity or analysis failures produce INCOMPLETE and exit 2. The scanner does not establish complete semantic coverage. See [SECURITY.md](SECURITY.md) for the trust and network boundary.
+The default `p0` policy exits 1 for confirmed mechanical P0 findings. Choose `--fail-on p0-candidate` to also gate retained P0 candidates; `any` gates confirmed findings and `none` is report-only. Exit 0 means only that the selected threshold was not reached. Retained candidates and review obligations still need review, including when execution completed with P0=0. Missing inputs, source-integrity or analysis failures produce INCOMPLETE and exit 2. For a CI gate that should not stop on unresolved analysis, add `--allow-incomplete`: the exit then reflects the policy on the findings that were analyzed, and the report states how many files and locations were not analyzed and are not checked; missing inputs and source-integrity failures still exit 2. If your tests import `test` or `expect` from a workspace package, add `--trust-module <package>=<path to its source entry inside the scan root>` so that import can be followed. The scanner does not establish complete semantic coverage. See [SECURITY.md](SECURITY.md) for the trust and network boundary.
 
 </details>
 

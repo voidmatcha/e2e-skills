@@ -9,6 +9,18 @@ import { inventory } from '../src/inventory.mjs';
 import { createScope } from '../src/scope.mjs';
 import { walk, ts } from '../src/source.mjs';
 
+function classifyAny(text) {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-receivers-')));
+  const file = path.join(root, 'case.spec.ts');
+  fs.writeFileSync(file, text);
+  const bytes = Buffer.from(text), manifest = inventory(root);
+  const receivers = createReceivers(bytes, file, {scope: createScope({manifest, sources: new Map([[file, bytes]])})});
+  const values = [];
+  walk(receivers.source, node => {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'inspect') values.push(receivers.expression(node.arguments[0]));
+  });
+  return values.map(x => [x.kind, x.complete]);
+}
 function classify(text, selected) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-receivers-')));
   const file = path.join(root, 'case.spec.ts');
@@ -88,4 +100,25 @@ test('only the official nested fail.only registration receives test-scoped fixtu
   classify("import {test} from 'vitest';test.fail.only('x',({page})=>inspect(page));",['none']);
   classify("import {test} from '@playwright/test';function f(test){test.fail.only('x',({page})=>inspect(page));}",['none']);
   classify("import {test} from '@playwright/test';test.fail.only=custom;test.fail.only('x',({page})=>inspect(page));",['unknown']);
+});
+
+test('a custom fixture is a Page only when every use() hands down the base page fixture', () => {
+  // Round 7: test.extend fixtures named other than `page`.
+  classify("import {test as base} from '@playwright/test';const test=base.extend({app:async({page},use)=>{await page.goto('/');await use(page);}});test('x',async({app})=>{inspect(app);inspect(app.getByRole('row'));});", ['page','locator']);
+  classify("import {test as base} from '@playwright/test';const one=base.extend({app:async({page},use)=>{await use(page);}});const test=one.extend({shell:async({app},use)=>{await use(app);}});test('x',async({shell})=>{inspect(shell);});", ['page']);
+  // A new page, a wrapped object, a page overridden in the same extend object
+  // and an unpinned base stay unproven.
+  for (const text of [
+    "import {test as base} from '@playwright/test';const test=base.extend({app:async({context},use)=>{await use(await context.newPage());}});test('x',async({app})=>{inspect(app);});",
+    "import {test as base} from '@playwright/test';const test=base.extend({app:async({page},use)=>{await use({page});}});test('x',async({app})=>{inspect(app);});",
+    "import {test as base} from '@playwright/test';const test=base.extend({page:async({},use)=>{await use(custom);},app:async({page},use)=>{await use(page);}});test('x',async({app})=>{inspect(app);});",
+    "import {test as base} from './missing';const test=base.extend({app:async({page},use)=>{await use(page);}});test('x',async({app})=>{inspect(app);});",
+  ]) assert.deepEqual(classifyAny(text), [['unknown', false]], text);
+});
+
+test('a property of a proven Page is a Playwright helper object, never a Page or Locator', () => {
+  // Round 7: page.keyboard and friends were unresolved provenance.
+  classify("import {test} from '@playwright/test';test('x',async({page})=>{inspect(page.keyboard);inspect(page.mouse);inspect(page.locator('a').first);});", ['none','none','none']);
+  assert.deepEqual(classifyAny("import {test} from '@playwright/test';test('x',async({page})=>{page.keyboard=custom;inspect(page.keyboard);});"), [['unknown', false]]);
+  assert.deepEqual(classifyAny("import {helper} from './missing';inspect(helper().keyboard);"), [['unknown', false]]);
 });

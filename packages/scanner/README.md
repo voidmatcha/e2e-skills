@@ -2,21 +2,21 @@
 
 Static Playwright and Cypress test review with configuration context and explicitly approved probes. The scanner finds candidates; an LLM reviews context, selects checks and interprets the evidence. Scanning never starts a probe.
 
-The commands below pin version `3.3.1`.
+The commands below pin version `3.4.0`.
 
 Requires Node.js 22+. The scan, check and unified CLIs do not require Python. Probe execution additionally requires a trusted, prepared project.
 
 ## Run with npx
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills-scan --scan /absolute/project/tests --format text
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills-scan --scan /absolute/project/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
 ```
 
 Or install locally:
 
 ```bash
-npm install --save-dev @voidmatcha/e2e-skills-scanner@3.3.1
+npm install --save-dev @voidmatcha/e2e-skills-scanner@3.4.0
 npx e2e-skills-scan --scan ./tests --format json
 npx e2e-skills-check --help
 ```
@@ -32,12 +32,12 @@ The reviewer skill includes its own scanner, so reviewing an existing project do
 The unified CLI provides `e2e-skills install`, `doctor`, `guidance`, `scan` and `check`:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills doctor --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills guidance --host codex --project /absolute/playwright-project --memo --policy --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan /absolute/playwright-project/tests --format json
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills check --help
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills doctor --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host codex --project /absolute/playwright-project --memo --policy --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan /absolute/playwright-project/tests --format json
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills check --help
 ```
 
 Command and option parsing for `install`, `doctor` and `guidance` uses the pinned MIT-licensed [Commander.js](https://github.com/tj/commander.js) package. Scanner and check arguments are passed through to their existing CLIs.
@@ -46,7 +46,7 @@ Use `--host claude` for Claude Code. The setup commands require Node.js 22.20 or
 
 Existing skill copies must match this package exactly. Older versions and local edits stop installation; review the reported paths before retrying.
 
-The default `doctor` returns JSON file checks, missing requirements and next steps without installing anything, executing project code or contacting MCP. Add `--check-server` only for an explicitly approved trusted-project check: it starts the configured local MCP server and performs initialization and tool listing. Server tools, active-session tools, host approval and browser readiness are distinct; the CLI cannot complete or establish the last three. It never changes host trust, grants permissions or restarts the host. See the [installation guide](https://github.com/voidmatcha/e2e-skills/blob/main/docs/installation.md#cli-installer) for setup details.
+The default `doctor` returns JSON checks of project and user agent registrations and MCP configuration, including candidate paths, missing requirements and next steps. It does not install anything, execute project code or contact MCP; finding a registration does not prove active-session readiness. Add `--check-server` only for an explicitly approved trusted-project check: it starts the configured local MCP server and performs initialization and tool listing. Server tools, active-session tools, host approval and browser readiness are distinct; the CLI cannot complete or establish the last three. It never changes host trust, grants permissions or restarts the host. See the [installation guide](https://github.com/voidmatcha/e2e-skills/blob/main/docs/installation.md#cli-installer) for setup details.
 
 `guidance` is opt-in: it writes only what `--memo` (the [test-authoring memo](https://github.com/voidmatcha/e2e-skills/blob/main/docs/test-authoring-memo.md)) or `--policy` (the [test-failure policy](https://github.com/voidmatcha/e2e-skills/blob/main/docs/test-failure-policy.md)) requests, into `AGENTS.md` (codex) or `CLAUDE.md` (claude) in the `--project` directory. The bundled texts are byte-identical to the documented blocks and are inserted unchanged between HTML comment markers; a rerun replaces only the text between the markers and never changes other bytes. Symlinked, hard-linked or non-regular instruction files and malformed markers are refused. `--dry-run` prints the JSON report and the text without writing. `install` and `doctor` never write either text.
 
@@ -64,9 +64,11 @@ From the repository root, or using the corresponding installed skill path:
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh /absolute/project/tests --fail-on p0-candidate
 ```
 
-The launcher defaults to the current directory and text output. `--format json` selects the canonical report; `--report-file /absolute/new-file` writes a private text report without overwriting an existing path. Confirmed findings and candidates remain separate. Candidates require contextual review and do not become confirmed defects through formatting or policy selection. Exit 0 means the selected policy found no violation within completed analysis, exit 1 means that policy found a violation, and exit 2 means required analysis or execution evidence remains incomplete. None of these outcomes establishes full JavaScript coverage or general test quality.
+The launcher defaults to the current directory and text output. `--format json` selects the canonical report; `--report-file /absolute/new-file` writes a private text report without overwriting an existing path. Confirmed findings and candidates remain separate. Candidates require contextual review and do not become confirmed defects through formatting or policy selection. By default, exit 0 means the selected policy found no violation within completed analysis, exit 1 means that policy found a violation, and exit 2 means required analysis or execution evidence remains incomplete. With `--allow-incomplete`, unresolved source analysis can instead return the policy exit while the report remains incomplete; see the flag below. None of these outcomes establishes full JavaScript coverage or general test quality.
 
 Limits are fixed: each parsed source file is limited to 16 MiB; relative-import expansion adds at most 128 helper files, 16 MiB of helper bytes and 32 import levels. These helper budgets do not cap already inventoried test files. Symlinks, excluded trees, ambiguous resolution and imports outside the pinned project boundary are not followed. Unsupported imports, syntax, provenance and drift remain explicit uncertainty. Retired backend, executable and limit environment overrides are rejected; `E2E_SMELL_FAIL_ON` remains supported.
+
+Explicit relative default imports of `.json` files are validated and hash-pinned as data dependencies within those same file and byte budgets. They are not parsed as JavaScript or used to infer framework bindings or fixture values; unresolved consumers still report `INCOMPLETE`. Known credential and agent-configuration paths are refused before reading, including case variants. This named-path guard is not a general secret detector. Named, namespace, dynamic and CommonJS JSON imports remain unsupported.
 
 ## LLM and CLI responsibilities
 
@@ -101,22 +103,26 @@ The focused preview covers `#7`; static preview adds bounded detector slices and
 
 The policy defaults to `E2E_SMELL_FAIL_ON` when set, otherwise `p0`; an explicit `--fail-on` overrides it. Invalid policies exit 2.
 
+`--allow-incomplete` (with `--scan`) is an opt-in CI mode. Unresolved analysis of read source (`analysis incomplete: …` and missing relative imports) no longer forces exit 2; the exit follows the `--fail-on` policy on the retained findings. The report keeps `status: "INCOMPLETE"` and `execution.complete: false`, adds `execution.allowIncomplete: { applied, unanalyzed: { files, locations } }`, and the text view prints two `ALLOW-INCOMPLETE:` lines stating that code with unresolved analysis is not checked. Inventory, source-integrity, scope and requested-ESLint failures still exit 2. Without the flag nothing changes.
+
+`--trust-module <specifier>=<path>` (with `--scan`, repeatable) maps a bare package specifier, such as a workspace test library that re-exports Playwright `test` and `expect`, to one source file inside a directory scan root. The file must be an inventoried regular JavaScript or TypeScript file reached without symbolic links; anything else exits 2. The mapped file is then followed like a relative import, and `trustedModules` in the report lists each declaration.
+
 The separate `--bounded-static` mode reports `status: "PARTIAL"` even when execution succeeds. Its new JSON contract separates `execution.complete` from `coverage.complete: false` and lists partial rule slices and limitations. Exit 0 means no violation of the selected policy was found within these checks; exit 1 means a policy violation was found; exit 2 means execution or required analysis evidence is incomplete. Parser, provenance, file access and drift diagnostics still take precedence over every policy. No exit code establishes full taxonomy coverage or test quality. The existing preview modes keep their original JSON and always exit 2. No scan starts a probe. Project ESLint configuration runs only with the paired opt-in flags below.
 
 ### Static-review contract
 
 `--scan` is the static-review contract used by the installed launcher. It runs the Node detectors directly, without invoking the legacy analyzer. JSON uses `e2e-skills-node-scan-v1`. `status: COMPLETE` and `execution.complete: true` mean mechanical discovery finished within the declared scope. `coverage.complete` remains false, and `review.required` is true whenever retained triage candidates or unresolved analysis tasks need contextual review. Neither a complete discovery nor exit 0 means the tests are correct.
 
-Uncertainty can become a review obligation only when its exact detector reason and AST location match a retained candidate with the required evidence. Other parser, read, provenance, drift and required ESLint failures remain incomplete and exit 2. Candidate-only P0 findings continue to require the explicit `p0-candidate` policy; they do not become confirmed P0 findings. Import discovery reads bounded local helpers without executing them or treating them as additional test targets.
+Uncertainty can become a review obligation only when its exact detector reason and AST location match a retained candidate with the required evidence. Other parser, read, provenance, drift and required ESLint failures remain incomplete and exit 2 by default. `--allow-incomplete` changes the exit only for the unresolved source-analysis categories described above; source-integrity, inventory and requested-ESLint failures still exit 2. Candidate-only P0 findings continue to require the explicit `p0-candidate` policy; they do not become confirmed P0 findings. Import discovery reads bounded local helpers without executing them or treating them as additional test targets.
 
-`--format text` renders a source-linked report. `--report-file /absolute/new-file` also selects text and creates a private file without replacing an existing path. Complete discovery permits a `Summary:` line; incomplete discovery is explicitly partial. JSON consumers should read canonical pattern, severity, disposition and source-location fields instead of inferring them from historical shell headings.
+`--format text` renders a source-linked report. `--report-file /absolute/new-file` also selects text and creates a private file without replacing an existing path. The text view lists #10c hits once per file with every line number; `--verbose` (text only) and the report file list each hit, and JSON keeps one entry per hit. Complete discovery permits a `Summary:` line; incomplete discovery is explicitly partial. JSON consumers should read canonical pattern, severity, disposition and source-location fields instead of inferring them from historical shell headings.
 
 Analysis diagnostics include `line` and `column` when their source offset can be located in the pinned input. Text reports show locations and fixed review guidance for common unresolved categories. These entries identify analysis gaps, not findings; they neither prove a defect nor clear the incomplete status.
 
 A direct awaited state read through `wrapper.page.locator('literal')` can remain a P1 candidate when the wrapper is constructed from a pinned relative import with a proven Page argument and no local writes. This shape does not prove the wrapper's runtime receiver: its diagnostic and incomplete status remain, with explicit receiver, expected-outcome and retry-boundary review requirements. Unbound or mutable wrappers are not promoted by this fallback.
 
 
-Unresolved state-read and conditional-assertion diagnostics with valid source ranges also populate `review.analysisTasks`: stable task IDs, source SHA-256, UTF-16 ranges and review requirements. These tasks require contextual review even without a retained finding. Verify the source hash before adjudication, retain source citations separately, and rescan changed inputs. Tasks do not remove diagnostics, change finding counts or clear exit 2.
+Unresolved state-read and conditional-assertion diagnostics with valid source ranges also populate `review.analysisTasks`: stable task IDs, source SHA-256, UTF-16 ranges and review requirements. These tasks require contextual review even without a retained finding. Verify the source hash before adjudication, retain source citations separately, and rescan changed inputs. Tasks do not remove diagnostics, change finding counts or clear the incomplete status. Exit 2 remains the default unless the documented `--allow-incomplete` exception applies.
 
 **Added in 3.3.0:** the pinned commands above include tasks for unpinned-import Promise receivers and catch propagation. For Promise import tasks, inspect the containing call and its Promise handling: the range may identify only its receiver. For catch propagation tasks, trace the catch body, helper callers and required test outcome before deciding whether an error is swallowed. Other unsupported catch shapes do not create these tasks. A helper catch that only rethrows its identifier-bound error needs no task; immediate finally blocks and generator helpers are excluded from that narrow proof, and enclosing catch/finally diagnostics remain. These tasks also preserve finding counts, diagnostics and incomplete status.
 
@@ -192,7 +198,7 @@ Implemented modules:
 - `inventory`: candidate discovery, file identity and drift checks, with legacy differential fixtures. Project markers are pinned without execution. Self-checkout fixture exclusions apply only to the canonical fingerprint and respect project boundaries when a nested project is explicitly requested, as well as explicitly requested fixture paths. Whole-checkout scans retain the legacy global fixture exclusions.
 - Internal `dedupe`: legacy file/line/class accounting with ESLint, AST and heuristic precedence; unclassified variants remain distinct. The CLI retains a duplicate ledger and counts retained findings only. Opted-in local ESLint and AST findings are integrated; the legacy ast-grep backend is not ported.
 - Internal `project-context`: nearest Git or package/framework marker discovery, with scan and project roots kept distinct. Configuration discovery pins file hashes; a separate bounded AST pass reports root and already discovered nested declarations and unknowns without execution. Symlinked markers are incomplete. The explicit local ESLint opt-in loads a pinned root config; nested legacy cascade is unsupported.
-- `report`: counts and exit policies for already-deduplicated findings. Candidate-only results do not fail the confirmed-only `any` policy; incomplete execution always exits 2.
+- `report`: counts and exit policies for already-deduplicated findings. Candidate-only results do not fail the confirmed-only `any` policy. Incomplete execution exits 2 by default; explicit `--allow-incomplete` changes only the unresolved-analysis exit policy described above, not the `INCOMPLETE` report status.
 - Internal `focused-tests`: a bounded raw detector for proven Playwright imports, fixtures, Cypress globals and immutable focused aliases, with lexical shadowing guards. Complete import-graph and pattern coverage are pending. `#7` is never exempted by JUSTIFIED. A legacy same-line shadow false positive and a mixed CommonJS/ESM alias false negative are recorded separately from parity results.
 - Internal `scope`: hash-pinned relative fixture, ESM re-export and bounded literal CommonJS provenance; unresolved, mutable or ambiguous imports remain incomplete. Conditional, mixed and property-style CommonJS exports are unsupported. CLI integration uses the same pinned bytes for scope and detectors.
 - Internal `receivers`: shared proof for fixture Page, immutable Locator chains and imported Playwright expect. POMs, arbitrary factories and mutable receivers remain unproven.
@@ -210,7 +216,7 @@ Implemented modules:
 - Internal `cypress-callbacks`: async Cypress test/hook callbacks that directly queue commands (`#10d`) and continued action chains (`#10f`), both P1 candidates. Hook identity comes from shared scope; aliases, optional/computed chains and arbitrary helper execution remain unsupported.
 - Internal `state-reads`: directly awaited Playwright state/content reads in assertions (`#4c-4e`), as P1 candidates. Direct proven retry callbacks are excluded; nested function propagation and generator callback execution remain diagnostic instead of borrowing the retry exemption. Narrow imported POM wrappers and direct `for...of` items from `await page.$$('literal')` retain source-review candidates with explicit requirements; receiver diagnostics and incomplete status remain. Mutated or escaped collections, arbitrary objects, wrapped reads and type-only receiver proof remain outside this slice.
 - Internal `collections`: absence assertions (`#4i`), awaited Locator iteration and Cypress `each` (`#4k`), as P1 candidates. These shapes include legitimate empty-state assertions and setup loops. Positive-match proof, collection size and the purpose of a loop require semantic review. Aliased Cypress chains and optional/computed calls are outside this slice.
-- Internal `accessible-names`: bounded same-line Page name options and Cypress unanchored role-name regexes (`#10c`), as P1 candidates. Preserve the legacy explicit-exact exclusion and direct receiver spelling. Dynamic or spread options remain diagnostic; collisions and container scope require semantic review.
+- Internal `accessible-names`: Page `getByRole`/`getByLabel`/`getByPlaceholder` names without `exact`, whatever their value or line layout, and Cypress same-line unanchored role-name regexes (`#10c`), as P1 candidates. Preserve the legacy explicit-exact exclusion and direct receiver spelling. Spread, computed, accessor or dynamic-exact options and dynamic Cypress names remain diagnostic; collisions and container scope require semantic review.
 - Internal `conditional-assertions`: bounded inline `if`, logical and ternary assertion paths and proven Page/Locator boolean conditions (`#5a`), as P0 candidates. This does not decide whether a required assertion is bypassed. Generic assert helpers, transitive calls, awaited-variable dataflow, expect wrappers and separate else bodies remain diagnostic gaps.
 - Internal `credentials`: a bounded literal/name-based `#14` P1 candidate sweep for forms, login helpers and authentication payloads. This does not validate secrets or prove authentication intent. Findings contain locations, not source values; public JSON also omits JUSTIFIED reason text. Dynamic strings, literal aliases and multiline payloads remain outside this slice. This is not a general redactor for arbitrary project metadata or paths.
 - `check`: three narrow operators: change one awaited literal `toHaveText` expectation, omit one standalone awaited literal POST, or omit one standalone POST with its one-to-three `.then()` callbacks. Bundled TypeScript 6.0.3 replaces the historical spike's explicit 5.9.3 parser. Candidate discovery is not runtime proof.

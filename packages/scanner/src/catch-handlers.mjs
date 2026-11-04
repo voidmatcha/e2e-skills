@@ -307,6 +307,33 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
     return symbol?.declarations?.length === 1 && !isWritten(source, receivers.checker, symbol, { properties: true })
       ? symbol : null;
   }
+  // A detached rejection observer does not replace the original Promise.
+  // Admit only a direct const Playwright wait plus adjacent await in the
+  // same registered test; aliases, derived promises and races stay outside.
+  function observedOriginalAwait(call) {
+    const statement = call.parent;
+    if (!ts.isExpressionStatement(statement) || statement.expression !== call ||
+        !directTestStatement(statement) || call.questionDotToken) return false;
+    const access = dot(call.expression), name = access && unwrap(access.expression);
+    const symbol = name && immutableSymbol(name), declaration = symbol?.declarations[0];
+    if (!declaration || !ts.isVariableDeclaration(declaration) ||
+        !ts.isIdentifier(declaration.name) || !declaration.initializer ||
+        !ts.isVariableDeclarationList(declaration.parent) || declaration.parent.declarations.length !== 1 ||
+        !(declaration.parent.flags & ts.NodeFlags.Const) ||
+        declaration.parent.parent.parent !== statement.parent) return false;
+    const initial = unwrap(declaration.initializer), wait = ts.isCallExpression(initial) && dot(initial.expression);
+    if (!wait || initial.questionDotToken || initial.typeArguments?.length ||
+        !['waitForURL', 'waitForResponse', 'waitForRequest', 'waitForEvent'].includes(wait.name.text) ||
+        !proven(wait.expression, 'page', true)) return false;
+    const lines = statement.parent.statements, index = lines.indexOf(statement);
+    // Keep the original declaration immediately before the observer. This
+    // excludes intervening escapes or calls that could replace its methods.
+    if (index < 1 || declaration.parent.parent !== lines[index - 1]) return false;
+    const next = lines[index + 1];
+    if (!next || !ts.isExpressionStatement(next)) return false;
+    const awaited = unwrap(next.expression);
+    return ts.isAwaitExpression(awaited) && immutableSymbol(awaited.expression) === symbol;
+  }
   function inlineThen(call) {
     call = unwrap(call);
     if (!ts.isCallExpression(call) || call.questionDotToken || call.typeArguments?.length || call.arguments.length !== 1) return null;
@@ -446,7 +473,9 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
     if (!parameter || !ts.isParameter(parameter) || parameter.parent !== fn || parameter.initializer ||
         parameter.dotDotDotToken || !ts.isIdentifier(parameter.name)) return false;
     const proof = receivers.expression(root);
-    return proof.complete && proof.kind === 'page-type';
+    // Call-site proof of an annotated Page parameter is stronger evidence for
+    // the same review lane; it never discharges the helper-outcome diagnostic.
+    return proof.complete && (proof.kind === 'page-type' || proof.kind === 'page' && Boolean(parameter.type));
   }
   function typedHelperTry(statement) {
     const clause = statement.catchClause, fn = typedHelperContext(statement);
@@ -762,6 +791,149 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
       start, end: node.end });
     return true;
   }
+  // A proven afterEach/afterAll callback, or a proven test callback whose
+  // final statement is a try with this catch in its finally block.
+  function registeredHook(callback) {
+    if (!callback || !(ts.isArrowFunction(callback) || ts.isFunctionExpression(callback)) || callback.asteriskToken ||
+        !ts.isCallExpression(callback.parent) || callback.parent.questionDotToken || callback.parent.arguments.at(-1) !== callback) return false;
+    const access = dot(callback.parent.expression);
+    return Boolean(access && ['afterEach', 'afterAll'].includes(access.name.text) && plainBinding(access.expression) &&
+      proven(access.expression, 'playwright-test'));
+  }
+  // Swallowing a cleanup failure after the test's assertions have run cannot
+  // hide a failed outcome: nothing later in the callback reads an expect, and
+  // the swallowed chain is not itself an assertion.
+  function trailingCleanup(call) {
+    const mentionsExpect = node => { let found = false; walk(node, item => {
+      if (ts.isIdentifier(item) && item.text === 'expect') found = true; }); return found; };
+    if (mentionsExpect(call.expression)) return false;
+    let finallyOf = null, fn = call.parent;
+    for (; fn && !ts.isFunctionLike(fn); fn = fn.parent) {
+      if (ts.isBlock(fn) && ts.isTryStatement(fn.parent) && fn.parent.finallyBlock === fn) finallyOf = fn.parent;
+    }
+    if (!fn?.body || !ts.isBlock(fn.body)) return false;
+    const hook = registeredHook(fn);
+    const trailing = finallyOf && finallyOf.parent === fn.body && fn.body.statements.at(-1) === finallyOf && registeredTest(fn, false);
+    if (!hook && !trailing) return false;
+    // No assertion may follow the swallowed operation in this callback.
+    let later = false;
+    walk(fn.body, item => { if (item.pos >= call.end && ts.isIdentifier(item) && item.text === 'expect') later = true; });
+    return !later;
+  }
+  // `await <locator>.waitFor(...).catch(...)` followed in the same block by an
+  // awaited hard web-first assertion on the same locator expression re-checks
+  // the waited state with retries, so the swallowed wait is not load-bearing.
+  function reverifiedWait(call) {
+    const wait = unwrap(dot(call.expression)?.expression);
+    const waitAccess = wait && ts.isCallExpression(wait) && dot(wait.expression);
+    if (!waitAccess || waitAccess.name.text !== 'waitFor' || !proven(waitAccess.expression, 'locator', true)) return false;
+    const target = waitAccess.expression.getText(source).replace(/\s+/g, '');
+    let statement = call;
+    while (statement.parent && !ts.isBlock(statement.parent)) {
+      if (ts.isFunctionLike(statement.parent)) return false;
+      statement = statement.parent;
+    }
+    if (!ts.isExpressionStatement(statement)) return false;
+    // The waited state, from a literal `state` option (default 'visible').
+    const options = wait.arguments[0] && unwrap(wait.arguments[0]);
+    let state = 'visible';
+    if (wait.arguments.length > 1 || options && !ts.isObjectLiteralExpression(options)) return false;
+    for (const item of options?.properties ?? []) {
+      if (!ts.isPropertyAssignment(item) || !ts.isIdentifier(item.name)) return false;
+      if (item.name.text === 'state') {
+        if (!ts.isStringLiteral(unwrap(item.initializer))) return false;
+        state = unwrap(item.initializer).text;
+      }
+    }
+    // Matchers whose retried pass proves the waited state on that element.
+    const proves = { visible: ['toBeVisible'], hidden: ['toBeHidden'],
+      attached: ['toBeAttached', 'toBeVisible', 'toHaveText', 'toContainText', 'toHaveAttribute', 'toHaveValue'] }[state];
+    if (!proves) return false;
+    const block = statement.parent, index = block.statements.indexOf(statement);
+    return block.statements.slice(index + 1).some(next => {
+      if (!ts.isExpressionStatement(next)) return false;
+      const awaited = unwrap(next.expression);
+      const assertion = ts.isAwaitExpression(awaited) && unwrap(awaited.expression);
+      const matcher = assertion && ts.isCallExpression(assertion) && !assertion.questionDotToken && dot(assertion.expression);
+      const expectation = matcher && unwrap(matcher.expression);
+      if (!matcher || !proves.includes(matcher.name.text) || !ts.isCallExpression(expectation) || expectation.questionDotToken ||
+          expectation.arguments.length !== 1 || !plainBinding(expectation.expression) || !proven(expectation.expression, 'expect', true)) return false;
+      // toBeVisible({ visible: false }) asserts the opposite state.
+      if (matcher.name.text === 'toBeVisible' && assertion.arguments.length &&
+          !(ts.isObjectLiteralExpression(unwrap(assertion.arguments[0])) && unwrap(assertion.arguments[0]).properties.every(item =>
+            ts.isPropertyAssignment(item) && ts.isIdentifier(item.name) && item.name.text === 'timeout'))) return false;
+      const subject = expectation.arguments[0];
+      return unwrap(subject).getText(source).replace(/\s+/g, '') === target && proven(subject, 'locator', true);
+    });
+  }
+  // `await op().catch(error => { errors.push(error); })` where `errors` is a
+  // local const array that the same callback later asserts empty with a
+  // direct `expect(errors).toEqual([])` statement: the caught error is
+  // re-reported, not swallowed. Every other use of the array, a return that
+  // could skip the assertion, or an unawaited chain keeps the candidate.
+  function collectedErrors(call) {
+    const checker = receivers.checker, callback = unwrap(call.arguments[0]);
+    if (call.arguments.length !== 1 || !(ts.isArrowFunction(callback) || ts.isFunctionExpression(callback)) ||
+        callback.parameters.length !== 1 || !ts.isIdentifier(callback.parameters[0].name) || callback.parameters[0].dotDotDotToken) return false;
+    let line = callback.body;
+    if (ts.isBlock(line)) {
+      if (line.statements.length !== 1 || !ts.isExpressionStatement(line.statements[0])) return false;
+      line = line.statements[0].expression;
+    }
+    line = unwrap(line);
+    const push = ts.isCallExpression(line) && !line.questionDotToken && dot(line.expression);
+    const errorSymbol = checker.getSymbolAtLocation(callback.parameters[0].name);
+    if (!push || push.name.text !== 'push' || line.arguments.length !== 1 || !ts.isIdentifier(unwrap(line.arguments[0])) ||
+        checker.getSymbolAtLocation(unwrap(line.arguments[0])) !== errorSymbol || !ts.isIdentifier(unwrap(push.expression))) return false;
+    const list = checker.getSymbolAtLocation(unwrap(push.expression));
+    const declaration = list?.declarations?.length === 1 ? list.declarations[0] : null;
+    if (!declaration || !ts.isVariableDeclaration(declaration) || !declaration.initializer ||
+        !ts.isArrayLiteralExpression(unwrap(declaration.initializer)) || unwrap(declaration.initializer).elements.length ||
+        !(declaration.parent.flags & ts.NodeFlags.Const)) return false;
+    // The awaited chain sits in the function that declares the array.
+    let awaited = call;
+    while (ts.isParenthesizedExpression(awaited.parent)) awaited = awaited.parent;
+    if (!ts.isAwaitExpression(awaited.parent)) return false;
+    let fn = call.parent;
+    for (; fn && !ts.isFunctionLike(fn); fn = fn.parent);
+    let owner = declaration.parent;
+    for (; owner && !ts.isFunctionLike(owner); owner = owner.parent);
+    if (!fn || fn !== owner || !fn.body || !ts.isBlock(fn.body)) return false;
+    let unsupported = false, assertion = null;
+    walk(fn.body, node => {
+      if (unsupported) return;
+      if (ts.isReturnStatement(node)) {
+        let inner = node.parent;
+        for (; inner && inner !== fn && !ts.isFunctionLike(inner); inner = inner.parent);
+        if (inner === fn) unsupported = true;
+      }
+      if (!ts.isIdentifier(node) || node === declaration.name || checker.getSymbolAtLocation(node) !== list) return;
+      const parent = node.parent;
+      if (dot(parent) && parent.expression === node && parent.name.text === 'push' && ts.isCallExpression(parent.parent) &&
+          parent.parent.expression === parent) return;
+      if (ts.isForOfStatement(parent) && parent.expression === node) return;
+      const expectation = parent;
+      const matcher = ts.isCallExpression(expectation) && expectation.arguments.length === 1 && expectation.arguments[0] === node &&
+        dot(expectation.parent) && expectation.parent.expression === expectation && expectation.parent.parent;
+      const statement = matcher && ts.isCallExpression(matcher) && !matcher.questionDotToken && matcher.parent;
+      const empty = matcher && (['toEqual', 'toStrictEqual'].includes(expectation.parent.name.text) && matcher.arguments.length === 1 &&
+        ts.isArrayLiteralExpression(unwrap(matcher.arguments[0])) && !unwrap(matcher.arguments[0]).elements.length ||
+        expectation.parent.name.text === 'toHaveLength' && matcher.arguments.length === 1 && unwrap(matcher.arguments[0]).getText(source) === '0');
+      if (empty && ts.isExpressionStatement(statement) && statement.parent === fn.body && statement.pos >= call.end &&
+          ts.isIdentifier(expectation.expression) && proven(expectation.expression, 'expect', true)) { assertion = statement; return; }
+      unsupported = true;
+    });
+    return !unsupported && Boolean(assertion);
+  }
+  function abruptFinally(block) {
+    let abrupt = false;
+    (function visit(node) {
+      if (abrupt || node !== block && ts.isFunctionLike(node)) return;
+      if (ts.isReturnStatement(node) || ts.isBreakStatement(node) || ts.isContinueStatement(node)) abrupt = true;
+      ts.forEachChild(node, visit);
+    })(block);
+    return abrupt;
+  }
   function hasCleanup(call) {
     let found = false;
     walk(call, node => {
@@ -833,6 +1005,9 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
       if (!supported.has(node) && !trivialRethrow(node)) diagnostic(node, 'unsupported #3 try/catch propagation context');
       return;
     }
+    // A finally that completes normally rethrows the pending error after it
+    // runs, so it can only swallow through return, break or continue.
+    if (ts.isTryStatement(node) && node.finallyBlock && !supported.has(node.finallyBlock) && !abruptFinally(node.finallyBlock)) supported.add(node.finallyBlock);
     if (ts.isTryStatement(node) && node.finallyBlock && !supported.has(node.finallyBlock)) diagnostic(node.finallyBlock, 'unsupported #3 finally context');
     if (!ts.isCallExpression(node)) return;
     const callee = unwrap(node.expression), access = member(callee);
@@ -861,7 +1036,7 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
     if (endPosition.line - position.line > 12) {
       diagnostic(node, 'catch callback exceeds legacy 12-line lookahead'); return;
     }
-    if (hasCleanup(node)) return;
+    if (hasCleanup(node) || trailingCleanup(node) || reverifiedWait(node) || collectedErrors(node) || observedOriginalAwait(node)) return;
     const parameterized = callback.parameters.length > 0;
     if (parameterized) {
       if (callback.parameters.length !== 1 || !ts.isIdentifier(callback.parameters[0].name) ||

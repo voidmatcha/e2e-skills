@@ -78,7 +78,7 @@ try {
     let hasRoot = false, hasFormat = false, hasReport = false;
     for (let index = 0; index < supplied.length; index++) {
       const arg = supplied[index];
-      if (['--format', '--report-file', '--fail-on'].includes(arg)) {
+      if (['--format', '--report-file', '--fail-on', '--trust-module'].includes(arg)) {
         if (arg === '--format') hasFormat = true;
         if (arg === '--report-file') hasReport = true;
         index++;

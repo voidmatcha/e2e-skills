@@ -2,7 +2,7 @@
 
 Before any execution, browser request, or artifact write in this procedure, read `references/safety-procedures.md` and apply its gates.
 
-Read this when an HTML/trace-only report sends you directly to trace analysis, or when Phase 2 (report-based classification) left the root cause unclear. Most failures are identifiable from Phase 1/2 alone.
+Read this for HTML/trace-only input or an unresolved DOM/timeline/media question that trace evidence could answer. Missing requirements or unavailable source alone do not trigger this procedure; name the missing evidence. Most failures are identifiable from Phase 1/2 alone.
 
 Find trace files (restrict to regular files under `playwright-report/`): `find playwright-report -type f -name "*.zip" | head -10`
 
@@ -19,7 +19,7 @@ Command form: write `<absolute-project-root>` literally, as the physical (symlin
   --report-root playwright-report playwright-report/path/to/trace.zip --entry trace.network
 ```
 
-Only names returned by `--list` may be passed to `--entry`; accepted names are `trace.trace`, `trace.network`, and numeric-prefixed equivalents. The reader rejects archive/path symlinks, special files, unsafe or duplicate ZIP names, encrypted or unexpected compression methods, excessive entry count, per-entry/total expanded bytes, high compression ratios, oversized NDJSON lines, and excessive JSON depth/nodes/diagnostics/output. By default it streams the selected NDJSON entry and emits only bounded safe projections: failed actions, failed network requests, console errors, and page errors. Irrelevant records are validated but discarded instead of consuming the diagnostic-record limit. Credential, cookie, token, query-string, and request/response body values use the same recursive redact-before-truncate path as report JSON. It never extracts files, exposes raw trace records, or reads `resources/`. ZIP ceilings are 10,000 entries, 64 MiB per expanded entry, 512 MiB total expanded bytes, a 200:1 compression ratio, and 32 MiB for the selected trace JSON entry. Unix file mode and a trailing-slash directory name must agree, and a selected trace entry must be a regular file; directory-mode or directory-named empty entries cannot masquerade as trace JSON. Every trace JSON line uses the same strict duplicate-key, non-finite-number, BOM, and trailing-data rules as `results.json`.
+Only names returned by `--list` may be passed to `--entry`; accepted names are `test.trace`, `trace.trace`, `trace.network`, and numeric-prefixed equivalents of the latter two. The reader rejects archive/path symlinks, special files, unsafe or duplicate ZIP names, encrypted or unexpected compression methods, excessive entry count, per-entry/total expanded bytes, high compression ratios, oversized NDJSON lines, and excessive JSON depth/nodes/diagnostics/output. By default it streams the selected NDJSON entry and emits only bounded safe projections: failed actions, test-level error messages from `test.trace`, failed network requests, console errors, and page errors. Irrelevant records are validated but discarded instead of consuming the diagnostic-record limit. Credential, cookie, token, query-string, and request/response body values use the same recursive redact-before-truncate path as report JSON. It never extracts files, exposes raw trace records, or reads `resources/`. ZIP ceilings are 10,000 entries, 64 MiB per expanded entry, 512 MiB total expanded bytes, a 200:1 compression ratio, and 32 MiB for the selected trace JSON entry. Unix file mode and a trailing-slash directory name must agree, and a selected trace entry must be a regular file; directory-mode or directory-named empty entries cannot masquerade as trace JSON. Every trace JSON line uses the same strict duplicate-key, non-finite-number, BOM, and trailing-data rules as `results.json`.
 
 The `trace.network` output is an error projection: it emits HTTP status 400 or greater and network failures, not every request. An empty array means no network error was projected; it does not prove a request was absent, an intercept missed it, or a write persisted. Ask for matching request, response, or persisted-state evidence before assigning that cause. Do not bypass the bounded reader to inspect raw headers or bodies.
 
@@ -84,7 +84,8 @@ Use the exact emitted `.zip` path in the approved `show-trace` command; never gi
 **What to look for at each step:**
 
 1. **Which step failed** — inspect `failed-action` projections for `apiName`
-   and `error.message`.
+   and `error.message`. For test timeouts, read a listed `test.trace` entry for
+   bounded `test-error` messages; a browser trace can omit the cancelled action error.
 
 2. **Failed requests** — inspect `network-error` projections for method,
    redacted URL, status/status text, and transport failure.

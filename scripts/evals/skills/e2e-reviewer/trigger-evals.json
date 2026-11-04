@@ -78,5 +78,35 @@
     "id": "interpret-coverage-report",
     "query": "Explain the Istanbul coverage report for app/services/cart.ts and suggest unit test targets.",
     "should_trigger": false
+  },
+  {
+    "id": "review-green-after-expectation-edit",
+    "query": "Our Playwright checkout test passes after its expected total was changed. Review the diff to check whether the fix still protects the required behavior.",
+    "should_trigger": true
+  },
+  {
+    "id": "ko-review-green-after-assertion-edit",
+    "query": "Playwright 테스트의 assertion을 바꿨더니 통과해. 수정 전후를 보고 버그에 맞춰 테스트를 고친 건 아닌지 확인해줘.",
+    "should_trigger": true
+  },
+  {
+    "id": "ko-failing-test-needs-debugging",
+    "query": "Playwright 결제 테스트가 지금 TimeoutError로 실패해. 원인을 찾아 수정해줘.",
+    "should_trigger": false
+  },
+  {
+    "id": "explicit-scanner-only-evidence",
+    "query": "Run only the static scanner on the Playwright checkout spec; no semantic review.",
+    "should_trigger": true
+  },
+  {
+    "id": "focused-finding-refutation",
+    "query": "Check only whether this #5a finding in our Cypress spec is a false positive.",
+    "should_trigger": true
+  },
+  {
+    "id": "requested-v3-probe-only",
+    "query": "Run a single app-fault probe to see whether this passing Playwright test detects the sourced defect.",
+    "should_trigger": true
   }
 ]

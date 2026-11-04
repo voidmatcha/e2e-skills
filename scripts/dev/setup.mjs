@@ -277,6 +277,74 @@ export async function mcpTools(command, project, env, timeout = 20000) {
     if (child.exitCode === null && child.signalCode === null && child.pid) await new Promise(resolve => child.once('exit', resolve));
   }
 }
+// Disk evidence only: host trust, active profiles, session exposure and approval
+// remain outside this read-only inspection. Never emit commands or config values.
+export function inspectHostConfiguration(project, host, env) {
+  const user = host === 'codex' ? env.CODEX_HOME ?? path.join(env.HOME, '.codex') : env.CLAUDE_CONFIG_DIR ?? path.join(env.HOME, '.claude');
+  const scopes = [...(project ? [{ scope: 'project', base: path.join(project, host === 'codex' ? '.codex' : '.claude') }] : []), { scope: 'user', base: user }];
+  const roles = ['planner', 'generator', 'healer'];
+  const official = roles.map(role => ({ role, status: 'MISSING', candidates: [] }));
+  const configurations = [], registrationErrors = [];
+  const boundedRead = target => {
+    safePath(target);
+    if (fs.statSync(target).size > 1024 * 1024) throw Error('configuration exceeds inspection limit');
+    return text(fs.readFileSync(target));
+  };
+  for (const entry of scopes) {
+    const target = entry.scope === 'project' && host === 'claude' ? path.join(project, '.mcp.json') : (host === 'codex' ? path.join(entry.base, 'config.toml') : path.join(env.CLAUDE_CONFIG_DIR ? entry.base : env.HOME, '.claude.json'));
+    const config = { scope: entry.scope, path: target, status: 'ABSENT', server: 'playwright-test' };
+    try {
+      safePath(target);
+      if (exists(target)) {
+        const parsed = parseConfig(boundedRead(target), host === 'codex' ? 'toml' : 'json', target);
+        if (!object(parsed)) throw Error('invalid configuration object');
+        const server = parsed[host === 'codex' ? 'mcp_servers' : 'mcpServers']?.['playwright-test'];
+        config.status = server === undefined ? 'SERVER_ABSENT' : !object(server) ? 'INVALID' : server.enabled === false ? 'DISABLED' : 'CONFIGURED_UNVERIFIED';
+        // Older hosts may register named roles through a config_file entry.
+        if (host === 'codex') for (const role of roles) {
+          const registration = parsed.agents?.[`playwright_test_${role}`] ?? parsed.agents?.[`playwright-test-${role}`];
+          if (!object(registration) || typeof registration.config_file !== 'string') continue;
+          const agentPath = path.resolve(path.dirname(target), registration.config_file);
+          let status = 'MISSING';
+          try { safePath(agentPath); if (exists(agentPath)) { parseConfig(boundedRead(agentPath), 'toml', agentPath); status = 'PRESENT_UNVERIFIED'; } }
+          catch (error) { status = /symlink|regular file|parent/.test(error.message) ? 'UNSAFE' : 'INVALID'; }
+          const record = official.find(record => record.role === role);
+          record.candidates.push({ scope: entry.scope, path: agentPath, registration_path: target, status });
+          if (status === 'PRESENT_UNVERIFIED') record.status = status;
+        }
+      }
+    } catch (error) { config.status = /symlink|regular file|parent/.test(error.message) ? 'UNSAFE' : 'INVALID'; }
+    configurations.push(config);
+    const directory = path.join(entry.base, 'agents');
+    try {
+      // safePath expects a file: validate a non-existent sentinel's ancestors.
+      safePath(path.join(directory, '.doctor-inspection'));
+      if (!exists(directory)) continue;
+      const names = fs.readdirSync(directory).filter(name => name.endsWith(host === 'codex' ? '.toml' : '.md')).sort();
+      if (names.length > 256) throw Error('agent directory exceeds inspection limit');
+      for (const name of names) {
+        const agentPath = path.join(directory, name);
+        let agentName = name.replace(/\.(toml|md)$/, ''), status = 'PRESENT_UNVERIFIED';
+        try {
+          const source = boundedRead(agentPath);
+          if (host === 'codex') {
+            const parsed = parseConfig(source, 'toml', agentPath);
+            if (typeof parsed.name === 'string') agentName = parsed.name;
+          } else {
+            const match = source.match(/^---\r?\n[\s\S]*?^name:\s*["']?([^\r\n"']+)["']?\s*$[\s\S]*?^---/m);
+            if (match) agentName = match[1].trim();
+          }
+        } catch (error) { status = /symlink|regular file|parent/.test(error.message) ? 'UNSAFE' : 'INVALID'; }
+        const role = roles.find(role => agentName.replaceAll('-', '_') === `playwright_test_${role}`);
+        if (!role) continue;
+        const record = official.find(record => record.role === role);
+        record.candidates.push({ scope: entry.scope, path: agentPath, status });
+        if (status === 'PRESENT_UNVERIFIED') record.status = status;
+      }
+    } catch { registrationErrors.push({ scope: entry.scope, path: directory, status: 'UNSAFE_OR_UNREADABLE' }); }
+  }
+  return { official_agents: official, mcp_configuration: configurations, registration_errors: registrationErrors, inspected_scopes: scopes.map(({ scope, base }) => ({ scope, path: base })), runtime_resolution: 'UNKNOWN' };
+}
 export async function checkSetup(project, host, env, discover = mcpTools) {
   const report = { status: 'CONFIG_MISSING', server: 'not_checked', session: 'unverified', approval: 'unknown' };
   const target = path.join(project, host === 'codex' ? '.codex/config.toml' : '.mcp.json');

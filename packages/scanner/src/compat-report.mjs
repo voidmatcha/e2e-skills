@@ -32,13 +32,17 @@ function checked(report) {
       throw new TypeError('invalid finding location or pattern');
     }
   }
-  const summary = summarize(report.findings, { failOn: report.failOn, incomplete: report.execution.incomplete });
+  const allowIncomplete = report.execution.allowIncomplete !== undefined;
+  const summary = summarize(report.findings, { failOn: report.failOn, incomplete: report.execution.incomplete, allowIncomplete,
+    diagnostics: report.execution.diagnostics ?? [] });
+  if (allowIncomplete && report.execution.allowIncomplete.applied !== summary.allowIncomplete.applied) throw new TypeError('inconsistent incomplete tolerance');
   if (!report.counts || COUNT_FIELDS.some(key => report.counts[key] !== summary.counts[key]) ||
       report.execution.exitCode !== summary.exitCode ||
       (replacement && (report.review.required !== (summary.counts.triage > 0 || (report.review.analysisTasks?.length ?? 0) > 0) || report.review.candidates !== summary.counts.triage))) {
     throw new TypeError('inconsistent canonical accounting');
   }
-  return { summary, complete: replacement && report.execution.complete };
+  return { summary, complete: replacement && report.execution.complete,
+    tolerated: replacement && summary.allowIncomplete?.applied === true };
 }
 
 function escaped(value) {
@@ -51,12 +55,12 @@ function location(file, root) {
   if (root !== undefined && (typeof root !== 'string' || !path.isAbsolute(root))) {
     throw new TypeError('display root must be absolute');
   }
-  return escaped(root && path.isAbsolute(file) ? path.relative(root, file) || '.' : file);
+  return escaped(root && path.isAbsolute(file) ? path.relative(root, file) || path.basename(file) : file);
 }
 
 /** Format a validated canonical report. No source snippets, titles, or reasons are copied. */
-export function formatLegacyReport(report, { root } = {}) {
-  const { summary, complete } = checked(report);
+export function formatLegacyReport(report, { root, verbose = false } = {}) {
+  const { summary, complete, tolerated } = checked(report);
   // Validate a supplied root even if there are no findings.
   if (root !== undefined && (typeof root !== 'string' || !path.isAbsolute(root))) throw new TypeError('display root must be absolute');
   const headers = [
@@ -68,10 +72,17 @@ export function formatLegacyReport(report, { root } = {}) {
     `Review obligations: ${report.review.obligations.length}, linked to retained candidates.`,
     `Unresolved analysis tasks: ${report.review.analysisTasks?.length ?? 0}; separate from findings, execution status unchanged.`,
   );
+  if (Array.isArray(report.trustedModules) && report.trustedModules.length) headers.push(
+    `Trusted modules: ${report.trustedModules.map(item => `${escaped(item.specifier)} -> ${location(item.path, root)}`).join(', ')} (declared by --trust-module).`);
   if (!complete) headers.push(
     'INCOMPLETE: this report cannot establish a complete replacement scan.',
     'Use --format json to inspect structured execution diagnostics; no clean result is implied.',
   );
+  if (tolerated) {
+    const unanalyzed = report.execution.allowIncomplete.unanalyzed ?? {};
+    headers.push(`ALLOW-INCOMPLETE: ${unanalyzed.files ?? 0} file(s) with ${unanalyzed.locations ?? 0} unresolved location(s) were NOT fully analyzed; that code is NOT checked.`,
+      'ALLOW-INCOMPLETE: the exit status reflects only the findings that were analyzed; it is not a clean result for the unanalyzed code.');
+  }
   const gaps = report.execution.diagnostics ?? [];
   const guidance = {
     'propagation-unsupported': 'Trace catch propagation and helper callers against the required test outcome; no defect is established.',
@@ -124,24 +135,39 @@ export function formatLegacyReport(report, { root } = {}) {
     const header = `[${first.severity}${candidate ? '?' : ''}][${disposition}] ${first.patternId} Static ${candidate ? 'candidate' : 'finding'} (${findings.length} hit${findings.length === 1 ? '' : 's'})`;
     full.push('', header);
     digest.push('', header);
+    // #10c (inexact Playwright name) dominates generated specs. The default
+    // view lists each file once with every line; JSON and --verbose keep one
+    // entry per hit. Counts and line numbers are unchanged.
+    if (first.patternId === '#10c' && !verbose) {
+      const byFile = new Map();
+      for (const finding of findings) {
+        if (!byFile.has(finding.file)) byFile.set(finding.file, []);
+        byFile.get(finding.file).push(finding.line);
+      }
+      for (const [file, lines] of byFile)
+        full.push(`  ${location(file, root)}: ${lines.length} hit${lines.length === 1 ? '' : 's'}, line${lines.length === 1 ? '' : 's'} ${lines.join(', ')}: #10c`);
+      continue;
+    }
     for (const finding of findings) full.push(`  ${location(finding.file, root)}:${finding.line}: ${finding.patternId}`);
   }
   // This counts retained AST-origin findings; no ast-grep backend invocation is implied.
   const ast = `AST-origin total: ${summary.counts.ast} hit(s); retained findings, not ast-grep execution.`;
   const label = complete ? 'Summary:' : report.schema === 'e2e-skills-node-scan-v1' ? 'Summary [INCOMPLETE]:' : 'Summary [PARTIAL COVERAGE]:';
   const c = summary.counts;
-  const final = `${label} ${c.total} total hit(s), ${c.p0} P0, ${c.p1p2} P1/P2 heuristic, ${c.triage} LLM-triage, ${c.p0Candidate} P0 candidate; ${c.ast} AST-origin hit(s), canonical retained findings.`;
+  const final = `${label} ${c.total} total hit(s), ${c.p0} P0, ${c.p1p2} P1/P2 heuristic, ${c.triage} LLM-triage, ${c.p0Candidate} P0 candidate; ${c.ast} AST-origin hit(s), canonical retained findings.` +
+    (tolerated ? ' ALLOW-INCOMPLETE: unanalyzed code is NOT checked; exit status covers analyzed findings only.' : '');
   full.push('', ast, '', final);
   digest.push('', ast, '', 'Hits per file:');
   if (!files.size) digest.push('  none');
   for (const [file, count] of files) digest.push(`  ${location(file, root)}: ${count}`);
   digest.push('', final);
-  return { text: full.join('\n') + '\n', digest: digest.join('\n') + '\n', exitCode: complete ? summary.exitCode : 2 };
+  return { text: full.join('\n') + '\n', digest: digest.join('\n') + '\n', exitCode: complete || tolerated ? summary.exitCode : 2 };
 }
 
 /** Exclusively create a private full text report; leave existing files and links intact. */
 export function writeLegacyReportFile(report, target, options = {}) {
-  const formatted = formatLegacyReport(report, options);
+  // The report file is the full artifact: one line per hit.
+  const formatted = formatLegacyReport(report, { ...options, verbose: true });
   if (typeof target !== 'string' || !target) throw new TypeError('new report file path required');
   const parent = path.dirname(target);
   const metadata = fs.lstatSync(parent);

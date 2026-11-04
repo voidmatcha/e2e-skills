@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { reviewCandidates } from '../src/review-candidates.mjs';
 import { domQueries } from '../src/dom-queries.mjs';
+import { accessibleNames } from '../src/accessible-names.mjs';
 import { inventory } from '../src/inventory.mjs';
 import { createScope } from '../src/scope.mjs';
 import { applyJustified } from '../src/justified.mjs';
@@ -92,7 +93,6 @@ test('mutated or escaping this and mutated constructor arguments fail closed', (
 test('original typed Page parameters and Locator fields retain remaining eval anchors', () => {
   for (const [relative, required] of [
     ['missing-await-contexts.spec.ts', [['#10c', 7], ['#16', 11]]],
-    ['swallowed-try-catch.spec.ts', [['#10c', 13]]],
   ]) {
     const text = fs.readFileSync(new URL('../../../scripts/evals/skills/e2e-reviewer/files/' + relative, import.meta.url), 'utf8');
     const result = scan(text);
@@ -103,6 +103,15 @@ test('original typed Page parameters and Locator fields retain remaining eval an
       assert.deepEqual(hits[0].evidence.requirements, ['verify-runtime-binding', 'verify-required-test-outcome']);
     }
   }
+});
+test('a typed helper proven by its only fixture call site moves #10c to the strict detector', () => {
+  // openPanel(page: Page) is called only with the fixture Page, so line 13 is
+  // runtime-proven: the typed lane yields and accessibleNames owns the anchor.
+  const text = fs.readFileSync(new URL('../../../scripts/evals/skills/e2e-reviewer/files/swallowed-try-catch.spec.ts', import.meta.url), 'utf8');
+  let strict;
+  const result = scan(text, (_, { file, bytes, scope }) => { strict = accessibleNames(bytes, file, { scope }); });
+  assert.equal(result.findings.some(item => item.patternId === '#10c' && item.line === 13), false);
+  assert.deepEqual(strict.findings.filter(item => item.line === 13).map(item => [item.patternId, item.disposition]), [['#10c', 'candidate']]);
 });
 test('typed accessible-name lane excludes foreign, custom, shadowed, mutable and nonliteral options', () => {
   const parameter = (body, prefix = header) => prefix + `function helper(page:Page){${body}}`;

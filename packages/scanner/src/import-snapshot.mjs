@@ -12,13 +12,22 @@ const EXTENSIONS = ['ts', 'tsx', 'js', 'jsx', 'mts', 'mjs', 'cts', 'cjs'];
 const EXCLUDED = new Set(['node_modules', '.git', 'playwright-report', 'test-results', 'dist', 'build', '.next', 'out', 'coverage', '.yarn', '.pnp.cjs', '.pnp.loader.mjs']);
 // Expansion budgets cover new helpers, not the caller's existing scan targets.
 const MAX_HELPERS = 128, MAX_HELPER_BYTES = 16 * 1024 * 1024, MAX_DEPTH = 32;
+// Data-leaf reads also honor credential/agent-config boundaries. This named
+// policy is deliberately conservative, not a content-based secret detector.
+const DATA_RESERVED = new Set(['.git', '.codex', '.claude', '.agents', '.omx', '.skill', '.auth', '.ssh', '.aws', '.azure', '.gcloud', '.config']);
+// Compare conservatively on every platform: case-insensitive filesystems can
+// resolve an uppercase spelling to the same protected file.
+const forbiddenDataPath = file => {
+  const normalized = file.toLowerCase();
+  return normalized.split(path.sep).some(part => DATA_RESERVED.has(part) || part.startsWith('.env')) || ['auth.json', '.npmrc', 'agents.md', 'claude.md'].includes(path.basename(normalized));
+};
 const directoryIdentity = stat => ['dev', 'ino', 'mode'].map(key => String(stat[key]));
 const fileIdentity = stat => ['dev', 'ino', 'mode', 'size', 'mtimeNs', 'ctimeNs'].map(key => String(stat[key]));
 const excluded = file => file.split(path.sep).some(part => EXCLUDED.has(part)) || /(?:^|\/)cypress\/reports(?:\/|$)|\.min\.(?:js|ts)$/.test(file);
 const within = (root, file) => file === root || file.startsWith(root === path.sep ? root : root + path.sep);
 
 export function prepareImportSnapshot({ manifest, sources } = {}) {
-  const diagnostics = [], helpers = [], copied = new Map(), observations = new Map();
+  const diagnostics = [], helpers = [], dataDependencies = [], dataBytes = new Map(), copied = new Map(), observations = new Map();
   const original = manifest ? structuredClone(manifest) : null;
   let expanded = original, root, rootIdentity, helperBytes = 0;
   const add = (code, file, start) => diagnostics.push({ code, ...(file ? { file } : {}), ...(Number.isInteger(start) ? { start } : {}) });
@@ -49,10 +58,12 @@ export function prepareImportSnapshot({ manifest, sources } = {}) {
     observations.set(file, serialized);
     return value;
   }
-  function resolve(file, specifier, start) {
+  function resolve(file, specifier, start, dataLeaf = false) {
     if (!specifier.startsWith('./') && !specifier.startsWith('../')) return null;
     if (/[\\:\n\r\0]/.test(specifier)) { add('import-path-unsupported', file, start); return null; }
     const candidate = path.resolve(path.dirname(file), specifier);
+    // Refuse before observing, inventorying, opening, or reading target bytes.
+    if ((dataLeaf || /\.json$/i.test(specifier)) && forbiddenDataPath(candidate)) { add('import-data-path-forbidden', file, start); return null; }
     const parts = candidate.split(path.sep);
     // Relative vendor dependencies are opaque, like bare packages: never read
     // their code or infer framework provenance from the package-looking path.
@@ -61,24 +72,24 @@ export function prepareImportSnapshot({ manifest, sources } = {}) {
         !excluded(parts.filter(part => part !== 'node_modules').join(path.sep))) return null;
     if (!within(root, candidate) || excluded(candidate)) { add('import-outside-scope', file, start); return null; }
     const base = /\.(?:js|jsx|mjs|cjs)$/.test(candidate) ? candidate.slice(0, candidate.lastIndexOf('.')) : candidate;
-    const alternatives = [...new Set([candidate, ...EXTENSIONS.map(ext => `${base}.${ext}`), ...EXTENSIONS.map(ext => path.join(candidate, `index.${ext}`))])];
+    const alternatives = dataLeaf ? [candidate] : [...new Set([candidate, ...EXTENSIONS.map(ext => `${base}.${ext}`), ...EXTENSIONS.map(ext => path.join(candidate, `index.${ext}`))])];
     try {
       const matches = alternatives.filter(name => pin(name).kind === 'file');
       if (matches.length !== 1) { add(matches.length ? 'import-ambiguous' : 'import-missing', file, start); return null; }
-      if (!/\.(?:ts|tsx|js|jsx|mts|mjs|cts|cjs)$/.test(matches[0])) { add('import-extension-unsupported', file, start); return null; }
+      if (!(dataLeaf && matches[0].endsWith('.json')) && !/\.(?:ts|tsx|js|jsx|mts|mjs|cts|cjs)$/.test(matches[0])) { add('import-extension-unsupported', file, start); return null; }
       return matches[0];
     } catch { add('import-entry-unsafe', file, start); return null; }
   }
   function edges(bytes, file) {
     const model = sourceModel(bytes, file), result = [];
     if (model.diagnostics.length) { add('import-parse-invalid', file); return result; }
-    function emit(node, specifier) {
-      if (specifier && (ts.isStringLiteral(specifier) || ts.isNoSubstitutionTemplateLiteral(specifier))) result.push({ specifier: specifier.text, start: node.getStart(model.source) });
+    function emit(node, specifier, dataLeaf = false) {
+      if (specifier && (ts.isStringLiteral(specifier) || ts.isNoSubstitutionTemplateLiteral(specifier))) result.push({ specifier: specifier.text, start: node.getStart(model.source), dataLeaf });
     }
     walk(model.source, node => {
       if (ts.isImportDeclaration(node)) {
         const clause = node.importClause, bindings = clause?.namedBindings;
-        if (!clause?.isTypeOnly && (!bindings || !ts.isNamedImports(bindings) || clause.name || bindings.elements.some(item => !item.isTypeOnly))) emit(node, node.moduleSpecifier);
+        if (!clause?.isTypeOnly && (!bindings || !ts.isNamedImports(bindings) || clause.name || bindings.elements.some(item => !item.isTypeOnly))) emit(node, node.moduleSpecifier, Boolean(clause?.name && !bindings && ts.isStringLiteral(node.moduleSpecifier) && node.moduleSpecifier.text.endsWith('.json')));
       } else if (ts.isExportDeclaration(node)) {
         if (!node.isTypeOnly && (!node.exportClause || !ts.isNamedExports(node.exportClause) || node.exportClause.elements.some(item => !item.isTypeOnly))) emit(node, node.moduleSpecifier);
       } else if (ts.isImportEqualsDeclaration(node)) {
@@ -109,10 +120,10 @@ export function prepareImportSnapshot({ manifest, sources } = {}) {
     for (let index = 0; index < queue.length; index++) {
       const { file, depth } = queue[index];
       for (const edge of edges(copied.get(file), file)) {
-        const selected = resolve(file, edge.specifier, edge.start);
+        const selected = resolve(file, edge.specifier, edge.start, edge.dataLeaf);
         if (!selected || loaded.has(selected)) continue;
         if (depth >= MAX_DEPTH) { add('import-depth-limit', file, edge.start); continue; }
-        if (helpers.length >= MAX_HELPERS) { add('import-file-limit', file, edge.start); continue; }
+        if (helpers.length + dataDependencies.length >= MAX_HELPERS) { add('import-file-limit', file, edge.start); continue; }
         try {
           const stat = fs.lstatSync(selected, { bigint: true });
           if (stat.size > BigInt(MAX_HELPER_BYTES - helperBytes)) { add('import-byte-limit', file, edge.start); continue; }
@@ -121,6 +132,15 @@ export function prepareImportSnapshot({ manifest, sources } = {}) {
           const candidate = single.candidates[0], bytes = readCandidate(candidate);
           pin(selected);
           if (helperBytes + bytes.length > MAX_HELPER_BYTES) { add('import-byte-limit', file, edge.start); continue; }
+          if (edge.dataLeaf) {
+            try { JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); }
+            catch { add('import-json-invalid', file, edge.start); continue; }
+            // Pin data for integrity only. Never parse it as source, traverse its
+            // contents as imports, or expose it to framework/receiver provenance.
+            dataDependencies.push(candidate); dataBytes.set(selected, Buffer.from(bytes));
+            loaded.add(selected); helperBytes += bytes.length;
+            continue;
+          }
           copied.set(selected, Buffer.from(bytes)); loaded.add(selected); helperBytes += bytes.length;
           helpers.push(candidate); expanded.candidates.push(candidate); queue.push({ file: selected, depth: depth + 1 });
         } catch { add('import-read-unavailable', file, edge.start); }
@@ -135,9 +155,10 @@ export function prepareImportSnapshot({ manifest, sources } = {}) {
     try {
       if (!root || !revalidateProjectContext(original.projectContext).complete || JSON.stringify(directoryIdentity(fs.lstatSync(root, { bigint: true }))) !== JSON.stringify(rootIdentity) || fs.realpathSync(root) !== root) throw new Error('context drift');
       for (const [file, expected] of observations) if (JSON.stringify(observe(file)) !== expected) throw new Error('resolution drift');
+      for (const candidate of dataDependencies) if (!readCandidate(candidate).equals(dataBytes.get(candidate.path))) throw new Error('data drift');
       for (const candidate of expanded.candidates) if (!readCandidate(candidate).equals(copied.get(candidate.path))) throw new Error('source drift');
     } catch { result.push({ code: 'import-snapshot-drift' }); }
     return { complete: result.length === 0, diagnostics: result };
   }
-  return { manifest: expanded, sources: copied, helpers, diagnostics, revalidate };
+  return { manifest: expanded, sources: copied, helpers, dataDependencies, diagnostics, revalidate };
 }

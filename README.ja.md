@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=233d6cc983e1b74418005a7ffadc0cbf7d67ed6347f45ddb40f2b3591dda816e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=0c4bdba4c28f1a4c487a5acb5389d235599cb49631cf14c26f088dcf12723861; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。4 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、失敗原因の診断を行います。
 
@@ -103,7 +103,7 @@ test('shows the welcome message', async ({ page }) => {
 同梱スキャナーは、プロジェクト設定なしで false-green assertion を検出します。以下は関連部分を抜粋した出力です。
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan tests/
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan tests/
 
 [P0][CONFIRMED] #4f Static finding (2 hits)
   "login.spec.ts":5: #4f
@@ -138,12 +138,29 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 ## インストールして試す
 
+### クイックスタート: スキャンしてからメモを追加する
+
+2 つのコマンドから始めてください。まず、既存の E2E テストのうち何も証明せずに通過しているテストをスキャンします。
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text
+```
+
+次に、[テスト作成メモ](docs/test-authoring-memo.md)をエージェントが読み込む指示ファイルに追加します。Claude Code では E2E テストディレクトリを、Codex ではリポジトリのルートを指定します。Codex を E2E テストディレクトリで起動する場合は、そのディレクトリを指定してください。先に `--dry-run` を付けると内容を確認できます。
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host codex --project path/to/repository --memo
+```
+
+開発段階のパイロットでは、最も大きな差を生んだのはメモファイルでした。メモファイルがない場合、スキルが検出した失敗経路の fault は Claude で 54 件中 42 件、Codex で 54 件中 27 件で、ルートの指示ファイルにメモがある場合（53/54、45/54）より少なくなりました。
+
 ### コーディング agent にインストールを依頼する（推奨）
 
 Claude Code または Codex に次のプロンプトを貼り付けてください。テスト生成も使う場合は既存のローカル Playwright プロジェクトを伝え、レビューと失敗分析だけならプロジェクト設定なしでインストールします。
 
 ```text
-Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
+Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
 ```
 
 agent は `e2e-skills` インストーラーを実行し、スキル 4 つと専用エージェント 2 つをインストールします。プロジェクトを指定すると、公式 Playwright test agent とプロジェクトの MCP 設定も準備します。再起動が必要なら agent を自分で再起動し、プロジェクトの MCP サーバーを承認してください。現在のセッションで `generator_write_test` が見えれば生成を始められます。Cursor や Gemini CLI など他の agent を使う場合は、下の skills.sh でスキルをインストールしてください。
@@ -166,16 +183,16 @@ agent は `e2e-skills` インストーラーを実行し、スキル 4 つと専
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
 
-特定の agent だけに入れるには、`--all` を[対応一覧](https://github.com/vercel-labs/skills#supported-agents)の `-a <agent>` に置き換えてください。CLI のバージョンは固定されています。インストールされるのはスキル 4 つだけです。確認するには、agent のスキル一覧（Claude Code では `/skills`）に `e2e-reviewer`、`playwright-debugger`、`cypress-debugger`、`playwright-test-generator` があるか見てください。
+特定の agent だけに入れるには、`--all` を[対応一覧](https://github.com/vercel-labs/skills#supported-agents)の `-a <agent>` に置き換えてください。CLI のバージョンは固定されています。インストールされるのはスキル 4 つだけです。`playwright-test-generator` には公式の Playwright test agent（`playwright init-agents`）とプロジェクトの `playwright-test` MCP サーバーも必要で、このコマンドはそれらを設定しません。両方が揃うまでは、テストを書く代わりにセットアップガイドを表示して停止します。その設定には[下記のインストーラー](#test-generation-claude-code-and-codex)か[インストールガイド](docs/installation.md#manual-generator-setup)を使ってください。確認するには、agent のスキル一覧（Claude Code では `/skills`）に `e2e-reviewer`、`playwright-debugger`、`cypress-debugger`、`playwright-test-generator` があるか見てください。
 
 ### テスト生成: Claude Code と Codex
 
 どのディレクトリからでも実行でき、既存のローカル Playwright プロジェクトを指定します。Claude Code では `codex` を `claude` に置き換えてください。インストーラーには Node.js 22.20 以上が必要です。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills install --host codex --project /path/to/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills doctor --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills doctor --host codex --project /path/to/playwright-project
 ```
 
 `--project` を指定すると、そのプロジェクトで公式の `playwright init-agents --loop=codex`（または `--loop=claude`）を実行し、MCP 設定を書き込みます。Playwright をアップグレードした後はインストールをやり直してください。`--project` なしではスキル 4 つと専用エージェント 2 つだけをインストールします。信頼するプロジェクトでは、`doctor` に `--check-server` を付けると、設定された MCP サーバーを起動して `initialize` と `tools/list` を確認できます。この確認はプロジェクトのコードを実行しますが、ツール呼び出し、ブラウザー起動、テスト実行は行わず、サーバーだけを確認します。必要なら agent を自分で再起動し、プロジェクトの MCP サーバーを承認してください。現在のセッションで `generator_write_test` が見えれば生成を始められます。
@@ -233,7 +250,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 同梱のシェルスクリプトとアーティファクトリーダーは、`/bin/bash` と、ランチャーが要求する固定のシステム実行ファイルパスを使う一般的な macOS/Linux 構成を対象としています。Windows ユーザーには互換性のある WSL ディストリビューションと、WSL ファイルシステム内のアーティファクトが必要で、ネイティブ Windows はサポートしていません。NixOS や、Nix・pyenv・Conda・nvm だけで導入したツールは、すべてが自動検出されるわけではありません。信頼できるツールが見つからない場合は、該当の操作が停止します。環境の `PATH` を探索してこの境界を回避しないでください。スキルのリソースは、推測したホームディレクトリではなく、プラグインキャッシュやカスタムインストールを含め、ホストが実際に提供するスキルの場所から解決してください。
 
-generator は `thin-rules.md` と安全指示を公式 planner と generator に付けて委譲し、reviewer scanner と新しいテストを実行します。何もインストールせず、agent・MCP 設定を変更せず、CLI fallback や healer を使いません。設定がなければ手順を案内します。
+generator は `thin-rules.md`、テスト作成メモ、安全指示を公式 planner と generator に付けて委譲し、reviewer scanner と新しいテストを実行します。何もインストールせず、agent・MCP 設定を変更せず、CLI fallback や healer を使いません。設定がなければ手順を案内します。
 
 生成には、ローカル開発で一般的な loopback アドレス（`localhost`、`127.0.0.1`、`::1`）を使います。承認済みの開発サーバーと既存のテスト用 backend または mock を再利用します。browser 操作の前には、シナリオが使用するサービスだけを確認します。書き込みには隔離されたテストデータと削除またはリセットの方法が必要ですが、読み取り専用のシナリオにはリセットは不要です。新しい mock サーバーやデプロイ環境は必要ありません。使用しない API や database は N/A とし、共有データや本番データは対象外です。実行される navigation と request の宛先は承認済み origin の scheme・hostname・実効 port に一致する必要があり、別途承認した loopback API 宛先も許可します。それ以外や解決できない宛先は BLOCKED です。この確認は browser 全体の origin 隔離を提供しません。
 
@@ -258,7 +275,7 @@ debugger と probe の実行には、信頼するプロジェクトと、環境�
 
 詳細は[実行手順と準備条件](skills/e2e-reviewer/references/runtime-probes.md)、[OSS 2 例の作業手順検証](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)を参照してください。
 
-任意で、エージェントがテストを書く際に失敗経路もテストさせたい場合は、[テスト作成メモ](docs/test-authoring-memo.md)を変更せずにプロジェクトの `CLAUDE.md` または `AGENTS.md` に貼り付けてください。このメモを読み込むスキルはありません。先に測定結果と限界を確認してください。任意の[テスト失敗ポリシー](docs/test-failure-policy.md)は同じファイルに入れる別のスニペットで、根拠となる要件を示さずに失敗したテストを書き換えないようエージェントに求めます。 貼り付ける代わりに `e2e-skills guidance --host claude|codex --project PATH --memo --policy` を実行すると、指定した場合にのみ、どちらか一方または両方を変更せずに HTML コメントのマーカーの間へ書き込みます。詳しくは[インストール手順](docs/installation.md#optional-memo-and-failure-policy)を参照してください。
+任意で、エージェントがテストを書く際に失敗経路もテストさせたい場合は、[テスト作成メモ](docs/test-authoring-memo.md)を変更せずにプロジェクトの `CLAUDE.md` または `AGENTS.md` に貼り付けてください。常に読み込まれるこのファイルがメモの置き場所です。一部のホストではサブエージェントがこのファイルを引き継がないため、generator スキルは委譲先の公式エージェントにもメモを渡します。ファイルにメモがなければ下記の `guidance` コマンドを案内しますが、同意なしには何も書き込みません。ほかのスキルはこのメモを読み込みません。先に測定結果と限界を確認してください。任意の[テスト失敗ポリシー](docs/test-failure-policy.md)は同じファイルに入れる別のスニペットで、根拠となる要件を示さずに失敗したテストを書き換えないようエージェントに求めます。 貼り付ける代わりに `e2e-skills guidance --host claude|codex --project PATH --memo --policy` を実行すると、指定した場合にのみ、どちらか一方または両方を変更せずに HTML コメントのマーカーの間へ書き込みます。詳しくは[インストール手順](docs/installation.md#optional-memo-and-failure-policy)を参照してください。
 
 ## 根拠と限界
 
@@ -296,7 +313,7 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 | 2 | **Missing Then** | Cancel 操作とテキスト復元は検証している。でも input はまだ visible? | restored state と dismissed state の両方を検証する |
 | 3 | **Error swallowing** | spec 内の `try/catch`、POM 内の `.catch(() => {})` | error で fail させる。POM methods から silent catch を取り除く |
 | 3b | **Cypress `uncaught:exception` suppression** | `cy.on('uncaught:exception', () => false)` がアプリケーションエラーを一律に握りつぶす。再 throw しない `fail` handler は失敗したテストも通してしまう | handler を特定の known errors に限定し、unknown errors は re-throw する。`fail` handler は `throw error` で終える |
-| 4 | **Vacuous or retry-weakening assertion** (P0/P1) | P0: invariant predicates と Locator truthiness。P1: weak attachment proof、one-shot values/URL、zero-timeout retry/deadline hazards、証明されていない absence、空の可能性があるコレクションの assertion loop、promised accessible name を省いた ARIA snapshots | 意味のある境界と web-first auto-retrying assertions を使う。absence の前に presence を証明し、assertion loop の前にコレクションが空でないことを証明し、promised accessible names を load-bearing に保つ |
+| 4 | **Vacuous or retry-weakening assertion** (P0/P1) | P0: invariant predicates と Locator truthiness。P1: weak attachment proof、one-shot values/URL、zero-timeout retry/deadline hazards、証明されていない absence、空の可能性があるコレクションの assertion loop、promised accessible name を省いた ARIA snapshots | 意味のある境界と web-first auto-retrying assertions を使う。同じ locator の根拠、または正確な selector/fixture mapping と関連状態の positive assertion で absence を裏付け、シナリオを維持し、assertion loop の前にコレクションが空でないことを証明し、promised accessible names を load-bearing に保つ |
 | 5 | **Bypass patterns** (5a P0, 5b P1) | `if (await el.isVisible()) { expect(...) }`; comment なしの `{ force: true }` | 常に assert する。env checks は `beforeEach` に移し、force:true には `// JUSTIFIED:` を追加する |
 | 7 | **Focused test leak** | `test.only(...)` が commit され、CI は 1 件だけ実行して残りを静かに skip する | `.only` を削除する。local focus には `--grep` または `--spec` を使う |
 | 8 | **Missing assertion** | 捨てられた locator/boolean が scenario 唯一の verification になっている。`expect(x).toBeVisible;` は matcher を呼び出していない | `await expect(locator).toBeVisible()` を追加する。independent verification/failure evidence がすでにある場合は 8a/8b を skip する |
@@ -369,7 +386,7 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 AI agent に依頼せず、コードスキャナーだけを直接実行できます。レビューする問題候補を探す道具であり、テストの実行や、意図した動作を検証しているかの判断は行いません。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.3.1 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text
 ```
 
 Node.js 22 以降が必要で、TypeScript パーサーは同梱されています。npx はキャッシュにない package と依存関係をダウンロードします。scanner 自体は tool のダウンロード、プロジェクト設定コードの読み込み、テストの実行を行いません。構造化された出力には `--format json`、レポートの保存には `--report-file <new-file>` を使います。既存ファイルは上書きしません。
@@ -392,7 +409,7 @@ scan だけでは assertion mutation や fault injection は実行されませ�
 同梱 checks は `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` の source を読み取ります。
 <!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
-デフォルトの `p0` ポリシーは機械的に確認された P0 があれば exit 1 を返します。P0 候補も対象にするには `--fail-on p0-candidate` を指定します。`any` は確認済みの全指摘を対象とし、`none` は件数による終了判定を行いません。exit 0 は選んだ基準に達しなかったことだけを示します。実行完了かつ P0=0 でも、残る候補と追加確認事項のレビューが必要です。入力不足、ソースの整合性や解析の失敗は INCOMPLETE と exit 2 を返します。すべての意味的な検証を完了したことは保証しません。実行とネットワークの境界は [SECURITY.md](SECURITY.md) を参照してください。
+デフォルトの `p0` ポリシーは機械的に確認された P0 があれば exit 1 を返します。P0 候補も対象にするには `--fail-on p0-candidate` を指定します。`any` は確認済みの全指摘を対象とし、`none` は件数による終了判定を行いません。exit 0 は選んだ基準に達しなかったことだけを示します。実行完了かつ P0=0 でも、残る候補と追加確認事項のレビューが必要です。入力不足、ソースの整合性や解析の失敗は INCOMPLETE と exit 2 を返します。 未解決の解析で CI を止めたくない場合は `--allow-incomplete` を追加します。終了コードは解析できた指摘にだけポリシーを適用し、レポートは解析できずチェックされていないファイルと箇所の数を示します。入力不足とソースの整合性の失敗は引き続き exit 2 です。テストが workspace package から `test` や `expect` を import する場合は、`--trust-module <package>=<scan root 内のソース entry のパス>` を追加するとその import を辿れます。すべての意味的な検証を完了したことは保証しません。実行とネットワークの境界は [SECURITY.md](SECURITY.md) を参照してください。
 
 </details>
 

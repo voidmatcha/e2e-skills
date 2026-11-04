@@ -26,7 +26,7 @@ test('direct fs.rm/unlink cleanup is exempt in the bounded legacy callback surfa
   assert.deepEqual(run("fs.rm('/tmp/x').catch(() => {});\nunlink('x').catch(() => false);\nhelper().catch(() => fs.unlink('x'));\n").findings, []);
 });
 test('unsupported parameter bindings, aliased, computed, try/catch and Promise contexts expose explicit coverage gaps', () => {
-  const result = run("helper().catch(({message}) => {});\nhelper().catch(onError);\nhelper()['catch'](() => {});\ntry { expect(1).toBe(2); } catch {}\nPromise.allSettled([helper()]);\ntry { helper(); } finally { returnValue(); }\n");
+  const result = run("helper().catch(({message}) => {});\nhelper().catch(onError);\nhelper()['catch'](() => {});\ntry { expect(1).toBe(2); } catch {}\nPromise.allSettled([helper()]);\ntry { helper(); } finally { for (;;) break; }\n");
   assert.deepEqual(result.findings, []);
   for (const fragment of ['parameterized','non-inline','access or argument','try/catch','allSettled','finally']) assert.ok(result.diagnostics.some(x => x.message.includes(fragment)), fragment);
 });

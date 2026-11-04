@@ -137,7 +137,6 @@ test('rethrow, cleanup, conditional and nested assertions remain outside the dir
     `try { if (ready) { ${assertion} } } catch {}`,
     `try { const deferred=async()=>{ ${assertion} }; } catch {}`,
     `async function helper(){ try { ${assertion} } catch {} }`,
-    `try { ${assertion} } finally { const cleanup=()=>{return;}; }`,
     `try { ${assertion} } finally { if (ready) return; }`,
     `try { ${assertion} } catch {} finally { return; }`,
     `try { ${assertion} } catch { cleanup(); }`,

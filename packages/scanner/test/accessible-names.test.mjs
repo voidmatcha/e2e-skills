@@ -33,16 +33,28 @@ test('shadowed/foreign/type-only receivers and inert examples cannot be candidat
     "function helper(cy){cy.findByRole('link',{name:/Job/});}"])
     assert.deepEqual(run(text,'guard.cy.ts').findings,[],text);
 });
-test('dynamic/spread/duplicate/computed options produce diagnostics, not candidates',()=>{
-  for(const options of ['options',"{name:'Job',...rest}","{name:'Job',name:'Other'}","{[key]:'Job'}","{name:value}","{name:'Job',exact:flag}","{get name(){return 'Job'}}"]){
+test('spread/duplicate/computed/accessor options and dynamic exact produce diagnostics, not candidates',()=>{
+  for(const options of ['options',"{name:'Job',...rest}","{name:'Job',name:'Other'}","{[key]:'Job'}","{name:'Job',exact:flag}","{get name(){return 'Job'}}"]){
     const result=run(body(`page.getByRole('link',${options});`));assert.deepEqual(result.findings,[]);assert.ok(result.diagnostics.length,options);
   }
 });
-test('mutated Cypress global and legacy multiline boundary remain diagnostic',()=>{
+test('Playwright dynamic names without exact are inexact candidates; with exact they are excluded',()=>{
+  for(const name of ['value','`Edit ${value}`',"'Edit '+value",'labels[6]!','new RegExp(`^${value}$`)']){
+    const result=run(body(`page.getByRole('link',{name:${name}});`));
+    assert.deepEqual(result.diagnostics,[],name);assert.deepEqual(result.findings.map(f=>[f.line,f.patternId,f.disposition]),[[3,'#10c','candidate']],name);
+    assert.deepEqual(run(body(`page.getByRole('link',{name:${name},exact:true});`)),{findings:[],diagnostics:[]},name);
+  }
+  // Cypress string names are exact; a dynamic Cypress name stays unresolved.
+  const cy=run("cy.findByRole('link',{name:value});",'example.cy.ts');
+  assert.deepEqual(cy.findings,[]);assert.match(cy.diagnostics[0].message,/dynamic accessible name/);
+});
+test('mutated Cypress global and Cypress multiline boundary remain diagnostic; Playwright multiline is a candidate',()=>{
   const mutated=run("cy.findByRole=custom;cy.findByRole('link',{name:/Job/});",'example.cy.ts');
   assert.deepEqual(mutated.findings,[]);assert.ok(mutated.diagnostics.length);
-  const multiline=run(body("page.getByRole('link',{\nname:'Job'});"));
-  assert.deepEqual(multiline.findings,[]);assert.match(multiline.diagnostics[0].message,/same-line/);
+  const cyMultiline=run("cy.findByRole('link',{\nname:/Job/});",'example.cy.ts');
+  assert.deepEqual(cyMultiline.findings,[]);assert.match(cyMultiline.diagnostics[0].message,/same-line/);
+  const multiline=run(body("page\n.getByRole('link',{\nname:'Job'});"));
+  assert.deepEqual(multiline.diagnostics,[]);assert.deepEqual(multiline.findings.map(f=>[f.line,f.patternId]),[[3,'#10c']]);
 });
 test('missing scope and malformed source stay diagnostic',()=>{
   assert.match(accessibleNames(Buffer.from(''),'example.ts').diagnostics[0].message,/pinned scope/);

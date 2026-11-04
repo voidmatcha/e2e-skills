@@ -217,8 +217,23 @@ export function stateReads(bytes, filename, { scope } = {}) {
         matcher.name === 'toBe' && node.arguments.length === 1 &&
         [ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.FalseKeyword].includes(unwrap(node.arguments[0]).kind);
       if (!booleanMatcher || !ts.isBinaryExpression(subject) || !booleanComposition(subject)) {
-        diagnostic(subject, '#4c-4e wrapped awaited reads are outside this bounded slice');
-        return;
+        // A wrapped scalar read, such as Number(await x.textContent()) or
+        // (await x.inputValue()).split(','), is still one point-in-time value.
+        // Every nested read must be a scalar read on a proven receiver;
+        // .all() yields Locators and any other read stays unresolved.
+        const leaves = [];
+        (function collect(child) {
+          if (ts.isFunctionLike(child)) return;
+          const leaf = read(child);
+          if (leaf) leaves.push(leaf);
+          ts.forEachChild(child, collect);
+        })(subject);
+        // A boolean matcher keeps only the explicit composition lane above.
+        if (booleanMatcher || !leaves.length || leaves.some(leaf => !READS.has(leaf.access.name) ||
+            !['page', 'locator'].includes(receivers.expression(leaf.access.object).kind))) {
+          diagnostic(subject, '#4c-4e wrapped awaited reads are outside this bounded slice');
+          return;
+        }
       }
     }
     const receiver = direct ? kind(direct.access.object) : 'locator';

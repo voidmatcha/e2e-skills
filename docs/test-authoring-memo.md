@@ -1,6 +1,6 @@
 # Optional test-authoring memo
 
-A short memo you can add to a project so that coding agents writing Playwright tests also cover failure paths. It is optional and separate from the four skills: no e2e-skills skill loads or reads it.
+A short memo you can add to a project so that coding agents writing Playwright tests also cover failure paths. Adding it to your project is optional. The `playwright-test-generator` skill also passes a byte-identical copy to the official Playwright planner and generator it delegates to; no other skill loads it.
 
 ## The memo
 
@@ -20,7 +20,7 @@ Finally, ask of each assertion: if this behavior broke, would this line fail? St
 
 ## How to use it
 
-Paste the memo unchanged into the project's always-loaded instruction file: `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex. Then ask for tests as you normally would. The measured effect applies to this exact text; edited wording is untested.
+Paste the memo unchanged into the project's always-loaded instruction file: `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex. That is its supported place: an instruction file is loaded in every session, whichever skill or prompt is used, while a skill file is loaded only when its skill runs. On some hosts, sub-agents do not inherit the project instruction file; for that reason the generator skill also passes the memo in the prompt of the official agents it delegates to. When the generator skill finds the memo missing from the instruction file, it shows the `guidance` command below and writes nothing there without your yes. Then ask for tests as you normally would. The measured effect applies to this exact text in the instruction file; edited wording is untested, and the copy in the delegated prompt has not been measured separately.
 
 Instead of pasting, you can run `e2e-skills guidance --host claude --project /path/to/project --memo` (use `--host codex` for `AGENTS.md`, and add `--dry-run` to preview). It inserts the same text unchanged between two HTML comment markers; see [installation](installation.md#optional-memo-and-failure-policy). Writing the file does not show that the memo works for you; still check your own tests as described below.
 

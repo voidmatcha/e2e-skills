@@ -61,18 +61,31 @@ Start every review with this evidence header:
 
 ```markdown
 ## Review Scope and Evidence
-- **Mode:** [full mode | diff mode]
+- **Mode:** [full mode | diff mode; evidence route: semantic review | scanner-only | targeted assessment | V2/V3 probe]
 - **Behavior under review:** [suite/root behavior or PR/diff behavior]
 - **Diff base/range:** [base...head, patch source, changed-file list, or N/A]
 - **Changed E2E artifacts:** [changed Playwright/Cypress specs, POMs, support, fixtures, custom commands, and E2E config artifacts; or none]
 - **Context-only files consulted:** [unchanged imports/POMs/fixtures/support/app files read as evidence]
 - **Static evidence:** [scanner tier coverage and semantic checks, or none]
-- **Runtime evidence:** [command/result, or "not executed"; state when runtime was not executed and recommend the relevant E2E run]
+- **Runtime evidence:** [command/result, or "not executed"; state when runtime was not executed]
 - **Independent verification:** [V1-V6 evidence or recommended/unexecuted]
 - **Limitations/exclusions:** [out-of-scope files, missing base, skipped runtime, or none]
 ```
 
-Every field is mandatory; use `none`, `unavailable`, or `not executed`. `Static evidence` records scanner tier coverage and semantic checks. `Runtime evidence` means target-controlled project runtime, never the bundled scanner. In diff mode, identify context-only files; when runtime was not executed, say so and recommend the relevant E2E run. Emit the section even for `no in-scope E2E diff`.
+Every field is mandatory; use `none`, `unavailable`, or `not executed`. `Static evidence` records scanner tier coverage and semantic checks. `Runtime evidence` means target-controlled project runtime, never the bundled scanner. In diff mode, identify context-only files; when runtime was not executed, say so. For a complete semantic review, recommend the relevant E2E run when runtime was not executed. For a targeted assessment, recommend runtime only when it is needed to answer the requested question. For an explicit scanner-only request, report runtime as `not executed` without recommending a native E2E run or a probe. Recommendations never authorize execution; requested probes retain their existing trust and exact-command approval gates. Emit the section even for `no in-scope E2E diff`.
+
+**Targeted evidence results:** retain every header field, naming the selected route
+and the exact question tested. Mark omitted scan, semantic and runtime work as
+`not executed`; do not imply that omitted checks passed. Scanner-only output keeps
+candidate counts separate from confirmed findings and never emits `Real P0` or a
+semantic clean verdict. A probe reports only its V2/V3 result; a focused assessment
+reports its disposition, source comparison and unresolved inputs. Use the catalog
+finding template below only for a confirmed finding. Summary tables, priorities,
+systemic rollups and coverage-gap suggestions below belong to the complete semantic
+review and are not required for targeted results. Do not recommend or offer a
+probe after an explicit scanner-only request. A missing requirement/diff is
+`NEEDS_INPUT`, missing runtime proof is `CANNOT_VERIFY`; neither licenses `FAITHFUL`
+or a whole-suite correctness claim.
 
 When `review.analysisTasks` is present, include its task IDs, source-backed dispositions and remaining uncertainty in Static evidence (group repeated contexts when useful). A completed source review does not turn an `INCOMPLETE` scan into `COMPLETE` or establish runtime behavior; keep those evidence states separate.
 
@@ -134,6 +147,7 @@ These constrain what the review says, not what it detects. They never change a p
 - **Clean result:** report that no catalog findings were confirmed, and carry the evidence header's scope and limitation fields unchanged. Emit no findings rows, no `Coverage Gaps` list, and no selector, payload, coverage, style, or general-improvement advice — Phase 3 requires every gap to cite a confirmed Phase 1/2 finding, so a clean result has nothing to cite.
 - **Positive result:** report only confirmed catalog findings. Keep limitations in the `Limitations/exclusions` header field, never inside a finding or the summary. Do not relabel speculative advice as a non-blocking observation, nit, or optional improvement to get it past this rule: if it is not a confirmed catalog finding, it does not ship.
 - **One fix per finding:** give the single minimal evidence-backed fix. Add a second only when the pattern contract genuinely requires coordinated changes across files, and then say which change forces the other.
+- **Concrete patch consistency:** Before recommending code, trace the unchanged test input through the actual source predicate and proposed fixture to the expected output. Check every proposed positive sample satisfies all retained guards and every negative sample is excluded for the intended reason; preserve case sensitivity, normalization, types and exact selector text. For example, with unchanged input `note` and predicate `title.includes(query)`, `Note draft` is not a matching positive fixture; `note draft` is. Do not change the input or predicate merely to make the sample pass, or infer a new requirement from the current implementation. If the necessary source or requirement is missing, state the gap and omit an unsupported concrete patch. This source consistency check is not runtime proof and does not require execution or broaden a scanner-only request.
 - **No weakening alternatives:** never offer an alternative that reduces what the test proves — relaxing a matcher, widening a timeout, deleting the assertion instead of proving the locator, or adding `force: true` to get past an actionability failure.
 - **Calibrated causal language:** write `always` only when the evidence proves an unconditional outcome (a locator that matches nothing under `toHaveCount(0)` does always pass). Otherwise write `can`, `may`, or `when <condition>`.
 

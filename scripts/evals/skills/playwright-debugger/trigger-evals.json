@@ -88,5 +88,20 @@
     "id": "ko-cypress-not-playwright",
     "query": "Cypress 테스트가 CI에서 실패했어. cypress/reports의 mochawesome 결과를 보고 원인을 알려줘.",
     "should_trigger": false
+  },
+  {
+    "id": "ko-failing-playwright-needs-fix",
+    "query": "Playwright 결제 테스트가 지금 TimeoutError로 실패해. 원인을 찾아 수정해줘.",
+    "should_trigger": true
+  },
+  {
+    "id": "green-after-assertion-edit-needs-review",
+    "query": "Our Playwright test now passes after changing an assertion. Review the diff for weakened checks; there is no currently failing run.",
+    "should_trigger": false
+  },
+  {
+    "id": "extract-existing-report-only",
+    "query": "Only extract the errors and counts from the existing Playwright report; no diagnosis or fix, even if the report has zero failures.",
+    "should_trigger": true
   }
 ]

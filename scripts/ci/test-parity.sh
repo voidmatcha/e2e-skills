@@ -764,12 +764,12 @@ if mutation == "duplicate-key":
 
 cases = json.loads(path.read_text(encoding="utf-8"))
 
-if mutation == "fewer-true":
-    index = next(i for i, case in enumerate(cases) if case["should_trigger"] is True)
-    cases.pop(index)
-elif mutation == "fewer-false":
-    index = next(i for i, case in enumerate(cases) if case["should_trigger"] is False)
-    cases.pop(index)
+if mutation in ("fewer-true", "fewer-false"):
+    label = mutation == "fewer-true"
+    # Cross the minimum of eight even when the source fixture has grown.
+    matching = [i for i, case in enumerate(cases) if case["should_trigger"] is label]
+    for index in reversed(matching[7:]):
+        cases.pop(index)
 elif mutation == "duplicate-id":
     cases[1]["id"] = cases[0]["id"]
 elif mutation == "non-boolean":
@@ -1065,6 +1065,17 @@ file="skills/playwright-debugger/SKILL.md"
 backup "$file"
 mutate "$file" "pass the actual absolute skill path" "pass the actual skill path"
 assert_fails "Subagent parity SP2 — delegation line drops absolute-path contract" "delegation line must pass the subagent an absolute"
+restore "$file"
+
+# Case 20b: subagent parity SP2 — the unconditional handoff rule (step 6) is a
+# second line that names the classifier. EVERY such line must carry the
+# absolute-path contract, so dropping it from the new rule must fail even though
+# step 5 still carries the word. A user-named delegation follows this line, not
+# step 5, so an any-line check would let the field failure back in.
+file="skills/playwright-debugger/SKILL.md"
+backup "$file"
+mutate "$file" "must carry \`debugger_skill_md: <absolute path of this loaded SKILL.md>\`" "must carry \`debugger_skill_md: <path of this loaded SKILL.md>\`"
+assert_fails "Subagent parity SP2 — unconditional handoff line drops absolute-path contract" "delegation line must pass the subagent an absolute"
 restore "$file"
 
 # Case 21: subagent parity SP5 — the optional Codex-native TOML port is a third

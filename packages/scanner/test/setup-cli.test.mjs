@@ -166,7 +166,7 @@ test('project official agent presence is reported without execution; config conf
   const report = JSON.parse((await capture(() => main(['doctor', '--host', 'codex', '--project', project], f))).output);
   assert.equal(report.project.status, 'CONFIG_CONFLICT');
   assert.equal(report.project_agents[0].status, 'PRESENT_UNVERIFIED');
-  assert.equal(report.requirements.filter(entry => entry.component === 'project_agent').length, 2);
+  assert.equal(report.requirements.filter(entry => entry.component === 'official_agent').length, 2);
   assert.equal(report.next_steps.some(line => line.includes('Install the project')), false);
 });
 test('project agent directories and special files are unsafe requirements', async () => {
@@ -176,7 +176,7 @@ test('project agent directories and special files are unsafe requirements', asyn
   fs.symlinkSync(path.join(runtime, '.codex/agents/e2e-finding-verifier.toml'), path.join(agents, 'playwright_test_generator.toml'));
   const report = JSON.parse((await capture(() => main(['doctor', '--host', 'codex', '--project', project], f))).output);
   assert.equal(report.project_agents[0].status, 'UNSAFE'); assert.equal(report.project_agents[1].status, 'UNSAFE');
-  assert.equal(report.requirements.filter(entry => entry.component === 'project_agent' && entry.status === 'UNSAFE').length, 2);
+  assert.equal(report.requirements.filter(entry => entry.component === 'official_agent').length, 3);
 });
 test('author payload excludes Python caches and other generated/private entries', () => {
   const source = path.join(temp, 'cache-source'); fs.cpSync(runtime, source, { recursive: true });

@@ -382,12 +382,12 @@
     {
       "id": 20,
       "prompt": "Review the Playwright E2E tests in scripts/evals/skills/e2e-reviewer/files/documented-exclusions.spec.ts. Triage the Phase 1 hits against the documented false-positive exclusions (#5a if-without-expect, #4c-4e custom-service subject, #16 Promise.all element, #4b dynamically-injected element, #4h bare url read, #9 waitFor timeout bound) and only report the real finding.",
-      "expected_output": "Exactly one P0 should survive Phase 2: the spinner test whose load-bearing promised-outcome assertion is gated inside an if with no independent unconditional meaningful postcondition or failure-producing action (#5a). All other Phase 1 hits match documented exclusions and must be skipped; the bare page.url() read and the waitFor timeout bound must not be flagged at all.",
+      "expected_output": "Exactly one P0 should survive Phase 2: the spinner test whose load-bearing promised-outcome assertion is gated inside an if with no independent unconditional meaningful postcondition or failure-producing action (#5a). The banner gate on line 15 has no assertion in its branch and is not a candidate; all other Phase 1 hits match documented exclusions and must be skipped; the bare page.url() read and the waitFor timeout bound must not be flagged at all.",
       "files": [
         "files/documented-exclusions.spec.ts"
       ],
       "assertions": [
-        "Does NOT report the #5a Phase 1 hit on line 15 as P0 — the if-body (line 16) contains no expect(); it gates a setup action (dismissing an optional cookie banner) and the test still asserts unconditionally on line 18",
+        "Does NOT report line 15 as #5a P0 — the if-body (line 16) contains no expect(); it gates a setup action (dismissing an optional cookie banner) and the test still asserts unconditionally on line 18 (the scanner does not emit this gate as a candidate)",
         "Still flags the #5a hit on lines 64-65 as P0 — the expect on line 65 is gated inside the if with no unconditional assertion after it, so the test passes silently whenever the spinner never appears",
         "Does NOT report the #4c-4e Phase 1 hit on line 24 as P1 — the subject flags.isEnabled('labs-mode') is a custom FeatureFlagService method returning Promise<boolean> (defined on lines 4-10), not a Playwright Locator/Page",
         "Does NOT report the #16 Phase 1 candidate on line 33 as P1 — page.locator('#send').click() is an element of the observed Promise.all array opened on line 31, so its Promise is sequenced",
@@ -1561,6 +1561,191 @@
         "True positive: explain that plan B's basename location receipt.spec.ts:7 must be rewritten as the phase-project-relative tests/receipt.spec.ts:7 before the failure can link",
         "False-positive guard: the coordinate in 'AssertionError: expected Sent (tests/receipt.spec.ts:7:5)' must not count as the failure location while the real stack frame at tests/helpers/render.ts:3:9 is present; do not report DETECTED or INVERTED_RESPONSE for plan A",
         "Do not execute commands or present these authored eval packets as observed repository runtime evidence"
+      ]
+    },
+    {
+      "id": 99,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/helper-provenance.spec.ts. It builds locators through same-file helper functions that take the Page and loops over literal heading names.",
+      "expected_output": "Should detect the #4f P0 on line 23: expect(row(page, 'Beta')).toBeTruthy() checks a Locator object returned by the same-file row() helper, which is always truthy. The scanner resolves row(), nameField() and addItem() because each is a non-exported same-file helper called only with the test's page fixture, so the scan completes without provenance diagnostics. Should not flag the helper-built locators on lines 8, 14 and 15, or the literal-array loop on lines 16-17, which uses exact: true.",
+      "files": [
+        "files/helper-provenance.spec.ts"
+      ],
+      "assertions": [
+        "True positive: detects #4f (P0) on line 23, expect(row(page, 'Beta')).toBeTruthy(), as Locator truthiness through the same-file row() helper, which always passes",
+        "False-positive guard: does not flag line 17, page.getByRole('heading', { name: heading, exact: true }) inside for (const heading of ['Items', 'Recent']), as #10c or as an unresolved dynamic name: the loop variable holds only literal strings and exact: true is explicit",
+        "False-positive guard: does not report the helper calls on lines 8, 14 and 15 (nameField(page).fill, addItem(page, 'Alpha'), expect(row(page, 'Alpha')).toBeVisible()) as findings or as an incomplete scan; each helper is a non-exported same-file function called only with the page fixture"
+      ]
+    },
+    {
+      "id": 100,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/generated-shapes.spec.ts. It uses template-literal accessible names, reads stored data through page.evaluate, checks a String.prototype.match result, and reassigns a let locator.",
+      "expected_output": "Should detect the #4f P0 on line 25: expect(page.getByRole('button', { name: `Edit ${name}`, exact: true })).toBeTruthy() checks a Locator object, which is always truthy, whatever its template-literal name. Should not flag line 13 (expect(m).not.toBeNull() on a text.match() result) or line 15 (expect(added.id).toBeTruthy() on data returned by page.evaluate) as Locator truthiness: both subjects are plain data. Should not flag the reassigned let form on lines 16-19, which is a Locator at every read.",
+      "files": [
+        "files/generated-shapes.spec.ts"
+      ],
+      "assertions": [
+        "True positive: detects #4f (P0) on line 25, expect(page.getByRole('button', { name: `Edit ${name}`, exact: true })).toBeTruthy(), as Locator truthiness that always passes; a template-literal name does not change that",
+        "False-positive guard: does not report line 13, expect(m).not.toBeNull(), or line 15, expect(added.id).toBeTruthy(), as #4f: m is a String.prototype.match result and added comes from page.evaluate, so neither can be a Locator",
+        "False-positive guard: does not report the let form reassignment on lines 16-18 or the toHaveValue assertion on line 19 as a finding or an incomplete scan; both writes are Locators from page.getByRole"
+      ]
+    },
+    {
+      "id": 101,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/p0-candidate-narrowing.spec.ts for silent always-pass assertions and conditional bypasses.",
+      "expected_output": "Should report #4a on line 26: expect(await page.locator('.row').count()).toBeGreaterThanOrEqual(0) is true for every count. Should not report #4a on line 18: idx comes from labels.indexOf('Mon'), which is -1 when Mon is missing, so the assertion can fail. Should not report #5a on line 5 (the low parameter is a literal chosen by each caller, and one call passes it) or line 14 (n < 6 holds for the literal loop values 4 and 5). The isVisible() branch on line 11 only dismisses an alert before unconditional assertions, so it is not a #5a candidate.",
+      "files": [
+        "files/p0-candidate-narrowing.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports #4a (P0) on line 26, expect(await page.locator('.row').count()).toBeGreaterThanOrEqual(0), because a count is never negative",
+        "False-positive guard: does not report line 18, expect(idx).toBeGreaterThanOrEqual(0), as #4a: idx is labels.indexOf('Mon'), which returns -1 when the label is missing",
+        "False-positive guard: does not report #5a on line 14 (if (n < 6) over the literal loop values [4, 5, 6]) or line 5 (if (low !== undefined) inside expectStats, whose callers pass the literal '1' or omit it), and does not report the action-only isVisible() branch on line 11 as a confirmed #5a"
+      ]
+    },
+    {
+      "id": 102,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/helper-objects-and-data.spec.ts. It builds an object of Locators through a helper and reads stored items through page.evaluate.",
+      "expected_output": "Should detect the #4f P0 on line 33: expect(form.save).toBeTruthy() checks a Locator field of the itemForm() object, which is always truthy. Should not report line 21, expect(created.id).toBeTruthy(), as Locator truthiness: created comes from data that page.evaluate returned, and the rewrite on line 26, the map on line 27 and the id passed to rowById() only read that data. Should not report the form.name and form.save actions on lines 17-18 and 24-25.",
+      "files": [
+        "files/helper-objects-and-data.spec.ts"
+      ],
+      "assertions": [
+        "True positive: detects #4f (P0) on line 33, expect(form.save).toBeTruthy(), as truthiness of a Locator returned in the itemForm() object, which always passes",
+        "False-positive guard: does not report line 21, expect(created.id).toBeTruthy(), as #4f: created is an element of the array page.evaluate returned, which cannot hold a Locator",
+        "False-positive guard: does not report the actions through form.name and form.save on lines 17-18 and 24-25, or the editButton(rowById(page, id)) click on line 23, as findings or an incomplete scan"
+      ]
+    },
+    {
+      "id": 103,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/field-scan-shapes.spec.ts for swallowed errors, numeric invariants and conditional bypasses.",
+      "expected_output": "Should keep two P0 candidates for review: #4a on line 32, where expect.poll(...).toBeGreaterThanOrEqual(0) on a row count passes on its first sample and never waits, and #3 on line 33, where page.reload() is swallowed before the assertion on line 34. Should not report line 8 (the swallowed waitFor is re-checked by toBeHidden on line 9), line 12 (the dark theme is one of the literal THEMES rows), line 15 (findIndex returns -1 when no option is checked), line 17 (the branch asserts the very length its condition tests) or line 27 (cleanup in the test's final finally block, after its assertions).",
+      "files": [
+        "files/field-scan-shapes.spec.ts"
+      ],
+      "assertions": [
+        "True positive: keeps #4a on line 32, expect.poll(async () => page.getByRole('row').count()).toBeGreaterThanOrEqual(0), because a count is never negative, so the poll passes at once",
+        "False-positive guard: does not report #3 on line 8, loading.waitFor({ state: 'hidden' }).catch(() => {}), because line 9 asserts toBeHidden on the same locator with retries, or on line 27, the request cleanup in the final finally block",
+        "False-positive guard: does not report #4a on line 15 (findIndex can return -1) or #5a on line 12 (the condition holds for the literal 'dark' row) or line 17 (if errors.length > 0 then expect(errors).toHaveLength(0) is satisfied when skipped)"
+      ]
+    },
+    {
+      "id": 104,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/conditional-paths.spec.ts for conditional assertion bypasses.",
+      "expected_output": "Should report #5a P0 on lines 16-18: the only assertion of 'confirms the deletion' runs only when the alert is visible, so the test passes silently when it never appears. Should not report lines 7-8, where the if and the else both assert, or line 9, where the visibility gate only closes an optional dialog before the unconditional assertion on line 10.",
+      "files": [
+        "files/conditional-paths.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports #5a (P0) on lines 16-18 — expect(page.getByRole('alert')).toHaveText('Profile deleted') is the only assertion in the test and is gated on the alert's one-shot visibility",
+        "False-positive guard: does not report lines 7-8 as #5a — whichever layout is shown, one branch asserts the saved state, so no path passes without an assertion",
+        "False-positive guard: does not report line 9 as #5a — the isVisible() branch only closes an optional dialog and the outcome is asserted unconditionally on line 10"
+      ]
+    },
+    {
+      "id": 105,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/round7-shapes.spec.ts for silent always-pass assertions and swallowed failures.",
+      "expected_output": "Should report #4a P0 on line 16, where a count() result can never be negative, and #5a P0 on line 36, where the only assertion of 'mocks the profile' runs only when the alert is visible. Should not report line 6, because getAttribute waits for an a[href^=\"/posts/\"] link and throws when none exists, so href is always a nonempty string. Should not report line 14, because a bounding box x coordinate is negative for an off-screen element. Should not report line 24 as #3, because the caught error is pushed to errors, which line 26 asserts is empty.",
+      "files": [
+        "files/round7-shapes.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports #4a (P0) on line 16 — expect(rows).toBeGreaterThanOrEqual(0) on a count() result always passes",
+        "True positive: reports #5a (P0) on line 36 — the only assertion of 'mocks the profile' is gated on the alert's one-shot visibility",
+        "False-positive guard: does not report line 6 as #5a — getAttribute('href') on a[href^=\"/posts/\"] waits for the link and throws when it is missing, so the if always runs",
+        "False-positive guard: does not report line 14 as #4a — box.x from boundingBox() is negative for an element positioned off-screen, so the check can fail",
+        "False-positive guard: does not report line 24 as #3 — the caught cleanup error is collected in errors and line 26 asserts errors is empty"
+      ]
+    },
+    {
+      "id": 106,
+      "prompt": "Run only the bundled static scanner on files/conditional-paths.spec.ts and report its output. Do not perform a semantic review or execute the tests.",
+      "expected_output": "Select scanner-only; report actual scanner coverage and candidate counts, then stop without confirmed catalog verdicts or runtime probes.",
+      "files": [
+        "files/conditional-paths.spec.ts"
+      ],
+      "assertions": [
+        "True positive: selects scanner-only and preserves actual completion/INCOMPLETE status and uncovered checks.",
+        "False-positive guard: does not confirm #5a at lines 16-18 from scanner output alone, emit Real P0, run the semantic sweep, or imply semantic correctness from zero hits."
+      ]
+    },
+    {
+      "id": 107,
+      "prompt": "Review files/conditional-paths.spec.ts for silently passing tests. The scanner reports zero confirmed P0 findings.",
+      "expected_output": "Default to full semantic review despite zero scanner P0; confirm the skipped sole assertion at lines 16-18 and refute the action-only branch at line 9.",
+      "files": [
+        "files/conditional-paths.spec.ts"
+      ],
+      "assertions": [
+        "True positive: runs mandatory semantic checks and confirms #5a at lines 16-18 even when the scanner has zero confirmed P0.",
+        "False-positive guard: does not interpret static review or a named file as scanner-only, and does not report the action-only branch on line 9 as #5a."
+      ]
+    },
+    {
+      "id": 108,
+      "prompt": "Check only finding #5a at files/conditional-paths.spec.ts:9. Is this isVisible branch really a conditional assertion bypass? I am not asking for a whole-file review.",
+      "expected_output": "Select targeted assessment, inspect the branch and unconditional postcondition on line 10, and return FALSE-POSITIVE with evidence.",
+      "files": [
+        "files/conditional-paths.spec.ts"
+      ],
+      "assertions": [
+        "True positive: resolves the specified candidate from the #5 contract and its actual line 9-10 context.",
+        "False-positive guard: returns FALSE-POSITIVE for the optional-dialog action branch and does not scan the suite, run all semantic sweeps, or report the unrelated real #5a at lines 16-18."
+      ]
+    },
+    {
+      "id": 109,
+      "prompt": "Assess only this Playwright test change: the expected total changed from 100 to 120 and the test is green. I have supplied no requirement or app contract. Does the change still preserve the intended behavior?",
+      "expected_output": "Select targeted change assessment, locate available requirement evidence, and return NEEDS_INPUT for the missing independent requirement if none exists. Neither old expectation nor green run establishes the correct total.",
+      "files": [],
+      "assertions": [
+        "True positive: identifies the missing acceptance contract and limits the conclusion to NEEDS_INPUT after bounded source lookup.",
+        "False-positive guard: does not label the change FAITHFUL or confirm a regression solely from the old assertion, current implementation or green run."
+      ]
+    },
+    {
+      "id": 110,
+      "prompt": "Assess only this assertion diff. The supplied acceptance contract says: displayed total includes 20 tax on a 100 subtotal. The Playwright test changed expect(total).toBe(100) to expect(total).toBe(120); the test still reads the same displayed total. No runtime evidence is supplied.",
+      "expected_output": "Select targeted change assessment and explain that the new expected total agrees with the supplied contract. Do not misclassify a sourced requirement correction as a regression or claim runtime proof.",
+      "files": [],
+      "assertions": [
+        "True positive: compares the supplied before/after assertion with the independent 100 plus 20 contract and reports the supported source-level agreement.",
+        "False-positive guard: does not report #1/#2 just because the expected value changed, infer author intent, claim runtime FAITHFUL proof, or start a full suite scan."
+      ]
+    },
+    {
+      "id": 111,
+      "prompt": "Run only one V3 app-fault probe against our unchanged passing Playwright checkout test. Use the sourced requirement that checkout persists one order. Existing exact command and checkout approvals cover the disposable local setup. Prepare missing probe artifacts from the existing source; do not perform a full review.",
+      "expected_output": "Select the existing runtime-probes behavior-fault workflow directly; prepare a source-backed plan and independent phase observer, preview, and execute only if prerequisites are satisfied. Missing evidence leaves CANNOT_VERIFY.",
+      "files": [],
+      "assertions": [
+        "True positive: routes to runtime-probes and verification-rules, prepares the observer from the sourced order-persistence requirement, reuses exact existing approvals, and retains normal/fault/restored evidence.",
+        "False-positive guard: does not require a whole-suite scanner/semantic review first, silently substitute V2 for V3, guess a generic runner/observer, install dependencies, or classify a fault without independent observations."
+      ]
+    },
+    {
+      "id": 112,
+      "prompt": "Run only a V2 assertion-mutation probe for the existing awaited Playwright heading assertion. Checkout trust and the exact local test command are already approved. Do not audit the rest of the suite.",
+      "expected_output": "Select the assertion-mutation procedure directly, anchor the selected assertion, prepare and preview a disposable plan, and execute within existing approvals when prerequisites exist. Report ASSERTION_SENSITIVE only for a linked mutation failure with passing normal/restored phases.",
+      "files": [],
+      "assertions": [
+        "True positive: uses the requested V2 mode without first scanning or sweeping the suite, and reuses existing exact command approval.",
+        "False-positive guard: does not require a V3 observer for V2, add an app fault automatically, or describe ASSERTION_SENSITIVE as proof that the correct app behavior is asserted."
+      ]
+    },
+    {
+      "id": 113,
+      "prompt": "Review only the #4i absence assertions in files/absence-provenance.spec.ts using the supplied contract and exact adapter mapping in files/absence-provenance-context.ts. Assess the two candidates without executing or modifying the project.",
+      "expected_output": "Confirm #4i P1 only at absence-provenance.spec.ts:19: .retired-hint is an obsolete selector, the heading on line 18 does not validate it, and the dismiss action targets a different control. Refute #4i at line 12: exact fixture code-to-data-testid mapping plus the loaded state and visible enabled entry validates the intentional exclusion of the disabled entry. Do not invent a reload, removal flow, or a state in which that disabled entry appears.",
+      "files": [
+        "files/absence-provenance.spec.ts",
+        "files/absence-provenance-context.ts"
+      ],
+      "assertions": [
+        "True positive: reports #4i P1 at absence-provenance.spec.ts:19; supplied adapter source proves .retired-hint is stale and the unrelated Catalog heading at line 18 is insufficient selector/condition evidence.",
+        "False-positive guard: does NOT report #4i at absence-provenance.spec.ts:12; entryView maps obsolete to entry-obsolete, the DOM adapter maps testId exactly to data-testid, and lines 10-11 prove the relevant loaded catalog state and enabled counterpart.",
+        "False-positive guard: does not report #23 for the disabled fixture at line 7: exclusion by enabled is precisely the supplied requirement, not a guard accidentally hiding an intended positive record.",
+        "Preserves the intentional initial negative contract at line 12; does not recommend reload, enabling the disabled fixture, or a fabricated removal transition merely to make entry-obsolete match. For line 19, recommends using the source-backed catalog-hint locator and observing its presence/removal instead of widening or deleting the assertion.",
+        "Does not use a generic positive heading alone to clear #4i or require runtime execution to decide these supplied-source candidates."
       ]
     }
   ]

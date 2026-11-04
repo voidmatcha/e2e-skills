@@ -1,10 +1,46 @@
 # Phase 0: Scope, Framework, and Diff Review
 
-Read this file before inventorying review targets. It contains the full Phase 0 procedure; `SKILL.md` retains the always-visible safety boundary and non-negotiable outcomes.
+Read this reference once before inventorying review targets and choose the requested evidence route. Apply the procedures selected by that route; the complete semantic route requires the full Phase 0 procedure below. `SKILL.md` retains the always-visible safety boundary and non-negotiable outcomes.
+
+## Select the evidence route
+
+Choose from the user's requested question before applying the full phase sequence.
+Diff/full mode below describes the source scope; it does not override an explicit
+request for a smaller evidence route. "Static review" still means semantic review;
+only an explicit scanner-only request selects the first row.
+
+| Requested question | Required procedure and stop condition |
+| --- | --- |
+| Explicit static scan only / scanner output only | Read `scanner-workflow.md`, establish supported framework and named roots, run the bundled scanner, and report its actual coverage, candidate counts and execution status. Stop at scanner evidence; do not resolve candidates as confirmed semantic findings, run semantic sweeps, start probes, or claim correctness from zero hits. |
+| One assertion mutation or one app-fault probe | Read `runtime-probes.md` and `verification-rules.md`; prepare and run the requested V2 or V3 procedure within existing trust and command approvals. No full scan or semantic sweep is a prerequisite. Stop with the selected test/fault's bounded result and retained evidence, or the concrete unmet prerequisite. |
+| Assess a specified finding or whether a particular test change preserves a requirement | Read the relevant source, the matching `patterns/<id>.md` and applicable confirmation/exclusion sections of `semantic-review.md`. Refute the candidate against its real context and source the requested requirement/change comparison as below. Stop with CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT for a catalog candidate, or a source-backed comparison and explicit gaps; do not expand into unrelated scanner roots or mandatory full-review sweeps. |
+| Broad review, audit, or unspecified review request (default) | Follow all phases below, including the scanner, zero-P0 semantic floor, write-path checks, ownership review and bounded sweeps. A clean scanner never ends this route. |
+
+For combined requests, perform each requested route and keep its conclusion tied to
+its evidence; do not silently reduce a broad review to a targeted check. Inspect
+only the framework, project conventions, helpers, config and app context needed by
+the selected route. Targeted routes do not require inventory of the entire suite.
+Before any result, read `reporting.md` § Output Format and § Output discipline,
+including the evidence header and applicable targeted reporting rules. Read its
+§ Severity classification when classifying findings, and § Phase 2.5 / § Phase 3
+only when synthesizing a complete semantic review. Reuse complete references already read
+from the unchanged skill copy. A targeted result never establishes whole-suite clearance.
+
+For a change assessment, obtain the actual before/after diff and the independent
+requirement or documented requirement change before deciding behavior preservation.
+Old tests, current buggy behavior and green runs are not requirement authority.
+Locate available source evidence yourself. If a material requirement, base/diff or
+observation is unavailable, name the missing input and return `NEEDS_INPUT` (source
+comparison) or `CANNOT_VERIFY` (runtime proof) for that question. Never report
+`FAITHFUL` or a confirmed regression without the necessary evidence. A separately
+provable catalog finding can still be resolved within the requested scope. Do not
+invent an observer, requirement or generic project command to fill an evidence gap;
+prepare a runtime observer only from the sourced behavior and project setup under
+`runtime-probes.md`.
 
 ## Phase 0: Framework Detection
 
-Classify the requested mode:
+For the complete semantic review, classify the requested mode:
 - **Full mode (default):** review the requested suite, directory, or repository.
 - **Diff mode:** review a supplied PR, patch, range, or changed-file list using the supplied patch or read-only git metadata; never guess an unavailable base.
 

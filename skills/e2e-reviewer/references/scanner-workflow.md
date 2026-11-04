@@ -16,13 +16,13 @@ For a directory, save the full report to a new scratch file:
 /bin/bash -p <skill-base>/scripts/scan.sh --report-file <new-file> <dir>
 ```
 
-The report file is created exclusively; an existing file is never overwritten. Stdout contains a digest and Summary. Read relevant report slices of about 30 KB. For structured output use `--format json` instead; do not parse source text as a machine format.
+The report file is created exclusively; an existing file is never overwritten. Stdout contains a digest and Summary. Read relevant report slices of about 30 KB. The report file lists every hit on its own line. Text printed to stdout without `--report-file` lists #10c hits once per file with all their line numbers; add `--verbose` to list each #10c hit separately. For structured output use `--format json` instead; do not parse source text as a machine format.
 
 `<skill-base>` is the absolute directory of the actual loaded skill: use the host-provided skill file path or Base directory, including plugin-cache, custom installation, or checkout locations. Do not infer the active copy from a conventional home directory or the target project cwd. Quote the resolved script and target paths as separate arguments. If the skill location cannot be resolved, report the missing location; do not run a guessed copy. Find review roots from actual E2E artifacts, including specs, fixtures, support files and POMs.
 
 ### Runtime and execution boundary
 
-`scan.sh` launches the bundled Node scanner in static `--scan` mode with text output. It requires Node.js 22 or newer and uses the bundled TypeScript parser. It needs no project packages, Python, ripgrep or ast-grep. It does not download tools, execute tests, or load executable project configuration by default. Missing runtime files, unreadable or changed source, unsupported analysis and invalid input make the run `INCOMPLETE` with exit 2; never treat that as a clean result.
+`scan.sh` launches the bundled Node scanner in static `--scan` mode with text output. It requires Node.js 22 or newer and uses the bundled TypeScript parser. It needs no project packages, Python, ripgrep or ast-grep. It does not download tools, execute tests, or load executable project configuration by default. Missing runtime files, unreadable or changed source, unsupported analysis and invalid input make the run `INCOMPLETE` with exit 2; never treat that as a clean result. `--allow-incomplete` is an opt-in mode for a user's CI gate, not for a review: it lets unresolved analysis exit by the `--fail-on` policy while the report still counts the unanalyzed files and locations. Do not use it to produce a review verdict. `--trust-module <package>=<path inside the scan root>` maps a workspace package that re-exports Playwright `test`/`expect` to its source entry; use it only for the user's own project packages and say so in the report.
 
 The standalone `@voidmatcha/e2e-skills-scanner` npm package uses the same scanner
 source. The skill deliberately uses its integrity-checked bundled copy rather

@@ -383,3 +383,26 @@ test('Cypress global assignment aliases and explicit object mutations preserve g
     ]) assert.equal(query(prefix,name).complete,true,prefix);
   }
 });
+
+
+test('warm CommonJS inventories keep export names and cyclic queries independent', () => {
+  const { scope } = fixture({
+    'fixture.ts': "export { test, expect } from '@playwright/test';\nexport const custom = {};",
+    'relay.cjs': "module.exports = require('./fixture');",
+    'cycle-a.cjs': "module.exports = require('./cycle-b');",
+    'cycle-b.cjs': "module.exports = require('./cycle-a');",
+    'test.cjs': "const {test, expect, custom} = require('./relay.cjs');\nconst cyclic = require('./cycle-a').test;",
+  });
+  for (let iteration = 0; iteration < 3; iteration++) {
+    assert.equal(binding(scope, 'test.cjs', 'test').kind, 'playwright-test');
+    assert.equal(binding(scope, 'test.cjs', 'expect').kind, 'playwright-expect');
+    assert.equal(binding(scope, 'test.cjs', 'custom').kind, 'none');
+    assert.equal(binding(scope, 'test.cjs', 'cyclic').kind, 'unknown');
+  }
+  const other = fixture({
+    'relay.cjs': "module.exports = require('foreign-library');",
+    'test.cjs': "const {test} = require('./relay.cjs');",
+  });
+  assert.equal(binding(other.scope, 'test.cjs', 'test').kind, 'unknown');
+  assert.equal(binding(scope, 'test.cjs', 'test').kind, 'playwright-test');
+});

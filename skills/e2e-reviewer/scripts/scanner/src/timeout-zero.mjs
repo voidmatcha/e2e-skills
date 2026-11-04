@@ -50,9 +50,46 @@ export function timeoutZero(bytes, filename, { scope } = {}) {
       return { unresolved: true, node };
     }
     const entry = entries[0], value = unwrap(entry.initializer);
-    if (!ts.isNumericLiteral(value)) return { unresolved: true, node };
+    if (!ts.isNumericLiteral(value)) {
+      // A same-file numeric constant that folds to a finite nonzero value is
+      // not timeout: 0. A folded zero keeps the legacy literal-only finding
+      // contract, so it stays unresolved rather than becoming a finding.
+      const folded = numericConstant(value, 0);
+      return Number.isFinite(folded) && folded !== 0 ? null : { unresolved: true, node };
+    }
     // Accept the legacy decimal literal spelling only; do not fold expressions.
     return value.getText(source) === '0' ? { entry } : null;
+  }
+  // Numeric literals, + - * / % of them, unary minus, and unwritten
+  // same-file const bindings initialized with such an expression.
+  function numericConstant(node, depth) {
+    node = unwrap(node);
+    if (depth > 8) return NaN;
+    if (ts.isNumericLiteral(node)) return Number(node.text);
+    if (ts.isPrefixUnaryExpression(node) && [ts.SyntaxKind.MinusToken, ts.SyntaxKind.PlusToken].includes(node.operator)) {
+      const operand = numericConstant(node.operand, depth + 1);
+      return node.operator === ts.SyntaxKind.MinusToken ? -operand : operand;
+    }
+    if (ts.isBinaryExpression(node)) {
+      const left = numericConstant(node.left, depth + 1), right = numericConstant(node.right, depth + 1);
+      switch (node.operatorToken.kind) {
+        case ts.SyntaxKind.PlusToken: return left + right;
+        case ts.SyntaxKind.MinusToken: return left - right;
+        case ts.SyntaxKind.AsteriskToken: return left * right;
+        case ts.SyntaxKind.SlashToken: return left / right;
+        case ts.SyntaxKind.PercentToken: return left % right;
+      }
+      return NaN;
+    }
+    if (ts.isIdentifier(node)) {
+      const symbol = receivers.checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      if (!declaration || !ts.isVariableDeclaration(declaration) || !ts.isIdentifier(declaration.name) ||
+          !declaration.initializer || !(declaration.parent.flags & ts.NodeFlags.Const) ||
+          isWritten(source, receivers.checker, symbol)) return NaN;
+      return numericConstant(declaration.initializer, depth + 1);
+    }
+    return NaN;
   }
   function cypressChain(node) {
     node = unwrap(node);

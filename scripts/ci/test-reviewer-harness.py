@@ -4,6 +4,8 @@ import argparse
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -19,6 +21,38 @@ def load(name, path):
 
 
 class ReviewerHarnessTest(unittest.TestCase):
+    def test_bounded_capture_closes_pipes_after_success_and_failure(self):
+        for runner in (self.runner, self.isolation.BEHAVIORAL):
+            for outcome in ('success', 'nonzero', 'timeout', 'quota'):
+                with self.subTest(runner=runner.__name__, outcome=outcome):
+                    code = ('import time; time.sleep(30)' if outcome == 'timeout'
+                            else 'import sys; print("out"); print("err", file=sys.stderr); '
+                                 f'sys.exit({7 if outcome == "nonzero" else 0})')
+                    command = [sys.executable, '-c', code]
+                    process = subprocess.Popen(command, stdout=subprocess.PIPE,
+                                               stderr=subprocess.PIPE, start_new_session=True)
+                    try:
+                        with mock.patch.object(runner, 'MAX_RUNNER_OUTPUT_BYTES',
+                                               1 if outcome == 'quota' else 1024):
+                            if outcome in ('timeout', 'quota'):
+                                expected = subprocess.TimeoutExpired if outcome == 'timeout' else ValueError
+                                with self.assertRaises(expected):
+                                    runner.communicate_bounded(process, command,
+                                                               0 if outcome == 'timeout' else 5)
+                            else:
+                                self.assertEqual(('out\n', 'err\n'),
+                                                 runner.communicate_bounded(process, command, 5))
+                                self.assertEqual(7 if outcome == 'nonzero' else 0, process.returncode)
+                        self.assertIsNotNone(process.poll())
+                        self.assertTrue(process.stdout.closed, 'stdout must close without waiting for GC')
+                        self.assertTrue(process.stderr.closed, 'stderr must close without waiting for GC')
+                    finally:
+                        if process.poll() is None:
+                            process.kill()
+                        process.wait()
+                        process.stdout.close()
+                        process.stderr.close()
+
     @classmethod
     def setUpClass(cls):
         cls.runner = load('harness_runner', ROOT / 'scripts/evals/run-reviewer-holdout.py')

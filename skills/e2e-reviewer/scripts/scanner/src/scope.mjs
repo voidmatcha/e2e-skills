@@ -10,6 +10,15 @@ const GLOBAL_TESTS = new Set(['test', 'it', 'describe', 'context', 'specify']);
 const CYPRESS_HOOKS = new Set(['before', 'beforeEach', 'after', 'afterEach']);
 const CYPRESS_GLOBALS = new Set(['cy', 'Cypress', ...GLOBAL_TESTS, ...CYPRESS_HOOKS, 'xit', 'xdescribe', 'suite']);
 const EXCLUDED = new Set(['node_modules', '.git', 'playwright-report', 'test-results', 'dist', 'build', '.next', 'out', 'coverage', '.yarn']);
+// Built-in expect members and matchers an `expect.extend` object must not redefine.
+const BUILT_IN_MATCHERS = new Set(('not resolves rejects soft poll configure extend any anything arrayContaining ' +
+  'objectContaining stringContaining stringMatching closeTo toBe toBeCloseTo toBeDefined toBeFalsy toBeGreaterThan ' +
+  'toBeGreaterThanOrEqual toBeInstanceOf toBeLessThan toBeLessThanOrEqual toBeNaN toBeNull toBeTruthy toBeUndefined ' +
+  'toContain toContainEqual toEqual toHaveLength toHaveProperty toMatch toMatchObject toStrictEqual toThrow toThrowError ' +
+  'toBeAttached toBeChecked toBeDisabled toBeEditable toBeEmpty toBeEnabled toBeFocused toBeHidden toBeInViewport ' +
+  'toBeVisible toContainClass toContainText toHaveAccessibleDescription toHaveAccessibleErrorMessage toHaveAccessibleName ' +
+  'toHaveAttribute toHaveClass toHaveCount toHaveCSS toHaveId toHaveJSProperty toHaveRole toHaveScreenshot toHaveText ' +
+  'toHaveTitle toHaveURL toHaveValue toHaveValues toMatchAriaSnapshot toMatchSnapshot toBeOK toPass').split(' '));
 const verdict = (kind, reasons = []) => ({ kind, complete: reasons.length === 0, reasons });
 const unknown = reason => verdict('unknown', [reason]);
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -19,12 +28,13 @@ const isExcluded = file => file.split(path.sep).some(part => EXCLUDED.has(part))
  * Caller revalidates the filesystem manifest around the consuming operation;
  * validate() below proves only this in-memory snapshot, never live disk state.
  */
-export function createScope({ manifest, sources } = {}) {
+export function createScope({ manifest, sources, trustedModules } = {}) {
   const failures = [];
   const records = new Map();
   const models = new Map();
   const active = new Set();
   const globalWrites = new WeakMap();
+  const commonJsAssignmentLists = new WeakMap();
   const root = manifest?.root?.canonical;
   const rootKind = manifest?.root?.kind;
   const within = file => typeof root === 'string' && (rootKind === 'file' ? file === root : file === root || file.startsWith(root === path.sep ? path.sep : root + path.sep));
@@ -67,6 +77,11 @@ export function createScope({ manifest, sources } = {}) {
     return Boolean(clause.name || !named || ts.isNamespaceImport(named) || named.elements.some(binding => !binding.isTypeOnly));
   }
   function resolveModule(file, specifier) {
+    // A user-declared --trust-module maps a bare specifier to one pinned file.
+    if (trustedModules instanceof Map && trustedModules.has(specifier)) {
+      const trusted = trustedModules.get(specifier);
+      return records.has(trusted) && !isExcluded(trusted) ? { file: trusted } : { error: `missing pinned module: ${specifier}` };
+    }
     if (!specifier.startsWith('./') && !specifier.startsWith('../')) return { error: `unsupported package/path alias: ${specifier}` };
     if (specifier.includes('\\') || /[:\n\0]/.test(specifier)) return { error: `unsupported module path: ${specifier}` };
     const candidate = path.resolve(path.dirname(file), specifier);
@@ -284,11 +299,40 @@ export function createScope({ manifest, sources } = {}) {
       const method = member(node.expression);
       if (method?.name === 'extend') {
         const base = expressionBinding(file, method.object);
-        return base.kind === 'playwright-test' ? base : base.complete ? unknown('extend receiver is not proven Playwright') : base;
+        if (base.kind === 'playwright-test') return base;
+        // expect.extend({ ... }) is still Playwright's expect when the literal
+        // matcher object only adds names, never redefining a built-in matcher.
+        if (base.complete && base.kind === 'playwright-expect') return addedMatchers(node) ? base : unknown('expect.extend matcher set is not proven additive');
+        return base.complete ? unknown('extend receiver is not proven Playwright') : base;
       }
       return unknown('unsupported provenance-producing call');
     }
     return verdict('none');
+  }
+  function addedMatchers(call) {
+    const matchers = call.arguments.length === 1 && unwrap(call.arguments[0]);
+    return Boolean(matchers && ts.isObjectLiteralExpression(matchers) && matchers.properties.every(item =>
+      (ts.isMethodDeclaration(item) || ts.isPropertyAssignment(item) || ts.isShorthandPropertyAssignment(item)) &&
+      (ts.isIdentifier(item.name) || ts.isStringLiteral(item.name)) && !BUILT_IN_MATCHERS.has(item.name.text)));
+  }
+  function commonJsAssignments(m) {
+    if (commonJsAssignmentLists.has(m)) return commonJsAssignmentLists.get(m);
+    const commonJsExports = [];
+    walk(m.source, node => {
+      if (!ts.isBinaryExpression(node) || node.operatorToken.kind < ts.SyntaxKind.FirstAssignment || node.operatorToken.kind > ts.SyntaxKind.LastAssignment) return;
+      let access = member(node.left);
+      if (!access) return;
+      let base = unwrap(access.object);
+      while ((access = member(base))) base = unwrap(access.object);
+      if (ts.isIdentifier(base) && ['module', 'exports'].includes(base.text)) {
+        const symbol = m.checker.getSymbolAtLocation(base);
+        // In JS the TS binder synthesizes module/exports symbols whose
+        // declarations are the assignments themselves, not lexical locals.
+        if (!lexicalGlobalShadow(m, base, base.text) && (!symbol || symbol.declarations?.every(ts.isBinaryExpression))) commonJsExports.push(node);
+      }
+    });
+    commonJsAssignmentLists.set(m, Object.freeze(commonJsExports));
+    return commonJsExports;
   }
   function exportedBinding(file, name) {
     const m = model(file);
@@ -296,20 +340,7 @@ export function createScope({ manifest, sources } = {}) {
     return cycle(`${file}:export:${name}`, () => {
       const matches = [];
       const stars = [];
-      const commonJsExports = [];
-      walk(m.source, node => {
-        if (!ts.isBinaryExpression(node) || node.operatorToken.kind < ts.SyntaxKind.FirstAssignment || node.operatorToken.kind > ts.SyntaxKind.LastAssignment) return;
-        let access = member(node.left);
-        if (!access) return;
-        let base = unwrap(access.object);
-        while ((access = member(base))) base = unwrap(access.object);
-        if (ts.isIdentifier(base) && ['module', 'exports'].includes(base.text)) {
-          const symbol = m.checker.getSymbolAtLocation(base);
-          // In JS the TS binder synthesizes module/exports symbols whose
-          // declarations are the assignments themselves, not lexical locals.
-          if (!lexicalGlobalShadow(m, base, base.text) && (!symbol || symbol.declarations?.every(ts.isBinaryExpression))) commonJsExports.push(node);
-        }
-      });
+      const commonJsExports = commonJsAssignments(m);
       if (commonJsExports.length) {
         if (m.source.statements.some(statement => ts.isExportDeclaration(statement) || ts.isExportAssignment(statement) ||
             statement.modifiers?.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword))) return unknown('mixed CommonJS and ESM exports');
@@ -442,6 +473,109 @@ export function createScope({ manifest, sources } = {}) {
     walk(m.source, item => { if (item.getStart(m.source) === start && item.end === node.end) selected = item; });
     return selected;
   }
+  // test.extend chains, as pinned source nodes: the outermost extend first.
+  // Anything not provably a chain of literal extend objects returns null.
+  function extendChain(file, node, depth = 0) {
+    const m = model(file);
+    if (!m || depth > 16) return null;
+    node = unwrap(node);
+    if (ts.isIdentifier(node)) {
+      const symbol = m.checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      if (!declaration || written(m, symbol)) return null;
+      if (ts.isVariableDeclaration(declaration) && declaration.initializer && declaration.parent.flags & ts.NodeFlags.Const)
+        return extendChain(file, declaration.initializer, depth + 1);
+      if (ts.isImportSpecifier(declaration) && !declaration.isTypeOnly) {
+        const statement = declaration.parent.parent.parent, imported = (declaration.propertyName || declaration.name).text;
+        if (statement.importClause?.isTypeOnly) return null;
+        if (statement.moduleSpecifier.text === '@playwright/test') return imported === 'test' ? [] : null;
+        const resolved = resolveModule(file, statement.moduleSpecifier.text);
+        if (resolved.error) return null;
+        const exported = exportedNode(resolved.file, imported, depth + 1);
+        return exported && extendChain(exported.file, exported.node, depth + 1);
+      }
+      return null;
+    }
+    const access = ts.isCallExpression(node) && !node.questionDotToken && member(node.expression);
+    if (!access || access.name !== 'extend' || node.arguments.length !== 1) return null;
+    const object = unwrap(node.arguments[0]);
+    if (!ts.isObjectLiteralExpression(object)) return null;
+    const base = extendChain(file, access.object, depth + 1);
+    return base && [{ file, object }, ...base];
+  }
+  function exportedNode(file, name, depth) {
+    const m = model(file);
+    if (!m || depth > 16) return null;
+    const found = [];
+    for (const statement of m.source.statements) {
+      if (ts.isVariableStatement(statement) && statement.modifiers?.some(item => item.kind === ts.SyntaxKind.ExportKeyword) &&
+          statement.declarationList.flags & ts.NodeFlags.Const) {
+        for (const declaration of statement.declarationList.declarations)
+          if (ts.isIdentifier(declaration.name) && declaration.name.text === name && declaration.initializer)
+            found.push(() => ({ file, node: declaration.initializer }));
+      } else if (ts.isExportDeclaration(statement) && !statement.isTypeOnly && statement.exportClause && ts.isNamedExports(statement.exportClause)) {
+        for (const element of statement.exportClause.elements) {
+          if (element.isTypeOnly || element.name.text !== name) continue;
+          const local = (element.propertyName || element.name).text;
+          if (statement.moduleSpecifier) found.push(() => {
+            const resolved = resolveModule(file, statement.moduleSpecifier.text);
+            return resolved.error ? null : exportedNode(resolved.file, local, depth + 1);
+          });
+          else found.push(() => ({ file, node: element.propertyName || element.name, local: true }));
+        }
+      }
+    }
+    if (found.length !== 1) return null;
+    const result = found[0]();
+    if (result?.local) {
+      // `export { test }`: the local binding's own declaration or import.
+      const symbol = m.checker.getExportSpecifierLocalTargetSymbol(result.node.parent);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      if (!declaration || written(m, symbol)) return null;
+      if (ts.isVariableDeclaration(declaration) && declaration.initializer && declaration.parent.flags & ts.NodeFlags.Const)
+        return { file, node: declaration.initializer };
+      if (ts.isImportSpecifier(declaration)) return { file, node: declaration.name };
+      return null;
+    }
+    return result;
+  }
+  // What a fixture name holds for a test built by extend: 'page' only when
+  // every `use(...)` of its definition passes a destructured base fixture that
+  // is itself a Page, down to Playwright's own `page`.
+  function fixtureKindFrom(chain, index, name, depth) {
+    if (depth > 16) return null;
+    for (let i = index; i < chain.length; i++) {
+      const { file, object } = chain[i];
+      if (object.properties.some(item => ts.isSpreadAssignment(item) || item.name && ts.isComputedPropertyName(item.name))) return null;
+      const matches = object.properties.filter(item => item.name && (ts.isIdentifier(item.name) || ts.isStringLiteral(item.name)) && item.name.text === name);
+      if (!matches.length) continue;
+      if (matches.length !== 1) return null;
+      const m = model(file), entry = matches[0];
+      let fn = ts.isMethodDeclaration(entry) ? entry : ts.isPropertyAssignment(entry) ? unwrap(entry.initializer) : null;
+      if (fn && ts.isArrayLiteralExpression(fn)) fn = fn.elements.length ? unwrap(fn.elements[0]) : null;
+      if (!fn || !(ts.isArrowFunction(fn) || ts.isFunctionExpression(fn) || ts.isMethodDeclaration(fn)) || !fn.body ||
+          fn.parameters.length < 2 || !ts.isIdentifier(fn.parameters[1].name)) return null;
+      const fixtures = fn.parameters[0].name, use = m.checker.getSymbolAtLocation(fn.parameters[1].name);
+      if (!ts.isObjectBindingPattern(fixtures) || !use || written(m, use)) return null;
+      let kind = 'page', calls = 0;
+      walk(fn.body, item => {
+        if (!kind || !ts.isIdentifier(item) || m.checker.getSymbolAtLocation(item) !== use) return;
+        const call = item.parent;
+        if (!ts.isCallExpression(call) || call.expression !== item || call.arguments.length !== 1) { kind = null; return; }
+        calls++;
+        const argument = unwrap(call.arguments[0]);
+        const binding = ts.isIdentifier(argument) && m.checker.getSymbolAtLocation(argument)?.declarations?.[0];
+        if (!binding || !ts.isBindingElement(binding) || binding.parent !== fixtures || binding.dotDotDotToken || binding.initializer ||
+            written(m, m.checker.getSymbolAtLocation(argument))) { kind = null; return; }
+        const base = (binding.propertyName || binding.name).text;
+        // A fixture sees overrides from its own extend object; only a fixture
+        // that depends on its own name gets the base definition below it.
+        if (fixtureKindFrom(chain, base === name ? i + 1 : i, base, depth + 1) !== 'page') kind = null;
+      });
+      return calls ? kind : null;
+    }
+    return name === 'page' ? 'page' : null;
+  }
   return {
     binding(file, name, position) { return failures.length ? unknown(failures.join('; ')) : localBinding(file, name, position); },
     expression(file, node) {
@@ -453,6 +587,11 @@ export function createScope({ manifest, sources } = {}) {
       if (!selected) return unknown('Cypress global expression is not in pinned source');
       const identifier = unwrap(selected);
       return ts.isIdentifier(identifier) ? cypressGlobalPinned(file, identifier) : verdict('none');
+    },
+    fixtureKind(file, node, name) {
+      const selected = pinnedExpression(file, node);
+      const chain = selected && failures.length === 0 ? extendChain(file, selected) : null;
+      return chain ? fixtureKindFrom(chain, 0, name, 0) : null;
     },
     framework, validate,
     // Ordered candidates are visible for differential resolver checks. No file

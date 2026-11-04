@@ -1148,9 +1148,12 @@ for name, text in (("e2e-finding-verifier", verifier), ("e2e-failure-classifier"
         )
 
 # SP2 — delegating skills must actually hand the subagent that absolute path.
-# Anchor the check to the delegation line itself (the line naming the agent),
-# NOT the whole file — otherwise an unrelated 'absolute' elsewhere would keep the
-# guard green after the delegation sentence drops the path contract (the A1 bug).
+# Anchor the check to the delegation lines themselves (every line naming the
+# agent), NOT the whole file — otherwise an unrelated 'absolute' elsewhere would
+# keep the guard green after a delegation sentence drops the path contract (the
+# A1 bug). Every such line must carry it: the debuggers state the contract twice
+# (the inline-default step and the unconditional user-named-call rule), and a
+# user-forced delegation in 3.3.1 skipped the only line that had it.
 for rel, text, agent in (
     ("skills/e2e-reviewer/SKILL.md", reviewer, "e2e-finding-verifier"),
     ("skills/playwright-debugger/SKILL.md", pw_dbg, "e2e-failure-classifier"),
@@ -1159,10 +1162,10 @@ for rel, text, agent in (
     delegation_lines = [ln for ln in text.splitlines() if agent in ln]
     if not delegation_lines:
         errors.append(f"{rel}: lost the {agent} delegation block")
-    elif not any("absolute" in ln for ln in delegation_lines):
+    elif not all("absolute" in ln for ln in delegation_lines):
         errors.append(
             f"{rel}: the {agent} delegation line must pass the subagent an absolute "
-            "source-of-truth path (the word 'absolute' is missing from the line that "
+            "source-of-truth path (the word 'absolute' is missing from a line that "
             "names the agent)."
         )
 

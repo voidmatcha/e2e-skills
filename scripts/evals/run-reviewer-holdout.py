@@ -4616,11 +4616,11 @@ def communicate_bounded(
         return stdout or "", stderr or ""
     selector = selectors.DefaultSelector()
     buffers = {"stdout": bytearray(), "stderr": bytearray()}
-    for name, stream in (("stdout", process.stdout), ("stderr", process.stderr)):
-        os.set_blocking(stream.fileno(), False)
-        selector.register(stream, selectors.EVENT_READ, name)
     deadline = time.monotonic() + timeout
     try:
+        for name, stream in (("stdout", process.stdout), ("stderr", process.stderr)):
+            os.set_blocking(stream.fileno(), False)
+            selector.register(stream, selectors.EVENT_READ, name)
         while selector.get_map():
             remaining = deadline - time.monotonic()
             if remaining <= 0:
@@ -4649,6 +4649,8 @@ def communicate_bounded(
         raise
     finally:
         selector.close()
+        process.stdout.close()
+        process.stderr.close()
     return (
         buffers["stdout"].decode(errors="replace"),
         buffers["stderr"].decode(errors="replace"),

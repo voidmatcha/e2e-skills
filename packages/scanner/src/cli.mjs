@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 // SPDX-License-Identifier: Apache-2.0
+import fs from 'node:fs';
+import path from 'node:path';
 import { inventory, revalidate } from './inventory.mjs';
 import { analyzeConfiguration } from './config-context.mjs';
 import { MAPPED_ESLINT_RULES } from './eslint-rule-map.mjs';
@@ -42,7 +44,7 @@ const COVERAGE_LIMITATIONS = [
   'Configuration observations are declared literals, not a resolved runner inventory. Unknown expressions and inherited settings need review; scanner file selection and independent rules are unchanged.',
   'No runtime test, browser, assertion mutation or fault injection probe runs automatically; passing this policy is not evidence that tests detect project faults.',
 ];
-const HELP = `Usage: e2e-skills-scan --experimental-focused|--experimental-static|--bounded-static|--scan <path> [--fail-on none|any|p0|p0-candidate] [--project-eslint --trust-project] [--format json|text] [--report-file <new-file>]
+const HELP = `Usage: e2e-skills-scan --experimental-focused|--experimental-static|--bounded-static|--scan <path> [--fail-on none|any|p0|p0-candidate] [--project-eslint --trust-project] [--format json|text] [--verbose] [--allow-incomplete] [--trust-module <specifier>=<path>]... [--report-file <new-file>]
 
 Development preview modes and bounded checks read source with the bundled parser;
 by default they do not load project configuration or download tooling. Focused preview covers #7; static
@@ -57,10 +59,45 @@ The default policy follows E2E_SMELL_FAIL_ON (or p0); --fail-on overrides it.
 ESLint with the project configuration. Configuration code has host access; no sandbox,
 fixes or dependency downloads are provided. Missing or incomplete ESLint evidence exits 2.
 --scan is the installed scanner contract: retained candidates require review.
+The text report lists #10c hits once per file with their lines; --verbose lists each hit.
+JSON output and --report-file always keep one entry per hit.
+--trust-module <specifier>=<path> (with --scan, repeatable) declares that a package import such as a
+workspace test library resolves to one source file inside the scan root; that file is then read
+like a relative import. The path must be an inventoried regular source file, not a symlink.
+--allow-incomplete (with --scan) is an opt-in CI mode: unresolved analysis no longer forces
+exit 2, so the exit reflects the --fail-on policy on findings that were analyzed. Code with
+unresolved analysis is NOT checked; the report counts it. Inventory, source-integrity, scope
+and requested-ESLint failures still exit 2.
 Only precisely linked POM uncertainty may become a review obligation. Other analysis,
 source-integrity or required ESLint failures still exit 2. It does not claim complete
 JavaScript semantics or completed human review.
 `;
+
+const TRUSTED_EXTENSIONS = /\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs)$/;
+// Each declared module maps a bare package specifier to one inventoried
+// source file inside the scan root. No resolution rules are guessed.
+function trustedModuleMap(declarations, baseline) {
+  const map = new Map();
+  if (!declarations?.length) return map;
+  if (!baseline.complete || baseline.root?.kind !== 'directory') throw new Error('--trust-module requires a complete directory scan root');
+  const root = baseline.root.canonical, pinned = new Set(baseline.candidates.map(item => item.path));
+  for (const { specifier, path: requested } of declarations) {
+    if (specifier.startsWith('.') || specifier.startsWith('/') || specifier === '@playwright/test' ||
+        !/^(?:@[a-z0-9][\w.-]*\/)?[a-z0-9][\w.-]*(?:\/[\w.-]+)*$/i.test(specifier) || map.has(specifier)) {
+      throw new Error(`--trust-module: unsupported or duplicate specifier: ${specifier}`);
+    }
+    const file = path.resolve(root, requested);
+    let real;
+    try { real = fs.realpathSync(file); } catch { throw new Error(`--trust-module: path not found: ${requested}`); }
+    if (real !== file || fs.lstatSync(file).isSymbolicLink() || !fs.lstatSync(file).isFile())
+      throw new Error(`--trust-module: path must be a regular file without symbolic links: ${requested}`);
+    if (!file.startsWith(root + path.sep)) throw new Error(`--trust-module: path leaves the scan root: ${requested}`);
+    if (!TRUSTED_EXTENSIONS.test(file)) throw new Error(`--trust-module: not a JavaScript or TypeScript source file: ${requested}`);
+    if (!pinned.has(file)) throw new Error(`--trust-module: path is not an inventoried source file: ${requested}`);
+    map.set(specifier, file);
+  }
+  return map;
+}
 
 function argumentsFor(argv) {
   if (argv.length === 1 && ['--help', '-h'].includes(argv[0])) return null;
@@ -70,12 +107,21 @@ function argumentsFor(argv) {
       throw new Error('INCOMPLETE: retired E2E_SMELL_* backend, executable or limit setting; remove it. Local ESLint requires --project-eslint --trust-project; no tooling is downloaded.');
   }
   let root, failOn = process.env.E2E_SMELL_FAIL_ON || 'p0', experimental, seenPolicy = false, projectEslintEnabled = false, trustProject = false;
-  let format = 'json', seenFormat = false, reportFile;
+  let format = 'json', seenFormat = false, reportFile, verbose = false, allowIncomplete = false;
+  const trustModules = [];
   for (let index = 0; index < argv.length; index++) {
     const arg = argv[index];
     if (['--experimental-focused', '--experimental-static', '--bounded-static', '--scan'].includes(arg) && !experimental) experimental = arg;
     else if (arg === '--project-eslint' && !projectEslintEnabled) projectEslintEnabled = true;
     else if (arg === '--trust-project' && !trustProject) trustProject = true;
+    else if (arg === '--verbose' && !verbose) verbose = true;
+    else if (arg === '--allow-incomplete' && !allowIncomplete) allowIncomplete = true;
+    else if (arg === '--trust-module') {
+      const value = argv[++index];
+      const split = typeof value === 'string' ? value.indexOf('=') : -1;
+      if (split < 1 || split === value.length - 1) throw new Error('--trust-module requires <specifier>=<path inside the scan root>');
+      trustModules.push({ specifier: value.slice(0, split), path: value.slice(split + 1) });
+    }
     else if (arg === '--format' && !seenFormat) {
       format = argv[++index]; seenFormat = true;
       if (!['json', 'text'].includes(format)) throw new Error('invalid --format');
@@ -95,7 +141,10 @@ function argumentsFor(argv) {
   if ((format === 'text' || reportFile) && !['--bounded-static', '--scan'].includes(experimental)) throw new Error('text reports require --bounded-static or --scan');
   if (reportFile && seenFormat && format !== 'text') throw new Error('--report-file requires text format');
   if (reportFile) format = 'text';
-  return { root, failOn, experimental, projectEslintEnabled, format, reportFile };
+  if (verbose && format !== 'text') throw new Error('--verbose requires the text report');
+  if (allowIncomplete && experimental !== '--scan') throw new Error('--allow-incomplete requires --scan');
+  if (trustModules.length && experimental !== '--scan') throw new Error('--trust-module requires --scan');
+  return { root, failOn, experimental, projectEslintEnabled, format, reportFile, verbose, allowIncomplete, trustModules };
 }
 
 // The lexical helper retains reasons for local analysis. Public JSON records
@@ -117,6 +166,8 @@ try {
   if (!args) process.stdout.write(HELP);
   else {
     const baseline = inventory(args.root);
+    // Validated before any analysis: a bad declaration fails the run (exit 2).
+    const trustedModules = trustedModuleMap(args.trustModules, baseline);
     const configurationAnalysis = analyzeConfiguration({manifest: baseline});
     configurationAnalysis.runnerSelectionApplied = false;
     configurationAnalysis.ruleComparison = {
@@ -149,7 +200,7 @@ try {
         }
       }
       const importSnapshot = scan ? prepareImportSnapshot({ manifest: baseline, sources }) : null;
-      const scope = createScope(importSnapshot ?? { manifest: baseline, sources });
+      const scope = createScope({ ...(importSnapshot ?? { manifest: baseline, sources }), trustedModules });
       if (importSnapshot?.diagnostics.length) {
         incomplete.push('relative import snapshot incomplete');
         diagnostics.push(...importSnapshot.diagnostics.map(item => ({ ...item, detector: 'importSnapshot' })));
@@ -262,7 +313,11 @@ try {
         diagnostics.push(analysisDiagnostic(unresolved, detector, file, sources.get(file)));
       }
     }
-    const summary = summarize(deduplicated.findings, { failOn: args.failOn, incomplete });
+    const summary = summarize(deduplicated.findings, { failOn: args.failOn, incomplete, allowIncomplete: args.allowIncomplete, diagnostics });
+    // What --allow-incomplete leaves unchecked, counted from the diagnostics.
+    const unanalyzed = args.allowIncomplete ? {
+      files: new Set(diagnostics.filter(item => typeof item?.file === 'string').map(item => item.file)).size,
+      locations: diagnostics.length } : null;
     const analysisTasks = scan ? analysisReviewTasks(diagnostics, sources) : [];
     const report = { ...(bounded ? {
       schema: scan ? 'e2e-skills-node-scan-v1' : 'e2e-skills-node-bounded-v1', status: scan ? summary.complete ? 'COMPLETE' : 'INCOMPLETE' : 'PARTIAL',
@@ -270,7 +325,8 @@ try {
       ...(scan ? { compatibility: { contract: 'source-review-v1', status: 'development', referenceLegacyCallVariants: 69 },
         review: { required: summary.counts.triage > 0 || analysisTasks.length > 0, candidates: summary.counts.triage,
           obligations, analysisTasks } } : {}),
-      execution: { complete: summary.complete, exitCode: summary.exitCode, incomplete: summary.incomplete, diagnostics },
+      execution: { complete: summary.complete, exitCode: summary.exitCode, incomplete: summary.incomplete, diagnostics,
+        ...(summary.allowIncomplete ? { allowIncomplete: { ...summary.allowIncomplete, unanalyzed } } : {}) },
       coverage: { complete: false, ruleSlices: STATIC_RULE_SLICES, limitations: COVERAGE_LIMITATIONS.map(text => {
         if (scan && text.startsWith('Unsupported syntax')) return 'Unsupported analysis remains incomplete. Only exact source-linked uncertainty covered by retained candidates becomes a review obligation; review is still required.';
         if (args.projectEslintEnabled && text.startsWith('Project ESLint configuration')) return 'Explicitly trusted local project ESLint configuration runs for the pinned files; only mapped framework rules contribute findings. Project-disabled rules stay disabled; full coverage remains incomplete.';
@@ -287,13 +343,14 @@ try {
         configurationExecuted: eslintResult.executed, configurationFiles: baseline.projectContext.markers
           .filter(item => item.kind === 'file' && /(?:eslint\.config\.(?:mjs|js|cjs)|\.eslintrc(?:\.(?:json|js|cjs|yml|yaml))?|(?:playwright|cypress)\.config\.(?:ts|js|mts|mjs|cts|cjs))$/.test(item.path))
           .map(({ path, sha256 }) => ({ path, sha256 })) } : null,
+      ...(trustedModules.size ? { trustedModules: [...trustedModules].map(([specifier, file]) => ({ specifier, path: file })) } : {}),
       files: baseline.candidates.length, findings: deduplicated.findings.map(publicFinding),
       duplicates: deduplicated.duplicates.map(({ finding, retained, reason, ruleClass }) => ({
         finding: publicFinding(finding), retained: publicFinding(retained), reason, ruleClass })),
       suppressed: suppressed.map(publicFinding), ...(!bounded ? summary : {}) };
     if (args.format === 'text') {
       const rendered = args.reportFile ? writeLegacyReportFile(report, args.reportFile, { root: baseline.root.canonical }) :
-        formatLegacyReport(report, { root: baseline.root.canonical });
+        formatLegacyReport(report, { root: baseline.root.canonical, verbose: args.verbose });
       process.stdout.write(args.reportFile ? rendered.digest : rendered.text);
       process.exitCode = rendered.exitCode;
     } else {

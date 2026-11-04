@@ -55,10 +55,14 @@ print(json.dumps(out))`, legacyOracleFile('regression/test-reviewer-scanner.py')
     if(hit) observed.push(`${hit[1]}:${hit[2]}:P0:candidate`);
   }
   const gap='conditional.spec.ts:6:P0:candidate', difference='shadow.spec.ts:4:P0:candidate';
+  // Intentional contract divergence (pattern-reference #5a): an assertion-free
+  // boolean-read branch is not a bypass. Legacy flags both of these gates.
+  const contract=['boolean-consumers.spec.ts:5:P0:candidate','documented-exclusions.spec.ts:15:P0:candidate'];
   assert.ok(observed.includes(gap),output);assert.ok(observed.includes(difference),output);
-  const parity=[...new Set(observed.filter(value=>value!==difference))].sort();
-  assert.equal(parity.length,9,output);
+  for(const value of contract){assert.ok(observed.includes(value),value);assert.ok(!expected.includes(value),value);}
+  const parity=[...new Set(observed.filter(value=>value!==difference&&!contract.includes(value)))].sort();
+  assert.equal(parity.length,7,output);
   assert.deepEqual(parity,[...new Set(expected)].sort(),output);
   t.diagnostic(JSON.stringify({matchedUniqueFindings:parity.length,diagnosticRetainedGenericAssertCandidate:[gap],
-    intentionalLegacyShadowFalsePositive:[difference],fullParity:false}));
+    intentionalLegacyShadowFalsePositive:[difference],intentionalContractDivergence:contract,fullParity:false}));
 });

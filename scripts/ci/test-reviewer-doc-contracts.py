@@ -193,13 +193,18 @@ def verify_reference_routing_contract() -> None:
 def assert_reference_reuse_contract(skill: str, scanner: str, semantic: str) -> None:
     require_normalized_contract(
         skill,
-        "A complete reference from the current loaded skill copy stays in context for this review; reuse it across scan roots and Phase 2 candidates without fetching it again.",
+        "Reuse complete unchanged references already read and apply them across scan roots and Phase 2 candidates.",
         "SKILL.md reference reuse",
     )
     require_normalized_contract(
         skill,
-        "If the skill copy changes or the text is missing, truncated, or lost after compaction, read the required reference again before using it.",
+        "Re-read required text only when the loaded skill copy changes or the text is missing, truncated, or lost after compaction.",
         "SKILL.md reference recovery",
+    )
+    require_normalized_contract(
+        skill,
+        "apply them across scan roots and Phase 2 candidates.",
+        "SKILL.md complete reference application",
     )
     require_normalized_contract(
         scanner,
@@ -273,7 +278,9 @@ def verify_reference_reuse_contract() -> None:
     semantic = SEMANTIC_REVIEW.read_text(encoding="utf-8")
     assert_reference_reuse_contract(skill, scanner, semantic)
     mutations = (
-        (skill.replace("reuse it across scan roots and Phase 2 candidates", "skip Phase 2 candidates"), scanner, semantic),
+        (skill.replace("apply them across scan roots and Phase 2 candidates.", "Skip Phase 2 candidates."), scanner, semantic),
+        (skill.replace("Reuse complete unchanged references already read", "Re-read every reference for every candidate"), scanner, semantic),
+        (skill.replace("Re-read required text only when the loaded skill copy changes", "Never re-read required text when the loaded skill copy changes"), scanner, semantic),
         (skill, scanner.replace("reuse it for later scan roots", "read it again for later scan roots"), semantic),
         (skill, scanner, semantic.replace("reuse it for later candidates", "skip checks for later candidates")),
     )
@@ -357,8 +364,9 @@ def verify_upstream_reference_routing_contract() -> None:
 # margin keeps one section plus its tool-call overhead fully visible.
 PATTERN_SECTION_MAX_BYTES = 32_000
 SECTION_READ_RULE = (
-    "reference text already in your context is complete — apply all of it "
-    "and do not fetch it again.",
+    "Reuse complete unchanged references already read and apply them across scan roots and Phase 2 candidates.",
+    "apply them across scan roots and Phase 2 candidates.",
+    "Re-read required text only when the loaded skill copy changes or the text is missing, truncated, or lost after compaction.",
     "Keep each step's combined tool output under about 30 KB: batch small "
     "reads (references, specs, POMs, and configs) into one tool call up to "
     "that size, and read a larger file alone.",
@@ -391,8 +399,6 @@ SECTION_READ_RULE = (
     "Run the scanner command on its own, with no `;`, `&&`, `||`, or pipe added",
     "**Reading the repository under review:** locate first, then read only "
     "what you need",
-    "Batch several small files or ranges into one command while their combined "
-    "output stays under about 30 KB",
     "nl -ba <file> | sed -n '<a>,<b>p'       # one range of at most 250 lines",
     "may take that row from `references/fix-replacements.md`, a generated copy "
     "of §4.1 alone",
@@ -683,8 +689,7 @@ def documented_extensions(text: str, start: str, end: str) -> tuple[str, ...]:
 def verify_pattern_4i_direction_neutral() -> None:
     """#4i's SKIP criterion must match its Rule and FLAG criterion.
 
-    The Rule ("somewhere in that test's execution path") and the FLAG
-    criterion ("appears nowhere else") are both direction-neutral: a locator
+    Same-locator consumption is direction-neutral: a locator
     consumed by a real assertion or action anywhere in the test cannot rot
     silently, because that use fails when the selector stops matching. A SKIP
     bullet that only credits proof appearing *earlier* contradicts them and
@@ -695,8 +700,9 @@ def verify_pattern_4i_direction_neutral() -> None:
 
     require_normalized_contract(
         pattern_reference,
-        "an absence assertion is only meaningful if the same locator is "
-        "proven capable of matching somewhere in that test's execution path",
+        "Accept either presence/action consumption of the same locator anywhere in "
+        "that test's execution path, or source-backed exact selector/fixture mapping "
+        "plus a relevant positive state assertion",
         "pattern-reference.md #4i Rule",
     )
     require_normalized_contract(
@@ -713,10 +719,44 @@ def verify_pattern_4i_direction_neutral() -> None:
         "the test, contradicting its own Rule and FLAG criterion"
     )
 
+    # Positive: an unmapped standalone absence is still a #4i candidate.
+    # Negative: exact fixture-to-selector mapping plus relevant positive state
+    # validates intentional absence; unrelated headings must not clear the lead.
+    clauses = (
+        'none of the SKIP evidence above validates the absence assertion',
+        'supplied source maps the exact fixture/adapter output to the asserted selector, all relevant render guards are satisfied, and a relevant positive assertion establishes the intended rendered state',
+        'An unrelated heading or generic readiness assertion alone is insufficient',
+        'apply #23 when fixture guards make that state true for the wrong reason',
+        'Do not invent setup, a removal flow, a reload, or a product state solely to make the locator appear',
+    )
+    for clause in clauses:
+        require_contract(pattern_reference, clause, "#4i provenance alternatives")
+        mutated = pattern_reference.replace(clause, "provenance obligation removed", 1)
+        assert mutated != pattern_reference
+        try:
+            require_contract(mutated, clause, "#4i provenance mutation")
+        except AssertionError:
+            continue
+        raise AssertionError(f"#4i provenance guard survived mutation: {clause}")
+
     # Every surface that restates #4i's SKIP criterion must stay direction-
     # neutral too, or the taxonomy contradicts itself across surfaces.
     semantic_review = normalized(SEMANTIC_REVIEW)
     scanner_source = SCANNER.read_text(encoding="utf-8")
+    for clause in (
+        'SKIP source-backed exact selector/fixture mapping with satisfied render guards and a relevant positive assertion of the intended rendered state',
+        'an unrelated heading or generic readiness assertion alone is insufficient',
+        'Apply #23 when guard-suppressed fixtures make the state true for the wrong reason',
+        'Do not invent a reload or removal flow to make an intentionally absent item appear',
+    ):
+        require_contract(semantic_review, clause, "semantic #4i provenance alternatives")
+        mutated = semantic_review.replace(clause, "semantic provenance obligation removed", 1)
+        assert mutated != semantic_review
+        try:
+            require_contract(mutated, clause, "semantic #4i mutation")
+        except AssertionError:
+            continue
+        raise AssertionError(f"semantic #4i guard survived mutation: {clause}")
 
     for surface, text, name in (
         ("semantic review", semantic_review, "semantic-review.md #4i row"),
@@ -1456,7 +1496,7 @@ def assert_fable_reviewer_policy_contracts(
     for contract in (
         "do not offer assertion deletion as a fix",
         "for an intentional initial-empty or negative contract, add the expected positive empty-state counterpart or other supplied evidence",
-        "Do not invent setup, an action, or a product state solely to make the locator appear",
+        "Do not invent setup, a removal flow, a reload, or a product state solely to make the locator appear",
         "replace the vacuous bound with the evidenced expected value or count for that scenario",
         "Do not default to `> 0` or invent a non-empty product requirement",
     ):
@@ -1881,6 +1921,8 @@ def verify_policy_summary_digest() -> None:
 
 
 def verify_current_docs() -> None:
+    verify_concrete_patch_consistency()
+    verify_evidence_route_contract()
     verify_policy_summary_digest()
     assert_behavior_preservation_contract(REVIEW_SCOPE.read_text(encoding="utf-8"))
     verify_cypress_name_and_coverage_scope()
@@ -2353,7 +2395,7 @@ def verify_current_docs() -> None:
         "`Runtime evidence` means target-controlled project runtime, never the bundled scanner",
         "use `none`, `unavailable`, or `not executed`",
         "Every diff finding must include the explicit `Attribution (diff mode)` field",
-        "when runtime was not executed, say so and recommend the relevant E2E run",
+        "For a complete semantic review, recommend the relevant E2E run when runtime was not executed",
     }
     for contract in (
         "Review Scope and Evidence",
@@ -2384,7 +2426,7 @@ def verify_current_docs() -> None:
         "A P1 may be suppressed only when a concrete local rationale is documented and the pattern contract allows that rationale",
         "P2/style follows a documented project convention",
         "Conventions never narrow the requested review scope",
-        "when runtime was not executed, say so and recommend the relevant E2E run",
+        "For a complete semantic review, recommend the relevant E2E run when runtime was not executed",
         "If a PR changes no in-scope E2E artifact, return `no in-scope E2E diff`",
         "do not perform a general app review",
     ):
@@ -2429,6 +2471,123 @@ def assert_node_scanner_docs(workflow: str, readme: str) -> None:
             continue
         raise AssertionError(f"Node scanner doc mutation survived: {original}")
 
+
+
+def assert_concrete_patch_consistency(reporting: str, semantic: str) -> None:
+    for clause in (
+        'trace the unchanged test input through the actual source predicate and proposed fixture to the expected output',
+        'every proposed positive sample satisfies all retained guards and every negative sample is excluded for the intended reason',
+        'preserve case sensitivity, normalization, types and exact selector text',
+        'Do not change the input or predicate merely to make the sample pass',
+        'If the necessary source or requirement is missing, state the gap and omit an unsupported concrete patch',
+        'does not require execution or broaden a scanner-only request',
+    ):
+        require_contract(reporting, clause, "concrete patch consistency")
+    require_contract(semantic, 'Apply `reporting.md` § Output discipline, Concrete patch consistency', "semantic patch check")
+    # This documented example witnesses the exact repair mistake: diagnosis alone
+    # does not make a new positive fixture satisfy an unchanged string predicate.
+    require_contract(reporting, 'with unchanged input `note` and predicate `title.includes(query)`, `Note draft` is not a matching positive fixture; `note draft` is', "case-sensitive patch example")
+    assert 'note' in 'note draft'       # positive sample reaches the expected output
+    assert 'note' not in 'Note draft'   # capitalized sample cannot be claimed positive
+
+
+def verify_concrete_patch_consistency() -> None:
+    reporting = normalized(REPORTING)
+    semantic = normalized(SEMANTIC_REVIEW)
+    assert_concrete_patch_consistency(reporting, semantic)
+    for original, replacement in (
+        ('every proposed positive sample satisfies all retained guards',
+         'a proposed positive sample may bypass retained guards'),
+        ('`Note draft` is not a matching positive fixture; `note draft` is',
+         '`Note draft` is a matching positive fixture; `note draft` is not'),
+        ('does not require execution or broaden a scanner-only request',
+         'requires execution and a full scanner-only review'),
+    ):
+        mutated = reporting.replace(original, replacement, 1)
+        assert mutated != reporting, f"patch consistency mutation was a no-op: {original}"
+        try:
+            assert_concrete_patch_consistency(mutated, semantic)
+        except AssertionError:
+            continue
+        raise AssertionError(f"patch consistency guard survived mutation: {original}")
+
+
+def assert_runtime_recommendation_scope(reporting: str) -> None:
+    # Preserve the useful full-review next step without extending scanner-only scope.
+    for clause in (
+        'For a complete semantic review, recommend the relevant E2E run when runtime was not executed',
+        'For a targeted assessment, recommend runtime only when it is needed to answer the requested question',
+        'For an explicit scanner-only request, report runtime as `not executed` without recommending a native E2E run or a probe',
+        'Recommendations never authorize execution; requested probes retain their existing trust and exact-command approval gates',
+    ):
+        require_contract(reporting, clause, "runtime recommendation scope")
+    assert 'when runtime was not executed, say so and recommend the relevant E2E run' not in reporting
+    assert 'state when runtime was not executed and recommend the relevant E2E run' not in reporting
+
+
+def verify_evidence_route_contract() -> None:
+    skill = normalized(SKILL)
+    scope = normalized(REVIEW_SCOPE)
+    reporting = normalized(REPORTING)
+    assert_runtime_recommendation_scope(reporting)
+    for obsolete in (
+        'in a tool call without other references',
+        'do not re-read an entire file to fetch a later section',
+        'Read only the sections required by that route',
+    ):
+        assert obsolete not in skill, f"retired section-first constraint remains: {obsolete}"
+    assert 'read § Select the evidence route alone first' not in scope
+    for clause in (
+        'Before inventorying any files, read `references/review-scope.md` once and choose the requested evidence route',
+        'Apply its routed procedures; the complete semantic route still requires every mandatory phase, sweep and matching pattern contract',
+        'Reuse complete unchanged references already read and apply them across scan roots and Phase 2 candidates',
+        'For complete semantic review, read all of `semantic-review.md` and every required matching pattern contract; perform every mandatory sweep',
+    ):
+        require_contract(skill, clause, "reference reuse with full semantic floor")
+        # Explicit route scope and the broad-review floor are both required.
+        mutated = skill.replace(clause, "route read obligation removed", 1)
+        assert mutated != skill
+        try:
+            require_contract(mutated, clause, "selective route mutation")
+        except AssertionError:
+            continue
+        raise AssertionError(f"selective route guard survived mutation: {clause}")
+    for original, replacement in (
+        ('For a complete semantic review, recommend the relevant E2E run when runtime was not executed',
+         'For a complete semantic review, omit all runtime recommendations'),
+        ('without recommending a native E2E run or a probe',
+         'and recommend a native E2E run or a probe'),
+        ('state when runtime was not executed]',
+         'state when runtime was not executed and recommend the relevant E2E run]'),
+    ):
+        mutated = reporting.replace(original, replacement, 1)
+        assert mutated != reporting, f"runtime recommendation mutation was a no-op: {original}"
+        try:
+            assert_runtime_recommendation_scope(mutated)
+        except AssertionError:
+            continue
+        raise AssertionError(f"runtime recommendation scope guard survived mutation: {original}")
+    for clause in (
+        'A broad "review" or "audit" uses the complete semantic review below by default',
+        'Never use a scanner result as semantic clearance',
+    ):
+        require_contract(skill, clause, "reviewer evidence routing")
+    for clause in (
+        'only an explicit scanner-only request selects the first row',
+        'No full scan or semantic sweep is a prerequisite',
+        'CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT',
+        'do not silently reduce a broad review to a targeted check',
+        'Old tests, current buggy behavior and green runs are not requirement authority',
+        'Never report `FAITHFUL` or a confirmed regression without the necessary evidence',
+    ):
+        require_contract(scope, clause, "reviewer evidence scope")
+    require_contract(reporting, 'candidate counts separate from confirmed findings', "targeted reporting")
+    require_contract(reporting, 'missing runtime proof is `CANNOT_VERIFY`', "targeted uncertainty")
+    evals = {case["id"]: case for case in json.loads(EVALS.read_text())["evals"]}
+    for case_id in range(106, 113):
+        assertions = evals[case_id]["assertions"]
+        assert any(a.startswith("True positive:") for a in assertions), case_id
+        assert any(a.startswith("False-positive guard:") for a in assertions), case_id
 
 
 def main() -> None:

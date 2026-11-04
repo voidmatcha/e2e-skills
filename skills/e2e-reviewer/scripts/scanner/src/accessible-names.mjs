@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Bounded raw #10c P1 candidates. Dynamic-content collisions and container scope
-// require semantic review. Preserve legacy page/cy direct spelling, same-line
-// calls, and its exclusion of any explicit exact property (including false).
+// require semantic review. Preserve legacy page/cy direct receiver spelling and
+// its exclusion of any explicit exact property (including false). Playwright
+// names need no literal value or same-line layout; Cypress keeps both limits.
 // Do not reinterpret Cypress string names as substring matching. Legacy's
 // Cypress regex slice excludes any leading ^, not only fully anchored regexes.
 import {createReceivers} from './receivers.mjs';
@@ -35,34 +36,43 @@ export function accessibleNames(bytes, filename, {scope} = {}) {
     }
     const properties=name=>options.properties.filter(p=>p.name&&p.name.text===name);
     const names=properties('name'),exact=properties('exact');
-    if(names.length>1||exact.length>1||[...names,...exact].some(p=>!ts.isPropertyAssignment(p))){
+    // A shorthand name is its same-named binding; accessors stay unresolved.
+    if(names.length>1||exact.length>1||names.some(p=>!ts.isPropertyAssignment(p)&&
+        !(ts.isShorthandPropertyAssignment(p)&&!p.objectAssignmentInitializer))||exact.some(p=>!ts.isPropertyAssignment(p))){
       diagnostic(options,'duplicate/accessor accessible-name options are unresolved');return;
     }
     if(!names.length)return;
-    const name=unwrap(names[0].initializer);
-    if(!ts.isStringLiteral(name)&&!ts.isRegularExpressionLiteral(name)){
-      diagnostic(name,'dynamic accessible name is outside the literal-name slice');return;
-    }
+    // Any explicit literal exact excludes the candidate, whatever the name is.
     if(pw&&exact.length){
       if(![ts.SyntaxKind.TrueKeyword,ts.SyntaxKind.FalseKeyword].includes(unwrap(exact[0].initializer).kind))
         diagnostic(exact[0],'dynamic exact option is unresolved');
       return;
     }
-    if(cy){
-      if(!ts.isRegularExpressionLiteral(name))return;
-      // Exact existing discovery shape: an unescaped slash or ) in the regex
-      // is outside the legacy same-line regex, not a new AST expansion.
-      if(name.text.startsWith('/^'))return;
-      if(!/^\/[^/\n)]+\/[a-z]*$/.test(name.text)){diagnostic(name,'regex is outside legacy Cypress discovery');return;}
-    }
     const start=callee.getStart(source),position=source.getLineAndCharacterOfPosition(start);
+    // Playwright matches any string or RegExp name inexactly unless exact is
+    // set, so the candidate needs no literal value; spelling and line layout
+    // are legacy discovery limits, not uncertainty about this AST shape.
+    if(pw){
+      if(!findings.some(f=>f.line===position.line+1))findings.push({patternId:'#10c',severity:'P1',disposition:'candidate',
+        origin:'ast',file:filename,line:position.line+1,column:position.character+1,start,end:node.end});
+      return;
+    }
+    const name=ts.isShorthandPropertyAssignment(names[0])?names[0].name:unwrap(names[0].initializer);
+    if(!ts.isStringLiteral(name)&&!ts.isRegularExpressionLiteral(name)){
+      diagnostic(name,'dynamic accessible name is outside the literal-name slice');return;
+    }
+    // Cypress Testing Library string names are exact; only regexes nominate.
+    if(!ts.isRegularExpressionLiteral(name))return;
+    // Exact existing discovery shape: an unescaped slash or ) in the regex
+    // is outside the legacy same-line regex, not a new AST expansion.
+    if(name.text.startsWith('/^'))return;
+    if(!/^\/[^/\n)]+\/[a-z]*$/.test(name.text)){diagnostic(name,'regex is outside legacy Cypress discovery');return;}
     if(source.getLineAndCharacterOfPosition(node.end).line!==position.line||
        source.text.slice(callee.end+1,node.end-1).includes(')')){
       diagnostic(node,'accessible-name call is outside legacy same-line discovery');return;
     }
     const raw=source.text.slice(start,node.end);
-    const legacyShape=pw ? /^page\.(getByRole|getByLabel|getByPlaceholder)\((?:(?!exact:)[^)])*name:(?:(?!exact:)[^)])*\)$/.test(raw) :
-      /^cy\.findByRole\([^\n)]*\bname\s*:\s*\/(?!\^)[^/\n]+\/[a-z]*\s*[,}]/.test(raw);
+    const legacyShape=/^cy\.findByRole\([^\n)]*\bname\s*:\s*\/(?!\^)[^/\n]+\/[a-z]*\s*[,}]/.test(raw);
     if(!legacyShape){diagnostic(node,'accessible-name spelling is outside legacy discovery');return;}
     if(!findings.some(f=>f.line===position.line+1))findings.push({patternId:'#10c',severity:'P1',disposition:'candidate',
       origin:'ast',file:filename,line:position.line+1,column:position.character+1,start,end:node.end});

@@ -133,3 +133,13 @@ hook-only failure can never appear as an empty successful extraction.
   --report-root cypress/reports \
   cypress/reports/results-*.xml
 ```
+
+### Extraction-only output
+
+Native run-results can contain a `run-error` from `runs[].error` before any test registers. Keep it separate from failed-test counts: its empty `attempts` array does not establish a test outcome or retry history. When the same error is attached to a test record as `runError` provenance, do not count it again as another failed test.
+
+For the explicit extraction-only route in SKILL.md, return only requested observed errors/counts, artifact identity and format, test/spec identity when emitted, attempt outcomes and retry provenance, and missing/incomplete evidence. Use only bundled reader output for artifacts and apply SKILL.md's excerpt source labels, verified redaction and 500-character excerpt limit. Keep setup/global errors separate from test counts. State the counting unit and scope; distinguish unknown from zero. A missing, rejected, partial or empty abnormal-record output does not prove a clean complete run. Report reader limitations without bypassing the reader, rerunning tests or regenerating artifacts merely to fill gaps. If the supplied format cannot yield the requested records through a supported reader mode, report that limitation and stop.
+
+Do not add F-codes, diagnosis axis, root cause, severity, fixes, verification recommendations or the diagnosis triage table. Stop after the extraction response; acquisition and write safety gates still apply if the user separately requested those actions.
+
+Report confirmed retries separately from unknown retry history. Stock mochawesome/JUnit final states alone cannot establish passed-on-retry; absent attempt metadata or screenshot association means unknown, not zero flaky tests. Do not investigate screenshots or video merely to resolve extraction-only uncertainty.

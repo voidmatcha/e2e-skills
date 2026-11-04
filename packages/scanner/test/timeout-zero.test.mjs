@@ -142,3 +142,22 @@ test('legacy eight-line options lookback and unsupported source stay diagnostic'
   assert.ok(run('function (').diagnostics.length);
   assert.match(timeoutZero(Buffer.from(''), 'example.ts').diagnostics[0].message,/scope is required/);
 });
+
+test('same-file numeric constants that fold to a finite nonzero timeout need no receiver proof', () => {
+  // Round 7: a named timeout used to leave the call unresolved.
+  for (const statement of ["const LONG=5*1000;eventTypePage.goto('/',{timeout:LONG});",
+    "const BASE=1000;const LONG=BASE*60+-1;expect(eventTypePage).toHaveText('x',{timeout:LONG});",
+    "eventTypePage.waitFor({timeout:30_000/2});"]) {
+    assert.deepEqual(run(`import {eventTypePage,expect} from './missing-fixture';${statement}`), { findings: [], diagnostics: [] }, statement);
+  }
+  // A folded zero, a reassigned binding, an imported value or a non-number stays unresolved, never a finding.
+  for (const statement of ["const NONE=1-1;eventTypePage.waitFor({timeout:NONE});",
+    "let LONG=500;LONG=0;eventTypePage.waitFor({timeout:LONG});",
+    "eventTypePage.waitFor({timeout:IMPORTED});", "const T='500';eventTypePage.waitFor({timeout:T*1});",
+    "eventTypePage.waitFor({timeout:1/0});"]) {
+    const result = run(`import {eventTypePage,IMPORTED} from './missing-fixture';${statement}`);
+    assert.deepEqual(result.findings, [], statement);
+    assert.ok(result.diagnostics.length, statement);
+  }
+  assert.deepEqual(run(body("const NONE=0;await page.goto('/',{timeout:NONE});")).findings, []);
+});

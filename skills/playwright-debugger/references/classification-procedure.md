@@ -4,7 +4,7 @@ Before any execution, browser request, or artifact write in this procedure, read
 
 Classification steps:
 
-**If delegating**, pass the failing test name, report excerpt (error, stack, attempt outcome), repo root, and the **absolute** path to this skill's `SKILL.md` (resolve the actual loaded skill from the host-provided file path or Base directory, not a conventional installation directory). Every delegated working directory is the project under debug, so a repo-relative `skills/...` path is invalid. Require the F-code with confidence, evidence, and a fix. All available paths use the same F1–F15 contract; resolve disagreements against source evidence and preserve uncertainty when unresolved.
+**If delegating**, pass the failing test name, report excerpt (error, stack, attempt outcome), repo root, and the **absolute** path to this skill's `SKILL.md` as `debugger_skill_md` (resolve the actual loaded skill from the host-provided file path or Base directory, not a conventional installation directory), using the payload template in `SKILL.md` step 6. This applies to every call, including one the user requests by name; a user-forced delegation skips no field. Every delegated working directory is the project under debug, so a repo-relative `skills/...` path is invalid. Require the F-code with confidence, evidence, and a fix. A `NEEDS_SKILL_PATH` reply is not a classification: resend once with the resolved absolute path if it was omitted; otherwise classify inline from the `SKILL.md` table and report that the delegated path did not classify. All available paths use the same F1–F15 contract; resolve disagreements against source evidence and preserve uncertainty when unresolved.
 
 1. Match error message to signals above
 2. `duration` near timeout → F1 or F3

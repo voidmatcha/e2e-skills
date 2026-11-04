@@ -113,5 +113,20 @@
     "id": "configure-mcp-server-only",
     "query": "Add a playwright-test MCP server entry to our team's shared Codex config.toml template.",
     "should_trigger": false
+  },
+  {
+    "id": "extend-existing-flow-coverage",
+    "query": "Extend our existing Playwright checkout spec with a new declined-payment scenario.",
+    "should_trigger": true
+  },
+  {
+    "id": "ko-new-flow-coverage",
+    "query": "Playwright로 배송지 변경 흐름에 빠진 E2E 시나리오를 추가해줘.",
+    "should_trigger": true
+  },
+  {
+    "id": "audit-green-repair-not-generation",
+    "query": "Our existing Playwright test is green after an assertion edit; review whether that edit weakened the test.",
+    "should_trigger": false
   }
 ]

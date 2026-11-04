@@ -749,7 +749,7 @@ def run_result_records(report: object) -> list[dict[str, object]]:
     if not isinstance(report, dict) or not isinstance(report.get("runs"), list):
         raise ValueError("run-results schema requires a root runs array")
     records: list[dict[str, object]] = []
-    for run in report["runs"]:
+    for run_index, run in enumerate(report["runs"]):
         if not isinstance(run, dict):
             raise ValueError("run-results schema requires run objects")
         spec = run.get("spec")
@@ -760,6 +760,13 @@ def run_result_records(report: object) -> list[dict[str, object]]:
             raise ValueError(
                 "run-results schema requires spec.relative and tests array"
             )
+        # Cypress RunResult.error is string | null (15.19.0 npm API types).
+        # It can describe a spec failure before any test was registered.
+        run_error = run.get("error")
+        if run_error is not None and not isinstance(run_error, str):
+            raise ValueError("run-results run.error must be a string or null")
+        run_error_present = isinstance(run_error, str) and bool(run_error.strip())
+        run_error_represented = False
         for test in tests:
             if (
                 not isinstance(test, dict)
@@ -831,6 +838,41 @@ def run_result_records(report: object) -> list[dict[str, object]]:
                         else None
                     ),
                     "attempts": attempts,
+                }
+            )
+            # Compare original strings, before redaction/truncation can make
+            # distinct errors look equal. Retain run provenance on a matching
+            # test record rather than counting the same error again.
+            raw_test_errors = [
+                test.get("displayError") if test_state == "failed" else None
+            ]
+            for attempt in raw_attempts:
+                raw_error = attempt.get("error") or attempt.get("displayError")
+                raw_test_errors.append(
+                    raw_error.get("message")
+                    if isinstance(raw_error, dict)
+                    else raw_error
+                )
+            if run_error_present and run_error in raw_test_errors:
+                records[-1]["runError"] = {
+                    "source": "runs[].error",
+                    "runIndex": run_index,
+                }
+                run_error_represented = True
+            if len(records) > MAX_OUTPUT_RECORDS:
+                raise ValueError(
+                    f"run-results exceeds the {MAX_OUTPUT_RECORDS}-record limit"
+                )
+        if run_error_present and not run_error_represented:
+            records.append(
+                {
+                    "kind": "run-error",
+                    "source": "runs[].error",
+                    "runIndex": run_index,
+                    "file": bounded_string(spec["relative"]),
+                    "error": bounded_string(run_error),
+                    # No test state or retry history is established here.
+                    "attempts": [],
                 }
             )
             if len(records) > MAX_OUTPUT_RECORDS:

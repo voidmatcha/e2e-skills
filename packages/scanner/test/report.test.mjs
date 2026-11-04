@@ -46,3 +46,20 @@ test('none does not discard findings; invalid policies and finding states reject
   assert.throws(() => summarize([hit('P1', 'justified-review')]));
   assert.throws(() => summarize([], { incomplete: [''] }));
 });
+
+test('allow-incomplete preserves raw reasons and finding policy without tolerating integrity failures', () => {
+  const reasons = ['analysis incomplete: /project/tests/check.spec.ts: unsupported at line 7'];
+  const clean = summarize([], { incomplete: reasons, allowIncomplete: true });
+  assert.equal(clean.exitCode, 0);
+  assert.equal(clean.complete, false);
+  assert.deepEqual(clean.incomplete, reasons);
+  assert.deepEqual(clean.allowIncomplete, { applied: true });
+  assert.equal(summarize([hit('P0')], { incomplete: reasons, allowIncomplete: true }).exitCode, 1);
+  for (const reason of ['source changed', 'inventory incomplete', 'requested ESLint failed']) {
+    const blocked = summarize([], { incomplete: [...reasons, reason], allowIncomplete: true, failOn: 'none' });
+    assert.equal(blocked.exitCode, 2);
+    assert.equal(blocked.allowIncomplete.applied, false);
+  }
+  assert.equal(summarize([], { incomplete: ['relative import snapshot validation incomplete'],
+    allowIncomplete: true, diagnostics: [{ code: 'import-snapshot-drift' }] }).exitCode, 2);
+});

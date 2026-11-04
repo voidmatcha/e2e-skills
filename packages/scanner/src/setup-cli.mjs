@@ -107,7 +107,8 @@ export async function doctor(root, setup, opts, env, check = setup.checkSetup) {
     try { setup.safePath(target); if (exists(target)) status = fs.readFileSync(target).equals(fs.readFileSync(source)) ? 'CURRENT' : 'DIFFERENT'; } catch { status = 'UNSAFE'; }
     return { name, path: target, status };
   });
-  const report = { host: opts.host, skills: installed, agents, project: { status: 'NOT_REQUESTED' }, server: 'NOT_CHECKED', session_tools: 'UNKNOWN', approval: 'UNKNOWN', browser: 'UNKNOWN', requirements: [], next_steps: [] };
+  const hostConfiguration = setup.inspectHostConfiguration(opts.project ? fs.realpathSync(opts.project) : null, opts.host, env);
+  const report = { host: opts.host, skills: installed, agents, ...hostConfiguration, readiness: 'UNKNOWN', project: { status: 'NOT_REQUESTED' }, server: 'NOT_CHECKED', session_tools: 'UNKNOWN', approval: 'UNKNOWN', browser: 'UNKNOWN', requirements: [], next_steps: [] };
   if (opts.project) {
     const project = fs.realpathSync(opts.project);
     if (!fs.statSync(project).isDirectory()) throw Error('--project is not a directory');
@@ -125,10 +126,11 @@ export async function doctor(root, setup, opts, env, check = setup.checkSetup) {
     if (opts.checkServer) { report.server_check = await check(project, opts.host, env); report.server = report.server_check.server; }
   }
   for (const entry of [...installed.filter(entry => entry.required || entry.status === 'FOREIGN_OR_MODIFIED'), ...agents]) if (entry.status !== 'CURRENT') report.requirements.push({ path: entry.path, status: entry.status });
-  for (const entry of report.project_agents ?? []) if (entry.status !== 'PRESENT_UNVERIFIED') report.requirements.push({ component: 'project_agent', ...entry });
+  if (opts.project) for (const entry of report.official_agents) if (entry.status !== 'PRESENT_UNVERIFIED') report.requirements.push({ component: 'official_agent', ...entry });
   if (!['CURRENT', 'NOT_REQUESTED'].includes(report.project.status)) report.requirements.push({ component: 'project', ...report.project });
   if (report.requirements.length) report.next_steps.push(`Review conflicts, then run e2e-skills install --host ${opts.host}${opts.project ? ' --project ' + JSON.stringify(opts.project) : ''}.`);
   if (opts.project && report.project.status === 'DEPENDENCIES_MISSING') report.next_steps.push("Install the project's Playwright dependencies and review its playwright.config.* using the official Playwright setup guidance; doctor installs nothing.");
+  if (report.mcp_configuration.some(entry => entry.scope === 'user' && entry.status === 'CONFIGURED_UNVERIFIED')) report.next_steps.push('User-scoped playwright-test configuration was found. The project status describes the installer-managed project config only; verify the active host configuration before changing setup.');
   report.next_steps.push('Restart the selected host in the trusted project, review MCP approvals and session tools; verify browser availability separately.');
   return report;
 }
