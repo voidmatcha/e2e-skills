@@ -180,4 +180,47 @@ export function isWritten(source, checker, symbol, { properties = false, propert
   return found;
 }
 
+// Every write to `symbol` or a property alias of it is a plain
+// `symbol.<name> = value` assignment on the binding itself: the property
+// names written, or null for any other write (reassignment, computed or
+// compound writes, deletes, Object.assign-style mutation, alias writes).
+export function propertyWriteNames(source, checker, symbol) {
+  if (isWritten(source, checker, symbol)) return null;
+  const aliases = propertyAliases(source, checker, symbol);
+  const names = new Set();
+  let other = false;
+  function target(node, property = false) {
+    node = unwrap(node);
+    if (ts.isIdentifier(node)) {
+      const written = checker.getSymbolAtLocation(node);
+      if (property ? aliases.has(written) : written === symbol) other = true;
+    } else if (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) target(node.expression, true);
+    else if (ts.isArrayLiteralExpression(node)) node.elements.forEach(entry => target(entry));
+    else if (ts.isObjectLiteralExpression(node)) for (const entry of node.properties) {
+      if (ts.isShorthandPropertyAssignment(entry)) other ||= checker.getShorthandAssignmentValueSymbol(entry) === symbol;
+      else if (ts.isPropertyAssignment(entry)) target(entry.initializer);
+      else if (ts.isSpreadAssignment(entry)) target(entry.expression);
+    }
+  }
+  walk(source, node => {
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+        node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
+      const left = unwrap(node.left);
+      if (node.operatorToken.kind === ts.SyntaxKind.EqualsToken && ts.isPropertyAccessExpression(left) && !left.questionDotToken &&
+          ts.isIdentifier(unwrap(left.expression)) && checker.getSymbolAtLocation(unwrap(left.expression)) === symbol) names.add(left.name.text);
+      else target(node.left);
+    }
+    if ((ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
+        [ts.SyntaxKind.PlusPlusToken, ts.SyntaxKind.MinusMinusToken].includes(node.operator)) target(node.operand);
+    if ((ts.isForInStatement(node) || ts.isForOfStatement(node)) && !ts.isVariableDeclarationList(node.initializer)) target(node.initializer);
+    if (ts.isDeleteExpression(node)) target(node.expression);
+    const mutated = objectMutationTarget(node);
+    if (mutated) target(mutated, true);
+  });
+  return other ? null : names;
+}
+
+// Playwright Test's two official entrypoints: the same API and objects.
+export const PLAYWRIGHT_TEST_MODULES = new Set(['@playwright/test', 'playwright/test']);
+
 export { ts };

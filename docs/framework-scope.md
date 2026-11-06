@@ -4,12 +4,12 @@
 
 | Framework | Status | What is covered |
 |-----------|--------|-----------------|
-| Playwright | First-class | Generation, static review, report debugging, locator guidance, web-first assertions, traces, auth, network waits |
-| Cypress | First-class for review/debug | Static review, mochawesome/JUnit debugging, retryability, `cy.intercept`, `cy.session`, screenshots/videos |
+| Playwright | First-class | Generation, static review, failing-test fixes, locator guidance, web-first assertions, auth, network waits |
+| Cypress | First-class for review and failing-test fixes | Static review, retryability, `cy.intercept`, `cy.session`; `e2e-debugger` flake check and test-only repair |
 
 ## Not In Scope Today
 
-Puppeteer is intentionally not listed as supported automation. The general review ideas still apply, but the repository does not currently ship Puppeteer-specific grep patterns, eval fixtures, or debugger workflows.
+Puppeteer is intentionally not listed as supported automation. The general review ideas still apply, but the repository does not currently ship Puppeteer-specific grep patterns or eval fixtures.
 
 ## Why Keep The Scope Narrow
 
@@ -19,5 +19,4 @@ New framework support should include all of the following before it is advertise
 
 1. Grep patterns or mechanical checks.
 2. At least one eval file with true positives and false positive guards.
-3. Report/debug artifact handling if the framework has a debugger skill.
-4. README and marketplace metadata updates.
+3. README and marketplace metadata updates.

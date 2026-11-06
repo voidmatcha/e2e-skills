@@ -35,6 +35,8 @@ import { formatLegacyReport, writeLegacyReportFile } from './compat-report.mjs';
 import { reviewCandidates } from './review-candidates.mjs';
 import { handoffDiagnostics } from './review-obligations.mjs';
 import { prepareImportSnapshot } from './import-snapshot.mjs';
+import { checkReportMain } from './check-report.mjs';
+import { fileURLToPath } from 'node:url';
 
 const STATIC_RULE_SLICES = ['#7', '#9', '#9b', '#8c', '#4f', '#10b', '#19', '#3b', '#11c', '#9c', '#5b', '#8a', '#8b', '#4a', '#4b', '#15', '#16', '#4h', '#17', '#10e', '#6', '#10a', '#3', '#4g', '#18', '#10d', '#10f', '#4c-4e', '#4i', '#4k', '#10c', '#5a', '#14'];
 const COVERAGE_LIMITATIONS = [
@@ -82,7 +84,7 @@ function trustedModuleMap(declarations, baseline) {
   if (!baseline.complete || baseline.root?.kind !== 'directory') throw new Error('--trust-module requires a complete directory scan root');
   const root = baseline.root.canonical, pinned = new Set(baseline.candidates.map(item => item.path));
   for (const { specifier, path: requested } of declarations) {
-    if (specifier.startsWith('.') || specifier.startsWith('/') || specifier === '@playwright/test' ||
+    if (specifier.startsWith('.') || specifier.startsWith('/') || specifier === '@playwright/test' || specifier === 'playwright/test' ||
         !/^(?:@[a-z0-9][\w.-]*\/)?[a-z0-9][\w.-]*(?:\/[\w.-]+)*$/i.test(specifier) || map.has(specifier)) {
       throw new Error(`--trust-module: unsupported or duplicate specifier: ${specifier}`);
     }
@@ -161,7 +163,14 @@ function diagnosticLocation(diagnostic) {
     ? ` at offset ${diagnostic.start}` : '';
 }
 
-try {
+// --check-report reads a reviewer report and scanner results; it never scans
+// into a file or changes the reviewed project (references/scanner-workflow.md).
+if (process.argv.slice(2).includes('--check-report')) {
+  const checked = checkReportMain(process.argv.slice(2), fileURLToPath(import.meta.url));
+  process.stdout.write(checked.stdout);
+  process.stderr.write(checked.stderr);
+  process.exitCode = checked.exitCode;
+} else try {
   const args = argumentsFor(process.argv.slice(2));
   if (!args) process.stdout.write(HELP);
   else {
@@ -185,6 +194,8 @@ try {
     const diagnostics = [];
     const analysisRecords = [];
     const sources = new Map();
+    let importSnapshotView = [];
+    const outOfScope = [];
     let eslintResult = { requested: args.projectEslintEnabled, executed: false };
     const incomplete = bounded ? [] : ['development preview: full scanner rules, provenance and suppression parity are not implemented'];
     for (const error of baseline.errors) {
@@ -200,6 +211,7 @@ try {
         }
       }
       const importSnapshot = scan ? prepareImportSnapshot({ manifest: baseline, sources }) : null;
+      importSnapshotView = importSnapshot?.unresolvedImports ?? [];
       const scope = createScope({ ...(importSnapshot ?? { manifest: baseline, sources }), trustedModules });
       if (importSnapshot?.diagnostics.length) {
         incomplete.push('relative import snapshot incomplete');
@@ -213,6 +225,9 @@ try {
         try {
           if (!sources.has(candidate.path)) continue;
           const bytes = sources.get(candidate.path);
+          // An out-of-scope runner file is listed, not analysed or counted as incomplete.
+          const foreignRunner = scan ? scope.outOfScopeFramework(candidate.path) : null;
+          if (foreignRunner) { outOfScope.push({ file: candidate.path, framework: foreignRunner }); continue; }
           const results = [{ detector: 'focusedTests', ...focusedTests(bytes, candidate.path, { scope }) }];
           if (staticMode) {
             for (const detector of [waits, assertions, suiteData, controlFlow, networkIdle, actions, promises, pageReads, cypressAssignment, domQueries, catchHandlers, timeoutZero, softAssertions, cypressCallbacks, stateReads, collections, accessibleNames, conditionalAssertions, credentials, reviewCandidates]) results.push({ detector: detector.name, ...detector(bytes, candidate.path, { scope }) });
@@ -344,13 +359,17 @@ try {
           .filter(item => item.kind === 'file' && /(?:eslint\.config\.(?:mjs|js|cjs)|\.eslintrc(?:\.(?:json|js|cjs|yml|yaml))?|(?:playwright|cypress)\.config\.(?:ts|js|mts|mjs|cts|cjs))$/.test(item.path))
           .map(({ path, sha256 }) => ({ path, sha256 })) } : null,
       ...(trustedModules.size ? { trustedModules: [...trustedModules].map(([specifier, file]) => ({ specifier, path: file })) } : {}),
+      ...(outOfScope.length ? { outOfScope } : {}),
       files: baseline.candidates.length, findings: deduplicated.findings.map(publicFinding),
       duplicates: deduplicated.duplicates.map(({ finding, retained, reason, ruleClass }) => ({
         finding: publicFinding(finding), retained: publicFinding(retained), reason, ruleClass })),
       suppressed: suppressed.map(publicFinding), ...(!bounded ? summary : {}) };
     if (args.format === 'text') {
-      const rendered = args.reportFile ? writeLegacyReportFile(report, args.reportFile, { root: baseline.root.canonical }) :
-        formatLegacyReport(report, { root: baseline.root.canonical, verbose: args.verbose });
+      // Text-only context: relative imports that were not found. JSON keeps
+      // its location-only diagnostics.
+      const unresolvedImports = importSnapshotView;
+      const rendered = args.reportFile ? writeLegacyReportFile(report, args.reportFile, { root: baseline.root.canonical, unresolvedImports }) :
+        formatLegacyReport(report, { root: baseline.root.canonical, verbose: args.verbose, unresolvedImports });
       process.stdout.write(args.reportFile ? rendered.digest : rendered.text);
       process.exitCode = rendered.exitCode;
     } else {

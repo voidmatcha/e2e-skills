@@ -74,9 +74,9 @@ try {
     offset += Math.ceil(size / 512) * 512;
   }
   const required = ['package.json', 'src/setup-cli.mjs', 'src/cli.mjs', 'src/check-cli.mjs', 'setup-runtime/inventory.json', 'setup-runtime/install.sh', 'setup-runtime/LICENSE', 'setup-runtime/NOTICE', 'setup-runtime/scripts/dev/setup.mjs', 'setup-runtime/scripts/dev/reinstall-skills.sh', 'setup-runtime/scripts/dev/vendor/smol-toml/index.cjs', 'setup-runtime/scripts/dev/vendor/smol-toml/LICENSE', 'setup-runtime/scripts/dev/vendor/smol-toml/provenance.json', 'guidance/test-authoring-memo.txt', 'guidance/test-failure-policy.txt'];
-  for (const name of ['e2e-finding-verifier', 'e2e-failure-classifier']) required.push(`setup-runtime/.codex/agents/${name}.toml`, `setup-runtime/agents/${name}.md`);
-  for (const name of ['cypress-debugger', 'e2e-reviewer', 'playwright-debugger', 'playwright-test-generator']) required.push(`setup-runtime/skills/${name}/SKILL.md`);
+  for (const name of ['e2e-debugger', 'e2e-reviewer', 'playwright-test-generator']) required.push(`setup-runtime/skills/${name}/SKILL.md`);
   for (const name of required) assert.ok(entries.has('package/' + name), 'packed closure missing ' + name);
+  for (const name of entries.keys()) assert.ok(!/^package\/setup-runtime\/(?:agents|\.codex)\/|install-(?:claude|codex)-agents\.sh$/.test(name), 'removed dedicated agent file packed: ' + name);
   for (const name of entries.keys()) assert.ok(!/(?:^|\/)(?:node_modules|__pycache__|\.git|\.cache|\.pytest_cache|testbed|test-results|playwright-report|setup-runtime\.tmp)(?:\/|$)|^package\/test\/|\.local\.md$|\.py[co]$|(?:^|\/)\.DS_Store$|(?:^|\/)(?:auth\.json|\.npmrc)$/.test(name), 'private/development file packed: ' + name);
   for (const name of entries.keys()) {
     assert.ok(!/^package\/setup-runtime\/skills\/[^/]+\/evals(?:\/|$)/.test(name), 'skill evaluation fixtures must stay development-only: ' + name);
@@ -97,7 +97,7 @@ try {
     assert.match(run([cli, 'install', '--host', host, '--dry-run']), /Dry run: no files changed/);
     assert.deepEqual(fs.readdirSync(home), [], `${host} dry-run leaves HOME untouched`);
     const report = JSON.parse(run([cli, 'doctor', '--host', host], 1));
-    assert.equal(report.host, host); assert.equal(report.agents.length, 2); assert.ok(report.requirements.length >= 6); assert.ok(report.next_steps.length);
+    assert.equal(report.host, host); assert.equal('agents' in report, false); assert.ok(report.requirements.length >= 2); assert.ok(report.next_steps.length);
     for (const key of ['session_tools', 'approval', 'browser']) assert.equal(report[key], 'UNKNOWN');
     assert.equal(report.server, 'NOT_CHECKED'); assert.deepEqual(fs.readdirSync(home), [], `${host} doctor leaves HOME untouched`);
   }

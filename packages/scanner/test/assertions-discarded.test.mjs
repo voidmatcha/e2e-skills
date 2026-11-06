@@ -90,5 +90,5 @@ test('direct Playwright Page/Locator annotations support #8b candidates without 
     "type LocalLocator={isVisible():Promise<boolean>};\nasync function local(locator:LocalLocator){await locator.isVisible();}\n");
   assert.deepEqual(result.diagnostics, []);
   assert.deepEqual(result.findings.map(f => [f.patternId, f.line, f.disposition]),
-    [['#8b', 3, 'candidate'], ['#8b', 4, 'candidate'], ['#8b', 8, 'candidate']]);
+    [['#8b', 3, 'candidate'], ['#8b', 4, 'candidate'], ['#4f', 5, 'candidate'], ['#8b', 8, 'candidate']]);
 });

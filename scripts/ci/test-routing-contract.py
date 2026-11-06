@@ -1,40 +1,26 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Guards the delegation-block wording against the frozen routing decision.
+"""Guards the reviewer verification wording: verdicts are inline only.
 
-benchmarks/subagent-routing-v1/README.md's "Result (2026-09-13)" section
-froze SELECTIVE_DELEGATE for Claude/finding_verification and INLINE_DEFAULT
-for Claude/failure_classification, based on the original 96-cell pilot.
+History. benchmarks/subagent-routing-v1/README.md first froze
+SELECTIVE_DELEGATE for finding verification; its confirmation run
+(confirmation-v1, revision 6) found no stable benefit from named delegation in
+any stratum and moved both tasks to INLINE_DEFAULT, with delegation as an
+optional second opinion. Real review runs on Claude and Codex never invoked
+the dedicated verifier, so the next release removes both dedicated subagents
+(`e2e-finding-verifier`, `e2e-failure-classifier`): the skills already reached
+the same verdicts inline from the same source of truth. The debugger skills,
+whose failure classification this file also guarded, were removed later.
 
-A subsequent confirmation run (benchmarks/subagent-routing-v1/confirmation-v1/,
-revision 6, protocol-valid after two rounds of real oracle-defect correction)
-re-tested that decision on a fresh case set and found the finding_verification
-side did NOT hold up: named delegation showed zero stable wins and one stable
-regression (CFV-07) even on the cross-file/config-dependent stratum
-SELECTIVE_DELEGATE was meant to justify. Per the confirmation evidence, both
-tasks are now INLINE_DEFAULT: verify/classify inline by default in every
-stratum, with named/native delegation available only as an optional second
-opinion when the inline result is itself uncertain. The old actor-based
-tie-break is not a universal evidence rule. The prospective development
-protocol in subagent-reconciliation-v1 records the unmeasured correction:
-reconcile source evidence and preserve unresolved uncertainty.
+This is the RED/GREEN contract for that wording change:
+  1. The real SKILL.md files must state the inline-only rule (GREEN).
+  2. The check must reject every earlier wording that still routes the verdict
+     to a subagent -- the INLINE_DEFAULT paragraph this release replaces, the
+     SELECTIVE_DELEGATE and "prefer the named" wordings before it, and
+     hand-built inverted paragraphs that keep the keyword "inline" while
+     delegating anyway (RED).
 
-Per the change boundary, a wording change to the three delegation blocks
-requires a RED test proving the current wording doesn't match the decision,
-before the smallest possible edit is made. This is that test.
-
-Two failure modes are guarded separately:
-  1. The real SKILL.md files must currently satisfy the checks.
-  2. The checks themselves must actually reject known-bad wording -- both
-     literal pre-change wordings and hand-built "inverted" paragraphs that
-     satisfy naive keyword matching while encoding the opposite routing
-     policy. An adversarial review of this file's first version found the
-     checks passed a paragraph that said "clear" and "inline" without ever
-     making inline the default; those fixtures guard against a regression
-     back to that state.
-
-Never touched (per the change boundary): the inline fallback itself, the
-verdict vocabulary, F1-F15, pattern IDs/severities, SP1-SP5 parity.
+Never touched: the verdict vocabulary, pattern IDs/severities.
 """
 
 from __future__ import annotations
@@ -46,8 +32,8 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 REVIEWER = ROOT / "skills/e2e-reviewer/SKILL.md"
-PW_DEBUGGER = ROOT / "skills/playwright-debugger/SKILL.md"
-CY_DEBUGGER = ROOT / "skills/cypress-debugger/SKILL.md"
+
+REVIEWER_ANCHOR = "Verify every finding inline"
 
 
 def _read(path: pathlib.Path) -> str:
@@ -56,199 +42,106 @@ def _read(path: pathlib.Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _delegation_paragraph(text: str, anchor: str, path: pathlib.Path) -> str:
+def _paragraph(text: str, anchor: str, path: pathlib.Path) -> str:
     lines = [ln for ln in text.splitlines() if anchor in ln]
     if not lines:
-        raise AssertionError(f"{path}: lost the {anchor!r} delegation block")
+        raise AssertionError(f"{path}: lost the {anchor!r} verdict rule")
     return lines[0]
 
 
-# --- Pure checks, usable against both the real files and synthetic fixtures ---
-#
-# Both tasks are now INLINE_DEFAULT, so reviewer and debugger paragraphs must
-# satisfy the same shape: inline by default (proximity-tied, not just present
-# anywhere), no unconditional preference for the named path, a concrete
-# trigger for when delegation is worth invoking, and evidence-based
-# reconciliation on disagreement.
+DELEGATION = re.compile(
+    r"prefer the named|delegate only when|delegat(?:e|ing|ion) to|"
+    r"native `(?:verifier|debugger)` role|optional second opinion|"
+    r"e2e-finding-verifier|e2e-failure-classifier|\bIf delegating\b",
+    re.IGNORECASE,
+)
 
 
-def _inline_default_error(para: str, label: str, agent_noun: str) -> str | None:
-    if "absolute" not in para:
-        return f"{label}: the {agent_noun} delegation line must keep the absolute source-of-truth path contract (SP2)."
-
+def _inline_only_error(para: str, label: str, noun: str) -> str | None:
     lower = para.lower()
-
-    if re.search(r"prefer the named", para, re.IGNORECASE):
-        return f"{label}: still prefers the named {agent_noun} unconditionally -- INLINE_DEFAULT requires resolving inline first, with delegation optional/not preferred."
-
-    # "by default" must specifically describe INLINE being the default, not
-    # merely appear somewhere in the paragraph -- a rewrite that makes
-    # DELEGATION "the default ... for X too" while still using the words
-    # "inline" and "default" elsewhere must not pass. Proximity to the word
-    # "inline" is what ties the claim to the right subject.
-    if not re.search(
-        r"inline[^.;]{0,120}\bby default\b|\bby default\b[^.;]{0,120}inline",
-        lower,
-    ):
-        return f"{label}: must state, with 'inline' and 'by default' tied together, that the inline path is the default (INLINE_DEFAULT: no stable named-delegation benefit was confirmed in any stratum, including cross-file/config-dependent)."
-
-    # A bounded trigger for when to actually delegate, not an unconditional
-    # "optional second opinion" with no criterion (flagged by two
-    # independent reviews as leaving the agent no rule to follow).
-    if "uncertain" not in lower and "low confidence" not in lower:
-        return f"{label}: must state a concrete trigger for when to delegate (e.g. the inline result is itself uncertain) -- 'optional, never required' alone gives no criterion."
-
-    # Reconciliation rule for a named/inline disagreement -- without this,
-    # two runs could disagree on which verdict wins with no stated authority.
-    if any(term in lower for term in ("keep the inline verdict", "inline verdict wins", "named verdict wins", "delegated verdict wins")):
-        return f"{label}: actor identity must not override contradictory source evidence."
+    if "inline" not in lower:
+        return f"{label}: must decide each {noun} inline."
+    if DELEGATION.search(para):
+        return f"{label}: still routes the {noun} verdict to a subagent; there are no dedicated subagents."
+    if "do not delegate" not in lower or "even when the user names one" not in lower:
+        return f"{label}: must refuse delegation explicitly, including when the user names a subagent."
     if "reconcile against source evidence" not in lower or "unresolved" not in lower:
         return f"{label}: must reconcile evidence and preserve unresolved uncertainty."
-
     return None
 
 
 def reviewer_paragraph_error(para: str) -> str | None:
-    """Return an error message if `para` does not implement INLINE_DEFAULT
-    for finding_verification (verify inline by default in every stratum;
-    delegate only when the inline verification is itself uncertain;
-    evidence-based reconciliation on disagreement), else None."""
-    return _inline_default_error(para, str(REVIEWER), "e2e-finding-verifier")
-
-
-def debugger_paragraph_error(para: str, label: str) -> str | None:
-    """Return an error message if `para` does not implement INLINE_DEFAULT
-    for failure_classification (inline classification by default, named
-    delegation optional and gated on inline uncertainty, with evidence-based
-    reconciliation on disagreement), else None."""
-    return _inline_default_error(para, label, "e2e-failure-classifier")
+    error = _inline_only_error(para, str(REVIEWER), "finding")
+    if error:
+        return error
+    for verdict in ("CONFIRMED", "FALSE-POSITIVE", "NEEDS-CONTEXT"):
+        if verdict not in para:
+            return f"{REVIEWER}: inline verification must use verdict {verdict}."
+    return None
 
 
 # --- Real-file assertions ---
 
 
-def assert_reviewer_is_inline_default() -> None:
-    text = _read(REVIEWER)
-    para = _delegation_paragraph(text, "e2e-finding-verifier", REVIEWER)
+def assert_reviewer_is_inline_only() -> None:
+    para = _paragraph(_read(REVIEWER), REVIEWER_ANCHOR, REVIEWER)
     error = reviewer_paragraph_error(para)
     if error:
         raise AssertionError(error)
 
 
-def assert_debuggers_are_inline_default() -> None:
-    for path in (PW_DEBUGGER, CY_DEBUGGER):
-        text = _read(path)
-        para = _delegation_paragraph(text, "e2e-failure-classifier", path)
-        error = debugger_paragraph_error(para, str(path))
-        if error:
-            raise AssertionError(error)
+# --- Negative fixtures: wording the checks above MUST reject ---
 
+# The INLINE_DEFAULT reviewer wording this release replaces: inline first,
+# but the named or native verifier stays available when uncertain.
+INLINE_DEFAULT_REVIEWER_WORDING = (
+    "Before a Phase 2 finding is reported, verify it survives its real context "
+    "— refute first. **Verify inline by default:** this covers every stratum. "
+    "The named `e2e-finding-verifier`, when registered by a Claude Code plugin "
+    "or by a Codex TOML, or the native `verifier` role, remain available as an "
+    "optional second opinion, never a required step. **Delegate only when "
+    "uncertain.** On disagreement, reconcile against source evidence; keep "
+    "unresolved cases explicitly uncertain. Require CONFIRMED / FALSE-POSITIVE "
+    "/ NEEDS-CONTEXT with evidence."
+)
 
-# --- Negative fixtures: known-bad wording that the checks above MUST reject ---
-
-# The literal SELECTIVE_DELEGATE-era reviewer wording (unconditional
-# cross-file/config preference for the named agent) -- superseded by the
-# confirmation-v1 revision-6 result.
+# The SELECTIVE_DELEGATE-era reviewer wording.
 OLD_SELECTIVE_DELEGATE_REVIEWER_WORDING = (
-    "Before a Phase 2 finding is reported, verify it survives its real context "
-    "— refute first. Verify inline by default: this covers both a finding "
-    "decided fully by the flagged snippet alone and one needing more context "
-    "from elsewhere in the same file; only the specific cross-file or "
-    "config-dependent stratum below is measured to benefit from delegation, "
-    "so any other case, including same-file context, stays inline. For a "
-    "finding whose correctness depends on another file or repo config the "
-    "snippet doesn't show, prefer the named `e2e-finding-verifier` when "
-    "registered by a Claude Code plugin. Pass the pattern ID, file:line, "
-    "flagged snippet, repo root, and the **absolute** path to "
-    "pattern-reference.md. Require CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT "
-    "with evidence."
+    "Verify inline by default: this covers both a finding decided fully by the "
+    "flagged snippet alone and one needing more context from elsewhere in the "
+    "same file. For a finding whose correctness depends on another file or repo "
+    "config the snippet doesn't show, prefer the named `e2e-finding-verifier` "
+    "when registered by a Claude Code plugin. Require CONFIRMED / FALSE-POSITIVE "
+    "/ NEEDS-CONTEXT with evidence."
 )
 
-# The literal pre-change (pre-SELECTIVE_DELEGATE) reviewer wording
-# (unconditional "prefer the named").
-OLD_REVIEWER_WORDING = (
-    "Before a Phase 2 finding is reported, verify it survives its real context "
-    "— refute first. Prefer the named `e2e-finding-verifier` when registered by "
-    "a Claude Code plugin or by a Codex `.codex/agents/` TOML. If that custom "
-    "agent is absent but Codex exposes native role routing, delegate the same "
-    "single-finding payload to the native `verifier` role; named registration "
-    "is an optimization, not a correctness dependency. Pass the pattern ID, "
-    "file:line, flagged snippet, repo root, and the **absolute** path to "
-    "pattern-reference.md. Require CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT "
-    "with evidence. If neither named nor native delegation is available, run "
-    "the identical refute-first procedure inline against that same contract."
-)
-
-# A hand-built paragraph that satisfies naive "clear" + "inline" keyword
-# matching while encoding the OPPOSITE of INLINE_DEFAULT: it still prefers
-# the named agent generally and only verifies inline "as a last resort" --
-# exactly the adversarial rewrite an independent review constructed to show
-# the original checks were vacuous.
+# A hand-built paragraph that keeps "inline", "do not delegate" and the verdict
+# terms while still handing the verdict to a generic subagent.
 INVERTED_REVIEWER_WORDING = (
-    "Before a Phase 2 finding is reported, verify it survives its real "
-    "context. Delegating to the named `e2e-finding-verifier` (an "
-    "**absolute** path contract applies) is the default for cross-file or "
-    "config-dependent findings and for clear findings too, since it is "
-    "broadly beneficial; prefer the named agent whenever it is registered. "
-    "Same-file context is handled the same way as cross-file context. "
-    "Verify inline only as a fallback when no delegation path is available."
+    "Verify every finding inline; do not delegate, even when the user names one, "
+    "except that an uncertain finding goes to a fresh subagent via delegation to "
+    "a general reviewer. Reconcile against source evidence and keep unresolved "
+    "cases NEEDS-CONTEXT. Use CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT."
 )
-
-# The literal pre-change debugger wording.
-OLD_DEBUGGER_WORDING = (
-    "**Classifier delegation (delegation-aware):** prefer the named "
-    "`e2e-failure-classifier` when registered by a Claude Code plugin or by "
-    "a Codex `.codex/agents/` TOML. If that custom agent is absent but Codex "
-    "exposes native role routing, delegate the same single-failure payload "
-    "to the native `debugger` role; named registration is an optimization, "
-    "not a correctness dependency. Pass the failing test name, report "
-    "excerpt, repo root, and the **absolute** path to this skill's "
-    "SKILL.md. Require the F-code with confidence, evidence, and a fix. If "
-    "neither named nor native delegation is available, classify inline with "
-    "the same F1-F15 table and steps below."
-)
-
-# A hand-built paragraph that mentions "inline" and "default" without ever
-# making inline the actual default: delegation is still required whenever
-# the case is unclear, which is most of the value the named path claimed
-# and this benchmark found does not hold up.
-INVERTED_DEBUGGER_WORDING = (
-    "**Classifier delegation:** the inline default applies for the most "
-    "obvious cases, but delegation to the named `e2e-failure-classifier` "
-    "(**absolute** path passed) is required whenever the case is even "
-    "slightly uncertain, since low confidence favors a second opinion, and "
-    "when it disagrees with the inline verdict, the named verdict wins "
-    "because it saw a fresh context."
-)
-
 
 def assert_checks_reject_known_bad_wording() -> None:
-    valid = (
-        "Verify inline by default; delegate only when uncertain. Pass the absolute path. "
-        "On disagreement, reconcile against source evidence and retain unresolved uncertainty."
+    valid_reviewer = (
+        "Verify every finding inline in this session. There is no dedicated "
+        "verifier subagent; do not delegate verification, even when the user "
+        "names one. Decide each finding as CONFIRMED / FALSE-POSITIVE / "
+        "NEEDS-CONTEXT. When the evidence conflicts, reconcile against source "
+        "evidence. Keep unresolved cases explicitly NEEDS-CONTEXT."
     )
-    assert reviewer_paragraph_error(valid) is None
-    for authority in ("inline verdict wins", "delegated verdict wins", "named verdict wins"):
-        assert reviewer_paragraph_error(valid + " But " + authority + ".") is not None
-    assert reviewer_paragraph_error(valid.replace("unresolved", "ignored")) is not None
+    assert reviewer_paragraph_error(valid_reviewer) is None
+    assert reviewer_paragraph_error(valid_reviewer.replace("unresolved", "ignored")) is not None
     for label, para in (
-        ("pre-change reviewer wording", OLD_REVIEWER_WORDING),
+        ("INLINE_DEFAULT reviewer wording", INLINE_DEFAULT_REVIEWER_WORDING),
         ("SELECTIVE_DELEGATE-era reviewer wording", OLD_SELECTIVE_DELEGATE_REVIEWER_WORDING),
         ("inverted reviewer wording", INVERTED_REVIEWER_WORDING),
     ):
         if reviewer_paragraph_error(para) is None:
             raise AssertionError(
                 f"reviewer_paragraph_error() must reject the {label}, but accepted it "
-                "-- the check is vacuous against this known-bad shape."
-            )
-
-    for label, para in (
-        ("pre-change debugger wording", OLD_DEBUGGER_WORDING),
-        ("inverted debugger wording", INVERTED_DEBUGGER_WORDING),
-    ):
-        if debugger_paragraph_error(para, label) is None:
-            raise AssertionError(
-                f"debugger_paragraph_error() must reject the {label}, but accepted it "
                 "-- the check is vacuous against this known-bad shape."
             )
 
@@ -267,16 +160,10 @@ def assert_skill_roots_are_runtime_resolved() -> None:
         text = _read(path)
         assert "~/.agents/skills/e2e-reviewer/" not in text
         assert "~/.claude/skills/e2e-reviewer/" not in text
-    for name in ("playwright-debugger", "cypress-debugger"):
-        path = ROOT / "skills" / name / "references/classification-procedure.md"
-        text = _read(path)
-        assert "actual loaded skill" in text
-        assert "it is under `~/.agents/skills/`" not in text
 
 
 CHECKS = (
-    assert_reviewer_is_inline_default,
-    assert_debuggers_are_inline_default,
+    assert_reviewer_is_inline_only,
     assert_checks_reject_known_bad_wording,
     assert_skill_roots_are_runtime_resolved,
 )

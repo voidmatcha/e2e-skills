@@ -4,7 +4,7 @@
 // confirmed. Suppression and dedupe belong to callers.
 import { createReceivers } from './receivers.mjs';
 import { createCypressChains } from './cypress-chain-aliases.mjs';
-import { unwrap, walk, isWritten, ts } from './source.mjs';
+import { unwrap, walk, isWritten, ts, PLAYWRIGHT_TEST_MODULES } from './source.mjs';
 
 const SELECTOR_APIS = new Set(['click', 'dblclick', 'tap', 'fill', 'type', 'press',
   'check', 'uncheck', 'setChecked', 'selectOption', 'setInputFiles', 'hover',
@@ -42,14 +42,14 @@ export function pageReads(bytes, filename, { scope } = {}) {
   function officialPageType(type) {
     if (!type) return false;
     if (ts.isImportTypeNode(type)) return !type.isTypeOf && ts.isLiteralTypeNode(type.argument) &&
-      ts.isStringLiteral(type.argument.literal) && type.argument.literal.text === '@playwright/test' &&
+      ts.isStringLiteral(type.argument.literal) && PLAYWRIGHT_TEST_MODULES.has(type.argument.literal.text) &&
       type.qualifier && ts.isIdentifier(type.qualifier) && type.qualifier.text === 'Page';
     if (!ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) return false;
     const declarations = receivers.checker.getSymbolAtLocation(type.typeName)?.declarations;
     const imported = declarations?.length === 1 ? declarations[0] : null;
     if (!imported || !ts.isImportSpecifier(imported) || (imported.propertyName || imported.name).text !== 'Page') return false;
     const statement = imported.parent.parent.parent;
-    return ts.isImportDeclaration(statement) && statement.moduleSpecifier.text === '@playwright/test';
+    return ts.isImportDeclaration(statement) && PLAYWRIGHT_TEST_MODULES.has(statement.moduleSpecifier.text);
   }
   function unresolvedModulePage(node) {
     node = unwrap(node);
@@ -81,6 +81,10 @@ export function pageReads(bytes, filename, { scope } = {}) {
           !ts.isCallExpression(invocation) || invocation.expression !== access || invocation.questionDotToken) unsafe = true;
     });
     return !unsafe;
+  }
+  function thisMember(node) {
+    node = unwrap(node);
+    return ts.isPropertyAccessExpression(node) && !node.questionDotToken && unwrap(node.expression).kind === ts.SyntaxKind.ThisKeyword;
   }
   function expectCall(node) {
     node = unwrap(node);
@@ -136,7 +140,12 @@ export function pageReads(bytes, filename, { scope } = {}) {
       if (!inRetry(base)) record('#4h', base, expression.end, 'candidate', 'unresolved-page-type');
       return;
     }
-    if (receiver === 'page-type') diagnostic(url.object, '#4h type-only Page proof is outside this runtime receiver slice');
+    if (receiver === 'page-type') {
+      // A page-object member declared Page (`this.page`) is the same review
+      // candidate as an unresolved module Page; other type-only Pages are gaps.
+      if (thisMember(url.object)) { if (!inRetry(base)) record('#4h', base, expression.end, 'candidate', 'unresolved-page-type'); return; }
+      diagnostic(url.object, '#4h type-only Page proof is outside this runtime receiver slice');
+    }
     if (receiver !== 'page' || inRetry(base)) return;
     record('#4h', base, expression.end);
   }
@@ -150,7 +159,13 @@ export function pageReads(bytes, filename, { scope } = {}) {
     if (cypress.kind === 'cypress-runtime') return;
     const receiver = kind(access.object);
     if (receiver === 'page-type') {
-      diagnostic(access.object, '#17 type-only Page receiver is outside this direct Page slice');
+      const selector = unwrap(node.arguments[0]);
+      // A page-object member declared Page (`this.page`): the POM review
+      // candidate, as for an unresolved module Page. Other type-only Pages
+      // (typed helper parameters) stay gaps.
+      if (thisMember(access.object) && (ts.isStringLiteral(selector) || ts.isNoSubstitutionTemplateLiteral(selector) ||
+          ts.isTemplateExpression(selector) || ts.isIdentifier(selector))) record('#17', node, node.end, 'candidate', 'unresolved-page');
+      else diagnostic(access.object, '#17 type-only Page receiver is outside this direct Page slice');
       return;
     }
     if (receiver !== 'page') {

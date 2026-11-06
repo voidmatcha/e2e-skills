@@ -74,8 +74,7 @@ while IFS=' ' builtin read -r _local_ref local_sha _remote_ref remote_sha; do
   changed=""
   if [ -n "$base" ]; then
     changed="$(/usr/bin/git -C "$REPO_ROOT" diff --name-only "$base" "$local_sha" -- \
-      'skills/*/scripts/*' scripts/ci/test-reviewer-scanner.py scripts/ci/test-debugger-contracts.py \
-      'scripts/ci/test-*-debugger-*.py')" || changed="unknown"
+      'skills/*/scripts/*' scripts/ci/test-reviewer-scanner.py)" || changed="unknown"
   fi
   if [ -z "$base" ] || [ -n "$changed" ]; then
     case " $linux_check_revs " in

@@ -38,19 +38,33 @@ test('ordinary objects, shadowed constructors/expect, scalar fields and non-E2E 
  for(const text of [
   body("const settingsPage={submitButton:true};expect(settingsPage.submitButton).toBeTruthy();"),
   body("const settingsPage=new SettingsPage();function f(settingsPage){expect(settingsPage.submitButton).toBeTruthy();}"),
-  body("function f(SettingsPage){const settingsPage=new SettingsPage();expect(settingsPage.submitButton).toBeTruthy();}"),
   body("function f(expect){const settingsPage=new SettingsPage();expect(settingsPage.submitButton).toBeTruthy();}"),
   body("function SettingsPage(){return {submitButton:true};}const settingsPage=new SettingsPage();expect(settingsPage.submitButton).toBeTruthy();"),
   header+"class SettingsPage {submitButton=true;verify(){expect(this.submitButton).toBeTruthy();}}\n"+"test('x',()=>{const settingsPage=new SettingsPage();expect(settingsPage.submitButton).toBeTruthy();});\n",
   "import {test,expect} from 'vitest';test('x',()=>{const settingsPage=new SettingsPage();expect(settingsPage.submitButton).toBeTruthy();});",
   "import {expect} from '@playwright/test';class SettingsPage {verify(){expect(this.submitButton).toBeTruthy();}}const settingsPage=new SettingsPage();expect(settingsPage.submitButton).toBeTruthy();",
-  body("const settingsPage=new SettingsPage();expect(settingsPage.response).toBeTruthy();"),
  ]){const result=scan(text);assert.deepEqual(result.findings,[],text);assert.deepEqual(result.diagnostics,[],text);}
 });
+// These two were expected clean only because any member of any `new X()`
+// counted as proven non-Locator. A constructor that is a parameter, or an
+// undeclared class, may build a Locator under any member name, so the read
+// is unresolved: never a finding, never a clean pass.
+test('members of an unproven constructor stay unresolved whatever their name',()=>{
+ for(const text of [
+  body("function f(SettingsPage){const settingsPage=new SettingsPage();expect(settingsPage.submitButton).toBeTruthy();}"),
+  body("const settingsPage=new SettingsPage();expect(settingsPage.response).toBeTruthy();"),
+ ]){const result=scan(text);assert.deepEqual(result.findings,[],text);
+  assert.deepEqual(result.diagnostics.map(item=>item.message),['member of an unproven class instance'],text);}
+});
+// `await` of a non-thenable member yields the member itself, so an awaited
+// unproven member is unresolved, not a scalar read (the old expectation of
+// one diagnostic treated every awaited value as plain data).
 test('awaited subject, inverse assertions and runtime Locator proof keep their existing meaning',()=>{
- const result=scan(body("const settingsPage=new SettingsPage();\nexpect(await settingsPage.submitButton).toBeTruthy();\nexpect(settingsPage.submitButton).not.toBeTruthy();\nexpect(page.locator('x')).toBeTruthy();\nawait expect(settingsPage.submitButton).toBeDefined();"));
+ const text=body("const settingsPage=new SettingsPage();\nexpect(await settingsPage.submitButton).toBeTruthy();\nexpect(settingsPage.submitButton).not.toBeTruthy();\nexpect(page.locator('x')).toBeTruthy();\nawait expect(settingsPage.submitButton).toBeDefined();");
+ const result=scan(text);
  assert.deepEqual(result.findings.map(item=>[item.patternId,item.disposition]),[['#4f','confirmed']]);
- assert.equal(result.diagnostics.length,1);assert.equal(result.diagnostics[0].message,message);
+ assert.deepEqual(result.diagnostics.map(item=>[text.slice(item.start,item.start+item.length),item.message]),[
+  ['await settingsPage.submitButton','member of an unproven class instance'],['settingsPage.submitButton',message]]);
 });
 test('bounded CLI retains the POM review candidate, provenance diagnostic and exit 2',()=>{
  scan(audited,(_result,file)=>{

@@ -9,6 +9,10 @@ Inspect package metadata, Playwright config and existing scripts without executi
 
 No Playwright dependency or config: explain that the test runner must be initialized first. Link the [official installation guide](https://playwright.dev/docs/intro). Ask the user to initialize Playwright with the project's existing package manager in a separate setup task, reviewing dependency, config, script and browser changes. Do not assume npm in a pnpm/yarn workspace, overwrite existing files, or invent a baseURL. Request the owning package, intended local URL and start/test commands. Once the local runner, config, browser and disposable stack are prepared, recommend the e2e-skills installer with `--project` from its reviewed checkout. Then check official agents and session MCP below.
 
+## Doctor and monorepos
+
+For setup questions, suggest the read-only `e2e-skills doctor --host <claude|codex> --project <abs dir>`; never add `--check-server` (it executes project code) without exact approval. Doctor lists the `playwright.config.*` files it finds, their owning package, missing skills such as `e2e-reviewer`, and optional lint. Monorepo: report the config's owning package and use it as `--project`.
+
 ## Existing development server
 
 Reuse an already running, approved loopback dev server and its existing real test backend or mocks. Confirm only services and data reached by the requested scenario. For writes, establish isolated test data and cleanup/reset; read-only scenarios need no reset method. A disposable test-data boundary does not require replacing the app, creating a mock server, using an in-memory database, or provisioning a new deployment. Mark services the scenario does not use as N/A.
@@ -23,8 +27,15 @@ Read `references/readiness.md` before deciding which prerequisites are missing. 
 
 When blocked, report together: `BLOCKED: <observed reason>. Needed: <specific input or approval>. NOT done: <unrun checks>.` Include all already-confirmed blockers, without inventing unknown prerequisites or restarting a completed setup step. For a remote target, explicitly request a disposable loopback URL and the relevant config/stack information. Existing approved facts need no repeated questions.
 
+Not-ready message: when the official agents or `generator_write_test` are missing, print the block for the current host only, with the project root filled in, then stop. The user runs these commands; this skill runs nothing itself, even after a yes.
+
+- Claude Code: `In <project root>, run: npx --no-install playwright init-agents --loop=claude` — it writes `.claude/agents/playwright-test-*.md` and replaces `.mcp.json` (back up other servers first). `Then restart Claude Code in the project and approve the playwright-test MCP server.`
+- Codex: `In <project root>, run: npx --no-install playwright init-agents --loop=codex` — it writes `.codex/agents/playwright_test_*.toml` only. `Then declare playwright-test (npx --no-install playwright run-test-mcp-server) in the trusted project's .codex/config.toml, restart Codex in the project and approve the server.`
+
+Add which prerequisite was observed missing, and `generation, scan and execution: NOT done`.
+
 1. In the project: `npx --no-install playwright init-agents --loop=<claude|codex>`. Writes repo files (agents, `specs/README.md`, seed spec); this skill never runs it.
-2. Declare `playwright-test` (`npx --no-install playwright run-test-mcp-server`) in the host with tool approval. Claude Code: `init-agents` wrote `.mcp.json`; approve its prompt. Codex: `init-agents` declares it only inside the agent file; declare it in trusted-project `.codex/config.toml` or user `~/.codex/config.toml` yourself. Headless, existing config; expose `generator_write_test` and, for MCP execution, `test_run`. Missing tools: check server errors; `required = true`, `mcp_optional_startup_grace_ms = 0` wait for startup. Keep Codex sessions persistent.
+2. Declare `playwright-test` (`npx --no-install playwright run-test-mcp-server`) in the host with tool approval. Claude Code: `init-agents` wrote `.mcp.json`; approve its prompt. Codex: `init-agents` declares it only inside the agent file; declare it in trusted-project `.codex/config.toml` or user `~/.codex/config.toml` yourself. Headless, existing config; expose `generator_write_test`. Missing tools: check server errors; `required = true`, `mcp_optional_startup_grace_ms = 0` wait for startup. Keep Codex sessions persistent.
 3. Start a new session and ask again.
 
 Tool absence alone is not approval evidence. Distinguish missing configuration, disabled server/tools, startup failure, and tools not exposed in the active session. The installer's `--check` verifies server discovery only, not host approval or session visibility; use it only as a separately authorized setup diagnostic. Never change host trust/approval or global settings to make this skill proceed.
@@ -39,6 +50,4 @@ If that file is missing or has neither the `# Test authoring notes` heading nor 
 
 ## No project lint rules
 
-Missing ESLint configuration or `eslint-plugin-playwright` does not block generation or the bundled scanner. Keep the pinned scanner invocation in `references/execution-and-report.md` unchanged: it disables target-controlled ESLint and downloads. Report optional ESLint as skipped, not lint-clean; bundled scan results do not establish lint coverage. A missing scanner prerequisite or failed scan still follows that execution contract's blocked/incomplete handling.
-
-Follow existing lint conventions when present. When Playwright lint rules are absent, recommend the [eslint-plugin-playwright recommended configuration](https://github.com/playwright-community/eslint-plugin-playwright) as optional follow-up, scoped to E2E files. Reuse an installed plugin; recommend enabling its preset rather than installing it again. Show proposed setup for a separately requested configuration task; do not install plugins, create lint files or replace existing rules during generation. Lint setup is not a prerequisite and cannot replace the scanner or native test execution, or a separately requested semantic review.
+Missing ESLint configuration or `eslint-plugin-playwright` does not block generation or the bundled scanner. Keep the pinned scanner invocation in `references/execution-and-report.md` unchanged: it disables target-controlled ESLint and downloads. Report optional ESLint as skipped, not lint-clean; a failed scan or missing scanner prerequisite still follows that execution contract. Follow existing lint conventions; do not install plugins, create lint files or replace existing rules during generation. `e2e-skills doctor --project` reports the optional `eslint-plugin-playwright` recommendation.

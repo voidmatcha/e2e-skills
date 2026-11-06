@@ -78,9 +78,6 @@ def assert_consumer_routing() -> None:
         'test-scanner-runtime.py', 'test-scanner-launcher.py',
         'test-scanner-node-performance.py', 'test-reviewer-scanner.py',
         'test-eslint-import-resolution.py', 'test-local-eslint-node.py',
-        'test-debugger-contracts.py', 'test-playwright-debugger-artifact-download.py',
-        'test-playwright-debugger-report-publish.py',
-        'test-cypress-debugger-artifact-download.py', 'test-cypress-debugger-report-publish.py',
     }
     assert {Path(item).name for item in suites} == required, suites
     assert len(suites) == len(required), 'duplicate or missing consumer suite'
@@ -157,10 +154,10 @@ def main() -> None:
         shutil.copy2(SOURCE_CHECK, check_script)
         write(repo / "skills/e2e-reviewer/scripts/scan.sh", "#!/bin/bash -p\n")
         write(
-            repo / "skills/cypress-debugger/references/report-acquisition.md",
-            "# Report acquisition\n",
+            repo / "skills/playwright-test-generator/references/setup-guide.md",
+            "# Setup guide\n",
         )
-        write(repo / "scripts/evals/skills/playwright-debugger/evals.json", "{}\n")
+        write(repo / "scripts/evals/skills/playwright-test-generator/evals.json", "{}\n")
         write(repo / "scripts/ci/test-reviewer-scanner.py", "# fixture\n")
         for relative in NODE_INPUTS:
             write(repo / relative, '# Node validation input fixture\n')
@@ -230,8 +227,8 @@ def main() -> None:
 
         run(str(GIT), "restore", "--", "skills/e2e-reviewer/scripts/scan.sh", cwd=repo)
         for relative in (
-            "skills/cypress-debugger/references/report-acquisition.md",
-            "scripts/evals/skills/playwright-debugger/evals.json",
+            "skills/playwright-test-generator/references/setup-guide.md",
+            "scripts/evals/skills/playwright-test-generator/evals.json",
         ):
             with (repo / relative).open("a", encoding="utf-8") as stream:
                 stream.write("dirty skill input\n")
@@ -247,7 +244,7 @@ def main() -> None:
             assert relative in dirty_skill_input.stderr
             run(str(GIT), "restore", "--", relative, cwd=repo)
 
-        untracked_path = repo / "skills/playwright-debugger/scripts/new-reader.py"
+        untracked_path = repo / "skills/playwright-test-generator/scripts/new-reader.py"
         write(untracked_path, "# untracked\n")
         untracked = run(
             str(BASH),
@@ -258,7 +255,7 @@ def main() -> None:
             check=False,
         )
         assert untracked.returncode == 2, untracked
-        assert "skills/playwright-debugger/scripts/new-reader.py" in untracked.stderr
+        assert "skills/playwright-test-generator/scripts/new-reader.py" in untracked.stderr
 
         with (repo / "scripts/ci/test-reviewer-scanner.py").open(
             "a", encoding="utf-8"

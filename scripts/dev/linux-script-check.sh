@@ -5,7 +5,7 @@
 # 1.11.0 to 1.17.0 the scanner ran /usr/bin/sg -- the shadow-utils group
 # command on Debian and Ubuntu -- as ast-grep. This check copies the committed
 # tree (`git archive`, which is what a push sends) into an official Node image
-# pinned by digest and runs the reviewer scanner and debugger script suites as a
+# pinned by digest and runs the reviewer scanner script suites as a
 # non-root user, because root would make the unreadable-file fail-closed tests
 # pass for the wrong reason.
 #
@@ -64,8 +64,6 @@ LINUX_INPUT_PATHS=(
   ':(glob)scripts/evals/skills/**'
   scripts/dev/build-scanner-runtime.py
   scripts/dev/scanner-launcher.sh
-  scripts/ci/test-debugger-contracts.py
-  ':(glob)scripts/ci/test-*-debugger-*.py'
   scripts/dev/linux-script-check.sh
 )
 
@@ -88,8 +86,6 @@ print_input_scope() {
   echo "  scripts/evals/skills/**"
   echo "  scripts/dev/build-scanner-runtime.py"
   echo "  scripts/dev/scanner-launcher.sh"
-  echo "  scripts/ci/test-debugger-contracts.py"
-  echo "  scripts/ci/test-*-debugger-*.py"
   echo "  scripts/dev/linux-script-check.sh"
 }
 
@@ -165,12 +161,7 @@ echo "==> linux-script-check: ${REV_SHA:0:7} in $IMAGE"
       scripts/ci/test-scanner-node-performance.py \
       scripts/ci/test-reviewer-scanner.py \
       scripts/ci/test-eslint-import-resolution.py \
-      scripts/ci/test-local-eslint-node.py \
-      scripts/ci/test-debugger-contracts.py \
-      scripts/ci/test-playwright-debugger-artifact-download.py \
-      scripts/ci/test-playwright-debugger-report-publish.py \
-      scripts/ci/test-cypress-debugger-artifact-download.py \
-      scripts/ci/test-cypress-debugger-report-publish.py; do
+      scripts/ci/test-local-eslint-node.py; do
       echo "--- $suite"
       if [ ! -f "$suite" ]; then
         echo "linux-script-check: missing suite: $suite" >&2

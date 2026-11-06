@@ -1,6 +1,6 @@
 # Optional test-failure policy
 
-A short policy you can add to a project so that a coding agent does not rewrite a failing test to match the app's current behavior without a stated requirement. It is optional and separate from the four skills: it is not part of any skill body, and no e2e-skills skill loads it.
+A short policy you can add to a project so that a coding agent does not rewrite a failing test to match the app's current behavior without a stated requirement. It is optional and separate from the three skills: it is not part of any skill body, and no e2e-skills skill loads it.
 
 ## The policy
 

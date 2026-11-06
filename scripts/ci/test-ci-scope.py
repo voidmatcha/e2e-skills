@@ -27,8 +27,6 @@ class ScopeTests(unittest.TestCase):
         for path, expected in (
             ('docs/e2e-test-smells.md', set()),
             ('skills/playwright-test-generator/code-rules.md', {'generator', 'verification'}),
-            ('skills/playwright-debugger/references/fix-verification.md', {'debuggers', 'verification'}),
-            ('skills/cypress-debugger/scripts/artifact.py', {'debuggers', 'fixtures'}),
             ('skills/e2e-reviewer/references/scanner-workflow.md', set(SCOPE.GROUPS)),
             ('scripts/ci/test-scanner-scope-graph.py', {'scanner', 'tooling'}),
             ('scripts/evals/fixtures/app.js', {'fixtures', 'selfscan'}),
@@ -36,6 +34,7 @@ class ScopeTests(unittest.TestCase):
             ('scripts/dev/reinstall-skills.sh', {'install'}),
             ('scripts/ast-grep-rules/sg-postfix-empty-expect.yml', {'postfix'}),
             ('examples/react-optimistic-write/index.html', {'evidence', 'selfscan'}),
+            ('skills/e2e-debugger/SKILL.md', {'install', 'parity', 'verification'}),
         ):
             mode, _, groups = SCOPE.select([path])
             self.assertEqual(mode, 'scoped', path)
@@ -43,10 +42,14 @@ class ScopeTests(unittest.TestCase):
             if not expected:
                 self.assertEqual(groups, (), path)
         for readme in ('README.md', 'README.ko.md', 'README.ja.md', 'README.zh-cn.md'):
-            self.assertEqual(SCOPE.select([readme])[2], ('debuggers',), readme)
+            self.assertEqual(SCOPE.select([readme]), ('scoped', 'changed paths classified: 1', ()), readme)
         all_skills = ['skills/' + name + '/SKILL.md' for name in (
-            'e2e-reviewer', 'playwright-test-generator', 'playwright-debugger', 'cypress-debugger')]
+            'e2e-debugger', 'e2e-reviewer', 'playwright-test-generator')]
         self.assertEqual(set(SCOPE.select(all_skills)[2]), set(SCOPE.GROUPS))
+        # The removed debugger skills are no longer a known domain: a path that
+        # brings one back is unknown and forces full CI, where review.sh fails.
+        for path in ('skills/playwright-debugger/SKILL.md', 'skills/cypress-debugger/SKILL.md'):
+            self.assertEqual(SCOPE.select([path])[0], 'full', path)
 
     def test_unknown_and_shared_are_full(self):
         for path in ('AGENTS.md', 'CONTRIBUTING.md', '.github/workflows/ci.yml', '.plugin-scanner.toml',
@@ -144,17 +147,16 @@ class ScopeTests(unittest.TestCase):
             self.assertNotIn('all checks passed', result.stdout)
             calls = log.read_text().splitlines()
             self.assertIn('review.sh', calls)
-            self.assertIn('test-debugger-contracts.py', calls)
+            self.assertIn('test-current-docs.py', calls)
             self.assertNotIn('test-reviewer-scanner.py', calls)
-            self.assertNotIn('test-playwright-debugger-artifact-download.py', calls)
             result = run('--quiet', '--changed', 'HEAD')
             self.assertEqual(result.returncode, 0, result.stdout)
             self.assertIn('scoped checks passed', result.stdout)
             log.unlink()
-            (root / 'README.md').write_text('README acquisition example change')
+            (root / 'README.md').write_text('README wording change')
             result = run('--changed', 'HEAD')
             self.assertEqual(result.returncode, 0, result.stdout)
-            self.assertIn('test-playwright-debugger-artifact-download.py', log.read_text())
+            self.assertIn('review.sh', log.read_text())
             self.assertNotIn('test-reviewer-scanner.py', log.read_text())
             log.unlink()
             (root / 'skills/playwright-test-generator').mkdir()

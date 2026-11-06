@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Keep the reviewer's V1-V6 contract and the debuggers' handoff to it aligned.
+# Keep the reviewer's V1-V6 contract complete.
 # The generator no longer ships a V1-V6 copy (3.0.0); its 2.0.1 copy is archived
 # evidence under benchmarks/generator-skill-v2.0.1-archive/ and is not compared.
 # Marker comments are informative only: parity is derived from the actionable
@@ -11,26 +11,20 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)" || exit 1
 REPO_ROOT="$ROOT"
 source "$REPO_ROOT/scripts/ci/lib/init-python-isolation.sh" || exit 2
 REV="$ROOT/skills/e2e-reviewer/references/verification-rules.md"
-PW_DBG="$ROOT/skills/playwright-debugger/references/fix-verification.md"
-CY_DBG="$ROOT/skills/cypress-debugger/references/fix-verification.md"
 
 if ! command -v python3 >/dev/null 2>&1; then
   echo "verification parity: python3 unavailable; semantic contract check did not run" >&2
   exit 1
 fi
 
-python3 - "$REV" "$PW_DBG" "$CY_DBG" <<'PY'
+python3 - "$REV" <<'PY'
 import pathlib
 import re
 import sys
 
 reviewer_path = pathlib.Path(sys.argv[1])
-playwright_debugger_path = pathlib.Path(sys.argv[2])
-cypress_debugger_path = pathlib.Path(sys.argv[3])
 try:
     reviewer = reviewer_path.read_text(encoding="utf-8")
-    playwright_debugger = playwright_debugger_path.read_text(encoding="utf-8")
-    cypress_debugger = cypress_debugger_path.read_text(encoding="utf-8")
 except (OSError, UnicodeError) as exc:
     print(f"verification parity: cannot read contract files: {exc}", file=sys.stderr)
     raise SystemExit(1)
@@ -46,9 +40,8 @@ def reviewer_rules(text):
 
 
 # Each tuple is a canonical semantic clause. Every alternative in a clause is
-# accepted, but every clause must be evidenced in both independently shipped
-# documents. This normalizes framework-specific wording without trusting a
-# duplicated marker token.
+# accepted, but every clause must be evidenced in the shipped document. This
+# normalizes wording without trusting a duplicated marker token.
 canonical = {
     "V1": (
         (r"primary observable outcome", r"observable product outcome"),
@@ -156,47 +149,5 @@ if reviewer_fields != schema_fields:
     raise SystemExit(1)
 
 
-def debugger_handoff(label, text):
-    required = {
-        "V2": (r"assertion",),
-        "V3": (r"fault injection",),
-        "V4": (r"method", r"(?:endpoint|url)", r"(?:payload|body)", r"cardinality"),
-        "V5": (r"solo", r"repeat", r"suite[- ]context"),
-        "V6": (r"independent re-review", r"repair"),
-    }
-    for rule_id, clauses in required.items():
-        bullet = re.search(rf"(?m)^- {rule_id}\b[^\n]*", text)
-        if bullet is None:
-            print(f"verification parity: {label} missing {rule_id}", file=sys.stderr)
-            raise SystemExit(1)
-        normalized_bullet = re.sub(r"\s+", " ", bullet.group(0)).lower()
-        if not all(re.search(clause, normalized_bullet) for clause in clauses):
-            print(
-                f"verification parity: {label} {rule_id} handoff behavior differs",
-                file=sys.stderr,
-            )
-            raise SystemExit(1)
-    for clause in (
-        "recommended",
-        "use `CANNOT_VERIFY` with the exact missing evidence",
-        "Do not install a verifier",
-        "never dispatches a reviewer",
-        "never quotes or invents a verdict",
-        "exit 0 means no confirmed P0",
-        "exit 1 with a Summary means confirmed P0",
-        "Retained candidates and review obligations still need source review even at exit 0.",
-        "Reserve `CANNOT_VERIFY` for exit 2, INCOMPLETE or a missing Summary.",
-    ):
-        if clause not in text:
-            print(
-                f"verification parity: {label} missing proof boundary {clause}",
-                file=sys.stderr,
-            )
-            raise SystemExit(1)
-
-
-debugger_handoff("Playwright debugger", playwright_debugger)
-debugger_handoff("Cypress debugger", cypress_debugger)
-
-print("verification parity: reviewer V1-V6 contract and debugger handoffs aligned")
+print("verification parity: reviewer V1-V6 contract aligned")
 PY

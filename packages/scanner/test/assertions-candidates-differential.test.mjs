@@ -25,13 +25,17 @@ test('#4a/#4b candidate parity on unchanged fixtures with explicit foreign-expec
   const manifest = inventory(root);
   const sources = new Map(manifest.candidates.map(item => [item.path, fs.readFileSync(item.path)]));
   const scope = createScope({ manifest, sources });
-  const expected = [];
+  const expected = [], confirmed = [];
   for (const [file, bytes] of sources) {
     const result = assertions(bytes, file, { scope });
     for (const finding of result.findings.filter(f => ['#4a', '#4b'].includes(f.patternId))) {
-      expected.push(`${finding.patternId}:${path.basename(file)}:${finding.line}:${finding.severity}:${finding.disposition}`);
+      // The legacy oracle has no confirmed #4a: a proven Locator count >= 0
+      // is promoted by Node and compared here by location only.
+      expected.push(`${finding.patternId}:${path.basename(file)}:${finding.line}:${finding.severity}:candidate`);
+      if (finding.disposition === 'confirmed') confirmed.push(`${finding.patternId}:${path.basename(file)}:${finding.line}`);
     }
   }
+  assert.deepEqual(confirmed.sort(), ['#4a:count-contracts.spec.ts:12', '#4a:count-contracts.spec.ts:6', '#4a:dashboard.spec.ts:8']);
   const env = { ...process.env, E2E_SMELL_ALLOW_PROJECT_ESLINT: '0', E2E_SMELL_NO_ESLINT_DOWNLOAD: '1',
     E2E_SMELL_DISABLE_AST_GREP: '1', E2E_SMELL_NO_AST_GREP_DOWNLOAD: '1', E2E_SMELL_FAIL_ON: 'none' };
   delete env.BASH_ENV; delete env.ENV;

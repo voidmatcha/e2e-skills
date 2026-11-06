@@ -3,7 +3,7 @@
 <!-- V-RULE-CONTRACT: V1=primary-outcome;V2=assertion-falsification;V3=behavior-fault-injection;V4=write-contract-proof;V5=repeat-and-isolation;V6=independent-re-review;verdicts=PASS,FAIL,CANNOT_VERIFY,ERROR;source=immutable;install=forbidden -->
 <!-- V-RESULT-SCHEMA: candidate,runner,verification.V1,verification.V2,verification.V3,verification.V4,verification.V5,verification.V6,sourceUnchanged,temporaryArtifactsRemaining -->
 
-V-rules are runtime proof recommendations, not new smell IDs. Keep the 24-pattern taxonomy and F1-F15 failure taxonomy stable.
+V-rules are runtime proof recommendations, not new smell IDs. Keep the 24-pattern taxonomy stable.
 
 | ID | Contract | Playwright proof | Cypress proof |
 |---|---|---|---|

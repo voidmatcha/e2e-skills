@@ -1,0 +1,312 @@
+{
+ "findings": [
+  {
+   "file": "packages/react-grab/e2e/activation-edge-cases.spec.ts",
+   "line": 206,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/api-methods.spec.ts",
+   "line": 136,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/app-theme-detection.spec.ts",
+   "line": 21,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/context-menu.spec.ts",
+   "line": 391,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/context-menu.spec.ts",
+   "line": 404,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/drag-selection.spec.ts",
+   "line": 438,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/drag-selection.spec.ts",
+   "line": 476,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/event-callbacks.spec.ts",
+   "line": 231,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/fixtures.ts",
+   "line": 662,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/focus-trap.spec.ts",
+   "line": 140,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework-production.spec.ts",
+   "line": 101,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework-production.spec.ts",
+   "line": 33,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework-production.spec.ts",
+   "line": 84,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework/list-keys.spec.ts",
+   "line": 16,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework/list-keys.spec.ts",
+   "line": 68,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework/list-keys.spec.ts",
+   "line": 73,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework/list-keys.spec.ts",
+   "line": 74,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework/owner-semantics.spec.ts",
+   "line": 19,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework/owner-semantics.spec.ts",
+   "line": 26,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework/owner-semantics.spec.ts",
+   "line": 71,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/framework/production.spec.ts",
+   "line": 51,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/freeze-animations.spec.ts",
+   "line": 153,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/overlay-filtering.spec.ts",
+   "line": 77,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/perf-bench.spec.ts",
+   "line": 143,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/perf-bench.spec.ts",
+   "line": 172,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/perf-heavy.spec.ts",
+   "line": 69,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/perf-heavy.spec.ts",
+   "line": 97,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/perf-interference.spec.ts",
+   "line": 236,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/selection.spec.ts",
+   "line": 228,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/solid-source-location.spec.ts",
+   "line": 36,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/toolbar.spec.ts",
+   "line": 286,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/toolbar.spec.ts",
+   "line": 469,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/touch-mode.spec.ts",
+   "line": 194,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/viewport.spec.ts",
+   "line": 131,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 12,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 187,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 188,
+   "patternId": "#4a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 207,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 208,
+   "patternId": "#4a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 227,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 228,
+   "patternId": "#4a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 31,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 47,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "packages/react-grab/e2e/visual-feedback.spec.ts",
+   "line": 87,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  }
+ ]
+}

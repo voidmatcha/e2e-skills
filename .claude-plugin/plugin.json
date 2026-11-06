@@ -1,7 +1,7 @@
 {
   "name": "e2e-skills",
-  "version": "3.4.0",
-  "description": "Four agent skills for Playwright and Cypress end-to-end tests: generate new Playwright specs through the installed official Playwright agents with a short rules checklist and a scanner gate, review existing specs or PR diffs, and debug failed runs.",
+  "version": "3.4.1",
+  "description": "Three agent skills for Playwright and Cypress end-to-end tests: generate new Playwright specs through the installed official Playwright agents with a short rules checklist and a scanner gate, review existing specs or PR diffs, and debug a failing test, fixing it safely (flake check, no product-code edits, no weakened assertions).",
   "license": "Apache-2.0",
   "author": {
     "name": "YONGJAE LEE"
@@ -9,7 +9,6 @@
   "skills": [
     "./skills/playwright-test-generator",
     "./skills/e2e-reviewer",
-    "./skills/playwright-debugger",
-    "./skills/cypress-debugger"
+    "./skills/e2e-debugger"
   ]
 }

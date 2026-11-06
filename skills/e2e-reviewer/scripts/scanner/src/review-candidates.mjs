@@ -2,7 +2,7 @@
 // Preserve source shapes requiring semantic review without inventing provenance.
 // Callers retain strict-detector diagnostics and adjudicate these candidates.
 import { createReceivers } from './receivers.mjs';
-import { unwrap, walk, isWritten, literalString, ts } from './source.mjs';
+import { unwrap, walk, isWritten, literalString, ts, PLAYWRIGHT_TEST_MODULES } from './source.mjs';
 
 const LOCATORS = new Set(['locator', 'getByRole', 'getByText', 'getByLabel', 'getByTestId',
   'getByPlaceholder', 'getByAltText', 'getByTitle']);
@@ -255,7 +255,7 @@ export function reviewCandidates(bytes, filename, { scope } = {}) {
     const item = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
     return Boolean(item && ts.isImportSpecifier(item) &&
       (item.propertyName || item.name).text === expected &&
-      item.parent.parent.parent.moduleSpecifier.text === '@playwright/test');
+      PLAYWRIGHT_TEST_MODULES.has(item.parent.parent.parent.moduleSpecifier.text));
   }
   const pomClasses = new Map();
   function pomClass(node) {
@@ -622,7 +622,9 @@ export function reviewCandidates(bytes, filename, { scope } = {}) {
     }
     if (SELECTORS.has(access.name) && selectorArgument(node)) {
       const field = dot(access.object), pom = field && unwrap(field.object).kind === ts.SyntaxKind.ThisKeyword && pomClass(node);
-      if (pom && pom.roots.has(field.name)) record('#17', 'P1', node, 'unresolved-page');
+      // pageReads owns a member it resolves to a (declared) Page.
+      const proof = pom && pom.roots.has(field.name) && receivers.expression(access.object);
+      if (proof && !(proof.complete && ['page', 'page-type'].includes(proof.kind))) record('#17', 'P1', node, 'unresolved-page');
     }
     unresolvedClassMember(node, access);
     let statement = node;

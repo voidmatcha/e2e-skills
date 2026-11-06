@@ -64,15 +64,12 @@ for (const host of ['codex', 'claude']) {
   test(host + ': dry run uses no CLI and makes no project writes', () => {
     const f = fixture(); assert.equal(plan(f, host, true, () => assert.fail('executed')).size, 1); assert.equal(fs.existsSync(target(f, host)), false);
   });
-  test(host + ': dedicated agents preserve foreign files', () => {
-    const f = fixture(), destination = path.join(host === 'codex' ? f.env.CODEX_HOME : f.env.CLAUDE_CONFIG_DIR, 'agents', 'e2e-finding-verifier' + (host === 'codex' ? '.toml' : '.md'));
-    put(destination, 'foreign'); assert.throws(() => setup.dedicatedPreflight(host, f.env), /conflicts/); assert.equal(fs.readFileSync(destination, 'utf8'), 'foreign');
-  });
   test(host + ': main routing uses clean staged env without executing real installers', async () => {
     const f = fixture(), calls = [];
     await setup.main(['--host', host, '--dry-run'], { cleanEnv: () => ({ ...f.env }), install: () => assert.fail('installed') });
     assert.equal(await setup.main(['--host', host], { cleanEnv: () => ({ ...f.env }), install: (command, cwd, env) => calls.push({ command, cwd, env }) }), 0);
-    assert.equal(calls.length, host === 'codex' ? 1 : 2); assert.equal(calls[0].env.E2E_SKILLS_AGENTS, host === 'codex' ? '-a codex' : '-a claude-code -a codex'); assert.equal(calls[0].env.E2E_SKILLS_INSTALL_CODEX_AGENTS, host === 'codex' ? '1' : '0');
+    assert.equal(calls.length, 1); assert.equal(calls[0].env.E2E_SKILLS_AGENTS, host === 'codex' ? '-a codex' : '-a claude-code -a codex'); assert.equal('E2E_SKILLS_INSTALL_CODEX_AGENTS' in calls[0].env, false);
+    assert.equal(calls.some(call => call.command.some(part => /install-(?:claude|codex)-agents/.test(part))), false, 'no dedicated agent installer runs');
   });
   test(host + ': diagnostic status does not infer session/approval or execute foreign config', async () => {
     const f = fixture(); assert.equal((await setup.checkSetup(f.project, host, f.env, () => assert.fail('discovery'))).status, 'CONFIG_MISSING');
@@ -167,9 +164,8 @@ test('workspace-hoisted Playwright is resolved without executing package/config 
   assert.equal(setup.projectDependencies(nested).cli, f.cli);
   fs.renameSync(f.config, f.config + '.bak'); assert.throws(() => plan(f), /directory containing/);
 });
-test('owned global agents may upgrade; custom Claude directory and relative global targets fail', async () => {
-  const f = fixture(); put(path.join(f.env.CODEX_HOME, 'agents/e2e-finding-verifier.toml'), '# e2e-skills Codex native agent: old\n'); assert.doesNotThrow(() => setup.dedicatedPreflight('codex', f.env));
-  assert.throws(() => setup.dedicatedPreflight('codex', { ...f.env, CODEX_HOME: 'relative' }), /absolute/);
+test('custom Claude directory fails', async () => {
+  const f = fixture();
   await assert.rejects(setup.main(['--host', 'claude', '--dry-run'], { cleanEnv: () => ({ ...f.env, CLAUDE_CONFIG_DIR: path.join(f.home, 'custom') }) }), /custom CLAUDE_CONFIG_DIR/);
 });
 test('MCP spawn failure, malformed JSON and protocol error do not hang or echo server secrets', async () => {
@@ -238,9 +234,10 @@ test('symlinked env ancestors resolve; the base itself and destinations below it
   assert.equal(setup.resolveAncestors(path.join(link, 'dangling/home')), path.join(real, 'dangling/home'));
   const env = setup.canonicalEnv({ HOME: path.join(link, 'home'), CODEX_HOME: path.join(link, 'home/.codex'), PATH: '/usr/bin:/bin' });
   assert.deepEqual(env, { HOME: path.join(real, 'home'), CODEX_HOME: path.join(real, 'home/.codex'), PATH: '/usr/bin:/bin' });
-  for (const host of ['codex', 'claude']) setup.dedicatedPreflight(host, env);
-  assert.throws(() => setup.dedicatedPreflight('codex', setup.canonicalEnv({ HOME: path.join(link, 'dangling/home') })), /refusing symlinked destination/);
-  assert.throws(() => setup.dedicatedPreflight('codex', setup.canonicalEnv({ HOME: link })), /refusing symlinked destination/);
+  const destination = (home, relative) => setup.safePath(path.join(home, relative));
+  for (const relative of ['.codex/config.toml', '.claude/skills/e2e-reviewer/SKILL.md']) destination(env.HOME, relative);
+  assert.throws(() => destination(setup.canonicalEnv({ HOME: path.join(link, 'dangling/home') }).HOME, '.codex/config.toml'), /refusing symlinked destination/);
+  assert.throws(() => destination(setup.canonicalEnv({ HOME: link }).HOME, '.codex/config.toml'), /refusing symlinked destination/);
   fs.symlinkSync(f.root, path.join(real, 'home/.claude'));
-  assert.throws(() => setup.dedicatedPreflight('claude', env), /refusing symlinked destination/);
+  assert.throws(() => destination(env.HOME, '.claude/skills/e2e-reviewer/SKILL.md'), /refusing symlinked destination/);
 });

@@ -555,7 +555,7 @@ restore "$file"
 # Case 10: Codex plugin interface prompt limit — Codex displays at most 3 prompts
 file=".codex-plugin/plugin.json"
 backup "$file"
-mutate "$file" "\"Diagnose failed Playwright/Cypress tests with root-cause classification.\"" "\"Diagnose failed Playwright/Cypress tests with root-cause classification.\", \"Extra prompt that should fail\""
+mutate "$file" "\"Review existing Playwright/Cypress specs or PR/diff-scoped test changes for 24 P0/P1/P2 anti-patterns.\"" "\"Review existing Playwright/Cypress specs or PR/diff-scoped test changes for 24 P0/P1/P2 anti-patterns.\", \"Extra prompt one\", \"Extra prompt that should fail\""
 assert_fails "Codex plugin guard — too many default prompts" "interface.defaultPrompt must contain 1-3 prompts"
 restore "$file"
 
@@ -950,7 +950,7 @@ assert_fails \
   "README i18n parity: README.md title must be exactly '<h1 align=\"center\">E2E Skills</h1>'"
 restore "$file"
 
-# A reviewer-specific subtitle would narrow the four-skill bundle again.
+# A reviewer-specific subtitle would narrow the two-skill bundle again.
 file="README.ko.md"
 backup "$file"
 mutate "$file" \
@@ -1021,103 +1021,41 @@ assert_fails \
   "README i18n parity: README.ko.md upstream에 merge된 수정 사례 must appear before false-green 테스트 살펴보기"
 restore "$file"
 
-# Case 16: subagent parity SP1 — dropping the absolute-path contract from an
-# agent file (the A1 regression) must fail. CWD is the target project, so a
-# repo-relative read target silently resolves nowhere.
+# Case 16: inline verdict contract IV1 — re-adding a removed dedicated subagent
+# file must fail: the skills reach every verdict inline, and a second copy of the
+# contract would drift.
 file="agents/e2e-finding-verifier.md"
+mkdir -p agents
+printf '%s\n' '---' 'name: e2e-finding-verifier' '---' > "$file"
+assert_fails "Inline verdict IV1 — re-added dedicated subagent caught" "the dedicated subagents were removed"
+rm -f "$file"
+rmdir agents 2>/dev/null || true
+
+# Case 16b: the removed debugger skills must not come back, as a skill
+# directory or as a manifest entry.
+file="skills/playwright-debugger/SKILL.md"
+mkdir -p skills/playwright-debugger
+printf '%s\n' '---' 'name: playwright-debugger' '---' > "$file"
+assert_fails "Removed skills — re-added debugger skill directory caught" "the debugger skills were removed and must not reappear"
+rm -f "$file"
+rmdir skills/playwright-debugger 2>/dev/null || true
+
+file=".claude-plugin/plugin.json"
 backup "$file"
-mutate "$file" "absolute path" "path"
-assert_fails "Subagent parity SP1 — agent drops absolute-path contract" "must state the caller passes the absolute"
+mutate "$file" '"./skills/e2e-reviewer"' '"./skills/e2e-reviewer",
+    "./skills/cypress-debugger"'
+assert_fails "Removed skills — re-added manifest entry caught" "names the removed skill cypress-debugger"
 restore "$file"
 
-# Case 17: subagent parity SP3 — the inline fallback losing a verifier verdict
-# term breaks the "identical verdict either way" contract (AGENTS.md rule 5).
+# Case 17: IV3 — the inline verification losing a verdict term must fail.
 file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
 mutate "$file" "CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT" "CONFIRMED / FALSE-POSITIVE"
-assert_fails "Subagent parity SP3 — inline fallback drops a verdict term" "inline fallback missing verdict term NEEDS-CONTEXT"
+mutate "$file" "Keep unresolved cases explicitly NEEDS-CONTEXT" "Keep unresolved cases explicitly uncertain"
+mutate "$file" "source justifies NEEDS-CONTEXT only when" "source justifies doubt only when"
+mutate "$file" "FALSE-POSITIVE, NEEDS-CONTEXT or SKIPPED-DORMANT" "FALSE-POSITIVE or SKIPPED-DORMANT"
+assert_fails "Inline verdict IV3 — inline verification drops a verdict term" "inline verification missing verdict term NEEDS-CONTEXT"
 restore "$file"
-
-# Case 18: subagent parity SP4 — a new F16+ code beyond the frozen F1–F15 range
-# must fail. Anchor on the bare `| F15 |` cell, NOT its display title: AGENTS.md
-# freezes the CODES, and F-code titles are framework-adapted, so a title rename
-# must not break this smoke test.
-file="skills/playwright-debugger/SKILL.md"
-backup "$file"
-mutate "$file" "| F15 |" "| F16 |"
-assert_fails "Subagent parity SP4 — new F16 code beyond frozen range" "found a new F16+ code"
-restore "$file"
-
-# Case 19: subagent parity SP4 — an added F17 code must ALSO fail. This guards the
-# strengthening over a bare "F16" substring check: the table-set comparison catches
-# any code outside F1–F15, not just the literal F16.
-file="skills/playwright-debugger/SKILL.md"
-backup "$file"
-mutate "$file" "| F15 |" "| F17 |"
-assert_fails "Subagent parity SP4 — added F17 caught by table-set check" "F-code table must be exactly F1"
-restore "$file"
-
-# Case 20: subagent parity SP2 — dropping the absolute-path requirement from the
-# DELEGATION LINE (the line naming the subagent) must fail, even if the word
-# 'absolute' survives elsewhere in the file. Guards the A1 regression on the
-# caller side.
-file="skills/playwright-debugger/SKILL.md"
-backup "$file"
-mutate "$file" "pass the actual absolute skill path" "pass the actual skill path"
-assert_fails "Subagent parity SP2 — delegation line drops absolute-path contract" "delegation line must pass the subagent an absolute"
-restore "$file"
-
-# Case 20b: subagent parity SP2 — the unconditional handoff rule (step 6) is a
-# second line that names the classifier. EVERY such line must carry the
-# absolute-path contract, so dropping it from the new rule must fail even though
-# step 5 still carries the word. A user-named delegation follows this line, not
-# step 5, so an any-line check would let the field failure back in.
-file="skills/playwright-debugger/SKILL.md"
-backup "$file"
-mutate "$file" "must carry \`debugger_skill_md: <absolute path of this loaded SKILL.md>\`" "must carry \`debugger_skill_md: <path of this loaded SKILL.md>\`"
-assert_fails "Subagent parity SP2 — unconditional handoff line drops absolute-path contract" "delegation line must pass the subagent an absolute"
-restore "$file"
-
-# Case 21: subagent parity SP5 — the optional Codex-native TOML port is a third
-# copy of the frozen contract; a new F16+ code in it must fail just like the .md.
-# (Skips cleanly when the port is absent; guards it only when shipped.)
-file=".codex/agents/e2e-failure-classifier.toml"
-if [ -f "$file" ]; then
-  backup "$file"
-  mutate "$file" "F1-F15 root-cause taxonomy" "F1-F17 root-cause taxonomy"
-  assert_fails "Subagent parity SP5 — Codex TOML port new F16+ code caught" "found a new F16+ code"
-  restore "$file"
-else
-  echo "  [SKIP] Case 21 — .codex/agents/e2e-failure-classifier.toml not present"
-fi
-
-# Case 21b: subagent parity SP3b — F1-vs-F7 is decided by an isolation probe the
-# read-only classifier can never run, so the no-probe verdict term has to exist on
-# every path that can return one. Drop it from a path and the delegated classifier
-# silently guesses F1 from the error text instead.
-file="agents/e2e-failure-classifier.md"
-backup "$file"
-mutate "$file" "CANNOT_VERIFY" "CANNOTVERIFY"
-assert_fails "Subagent parity SP3b — classifier missing CANNOT_VERIFY caught" "in both the procedure and"
-restore "$file"
-
-# The debugger leg has to fail on the rule, not the token: both skills use
-# CANNOT_VERIFY elsewhere, so a token-only check would stay green here.
-file="skills/playwright-debugger/SKILL.md"
-backup "$file"
-mutate "$file" "between F1 and F7" "between F1 and F2"
-assert_fails "Subagent parity SP3b — debugger losing the F1/F7 rule caught" "CANNOT_VERIFY rule for F1 versus F7"
-restore "$file"
-
-file=".codex/agents/e2e-failure-classifier.toml"
-if [ -f "$file" ]; then
-  backup "$file"
-  mutate "$file" "CANNOT_VERIFY" "CANNOTVERIFY"
-  assert_fails "Subagent parity SP3b — Codex TOML port missing CANNOT_VERIFY caught" "in both the procedure and"
-  restore "$file"
-else
-  echo "  [SKIP] Case 21b — .codex/agents/e2e-failure-classifier.toml not present"
-fi
 
 # Case 22: independently installable V-rule copies must not drift. Mutate the
 # actionable behavior while leaving marker comments untouched; marker-only
@@ -1163,61 +1101,12 @@ mutate "$file" '`sourceUnchanged`' '`sourceMayChange`'
 assert_verification_parity_fails "Verification parity — reviewer result schema drift" "result schemas differ or are missing"
 restore "$file"
 
-file="skills/playwright-debugger/references/fix-verification.md"
-backup "$file"
-mutate "$file" "independent re-review" "self-review"
-assert_verification_parity_fails \
-  "Verification parity — Playwright debugger V6 handoff drift" \
-  "Playwright debugger V6 handoff behavior differs"
-restore "$file"
-
-file="skills/playwright-debugger/references/fix-verification.md"
-backup "$file"
-mutate "$file" \
-  "F4/F5/F6/F13 or other load-bearing assertion questions" \
-  "F4/F5/F6/F13 or other load-bearing assertion questions with method endpoint payload cardinality context"
-mutate "$file" \
-  "request method/endpoint/payload/cardinality proof" \
-  "request proof"
-assert_verification_parity_fails \
-  "Verification parity — Playwright debugger V4 clauses moved to V2" \
-  "Playwright debugger V4 handoff behavior differs"
-restore "$file"
-
-file="skills/cypress-debugger/references/fix-verification.md"
-backup "$file"
-mutate "$file" 'use `CANNOT_VERIFY` with the exact missing evidence' 'use `CANNOTVERIFY` with the exact missing evidence'
-assert_verification_parity_fails \
-  "Verification parity — Cypress debugger proof boundary drift" \
-  'Cypress debugger missing proof boundary use `CANNOT_VERIFY` with the exact missing evidence'
-restore "$file"
-
-file="skills/playwright-debugger/references/fix-verification.md"
-backup "$file"
-mutate "$file" 'never dispatches a reviewer' 'may dispatch a reviewer'
-assert_verification_parity_fails \
-  "Verification parity — Playwright debugger V6 no-dispatch rule drift" \
-  'Playwright debugger missing proof boundary never dispatches a reviewer'
-restore "$file"
-
-# Case 23: named custom agents are optional; standard Codex native roles must
-# remain the delegation bridge before the inline fallback.
+# Case 23: IV2 — the reviewer must keep the inline-only verdict rule (SP6's
+# native-role fallback was removed with the dedicated subagents).
 file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
-mutate "$file" 'native `verifier` role' 'native review role'
-assert_fails "Subagent parity SP6 — reviewer drops standard native verifier fallback" "must fall back from the named agent"
-restore "$file"
-
-file="skills/playwright-debugger/SKILL.md"
-backup "$file"
-mutate "$file" 'native `debugger` role' 'native diagnosis role'
-assert_fails "Subagent parity SP6 — Playwright debugger drops standard native fallback" "must fall back from the named classifier"
-restore "$file"
-
-file="skills/cypress-debugger/SKILL.md"
-backup "$file"
-mutate "$file" 'native `debugger` role' 'native diagnosis role'
-assert_fails "Subagent parity SP6 — Cypress debugger drops standard native fallback" "must fall back from the named classifier"
+mutate "$file" 'Verify every finding inline' 'Verify inline by default'
+assert_fails "Inline verdict IV2 — reviewer delegation re-added caught" "must state the inline verdict rule"
 restore "$file"
 
 # Case 24: every framework rejected by the contributor scope contract must be
@@ -1297,28 +1186,72 @@ mutate \
   'git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skills'
 assert_fails \
   "README manual clone — nested bundle path rejected" \
-  "README.md manual Claude Code clone must expose four direct per-skill roots"
+  "README.md manual Claude Code clone must expose three direct per-skill roots"
 restore "$file"
 
-# The all-in-one prompt selects the current host; the optional official-agent
-# path needs a session-wide playwright-test MCP server on Codex (no role selector).
+# e2e-debugger ships the memo's failure-handling lines unchanged and keeps its
+# flake check and inline repair fallback.
+file="skills/e2e-debugger/failure-rules.md"
+backup "$file"
+mutate "$file" "Never change product code to make a test pass unless the user asked for that change." "Avoid changing product code."
+assert_fails "e2e-debugger — edited failure rules rejected" \
+  "must stay byte-identical to the memo v5 failure-handling lines"
+restore "$file"
+
+file="skills/e2e-debugger/SKILL.md"
+backup "$file"
+mutate "$file" "--repeat-each=3 --retries=0" "--repeat-each=1"
+assert_fails "e2e-debugger — flake check rerun count removed" \
+  "missing contract phrase '--repeat-each=3 --retries=0'"
+restore "$file"
+
+backup "$file"
+mutate "$file" "both paths must reach the same outcome" "delegate when possible"
+assert_fails "e2e-debugger — inline repair fallback removed" \
+  "missing contract phrase 'both paths must reach the same outcome'"
+restore "$file"
+
+# The install section leads with the one skills CLI command and names the
+# host-specific official-agent setup; the generator needs a session-wide
+# playwright-test MCP server on Codex (no role selector).
 file="README.md"
 backup "$file"
 mutate \
   "$file" \
-  "for my current host and Playwright project with" \
-  "for every host and Playwright project with"
+  "npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all" \
+  "npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g"
 assert_fails \
-  "README all-in-one install — current-host prompt rejects all-host installation" \
-  "README.md install must keep one current-host all-in-one prompt"
+  "README install — the one primary skills CLI command is required" \
+  "README.md install must lead with exactly one shared skills CLI command"
+restore "$file"
+
+file="README.md"
+backup "$file"
+mutate_all "$file" \
+  "npx --no-install playwright init-agents --loop=codex" \
+  "npx --no-install playwright init-agents"
+assert_fails \
+  "README install — host-specific init-agents command is required" \
+  "README.md install section missing tokens"
+restore "$file"
+
+file="README.ko.md"
+backup "$file"
+mutate "$file" \
+  "codex plugin add e2e-skills@voidmatcha" \
+  "codex plugin add e2e-skills@voidmatcha
+bash scripts/dev/install-codex-agents.sh"
+assert_fails \
+  "README install — a removed dedicated-agent installer is rejected" \
+  "README.ko.md still documents removed install path"
 restore "$file"
 
 file="docs/installation.md"
 backup "$file"
 mutate "$file" 'session-wide `playwright-test` MCP server' 'session-wide `playwright-tests` MCP server'
 assert_fails \
-  "README Codex delegation — generator official-agent MCP limit is required" \
-  "README.md Codex delegation limits missing tokens"
+  "README Codex setup — generator official-agent MCP limit is required" \
+  "README.md install section missing tokens"
 restore "$file"
 
 # review.sh requires the exact scope phrase, not a bare "session-wide" token.
@@ -1329,8 +1262,8 @@ mutate_all "$file" \
   'works only with a session-wide `playwright-test` MCP server' \
   'works with a `playwright-test` MCP server'
 assert_fails \
-  "README Codex delegation — session-wide MCP scope is required" \
-  "README.md Codex delegation limits missing tokens"
+  "README Codex setup — session-wide MCP scope is required" \
+  "README.md install section missing tokens"
 restore "$file"
 
 # Every translation must retain its link to the one shared setup guide.
@@ -1343,8 +1276,8 @@ for file in README.ko.md README.ja.md README.zh-cn.md; do
   restore "$file"
 done
 
-# The translated taxonomy tables must retain the canonical pattern IDs,
-# severities, and two complete F1-F15 debugger tables.
+# The translated taxonomy tables must retain the canonical pattern IDs and
+# severities.
 for file in README.ko.md README.ja.md README.zh-cn.md; do
   backup "$file"
   mutate "$file" "| 12 |" "| 12x |"
@@ -1360,14 +1293,6 @@ mutate "$file" "#### P1:" "#### P0:"
 assert_fails \
   "README i18n taxonomy — severity drift" \
   "README.ko.md pattern ID/severity contract differs from README.md"
-restore "$file"
-
-file="README.ja.md"
-backup "$file"
-mutate "$file" "| F15 |" "| F16 |"
-assert_fails \
-  "README i18n taxonomy — F1-F15 drift" \
-  "README.ja.md F1-F15 taxonomy contract differs from README.md"
 restore "$file"
 
 # Translation contract snapshots protect a small set of safety and scope claims.

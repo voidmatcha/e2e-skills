@@ -2866,8 +2866,8 @@ class MachineryStack(unittest.TestCase):
 
     def test_an_unbound_module_that_gets_loaded_is_detected_and_hashed(self):
         injected = ModuleType("injected")
-        injected.__file__ = str(ROOT / "scripts/evals/compare-debugger-holdouts.py")
-        target = "scripts/evals/compare-debugger-holdouts.py"
+        injected.__file__ = str(ROOT / "scripts/evals/compare-reviewer-revisions.py")
+        target = "scripts/evals/compare-reviewer-revisions.py"
         self.assertNotIn(target, m.bound_scripts())
         self.oss.v2.injected_for_test = injected
         try:

@@ -51,9 +51,7 @@ DEFAULT_CASES = ROOT / "scripts/evals/behavioral-cases.json"
 CODEX_ENV_KEYS: set[str] = set()
 CLAUDE_ENV_KEYS = {"CLAUDE_CODE_OAUTH_TOKEN"}
 ALLOWED_SKILLS = {
-    "cypress-debugger",
     "e2e-reviewer",
-    "playwright-debugger",
     "playwright-test-generator",
 }
 FIXTURE_ROOT = ROOT / "scripts/ci/fixtures/codex-smoke"
@@ -62,7 +60,7 @@ MAX_GRADING_REGEX_CHARS = 4_096
 GRADING_REGEX_TIMEOUT_SECONDS = 0.1
 PROCESS_GROUP_GRACE_SECONDS = 5.0
 PROCESS_GROUP_POLL_SECONDS = 0.05
-PINNED_CASES_FILE_SHA256 = "96319fb0ecd71772a0849d78817aa0d6b2473f2123484d8f390d91088d1917c6"
+PINNED_CASES_FILE_SHA256 = "92d6a45744cb2cdcb0b9f7f8824a516d17b3a2ecefb0bcd3527ddbe0c714eaa6"
 
 
 class GradingRegexError(ValueError):
@@ -258,11 +256,7 @@ def render_prompt(case: dict, variant: str, repo: Path = ROOT) -> str:
                     f"END_TRUSTED_SKILL_SNAPSHOT {case['skill']}/{relative}"
                 )
             reference_payload = "\n\n" + "\n\n".join(reference_sections)
-        elif case["skill"] in {
-            "cypress-debugger",
-            "e2e-reviewer",
-            "playwright-debugger",
-        }:
+        elif case["skill"] == "e2e-reviewer":
             reference_sections = []
             for reference_path in sorted((skill_path.parent / "references").glob("*.md")):
                 relative = reference_path.relative_to(skill_path.parent).as_posix()

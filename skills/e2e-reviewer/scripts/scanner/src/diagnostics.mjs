@@ -41,7 +41,8 @@ const GROUPS = {
     'extend receiver is not proven Playwright', 'unsupported provenance-producing call',
     'mixed CommonJS and ESM exports', 'CommonJS exports require one unconditional literal whole-module re-export',
     'namespace re-export binding is not ported', 'export-equals provenance is not ported',
-    'binding position did not identify source',
+    'binding position did not identify source', 'built-in fixture override is not proven', 'patched fixture member is used',
+    'member of an unproven class instance', 'page-object member is not proven', 'awaited value is not proven',
   ],
   'type-unsupported': [
     'type annotation alone does not prove the runtime timeout receiver',

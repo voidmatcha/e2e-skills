@@ -25,7 +25,9 @@ MEMO_DOC = ROOT / "docs/test-authoring-memo.md"
 # The delegated prompt carries the documented memo block byte for byte; the
 # docs block stays the single source and packages/scanner/guidance holds the
 # installer copy (checked against the same block by setup-guidance.test.mjs).
-MEMO_SHA256 = "c7e5d9a2dc69ee8f5366154f165269d8a33eaacc5fbb13266a3ed009ba3ca2bf"
+# 3.5 appended the unmeasured "When a test fails" section to the memo; the measured
+# 136-word text (SHA-256 c7e5d9a2dc69...) is kept unchanged above it, see the CHANGELOG.
+MEMO_SHA256 = "10b500f843c0daa3c0f3383b0891c16c604401c754f0427708bdd89fc9213999"
 
 SKILL_MAX_BYTES = 5120
 THIN_MAX_BYTES = 2500
@@ -59,6 +61,9 @@ REQUIRED_STATEMENTS = {
     "inert URL guard": "Inactive comments and href-only assertions do not block solely for URL strings.",
     "runtime stack drift and approval reuse": "Recheck section 1 whole-stack safety for drift. Reuse unchanged scoped evidence and approvals.",
     "delegated approved destinations": "add approved origin and stack destinations",
+    # Codex children read wrong or system skill paths and ran scan.sh from them; the parent hands over resolved absolute paths.
+    "delegated absolute skill and scanner paths": "resolved absolute paths of this skill's dir and `e2e-reviewer`'s `scripts/scan.sh`",
+    "scanner dir resolved to absolute path": "Resolve `<its skill dir>` to the absolute directory of the loaded `e2e-reviewer` copy first; never a relative or guessed path.",
     "healer prohibited": "Never use the healer",
     "no review sub-agents": "spawn review sub-agents",
     "no credential files": "never read `.env`, `auth.json`, or storage-state files",
@@ -85,7 +90,21 @@ REQUIRED_STATEMENTS = {
     "planner missing is reported": "No planner: ask the user for scenarios; list the planner under NOT done.",
     "uncommitted work kept": "keep uncommitted work",
     "several servers ask": "Multiple servers/origins: ask which one.",
-    "monorepo package named": "Monorepo: report the config's owning package.",
+    # Thin 3.5 candidate: monorepo ownership moved to the setup guide and `doctor` output (design MOVE row).
+    "guide monorepo package named": "Monorepo: report the config's owning package and use it as `--project`.",
+    "guide doctor stays read-only": "never add `--check-server` (it executes project code) without exact approval",
+    # Thin 3.5 candidate: setup questions route to the read-only doctor; the stop rule above is unchanged.
+    "setup questions route to doctor": "for setup questions, point to read-only `e2e-skills doctor`",
+    # The not-ready guide prints the exact host-specific init-agents command plus the MCP approval step, and runs
+    # nothing: a new user otherwise had to translate `--loop=<claude|codex>` and find the approval step themselves.
+    "not-ready message is printed per host": "Read `setup-guide.md`; print its host's not-ready message;",
+    "guide not-ready message per host only": "print the block for the current host only, with the project root filled in, then stop",
+    "guide not-ready runs nothing": "The user runs these commands; this skill runs nothing itself, even after a yes.",
+    "guide Claude Code not-ready command": "`In <project root>, run: npx --no-install playwright init-agents --loop=claude`",
+    "guide Claude Code .mcp.json replaced": "replaces `.mcp.json` (back up other servers first)",
+    "guide Claude Code not-ready approval": "`Then restart Claude Code in the project and approve the playwright-test MCP server.`",
+    "guide Codex not-ready command": "`In <project root>, run: npx --no-install playwright init-agents --loop=codex`",
+    "guide Codex not-ready session-wide step": "`Then declare playwright-test (npx --no-install playwright run-test-mcp-server) in the trusted project's .codex/config.toml, restart Codex in the project and approve the server.`",
     "already running server is reported": "Report host-started servers.",
     "post-delegation origin check": "Inspect executable navigation/request destinations in specs, called helpers/hooks/config and generator output/redirects.",
     "Claude Code subagent by name": "invoke the installed official planner/generator subagent by name and await its result",
@@ -101,9 +120,11 @@ REQUIRED_STATEMENTS = {
     "guide says the skill never runs init-agents": "this skill never runs it",
     "guide Claude Code step is the .mcp.json approval": "Claude Code: `init-agents` wrote `.mcp.json`; approve its prompt.",
     "guide Codex session-wide is an extra step": "Codex: `init-agents` declares it only inside the agent file; declare it in trusted-project `.codex/config.toml` or user `~/.codex/config.toml` yourself.",
-    "MCP native execution must select files": "never omit `locations`",
-    "MCP native execution must preserve scope": "Prove its loaded config, environment, project and origin match the approved command.",
-    "MCP transport is not native success": "MCP transport success alone is not test success.",
+    # Thin 3.5 candidate: the official test_run fallback was dropped (design DROP row), so its three
+    # scope/transport sentences went with it; the approved test command is the only execution path.
+    "no test command reports NOT run": "No approved test command: do not run; report tests NOT run.",
+    "tool results are not native runs": "child or MCP tool results are not native runs",
+    "approved project scope": "Run only approved projects or the confirmed sole project; unknown/broader scope: BLOCKED.",
     "native scenario completion": "Match every planned scenario to an actual native attempt with status `passed` in its approved applicable projects; an expected failure, zero tests or a missing, skipped, interrupted or failed required scenario: BLOCKED, not complete. Skips outside those applicable targets do not block completion.",
     "evaluator is not actor execution": "Evaluator runs do not count as agent execution.",
     "guide step new session": "Start a new session and ask again.",
@@ -143,7 +164,9 @@ REQUIRED_STATEMENTS = {
     "single run on disposable stack": "against a disposable stack",
     "run refused on baseURL mismatch": "if not, do not run",
     "baseURL confirmation": "Confirm the effective `baseURL`",
-    "NOFIX route": "`playwright-debugger` (NOFIX)",
+    # The debugger skills are removed, so a product defect is reported to the user
+    # as a suspected regression instead of being routed to a debugger (the old NOFIX route).
+    "suspected regression reported": "report BLOCKED as a suspected product regression with the failing evidence; never fix it.",
     "required assertions preserved": "Preserve required outcomes and expected values",
     "bounded repair": "the parent may make at most two repairs",
     "uncertain failure blocked": "Product defects or uncertain causes: report BLOCKED",
@@ -159,20 +182,18 @@ REQUIRED_STATEMENTS = {
     "untrusted content": "untrusted data",
     "no credentials": "No credentials in URLs",
     "report NOT done list": "NOT done: all unrun checks",
-    "fault check is opt-in": "Offer opt-in fault checks; never claim they ran",
 }
 # These contracts govern post-generation actions, behind the mandatory pre-action route.
 EXECUTION_STATEMENTS = {
     "evidence write scope",
-    'MCP native execution must preserve scope',
-    'MCP native execution must select files',
-    'MCP transport is not native success',
-    'NOFIX route',
+    'no test command reports NOT run',
+    'tool results are not native runs',
+    'approved project scope',
+    'suspected regression reported',
     'approved scoped run',
     'baseURL confirmation',
     'bounded repair',
     'evaluator is not actor execution',
-    'fault check is opt-in',
     'inert URL guard',
     'loopback aliases are not same origin',
     'origin is not project authorization',
@@ -197,6 +218,7 @@ EXECUTION_STATEMENTS = {
     'scanner fix P0 and P1',
     'scanner incomplete gate',
     'scanner loaded copy',
+    'scanner dir resolved to absolute path',
     'scanner pass cap',
     'scanner project config disabled',
     'scanner skipped is incomplete',
@@ -343,6 +365,40 @@ def native_gate_drift(text: str) -> str | None:
         if REQUIRED_STATEMENTS[label] not in text:
             return f"native gate missing: {label}"
     return None
+
+
+# Thin 3.5 candidate DROP rows: the official `test_run` fallback and the opt-in fault-check offer.
+DROPPED_PATHS = (("`test_run`", "the official test_run fallback execution path"),
+                 ("fault check", "the opt-in fault-check offer"),
+                 ("playwright-debugger", "routing failures to the removed playwright-debugger"),
+                 ("cypress-debugger", "routing failures to the removed cypress-debugger"),
+                 ("NOFIX", "the removed debugger NOFIX route"))
+
+
+def dropped_path_drift(surface: str) -> str | None:
+    lowered = surface.lower()
+    for needle, label in DROPPED_PATHS:
+        if needle.lower() in lowered:
+            return f"dropped path returned: {label}"
+    if REQUIRED_STATEMENTS["no test command reports NOT run"] not in surface:
+        return "without an approved test command the run must be reported NOT run"
+    return None
+
+
+def check_dropped_paths(surface: str) -> None:
+    drift = dropped_path_drift(surface)
+    if drift:
+        fail(drift)
+    # Mutate-and-detect: re-adding either dropped path or losing the no-command rule must be caught.
+    for label, mutated in (
+        ("re-added test_run fallback", surface + "\nOr official `test_run` with approved exact `locations`."),
+        ("re-added fault-check offer", surface + "\nOffer opt-in fault checks; never claim they ran."),
+        ("re-added debugger route", surface + "\nProduct defects: use `playwright-debugger` (NOFIX)."),
+        ("dropped no-command rule", surface.replace(REQUIRED_STATEMENTS["no test command reports NOT run"], "", 1)),
+        ("no-command run made silent", surface.replace("report tests NOT run.", "skip the run.", 1)),
+    ):
+        if mutated == surface or dropped_path_drift(mutated) is None:
+            fail(f"dropped-path check missed a {label}")
 
 
 def check_native_gate(text: str) -> None:
@@ -613,6 +669,7 @@ def main() -> None:
     check_delivery(delegate)
     check_scan_gate(execution)
     check_native_gate(execution)
+    check_dropped_paths(effective_contract + "\n" + setup_guide)
     check_offer(delegate)
     if "test-authoring-memo.md" in thin_text or "Test authoring notes" in thin_text:
         fail("keep the memo in its own file; thin-rules.md stays pinned")
@@ -647,9 +704,16 @@ def main() -> None:
         "baseURL mismatch refusal": ("effective baseurl", "does not run", "approved origin"),
         "loopback definition": ("loopback is defined", "::1", "credentials and a fragment"),
         "production refusal": ("production url refused", "disposable", "go ahead"),
-        "agents not set up": ("not set up", "init-agents", "run-test-mcp-server", "does not run", "stops"),
+        # The not-ready message names the exact host command, so the eval pins the Claude Code loop and a Codex twin pins its own.
+        "agents not set up": ("not set up", "init-agents --loop=claude", "run-test-mcp-server", "does not run", "stops", "--loop=codex"),
+        "codex not-ready message": ("codex session not set up", "init-agents --loop=codex", ".codex/config.toml", "does not run", "--loop=claude"),
         "remote target not explored": ("remote origin", "loopback", "not delegate"),
-        "report not done list": ("not done", "not done", "fault check", "opt-in"),
+        # Thin 3.5 candidate: the fault-check offer was dropped; the eval now guards that it is not offered.
+        "report not done list": ("report lists checks not done", "not done", "fault check", "does not offer"),
+        "no test command reports NOT run": ("no approved test command", "not run", "not complete", "approved test command"),
+        "test_run is not an execution path": ("official test_run is not an execution path", "test_run", "approved test command", "native"),
+        "setup questions route to doctor": ("setup guide is shown", "e2e-skills doctor", "read-only", "--check-server"),
+        "monorepo owner via doctor": ("monorepo", "owning package", "doctor", "--project"),
         "loopback frontend backend refusal": ("production api", "production host", "disposable stack"),
         "scanner blocked": ("scanner blocked", "blocked", "exit 2"),
         "post-delegation origin check": ("executable destinations", "blocked", "approved origin", "href"),
@@ -687,7 +751,7 @@ def main() -> None:
         if clause not in json.dumps(scanner_eval):
             fail(f"scanner residual-P1 eval is missing {clause!r}")
     titles = " ".join(e["title"].lower() for e in evals)
-    for topic in ("production", "loopback", "scanner", "not installed", "not set up", "planner", "nofix", "paste", "executable destinations"):
+    for topic in ("production", "loopback", "scanner", "not installed", "not set up", "planner", "suspected product regression", "paste", "executable destinations"):
         if topic not in titles + " " + " ".join(json.dumps(e).lower() for e in evals):
             fail(f"evals do not cover {topic}")
 

@@ -1,11 +1,33 @@
 <div align="center">
-  <img src="docs/assets/hero.png" alt="e2e-skills: 面向 Playwright 和 Cypress 的 Agent Skills：生成、审查并调试可靠的端到端测试。" width="100%" />
+  <img src="docs/assets/hero.png" alt="e2e-skills：生成 Playwright 测试，审查 Playwright 和 Cypress 测试，通过 e2e-debugger 修复失败测试。" width="100%" />
 </div>
 
 <h1 align="center">E2E Skills</h1>
 
+**对 200 个带有 E2E 测试的热门 React 主题仓库进行源码审查后，发现 17.5%（95% CI 12.9–23.4%）存在功能损坏仍可能通过的测试。** [范围与方法](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)。
+
+<!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
+
+安装 skill：
+
+```bash
+npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
+```
+
+试试 30 秒静态扫描（需要 Node.js 22+，实际耗时取决于仓库）：
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+```
+
+- **开源项目：** Claude 源码审查确认了 35/200 个仓库；Claude 和 Codex 在同一位置均确认问题的仓库为 33/200 个。[结果](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)。
+- **healer 保护指引：** 在准备好的两组应用中，加入失败处理指引后，应用代码修改从 16/16 降为 Claude 0/16、Codex 1/16。 **TODO：发布前补充此次 healer 复现实验的公开证据链接。**
+- **审查费用：** 记录中的 Claude `claude-sonnet-5-5`、high effort 运行每个仓库约 $1–2（扩展样本范围 $0.58–1.96）。[费用表](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)。
+
+这些数据仅代表所述条件下的观察。源码判断不是实际运行证明，样本并非随机，审查结果取决于模型和项目。[数据与范围](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106)。
+
 <p align="center">
-  <a href="https://github.com/voidmatcha/e2e-skills"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent_Skills-4-1FC07C?style=flat-square&labelColor=black"></a>
+  <a href="https://github.com/voidmatcha/e2e-skills"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent_Skills-3-1FC07C?style=flat-square&labelColor=black"></a>
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
   <a href="https://github.com/openai/codex"><img alt="Codex" src="https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white"></a>
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
@@ -19,9 +41,9 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=0c4bdba4c28f1a4c487a5acb5389d235599cb49631cf14c26f088dcf12723861; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=85776e6792ecbcf8a92d6ddfc32ff87ec120ae76a5ce98a377c232ddecb3fc16; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-`e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。四个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及诊断失败原因。
+`e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
@@ -41,11 +63,10 @@
 | --- | --- | --- |
 | 生成新的 Playwright 覆盖 | [`playwright-test-generator`](skills/playwright-test-generator/SKILL.md) | 根据实际页面编写的测试，以及扫描器检查和执行结果 |
 | 审查 Playwright/Cypress 测试或 PR/diff 变更 | [`e2e-reviewer`](skills/e2e-reviewer/SKILL.md) | 按严重程度排列的问题、判断依据和修复建议；对变更区分新增、恶化和已有问题 |
-| 调试失败的 Playwright 运行 | [`playwright-debugger`](skills/playwright-debugger/SKILL.md) | 推测原因、判断依据和具体修复建议 |
-| 调试失败的 Cypress 运行 | [`cypress-debugger`](skills/cypress-debugger/SKILL.md) | 推测原因、判断依据和具体修复建议 |
+| 调试并修复失败的 Playwright/Cypress 测试 | [`e2e-debugger`](skills/e2e-debugger/SKILL.md) | 附证据把原因归为 FLAKY、APP-REGRESSION、TEST-DEFECT-FIXED、ENV 或 UNCLEAR；只做安全的测试文件修复，从不改产品代码 |
 | 运行确定性本地扫描 | `e2e-skills scan` | 无需安装目标项目 package 即可发现的候选问题 |
 
-P0/P1/P2 表示审查的严重程度：P0 是功能损坏仍通过的问题，P1 影响可靠性或诊断，P2 涉及维护改进。debugger 的 F1–F15 是时序、selector、认证等 15 类失败原因的分类代码。
+P0/P1/P2 表示审查的严重程度：P0 是功能损坏仍通过的问题，P1 影响可靠性或诊断，P2 涉及维护改进。
 
 **测试生成：** 安装后，告诉 agent 要测试哪个本地项目。它会检查所需配置，并说明还需要哪些准备。
 
@@ -99,10 +120,18 @@ test('shows the welcome message', async ({ page }) => {
 });
 ```
 
-内置扫描器无需项目配置即可捕获这些 false-green 断言。下面摘录相关输出：
+内置扫描器无需项目配置即可捕获这些 false-green 断言。下面是文本报告（不加 `--format text` 时，扫描器以 JSON 输出相同结果）：
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan tests/
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan tests/ --format text
+Node source scan (canonical report view)
+Coverage: BOUNDED; discovery: COMPLETE.
+Semantic review: no retained candidates; compatibility contract: DEVELOPMENT.
+Review obligations: 0, linked to retained candidates.
+Unresolved analysis: 0 location(s) in 0 file(s), not findings; 0 of them are source-linked review tasks; execution status unchanged.
+Project configuration: UNAVAILABLE; declared settings only, runner selection unchanged.
+Configuration files: 0; unresolved configuration observations: 1.
+Project ESLint effective rule states: NOT EXECUTED; static declarations do not establish active rules.
 
 [P0][CONFIRMED] #4f Static finding (2 hits)
   "login.spec.ts":5: #4f
@@ -137,94 +166,13 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 ## 安装并试用
 
-### 快速开始：先扫描，再添加备忘
+### 安装
 
-从两条命令开始。首先，扫描现有的 E2E 测试，找出没有证明任何内容却能通过的测试：
+这一条命令会为包括 Claude Code 和 Codex 在内的所有[支持的代理](https://github.com/vercel-labs/skills#supported-agents)全局安装三个技能。CLI 版本已固定。如果只想为一个代理安装，请使用 `npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a <agent>`（例如 `-a claude-code` 或 `-a codex`）。开启一个新的代理会话，然后确认技能列表（例如 Claude Code 中的 `/skills`）里出现了 `e2e-reviewer`、`e2e-debugger` 和 `playwright-test-generator`。
 
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text
-```
+### 开始使用
 
-然后，把[测试编写备忘](docs/test-authoring-memo.md)添加到代理加载的指令文件中。Claude Code 使用 E2E 测试目录；Codex 使用仓库根目录，如果在 E2E 测试目录中启动 Codex，则使用该目录。可以先加上 `--dry-run` 预览：
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host codex --project path/to/repository --memo
-```
-
-在我们的开发试验中，影响最大的是备忘文件：没有它时，技能发现的失败路径 fault 更少（Claude 54 个中 42 个，Codex 54 个中 27 个），备忘位于根目录指令文件时分别为 53/54 和 45/54。
-
-### 让编程 agent 安装（推荐）
-
-将以下提示词粘贴到 Claude Code 或 Codex。如需测试生成，请告知现有的本地 Playwright 项目；只做审查和失败分析时，无需项目设置即可安装。
-
-```text
-Install e2e-skills for my current host and Playwright project with `npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host <codex|claude> --project <path>`, previewing it with `--dry-run` first. If I only want review or debugging, omit `--project`. Then run `e2e-skills doctor` with the same arguments and `--check-server` when authorized for that exact command, and verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
-```
-
-agent 会运行 `e2e-skills` 安装器，安装 4 个技能和 2 个专用代理；指定项目时，还会准备官方 Playwright test agent 和项目 MCP 配置。如需重启，请自行重启 agent 并批准项目的 MCP 服务器；当前会话中出现 `generator_write_test` 后即可开始生成。如果使用 Cursor 或 Gemini CLI 等其他 agent，请用下方的 skills.sh 安装技能。
-
-<details>
-<summary>其他安装方式：skills.sh、CLI 和插件</summary>
-
-请按需要选择安装方式。审查和失败分析可在任何 agent 中使用。测试生成还需要官方 Playwright test agent 和项目 MCP 服务器，安装器会在 Claude Code 和 Codex 中准备好它们。
-
-| 想要做的事 | agent | 安装方式 | 安装内容 | 不包含 |
-| --- | --- | --- | --- | --- |
-| 审查和分析现有 Playwright/Cypress 测试的失败 | [所有受支持的 agent](https://github.com/vercel-labs/skills#supported-agents) | 下方的 skills.sh | 4 个技能 | 2 个专用代理（可选；没有它们技能也会给出相同结论）和 generator 设置 |
-| 同时生成新的 Playwright 测试 | Claude Code、Codex | 下方的 e2e-skills 安装器 | 4 个技能、2 个专用代理、官方 Playwright test agent 和项目 MCP 配置 | 生成所需内容均已包含 |
-
-### 审查和失败分析：安装技能
-
-使用 [skills.sh](https://skills.sh/voidmatcha/e2e-skills) 安装 4 个技能：
-
-```bash
-npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
-```
-
-如只为一个 agent 安装，请将 `--all` 替换为[支持列表](https://github.com/vercel-labs/skills#supported-agents)中的 `-a <agent>`。CLI 版本已固定。此方式只安装 4 个技能。`playwright-test-generator` 还需要官方 Playwright test agent（`playwright init-agents`）和项目的 `playwright-test` MCP 服务器，此命令不会设置它们。两者就位之前，它会显示设置指南并停止，而不是直接编写测试。请使用[下方的安装器](#test-generation-claude-code-and-codex)或[安装指南](docs/installation.md#manual-generator-setup)完成该设置。安装后可查看 agent 的技能列表（Claude Code 中为 `/skills`），确认有 `e2e-reviewer`、`playwright-debugger`、`cypress-debugger` 和 `playwright-test-generator`。
-
-### 测试生成：Claude Code 和 Codex
-
-可在任意目录运行，并指定现有的本地 Playwright 项目。在 Claude Code 中将 `codex` 替换为 `claude`。安装器需要 Node.js 22.20 或更高版本。
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /path/to/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills doctor --host codex --project /path/to/playwright-project
-```
-
-`--project` 会为该项目运行官方的 `playwright init-agents --loop=codex`（或 `--loop=claude`）设置并写入 MCP 配置；升级 Playwright 后请重新运行安装。不加 `--project` 时，只安装 4 个技能和 2 个专用代理。对于受信任的项目，可在 `doctor` 后加 `--check-server`，启动已配置的 MCP 服务器并检查 `initialize` 和 `tools/list`；该检查会执行项目代码，但不调用工具、不打开浏览器、不运行测试，只检查服务器。如有需要，请自行重启 agent 并批准项目的 MCP 服务器；当前会话中出现 `generator_write_test` 后即可开始生成。
-
-前提条件、冲突和手动设置请参阅[安装指南](docs/installation.md)。
-
-### Claude Code
-
-也可以安装包含 4 个技能和 2 个专用代理的插件：
-
-```text
-/plugin marketplace add voidmatcha/e2e-skills
-/plugin install e2e-skills@voidmatcha
-```
-
-生成功能请使用上方的安装器，或按照[安装指南](docs/installation.md)进行设置。
-
-### Codex
-
-也可以通过插件市场安装 4 个技能：
-
-```text
-codex plugin marketplace add voidmatcha/e2e-skills
-codex plugin add e2e-skills@voidmatcha
-```
-
-插件不会安装 2 个专用代理。如需添加，请 clone 本仓库后运行 `bash scripts/dev/install-codex-agents.sh`。审查和失败分析在没有专用代理时也可内联执行。
-
-生成功能请使用上方的安装器，或按照[安装指南](docs/installation.md#codex)进行设置。
-
-</details>
-
-### 首次提示词
+用日常语言向代理提出请求即可：
 
 ```text
 Review my Playwright tests in tests/e2e with e2e-reviewer.
@@ -236,26 +184,89 @@ Generate Playwright E2E coverage for apps/web/e2e.
 ```
 
 ```text
-Debug the failed Playwright report in playwright-report/.
-Debug the failed Cypress report in cypress/reports/.
+This test is failing, fix it.
 ```
+
+审查和修复失败测试可以直接使用。测试生成需要先完成下面一次性的项目设置。
+
+### 测试生成：一次性的项目设置
+
+`playwright-test-generator` 通过 `playwright-test` MCP 服务器使用 Playwright 官方测试代理。首次使用时，如果缺少这些代理，它会停止生成，并告诉你在 Playwright 项目根目录中运行一条命令。技能本身从不运行这条命令：
+
+```bash
+npx --no-install playwright init-agents --loop=claude   # Claude Code
+npx --no-install playwright init-agents --loop=codex    # Codex
+```
+
+`--no-install` 使用项目中已安装的 Playwright，不会下载其他版本。在 Playwright 1.62 中，该命令会先加载 `playwright.config.*`，然后写入：
+
+- `--loop=claude`：`.claude/agents/playwright-test-planner.md`、`playwright-test-generator.md`、`playwright-test-healer.md`，以及声明 `playwright-test` 服务器（`npx playwright run-test-mcp-server`）的 `.mcp.json`。已有的 `.mcp.json` 会被替换而不是合并，请先备份。
+- `--loop=codex`：`.codex/agents/playwright_test_planner.toml`、`playwright_test_generator.toml`、`playwright_test_healer.toml`，每个代理文件内部都声明了 `playwright-test` 服务器。它不会写入 `.codex/config.toml`。
+- 两者都会：在没有 `specs/` 目录时创建 `specs/README.md`，在项目没有 seed 测试时在测试目录中创建 `seed.spec.ts`。
+
+然后在项目中重启代理。在 Claude Code 中，批准项目的 `playwright-test` MCP 服务器。在 Codex 中，由于生成器需要会话级服务器，还要按照[安装指南](docs/installation.md#codex)在受信任项目的 `.codex/config.toml` 中声明 `playwright-test`。会话中出现 `generator_write_test` 工具后即可开始生成。
+
+如果希望代理同时测试失败路径，可以把[测试编写备忘](docs/test-authoring-memo.md)添加到代理加载的指令文件中。Claude Code 使用 E2E 测试目录；Codex 使用仓库根目录，如果在 E2E 测试目录中启动 Codex，则使用该目录。可以先加上 `--dry-run` 预览：
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host codex --project path/to/repository --memo
+```
+
+在我们的开发试验中，影响最大的是备忘文件：没有它时，技能发现的失败路径 fault 更少（Claude 54 个中 42 个，Codex 54 个中 27 个），备忘位于根目录指令文件时分别为 53/54 和 45/54。
+
+### 无需安装，在 CI 中扫描
+
+扫描器无需安装技能即可运行，因此可以直接在本地或 CI 中使用：
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text
+```
+
+在真实仓库中，扫描经常以 `INCOMPLETE` 和退出码 2 结束：这表示有些代码无法分析，并不表示测试失败。请让代理对同一批测试运行 `e2e-reviewer` 技能；在 CI 中加上 `--allow-incomplete`，退出码就只取决于已分析的 finding。阅读报告：`P0`（`[P0][CONFIRMED]`）是经机械确认、不检查任何内容也能通过的测试；`LLM-TRIAGE` 标记尚未确认的候选，由 `e2e-reviewer` 技能确认或否定；`P0 candidate`（`[P0?]`）是一经确认即为 P0 的候选。`provenance-unsupported` 表示扫描器无法证明 `page` 等值的来源，因此没有检查那段代码。
+
+如果 `npx` 因 `ETARGET`（"No matching version found ... with a date before"）失败，说明 `.npmrc` 设置了 `min-release-age`，它会隐藏发布不足该天数的版本。不要修改 `.npmrc`，只对这一条固定版本的命令解除限制：`npm_config_min_release_age=0 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text`
+
+### 其他安装方式与故障排查
+
+除了 skills CLI，也可以把同样的三个技能作为插件安装。两种方式只选一种：插件技能带有命名空间，同时安装会让每个技能加载两次。
+
+```text
+/plugin marketplace add voidmatcha/e2e-skills
+/plugin install e2e-skills@voidmatcha
+```
+
+```text
+codex plugin marketplace add voidmatcha/e2e-skills
+codex plugin add e2e-skills@voidmatcha
+```
+
+第一组用于 Claude Code，第二组用于 Codex。测试生成仍然需要上面的项目设置。
+
+如果技能没有出现，或生成一直未就绪，请运行只读诊断。它会报告已安装的技能副本（包括过期的重复副本，以及已移除的 debugger 技能遗留的副本）、官方代理和 MCP 配置以及后续步骤，不做任何更改：
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills doctor --host claude --project /path/to/playwright-project
+```
+
+Codex 请使用 `--host codex`。前提条件、可同时完成项目设置的安装器以及手动设置，请参阅[安装指南](docs/installation.md)。
 
 ## 支持环境
 
 <details>
 <summary>查看支持环境和执行条件</summary>
 
-请用这些 skill 补充真实应用及其 E2E suite。审查和诊断支持 Playwright/Cypress，生成仅支持 Playwright。
+请用这些 skill 补充真实应用及其 E2E suite。审查和修复失败测试支持 Playwright/Cypress，生成仅支持 Playwright。
 
-随附的 shell 脚本和 artifact 读取器面向常规的 macOS/Linux 布局，使用 `/bin/bash` 以及启动器所需的固定系统可执行文件路径。Windows 用户需要兼容的 WSL 发行版，并把 artifact 放在 WSL 文件系统内；不支持原生 Windows。NixOS，以及仅通过 Nix、pyenv、Conda 或 nvm 安装的工具，并不都能被自动发现。缺少受信任的工具时，相关操作会停止；不要通过环境中的 `PATH` 查找绕过这一边界。请从宿主实际提供的 Skill 位置解析 Skill 资源，包括插件缓存和自定义安装位置，而不是猜测的主目录。
+随附的 shell 脚本面向常规的 macOS/Linux 布局，使用 `/bin/bash` 以及启动器所需的固定系统可执行文件路径。Windows 用户需要兼容的 WSL 发行版，并把项目放在 WSL 文件系统内；不支持原生 Windows。NixOS，以及仅通过 Nix、pyenv、Conda 或 nvm 安装的工具，并不都能被自动发现。缺少受信任的工具时，相关操作会停止；不要通过环境中的 `PATH` 查找绕过这一边界。请从宿主实际提供的 Skill 位置解析 Skill 资源，包括插件缓存和自定义安装位置，而不是猜测的主目录。
 
-generator 将 `thin-rules.md`、测试编写备忘和安全指令附加到官方 planner 与 generator 后委派，再运行 reviewer scanner 和新测试。它不安装任何内容，不修改 agent 或 MCP 设置，不使用 CLI fallback 或 healer。缺少设置时会提供指南。
+generator 将 `thin-rules.md`、测试编写备忘和安全指令附加到官方 planner 与 generator 后委派，再运行 reviewer scanner 和新测试。它不安装任何内容，不修改 agent 或 MCP 设置，不使用 CLI fallback 或 healer。缺少设置时会提供指南和只读的 `e2e-skills doctor`。doctor 还会报告 monorepo 中 Playwright config 所属的包、未安装的 `e2e-reviewer` 和可选的 lint。
 
 生成使用本地开发中常见的 loopback 地址（`localhost`、`127.0.0.1`、`::1`）。复用已获批的开发服务器及其现有测试 backend 或 mock。browser 操作前只确认场景使用的服务。写入需要隔离的测试数据及清理或重置方法；只读场景不需要重置。无需创建新的 mock 服务器或部署环境。未使用的 API 或 database 标为 N/A；共享数据或生产数据仍不适用。实际 navigation 和 request 目的地必须与获批 origin 的 scheme、hostname 和有效 port 一致；允许单独获批的 loopback API 目的地。其他或无法解析的目的地均为 BLOCKED。这些检查不提供 browser 全局 origin 隔离。
 
 仅在证实为生成错误时，父 agent 才能最多修复两次。必须保留要求的结果和预期值，重复写入前安全清理或重置测试数据，并使用相同的获批执行方式重复 origin 和 scanner 检查。产品缺陷、原因不明和剩余失败均保持 BLOCKED。完整流程见 [generator 约定](skills/playwright-test-generator/SKILL.md)。
 
-debugger 和 probe 执行需要可信项目，以及对包括环境变量和 flag 在内的确切命令的批准。报告注明跳过的检查。mutation 和应用 fault probe 是可选后续操作；未执行的结果不会报告为已测量。
+probe 执行需要可信项目，以及对包括环境变量和 flag 在内的确切命令的批准。报告注明跳过的检查。mutation 和应用 fault probe 是可选后续操作；未执行的结果不会报告为已测量。
 
 版本历史和旧 generator 流程见 [CHANGELOG.md](CHANGELOG.md)。
 
@@ -263,7 +274,7 @@ debugger 和 probe 执行需要可信项目，以及对包括环境变量和 fla
 
 ## 检查生成的测试能否发现缺陷
 
-生成由官方 Playwright agent 负责。之后，generator skill 会在安装了 `e2e-reviewer` 时运行扫描器，最多三轮修复 P0/P1 项。如果仍有问题或扫描未完成，则停止；通过后，仅对新 spec 使用已获批准的项目测试命令或现有的官方 `test_run` 工具。`test_run` 需要批准精确的 `locations`，并指定已批准的项目或确认只有一个项目。只使用一种执行方式，并报告测试运行原生的 passed/failed/skipped 数量。缺失或跳过的检查会报告为未完成。需要审查生成测试是否真正验证了预期行为时，请另行请求 `e2e-reviewer`。
+生成由官方 Playwright agent 负责。之后，generator skill 会在安装了 `e2e-reviewer` 时运行扫描器，最多三轮修复 P0/P1 项。如果仍有问题或扫描未完成，则停止；通过后，仅用已获批准的项目测试命令，在已批准的项目或确认唯一的项目中运行新 spec，并报告测试运行原生的 passed/failed/skipped 数量。没有已批准的测试命令时，报告测试未运行。缺失或跳过的检查会报告为未完成。需要审查生成测试是否真正验证了预期行为时，请另行请求 `e2e-reviewer`。
 
 先用常规的 `e2e-reviewer` 审查确认测试是否检查了预期行为。如果某个问题需要运行证据，再只针对该断言或行为添加 probe。你可以选择在哪里投入额外的 token 和执行时间；mutation 与应用 fault probe 不会在每次审查中自动运行。
 
@@ -351,34 +362,7 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 
 ## 失败调试
 
-两个调试器使用同一套稳定的 F1–F15 根本原因分类。Playwright 接受 `playwright-report/`、HTML reports、`trace.zip`、screenshots 和有界的 GitHub Actions artifacts。Cypress 接受 mochawesome 或 JUnit reports、screenshots、videos 和有界 CI artifacts。
-
-<details>
-<summary>全部 15 个失败分类</summary>
-
-| # | 类别 | 信号 |
-|---|----------|---------|
-| F1 | **不稳定 / 时序** | `TimeoutError`，重试后通过 |
-| F2 | **Selector 失效** | `locator not found`，strict mode violation |
-| F3 | **网络依赖** | `net::ERR_*`，意外的 API 响应 |
-| F4 | **断言不匹配** | `Expected X to equal Y`，实际值/期望值反置 |
-| F5 | **Then 缺失** | 动作已完成，但错误状态仍然存在 |
-| F6 | **条件分支缺失** | 元素有条件出现，但断言总是运行 |
-| F7 | **测试隔离失败** | 单独运行通过，suite 中失败 |
-| F8 | **环境不匹配** | 只在 CI vs local 出现；viewport、OS、timezone |
-| F9 | **数据依赖** | 缺失 seed data，hardcoded IDs |
-| F10 | **认证 / Session** | 会话过期，role-based UI 未渲染 |
-| F11 | **异步/命令顺序竞态** | Playwright 的 `Promise.all` 顺序或并行竞态；Cypress 在请求发出后注册 intercept、命令链顺序颠倒或 visit/request 竞态 |
-| F12 | **POM / Locator 漂移** | DOM 结构已变化，POM 未更新 |
-| F13 | **吞掉错误** | `.catch(() => {})` 隐藏实际 failure |
-| F14 | **动画竞态** | 内容尚未渲染，或 transient element 在被观察前移除 |
-| F15 | **Hydration 竞态** | Action 成功但没有效果：SSR page 尚未 hydrated；在下一个 assertion 失败 |
-
-这里的 F11 和 F12 使用跨框架的统一名称。每个 `debugger` 会为同一个稳定代码报告对应框架的专用名称。
-
-</details>
-
-调试器会把产品回归与脆弱测试分开分类，并返回证据和具体修复。没有失败的 Playwright 或 Cypress 测试 artifact 时，它们不会诊断应用或 backend。
+**3.5 起替换。** 一个精简的 `e2e-debugger` 取代了 `playwright-debugger` 和 `cypress-debugger`。在两次 Claude 测量中（各 24 个真实失败案例），旧的调试器并不比普通代理更准确（20/24 对 22/24；在 3.4.0 上 22/24 对 23/24），成本约为 1.6–1.7 倍，运行时间约为 1.8 倍。测试失败时，用日常语言提出请求（"This test is failing, fix it."），[`e2e-debugger`](skills/e2e-debugger/SKILL.md) 会在该请求中应用 [test-authoring memo](docs/test-authoring-memo.md#failure-handling) 的失败处理条目，因此无需设置 instruction 文件。它在关闭重试的情况下重跑测试三次，结果有成有败时报告 FLAKY 并停止；否则判断是应用还是测试有误：疑似应用回归时不改产品代码也不改测试，只报告；只有在证明是测试缺陷时才在不削弱测试的前提下修复，然后扫描改动的 spec 并要求连续三次通过。它也可能把修复交给官方 Playwright healer，并把同样的规则粘贴进提示。依据：在两组应用上的开发阶段复现实验中（每个模型 16 个应用回归），被要求修复测试的官方 healer 在没有 memo 失败处理条目时，Claude 和 Codex 都在 16/16 次中修改了应用代码；把这些条目放入 instruction 文件后降为 0/16（Claude）和 1/16（Codex）。该 skill 不依赖 instruction 文件来传递这些条目，这种传递方式尚未测量。对于通过削弱断言而变绿的测试，请使用 `e2e-reviewer`。对于旧安装遗留的调试器副本，安装器和 `e2e-skills doctor` 只发出警告，不会删除；如果不再使用，请自行删除。
 
 ## 独立扫描器
 
@@ -390,9 +374,9 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to
 
 需要 Node.js 22 或更新版本；TypeScript parser 已随附。npx 会下载尚未缓存的 package 及其依赖。scanner 本身不会下载 tool、加载可执行的项目配置或运行测试。使用 `--format json` 获取结构化输出，或用 `--report-file <new-file>` 保存完整报告；不会覆盖已有文件。
 
-reviewer 已内置相同的 Node scanner，无需单独通过 npm 安装。离线 launcher 和运行要求请参阅 [scanner 指南](packages/scanner/README.md#installed-scanner)。
+reviewer 已内置相同的 Node scanner，无需单独通过 npm 安装。离线 launcher 和运行要求请参阅 [scanner 指南](docs/scanner-cli.md#installed-scanner)。
 
-仅运行 scan 不会执行 assertion mutation 或 fault injection。这些检查需要可信且准备就绪的项目。详见 [CLI 与 probe 指南](packages/scanner/README.md)。
+仅运行 scan 不会执行 assertion mutation 或 fault injection。这些检查需要可信且准备就绪的项目。详见 [CLI 与 probe 指南](docs/scanner-cli.md)。
 
 <details>
 <summary>扫描器高级选项和文件读取范围</summary>
@@ -408,7 +392,7 @@ reviewer 已内置相同的 Node scanner，无需单独通过 npm 安装。离�
 内置检查读取 `.ts`、`.js`、`.tsx`、`.jsx`、`.mts`、`.mjs`、`.cts`、`.cjs` 源文件。
 <!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
-默认 `p0` 策略在存在机械确认的 P0 时返回 exit 1。使用 `--fail-on p0-candidate` 可同时检查保留的 P0 候选；`any` 检查所有确认的发现，`none` 不根据数量判定退出状态。exit 0 只表示没有达到所选阈值。即使执行完成且 P0=0，保留的候选和待确认事项仍需审查。输入缺失、源文件完整性或分析失败会产生 INCOMPLETE 并返回 exit 2。如果不希望未解决的分析阻塞 CI，可添加 `--allow-incomplete`：退出状态只对已分析的发现应用策略，报告会说明有多少文件和位置未被分析、未被检查。输入缺失和源文件完整性失败仍返回 exit 2。如果测试从 workspace package 导入 `test` 或 `expect`，可添加 `--trust-module <package>=<scan root 内源文件入口路径>` 以跟踪该导入。这不证明已完成全部语义验证。执行与网络边界见 [SECURITY.md](SECURITY.md)。
+默认 `p0` 策略在存在机械确认的 P0 时返回 exit 1。使用 `--fail-on p0-candidate` 可同时检查保留的 P0 候选；`any` 检查所有确认的发现，`none` 不根据数量判定退出状态。exit 0 只表示没有达到所选阈值，并不表示测试可靠。该门禁只在存在机械确认的发现时失败。这些发现现在包括一种狭窄的 #5a 形态（用 `if` 包住测试唯一断言的情况），以及两种狭窄的 #4a 形态（`expect(x || true)` 真值检查，以及将 Locator 的 `count()` 与 `>= 0` 或 `> -1` 比较）；其他大多数 P0 问题仍以候选形式出现，需要经过 `e2e-reviewer` 的 LLM 审查步骤。即使执行完成且 P0=0，保留的候选和待确认事项仍需审查。输入缺失、源文件完整性或分析失败会产生 INCOMPLETE 并返回 exit 2。如果不希望未解决的分析阻塞 CI，可添加 `--allow-incomplete`：退出状态只对已分析的发现应用策略，报告会说明有多少文件和位置未被分析、未被检查。输入缺失和源文件完整性失败仍返回 exit 2。如果测试从 workspace package 导入 `test` 或 `expect`，可添加 `--trust-module <package>=<scan root 内源文件入口路径>` 以跟踪该导入。这不证明已完成全部语义验证。执行与网络边界见 [SECURITY.md](SECURITY.md)。
 
 </details>
 
@@ -437,7 +421,7 @@ linter 可以捕获直接的 Locator 真值断言或缺失的 `await`。它无�
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
 `e2e-reviewer` Skill 会用稳定 IDs 和 P0/P1/P2 severity 审查目录中的全部 24 个模式。它的独立 `e2e-skills scan` 扫描器只覆盖确定性的机械子集。扫描器命中是候选项，不是最终发现；该 Skill 会先检查意图和周边代码，再报告 verdict。
 
-debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你信任该仓库并批准精确命令（包括其 environment 和 flags）之后，它们才会执行 target-controlled code。generator 先运行审查器扫描器，再使用一种已批准的方式，仅执行自己写的 spec：项目测试命令，或现有的官方 `test_run` 工具。使用工具时，需要批准精确的 `locations`，并指定已批准的项目或确认只有一个项目。
+只有在你信任该仓库并批准精确命令（包括其 environment 和 flags）之后，assertion mutation 和应用 fault probe 才会执行 target-controlled code。generator 先运行审查器扫描器，再用已获批准的项目测试命令，仅执行自己写的 spec。
 
 对于非公开 benchmark runs，`--isolation-wrapper` 是必需 hook，而不是 isolation proof。Continuous integration (CI) 会验证 wrapper contract，但不会证明 filesystem、process 或 network isolation。
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
@@ -446,11 +430,32 @@ debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你�
 
 ### 这会替代 Playwright 或 Cypress 测试执行吗？
 
-不会。这套 bundle 用于审查测试质量、生成 Playwright 覆盖，并诊断已有失败；它不是 test runner。
+不会。这套 bundle 用于审查测试质量、生成 Playwright 覆盖，并用你批准的测试命令修复失败的测试；它不是 test runner。
 
-### 它能调试只在 CI 中失败的测试吗？
+## 在 GitHub Actions 中加入静态扫描
 
-可以，前提是你提供本地 report artifacts 或受支持的 GitHub Actions run。调试器会使用 F1–F15 taxonomy 区分 environment、timing、selector、data、authentication 和 product-regression causes。
+默认将候选问题写入 job summary，仅在存在已确认的 P0 时失败。不执行被审查项目。[输入和行为](docs/github-action.md)。
+
+```yaml
+permissions:
+  contents: read
+jobs:
+  e2e-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: voidmatcha/e2e-skills@v3
+        with:
+          path: tests/
+          fail-on: p0
+          allow-incomplete: 'true'
+          format: text
+```
+
+运行此示例前，`v3` 标签必须指向包含此 Action 的版本。本次本地修改不创建标签。
 
 ## 详细文档
 
@@ -468,7 +473,6 @@ debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你�
 - [完整历史基准冻结 snapshot（Hugging Face 数据集）](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [外部证据台账](docs/llm-generated-e2e-test-evidence.md)
 - [历史 AI 审查器基准](docs/ai-reviewer-benchmark.md)
-- [调试器基准协议](docs/debugger-benchmark/README.md)
 - [框架范围](docs/framework-scope.md)
 - [本地 E2E 规则桥接与推荐 lint](docs/installation.md#optional-project-lint)
 - [路线图](docs/roadmap.md)

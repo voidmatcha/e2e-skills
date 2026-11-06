@@ -8,7 +8,7 @@
 // wrappers and unsupported matcher signatures remain outside confirmed coverage.
 // Suppression (including documented enclosing deadlines) belongs to the caller.
 import { createReceivers } from './receivers.mjs';
-import { member, unwrap, walk, isWritten, ts } from './source.mjs';
+import { member, unwrap, walk, isWritten, ts, PLAYWRIGHT_TEST_MODULES } from './source.mjs';
 
 const MATCHERS = new Map([
   ['toHaveText', ['locator', 1]], ['toHaveCount', ['locator', 1]],
@@ -117,7 +117,7 @@ export function timeoutZero(bytes, filename, { scope } = {}) {
     const declarations = checker.getSymbolAtLocation(type.typeName)?.declarations;
     if (declarations?.length !== 1 || !ts.isImportSpecifier(declarations[0])) return null;
     const imported = declarations[0], statement = imported.parent.parent.parent;
-    if (!ts.isImportDeclaration(statement) || statement.moduleSpecifier.text !== '@playwright/test') return null;
+    if (!ts.isImportDeclaration(statement) || !PLAYWRIGHT_TEST_MODULES.has(statement.moduleSpecifier.text)) return null;
     const name = (imported.propertyName || imported.name).text;
     return name === 'Page' ? 'page-type' : name === 'Locator' ? 'locator-type' : null;
   }

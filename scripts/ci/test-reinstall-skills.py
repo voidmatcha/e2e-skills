@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Regression tests for transactional four-skill reinstall behavior."""
+"""Regression tests for transactional bundle reinstall behavior."""
 
 from __future__ import annotations
 
@@ -27,11 +27,11 @@ INSTALLED_TREE_MANIFEST = (
     ROOT / "scripts" / "dev" / "skills-cli-installed-tree-sha256.json"
 )
 SKILLS = [
-    "cypress-debugger",
+    "e2e-debugger",
     "e2e-reviewer",
-    "playwright-debugger",
     "playwright-test-generator",
 ]
+REMOVED_SKILLS = ["playwright-debugger", "cypress-debugger"]
 
 
 def trusted_node_executable() -> Path:
@@ -76,16 +76,6 @@ class Harness:
         unrelated = self.store / "unrelated-skill"
         unrelated.mkdir()
         (unrelated / "SKILL.md").write_text("untouched\n", encoding="utf-8")
-
-        self.agent_log = self.temp / "codex-agent-install.log"
-        installer = self.script.parent / "install-codex-agents.sh"
-        installer.write_text(
-            "#!/bin/sh\n"
-            f"printf '%s\\n' CALL >> {str(self.agent_log)!r}\n"
-            "exit \"${FAKE_AGENT_INSTALL_STATUS:-0}\"\n",
-            encoding="utf-8",
-        )
-        installer.chmod(0o755)
 
         self.fake_bin = self.temp / "trusted-node-bin"
         self.fake_bin.mkdir()
@@ -412,7 +402,7 @@ class Harness:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             # This guards hangs, not performance: each fixture verifies and may
-            # roll back four complete skill surfaces on a loaded CI host.
+            # roll back every complete skill surface on a loaded CI host.
             timeout=120,
             check=False,
         )
@@ -581,7 +571,25 @@ def main() -> None:
             assert projection.is_symlink()
             assert projection.resolve() == (harness.store / skill).resolve()
         harness.assert_one_cli_artifact()
-        assert not harness.agent_log.exists()
+        harness.assert_no_staging()
+
+    with tempfile.TemporaryDirectory(prefix="reinstall-skills-contract-") as raw:
+        # Copies of the removed debugger skills from an older install are
+        # reported with a removal suggestion and left in place.
+        harness = Harness(Path(raw))
+        leftovers = [harness.store / REMOVED_SKILLS[0], harness.claude_store / REMOVED_SKILLS[1]]
+        for leftover in leftovers:
+            leftover.mkdir(parents=True)
+            (leftover / "SKILL.md").write_text("old-debugger\n", encoding="utf-8")
+        result = harness.run()
+        assert result.returncode == 0, result.stdout
+        for leftover, skill in zip(leftovers, REMOVED_SKILLS):
+            assert f"{leftover} is a copy of the removed skill {skill}, replaced by e2e-debugger" in result.stdout, result.stdout
+            assert f"remove {skill} -g" in result.stdout
+            assert (leftover / "SKILL.md").read_text(encoding="utf-8") == "old-debugger\n"
+        assert "This script does not delete it." in result.stdout
+        assert all(call[0] != "remove" for call in harness.calls()), harness.calls()
+        harness.assert_versions("new")
         harness.assert_no_staging()
 
     with tempfile.TemporaryDirectory(prefix="reinstall-skills-contract-") as raw:
@@ -731,14 +739,6 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory(prefix="reinstall-skills-contract-") as raw:
         harness = Harness(Path(raw))
-        result = harness.run(E2E_SKILLS_INSTALL_CODEX_AGENTS="invalid")
-        assert result.returncode == 2, result.stdout
-        assert harness.calls() == [], "environment validation must precede mutation"
-        harness.assert_versions("old")
-        harness.assert_no_staging()
-
-    with tempfile.TemporaryDirectory(prefix="reinstall-skills-contract-") as raw:
-        harness = Harness(Path(raw))
         result = harness.run(E2E_SKILLS_AGENTS="-a codex unexpected")
         assert result.returncode == 2, result.stdout
         assert harness.calls() == [], "agent argv validation must precede mutation"
@@ -793,7 +793,7 @@ def main() -> None:
             FAKE_SIGNAL="SIGTERM",
         )
         assert result.returncode == -15, result.stdout
-        assert "signal TERM failed; previous four-skill state restored" in (
+        assert "signal TERM failed; previous bundle state restored" in (
             result.stdout
         )
         calls = harness.calls()
@@ -809,7 +809,7 @@ def main() -> None:
         result = harness.run(FAKE_NOOP_CALL="1")
         assert result.returncode == 1, result.stdout
         assert "installed receiving surface digest mismatch" in result.stdout
-        assert "post-install verification failed; previous four-skill state restored" in (
+        assert "post-install verification failed; previous bundle state restored" in (
             result.stdout
         )
         assert len(harness.calls()) == 3, harness.calls()
@@ -836,7 +836,7 @@ def main() -> None:
         result = harness.run()
         assert result.returncode == 1, result.stdout
         assert "Codex shadow receiving surface is stale" in result.stdout
-        assert "previous four-skill state restored" in result.stdout
+        assert "previous bundle state restored" in result.stdout
         harness.assert_versions("old")
         harness.assert_no_staging()
 
@@ -855,7 +855,7 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory(prefix="reinstall-skills-contract-") as raw:
         harness = Harness(Path(raw))
-        prior = {SKILLS[0], SKILLS[2]}
+        prior = {SKILLS[1]}
         for skill in set(SKILLS) - prior:
             shutil.rmtree(harness.store / skill)
         result = harness.run(FAKE_WRITE_BEFORE_FAIL_CALL="1")
@@ -904,25 +904,6 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory(prefix="reinstall-skills-contract-") as raw:
         harness = Harness(Path(raw))
-        result = harness.run(
-            E2E_SKILLS_INSTALL_CODEX_AGENTS="1",
-            FAKE_AGENT_INSTALL_STATUS="73",
-        )
-        assert result.returncode == 73, result.stdout
-        assert "optional Codex agent install failed" in result.stdout
-        assert len(harness.calls()) == 3, harness.calls()
-        harness.assert_versions("old")
-        harness.assert_one_cli_artifact()
-        harness.assert_no_staging()
-
-    with tempfile.TemporaryDirectory(prefix="reinstall-skills-contract-") as raw:
-        harness = Harness(Path(raw))
-        result = harness.run(E2E_SKILLS_INSTALL_CODEX_AGENTS="1")
-        assert result.returncode == 0, result.stdout
-        assert harness.agent_log.read_text(encoding="utf-8") == "CALL\n"
-
-    with tempfile.TemporaryDirectory(prefix="reinstall-skills-contract-") as raw:
-        harness = Harness(Path(raw))
         result = harness.run(FAKE_CLEANUP_STATUS="77")
         assert result.returncode == 77, result.stdout
         assert "staging cleanup failed with status 77" in result.stdout
@@ -933,7 +914,7 @@ def main() -> None:
         harness = Harness(Path(raw))
         result = harness.run(FAKE_FAIL_CALL="1", FAKE_CLEANUP_STATUS="77")
         assert result.returncode == 91, result.stdout
-        assert "add failed; previous four-skill state restored" in result.stdout
+        assert "add failed; previous bundle state restored" in result.stdout
         assert (
             "staging cleanup also failed with status 77 "
             "while exiting after status 91"

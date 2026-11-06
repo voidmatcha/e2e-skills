@@ -28,6 +28,19 @@ function scan(text, name = 'example.spec.ts', inspect) {
   } finally { fs.rmSync(root, {recursive:true,force:true}); }
 }
 const anchors = findings => findings.map(item => [item.patternId, item.line]);
+// Every detector through the CLI: [pattern, line] of each finding, sorted, and
+// the report must be COMPLETE (no strict detector left a gap).
+function cliAnchors(text, name) {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'retained-source-cli-')));
+  try {
+    const file = path.join(root, name);
+    fs.writeFileSync(file, text);
+    const run = spawnSync(process.execPath, [cli, '--scan', root, '--fail-on', 'none', '--format', 'json'], { encoding: 'utf8', timeout: 20000 });
+    const report = JSON.parse(run.stdout);
+    assert.equal(report.status, 'COMPLETE', run.stdout);
+    return report.findings.map(item => [item.patternId, item.line]).sort((a, b) => a[1] - b[1]);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+}
 const pw = "import {expect,test} from '@playwright/test';\n";
 const workspace = "import {test} from '@workspace/e2e-fixtures';\n";
 const generic = body => `declare function run(callback: Function): void;\nrun(async ({ page }) => {\n${body}\n});`;
@@ -60,7 +73,11 @@ test('ambient callback fixture syntax preserves wait, selector and swallowed ass
 });
 test('typed POM parameter-property links retain original locator action and Page selector anchors', () => {
   const text = "import { type Locator, type Page as PWPage } from '@playwright/test';\nexport class SettingsPage {\n  readonly saveButton: Locator;\n  constructor(private readonly browserPage: PWPage) {\n    this.saveButton = browserPage.getByRole('button', { name: 'Save' });\n  }\n  async save(): Promise<void> {\n    this.saveButton.drop();\n    await this.browserPage.fill('#name', 'Ada');\n  }\n}\n";
-  assert.deepEqual(anchors(scan(text,'settings-page.ts')), [['#10c',5],['#16',8],['#17',9]]);
+  // The declared Locator field and Page parameter property resolve through
+  // the class summary, so the strict promises and pageReads detectors own the
+  // #16 and #17 anchors; the review lane keeps #10c.
+  assert.deepEqual(anchors(scan(text,'settings-page.ts')), [['#10c',5]]);
+  assert.deepEqual(cliAnchors(text,'settings-page.ts'), [['#10c',5],['#16',8],['#17',9]]);
   for (const changed of [
     text.replace("'@playwright/test'", "'custom'"),
     text.replace('this.saveButton = browserPage', 'browserPage=foreign;this.saveButton = browserPage'),

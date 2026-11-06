@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import subprocess
 
-GROUPS = ('generator', 'verification', 'install', 'debuggers', 'behavioral',
+GROUPS = ('generator', 'verification', 'install', 'behavioral',
           'evidence', 'holdout', 'scanner', 'harness', 'fixtures', 'tooling',
           'preflight', 'postfix', 'parity', 'selfscan')
 
@@ -16,26 +16,23 @@ def select(paths):
     selected = set()
     for path in paths:
         # Do not normalize names: Git paths are exact, including hostile bytes.
-        if path in ('README.md', 'README.ko.md', 'README.ja.md', 'README.zh-cn.md'):
-            # Artifact-download contracts also inspect the public acquisition examples.
-            selected.add('debuggers')
-            continue
-        if path in ('CHANGELOG.md', 'LICENSE', 'NOTICE') or (
+        if path in ('README.md', 'README.ko.md', 'README.ja.md', 'README.zh-cn.md',
+                    'CHANGELOG.md', 'LICENSE', 'NOTICE') or (
                     path.startswith('docs/') and path.endswith('.md')) or (
                     path.startswith('benchmarks/') and path.endswith('.md')):
             continue
         if path.startswith('skills/e2e-reviewer/'):
-            # Reviewer references feed generator, debugger, installation and
+            # Reviewer references feed generator, installation and
             # assertion guidance as well as the scanner and harness contracts.
             selected.update(GROUPS)
         elif path.startswith('skills/playwright-test-generator/'):
             selected.update(('generator', 'verification', 'install', 'behavioral',
                              'fixtures', 'parity', 'selfscan'))
-        elif path.startswith(('skills/playwright-debugger/', 'skills/cypress-debugger/')):
-            selected.update(('debuggers', 'verification', 'install', 'behavioral',
-                             'fixtures', 'parity', 'selfscan'))
+        elif path.startswith('skills/e2e-debugger/'):
+            selected.update(('verification', 'install', 'behavioral', 'fixtures',
+                             'parity', 'selfscan'))
         elif path.startswith(('agents/', '.codex/agents/')):
-            selected.update(('install', 'debuggers', 'verification', 'behavioral', 'parity'))
+            selected.update(('install', 'verification', 'behavioral', 'parity'))
         elif path.startswith('examples/react-optimistic-write/'):
             selected.update(('evidence', 'selfscan'))
         elif path.startswith(('scripts/evals/fixtures/', 'scripts/evals/semantic-probes/')):
@@ -49,8 +46,7 @@ def select(paths):
             selected.add('preflight')
         elif path in ('scripts/verify-fixes.sh', 'scripts/ci/test-verify-fixes.py') or path.startswith('scripts/ast-grep-rules/'):
             selected.add('postfix')
-        elif path in ('scripts/dev/reinstall-skills.sh', 'scripts/dev/install-codex-agents.sh',
-                      'scripts/dev/install-claude-agents.sh', 'scripts/ci/test-reinstall-skills.py'):
+        elif path in ('scripts/dev/reinstall-skills.sh', 'scripts/ci/test-reinstall-skills.py'):
             selected.update(('install', 'parity'))
         else:
             return 'full', 'unknown or shared path: ' + json.dumps(path, ensure_ascii=True), GROUPS

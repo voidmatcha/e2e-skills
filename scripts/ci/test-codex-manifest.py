@@ -21,9 +21,8 @@ from lib.version_contract import is_canonical_semver
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / ".codex-plugin/plugin.json"
 EXPECTED_SKILLS = {
-    "cypress-debugger",
+    "e2e-debugger",
     "e2e-reviewer",
-    "playwright-debugger",
     "playwright-test-generator",
 }
 PRIVACY_POLICY = ROOT / "PRIVACY.md"

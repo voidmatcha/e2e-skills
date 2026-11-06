@@ -15,6 +15,7 @@
         "Does NOT report dangling locator page.locator('.login-form') on line 24 as #8a P0 — it is dead code, but the same test already has meaningful URL and heading assertions, so it is not a silent always-pass defect",
         "Detects one-shot boolean: isVisible() piped to toBeTruthy() on lines 17-18 (#4, P1)",
         "Detects conditional bypass: if(await page.locator..isVisible()) gates assertion on line 42 (#5a, P0)",
+        "True positive: the scanner reports auth.spec.ts line 42 as a confirmed #5a P0 ([P0][CONFIRMED], not a [P0?] candidate), so the default --fail-on p0 policy fails on it: the else-less isVisible() gate directly in the test callback holds that test's only assertion",
         "Detects force:true on page.click('.logout-btn') line 36 without JUSTIFIED comment (#5b, P1)",
         "Evaluates the swallowed networkidle wait in POM goto() (pages/login-page.ts:33, a [P0?][LLM-TRIAGE] #3 candidate) under #3's dependency rule and does NOT report it as a confirmed P0: every goto() caller next runs login(), whose fill/click auto-wait for their elements, so no later assertion depends on network idle. Keeping it as a named candidate or lower-severity note is acceptable",
         "Detects raw DOM query document.querySelector in POM waitForDashboard() line 48 (#6, P1)",
@@ -516,7 +517,8 @@
       "assertions": [
         "Does NOT report the conditional status assertion on lines 6-8 as #5a P0 because it is not a load-bearing promised-outcome assertion",
         "Recognizes the independent unconditional meaningful postcondition on line 9 as sufficient outcome evidence",
-        "Does not require every assertion in a test to execute unconditionally when an independent assertion or failure-producing action still enforces the promised outcome"
+        "Does not require every assertion in a test to execute unconditionally when an independent assertion or failure-producing action still enforces the promised outcome",
+        "False-positive guard: the scanner keeps conditional-postcondition.spec.ts line 6 a #5a [P0?][LLM-TRIAGE] candidate, not a confirmed P0, because the unconditional assertion on line 9 lies outside the if; do not cite the scanner disposition as a confirmed bypass"
       ]
     },
     {
@@ -1746,6 +1748,107 @@
         "False-positive guard: does not report #23 for the disabled fixture at line 7: exclusion by enabled is precisely the supplied requirement, not a guard accidentally hiding an intended positive record.",
         "Preserves the intentional initial negative contract at line 12; does not recommend reload, enabling the disabled fixture, or a fabricated removal transition merely to make entry-obsolete match. For line 19, recommends using the source-backed catalog-hint locator and observing its presence/removal instead of widening or deleting the assertion.",
         "Does not use a generic positive heading alone to clear #4i or require runtime execution to decide these supplied-source candidates."
+      ]
+    },
+    {
+      "id": 114,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/invariant-predicates.spec.ts for silent always-pass assertions.",
+      "expected_output": "Should report #4a P0 on line 6, where bannerVisible || true is truthy whatever bannerVisible is, and #4a P0 on lines 19 and 21, where a Locator count() is never negative, so >= 0 and > -1 cannot fail. Should not report line 13, because bannerVisible || noticeVisible is false when neither element is visible, and should not report line 26, because >= 1 fails on an empty list.",
+      "files": [
+        "files/invariant-predicates.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports #4a (P0) on line 6, expect(bannerVisible || true).toBeTruthy(), because a || with a truthy literal operand is always truthy and the assertion cannot fail",
+        "False-positive guard: does not report line 13, expect(bannerVisible || noticeVisible).toBeTruthy(), as #4a, because neither operand is a constant truthy literal and the assertion fails when both elements are hidden",
+        "True positive: reports #4a (P0) on line 19, expect(await rows.count()).toBeGreaterThanOrEqual(0), and on line 21, expect(total).toBeGreaterThan(-1), because a proven Locator count is never negative",
+        "False-positive guard: does not report line 26, expect(await page.getByRole('row').count()).toBeGreaterThanOrEqual(1), as #4a, because a count of zero fails it"
+      ]
+    },
+    {
+      "id": 115,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/ignored-timeout.spec.ts for one-shot state reads and waits that do not wait.",
+      "expected_output": "Should report #4c-4e P1 on line 6: Playwright ignores the timeout option of locator.isVisible(), so the call returns immediately and the 5000 ms timeout does not make the gate wait; recommend a web-first assertion or locator.waitFor when the test must wait. Should not report line 15 or line 17: toBeVisible({ timeout }) and waitFor({ state, timeout }) honor their timeout and retry.",
+      "files": [
+        "files/ignored-timeout.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports #4c-4e (P1) on line 6, if (await banner.isVisible({ timeout: 5000 })), because Playwright ignores the timeout option of isVisible() and the call returns immediately without waiting",
+        "False-positive guard: does not report line 15, await expect(banner).toBeVisible({ timeout: 5000 }), or line 17, await banner.waitFor({ state: 'hidden', timeout: 5000 }), as #4c-4e, because both are retrying APIs that honor their timeout"
+      ]
+    },
+    {
+      "id": 116,
+      "prompt": "Review the Playwright specs in scripts/evals/skills/e2e-reviewer/files/framework-gates/ for weak or always-passing assertions.",
+      "expected_output": "Should give each #5a scanner candidate its own verdict instead of dismissing the directory with one shared reason such as 'hard assertions precede the branches'. Should report #5a P0 at reorder.spec.ts line 17: the only check that the key survives the reorder is gated on keyAfter, line 12 is a pre-action state check and line 18 is an absence assertion that a missing data-key also satisfies, so neither proves the promised outcome. Should not report rename.spec.ts line 15: line 13 unconditionally asserts data-key is 'renamed', which proves the promised rename, and the dismissal should cite that line.",
+      "files": [
+        "files/framework-gates/reorder.spec.ts",
+        "files/framework-gates/rename.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports #5a (P0) at reorder.spec.ts line 17, if (keyAfter) expect(keyAfter).toBe(keyBefore), with its own verdict rather than a directory-wide dismissal, because line 12 checks state before the reorder and line 18 not.toHaveAttribute('data-key', 'c') also passes when the key is missing",
+        "False-positive guard: does not report rename.spec.ts line 15, if (label) expect(label).toContain('renamed'), as #5a, and its dismissal cites line 13, await expect(target).toHaveAttribute('data-key', 'renamed'), as the unconditional assertion that proves the promised rename"
+      ]
+    },
+    {
+      "id": 117,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/settle-and-sentinel-shapes.spec.ts for swallowed errors, numeric invariants and conditional bypasses.",
+      "expected_output": "Should keep two P0 candidates for review: #4a on line 16, where a boundingBox width is never negative so toBeGreaterThanOrEqual(0) cannot fail, and #3 on line 29, where page.reload() is swallowed before the assertion on line 30. Should not report line 10 (768 is one of the literal WIDTHS), line 13 (Animation.finished rejects only for a cancelled animation, in browser code), line 15 (a boundingBox x is negative off-screen), line 18 (findIndex returns -1), line 19 (the swallowed isVisible only gates a dismiss click before the real assertion on line 23), line 22 (the poll fallback false cannot satisfy toBe(true)) or line 24 (a failed unroute only leaves a route alive).",
+      "files": [
+        "files/settle-and-sentinel-shapes.spec.ts"
+      ],
+      "assertions": [
+        "True positive: keeps #4a on line 16, expect((await drawer.boundingBox())!.width).toBeGreaterThanOrEqual(0), because a width is never negative, and #3 on line 29, page.reload().catch(() => {}), because the reload failure is swallowed before line 30 asserts",
+        "False-positive guard: does not report #4a on line 15 (boundingBox x can be negative) or line 18 (findIndex can be -1), or #5a on line 10 (width === 768 holds for one literal WIDTHS row)",
+        "False-positive guard: does not report #3 on line 13 (Animation.finished settle-wait in a browser callback), line 19 (isVisible().catch(() => false) gating only a click before the line 23 assertion), line 22 (expect.poll fallback false cannot pass toBe(true)) or line 24 (discarded page.unroute teardown catch)"
+      ]
+    },
+    {
+      "id": 118,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/missing-helper-invariant.spec.ts for always-passing assertions. Its helpers module is not part of the checkout.",
+      "expected_output": "Should report two confirmed P0 findings despite the missing helpers module: #4a on line 9, where expect(count).toBeGreaterThanOrEqual(0) on await toolBlocks(page).count() holds for any receiver, and #5a on line 17, where if (buttons > 0) gates the only copy-button assertion on the button's own count, so a missing button passes. The absent helpers cannot change either verdict, so neither stays NEEDS-CONTEXT.",
+      "assertions": [
+        "True positive: reports #4a on line 9 as CONFIRMED (P0), because a count() result is never negative whatever toolBlocks returns",
+        "True positive: reports #5a on line 17 as CONFIRMED (P0), because the if gates the only assertion on copyButton's own count, which bypasses for any receiver type",
+        "False-positive guard: does not withhold lines 9 or 17 as NEEDS-CONTEXT or UNRESOLVED on the ground that ./chat-helpers is missing"
+      ],
+      "files": [
+        "files/missing-helper-invariant.spec.ts"
+      ]
+    },
+    {
+      "id": 119,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/missing-helper-sentinel.spec.ts for always-passing assertions. Its helpers module is not part of the checkout.",
+      "expected_output": "Should keep line 9, expect(unread).toBeGreaterThanOrEqual(0), as NEEDS-CONTEXT rather than a confirmed #4a P0: unread comes from the missing unreadBadgeValue helper, not from .count(), and that helper could return a sentinel such as -1 when the badge is absent, which would make the assertion fail. The missing source decides the verdict, so it must be named as the missing context.",
+      "assertions": [
+        "False-positive guard: does not report line 9 as a CONFIRMED #4a P0, because the number comes from the unresolved unreadBadgeValue helper and can be negative",
+        "Keeps line 9 as NEEDS-CONTEXT and names ./inbox-helpers (unreadBadgeValue) as the source that would decide it"
+      ],
+      "files": [
+        "files/missing-helper-sentinel.spec.ts"
+      ]
+    },
+    {
+      "id": 120,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/project-allowance-value-gate.spec.ts for always-passing assertions.",
+      "expected_output": "Should report a confirmed #5a P0 on line 15: if (keyAfter) gates the only post-action assertion on the observed key itself, so a key that vanishes after the reorder passes. The project allowance on line 11 explains only the gate whose condition reads testInfo.project.name; it does not dismiss the value gate. Line 12 is a pre-action check and line 16 is an absence assertion an empty context also satisfies, so neither covers the reorder outcome.",
+      "assertions": [
+        "True positive: reports #5a on line 15 as CONFIRMED (P0), because if (keyAfter) gates the only post-action assertion on the observed value",
+        "False-positive guard: does not dismiss line 15 as a per-project allowance, a project-conditional gate or a secondary check on the strength of line 11, line 12 or line 16"
+      ],
+      "files": [
+        "files/project-allowance-value-gate.spec.ts"
+      ]
+    },
+    {
+      "id": 121,
+      "prompt": "Review the Playwright spec scripts/evals/skills/e2e-reviewer/files/project-allowance-unconditional.spec.ts for always-passing assertions.",
+      "expected_output": "Should report no #5a P0: line 15 asserts the post-reorder key unconditionally, so the project-gated pre-action check on lines 11-13 and the value-gated pre-action check on line 14 are secondary checks, not a bypass of the promised outcome.",
+      "assertions": [
+        "False-positive guard: does not report #5a on line 11 or line 14, because line 15 asserts the post-reorder key unconditionally",
+        "Gives lines 11 and 14 a FALSE-POSITIVE verdict that cites the unconditional line 15 assertion"
+      ],
+      "files": [
+        "files/project-allowance-unconditional.spec.ts"
       ]
     }
   ]

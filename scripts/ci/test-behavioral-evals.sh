@@ -12,7 +12,6 @@ cat >"$TMP/fake-runner" <<'SH'
 prompt=$(cat)
 case "$prompt" in
   *"BEGIN_TRUSTED_SKILL_SNAPSHOT e2e-reviewer/SKILL.md"*) echo "line 10: a bare locator object is truthy, so this assertion cannot fail." ;;
-  *"BEGIN_TRUSTED_SKILL_SNAPSHOT cypress-debugger/SKILL.md"*) echo "The report timed out because the element selector was not found; fix the locator after checking rendering." ;;
   *) echo "The test may need stronger validation." ;;
 esac
 SH
@@ -380,30 +379,6 @@ assert "You have no shell, filesystem, network, app, image, or subagent tools" i
 assert "BEGIN_TRUSTED_SKILL_SNAPSHOT" not in without_skill_prompt
 assert "BEGIN_UNTRUSTED_TASK_ARTIFACT" in without_skill_prompt
 
-cypress_case = {
-    "id": "cypress-reference-snapshot",
-    "skill": "cypress-debugger",
-    "task": "Diagnose {repo}/scripts/ci/fixtures/codex-smoke/mochawesome.json",
-    "assertions": [{"type": "contains", "value": "F2"}],
-}
-with tempfile.TemporaryDirectory() as prompt_dir:
-    prompt_workspace = pathlib.Path(prompt_dir)
-    module.prepare_workspace(cypress_case, prompt_workspace)
-    cypress_prompt = module.render_prompt(
-        cypress_case, "with_skill", prompt_workspace
-    )
-for reference in (
-    "artifact-extraction.md",
-    "classification-procedure.md",
-    "fix-verification.md",
-    "report-acquisition.md",
-    "report-and-repair.md",
-):
-    assert (
-        "BEGIN_TRUSTED_SKILL_SNAPSHOT "
-        f"cypress-debugger/references/{reference}"
-    ) in cypress_prompt
-
 generator_case = {
     "id": "generator-reference-snapshot",
     "skill": "playwright-test-generator",
@@ -468,9 +443,9 @@ assert summary == {
     "without_skill_pass_rate": 0.0,
     "absolute_lift": 1.0,
     "saturated_cases": [],
-    "runs": 8,
+    "runs": 4,
 }, summary
-assert len(report["runs"]) == 8
+assert len(report["runs"]) == 4
 assert report["complete"] is True
 assert all(row["passed"] for row in report["runs"] if row["variant"] == "with_skill")
 assert not any(row["passed"] for row in report["runs"] if row["variant"] == "without_skill")

@@ -5,7 +5,7 @@
 // states/options, computed keys, templates/concatenation, optional calls, spreads
 // and duplicate options are not claimed as equivalent coverage. Suppression and
 // dedupe belong to callers; a mechanical finding does not prove a test defect.
-import { createReceivers } from './receivers.mjs';
+import { createReceivers, UNPROVEN_MEMBER } from './receivers.mjs';
 import { member, unwrap, walk, isWritten, objectMutationTarget, ts } from './source.mjs';
 
 const OPTIONS_INDEX = new Map([['goto', 1], ['waitForURL', 1], ['reload', 0], ['goBack', 0], ['goForward', 0]]);
@@ -118,12 +118,15 @@ export function networkIdle(bytes, filename, { scope } = {}) {
       : optionsUseNetworkidle(node.arguments[OPTIONS_INDEX.get(access.name)]);
     if (!matches) return;
     const value = receivers.expression(access.object);
-    if (!value.complete) { diagnostic(access.object, value.reasons.join('; ')); return; }
+    // An unproven page-object member may still be a source-linked POM Page.
+    const memberGap = !value.complete && value.reasons.length > 0 && value.reasons.every(reason => UNPROVEN_MEMBER.has(reason));
+    if (!value.complete && !memberGap) { diagnostic(access.object, value.reasons.join('; ')); return; }
     const pom = value.kind === 'page' ? null : pomPage(access.object);
     if (pom === 'mutated') {
       diagnostic(access.object, 'networkidle POM Page member has explicit mutations'); return;
     }
     const uncertain = value.kind === 'page-type' || pom === 'linked';
+    if (memberGap && !uncertain) { diagnostic(access.object, value.reasons.join('; ')); return; }
     if (value.kind !== 'page' && !uncertain) return;
     if (uncertain && !ts.isPropertyAccessExpression(node.expression)) {
       diagnostic(node, 'networkidle uncertain Page requires direct method access'); return;

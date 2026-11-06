@@ -130,7 +130,7 @@ def collect_codex_errors(
     Args:
         codex_plugin: parsed JSON dict.
         expected_skills: iterable of skill directory names that must be
-            exposed by the Codex `skills` path (typically the four
+            exposed by the Codex `skills` path (typically the two
             ``skills/<name>`` directories on disk).
         repo_root: pathlib.Path to resolve the relative `skills` path
             against (usually `pathlib.Path('.')`).

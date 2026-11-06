@@ -1,0 +1,62 @@
+{
+  "name": "E2E Skills static scan",
+  "description": "Review Playwright and Cypress source; fail on confirmed P0 findings and report candidates.",
+  "author": "voidmatcha",
+  "inputs": {
+    "path": {
+      "description": "File or directory inside the checkout to scan.",
+      "required": false,
+      "default": "."
+    },
+    "fail-on": {
+      "description": "p0 fails on confirmed P0 findings; none reports only.",
+      "required": false,
+      "default": "p0"
+    },
+    "allow-incomplete": {
+      "description": "Allow unresolved analysis, visibly reported; scanner errors still fail.",
+      "required": false,
+      "default": "true"
+    },
+    "format": {
+      "description": "Saved report format: text or json. Job summary is always written.",
+      "required": false,
+      "default": "text"
+    }
+  },
+  "outputs": {
+    "report": {
+      "description": "Absolute path to the selected report on this runner.",
+      "value": "${{ steps.scan.outputs.report }}"
+    },
+    "json-report": {
+      "description": "Absolute path to the full scanner JSON on this runner.",
+      "value": "${{ steps.scan.outputs.json-report }}"
+    },
+    "exit-code": {
+      "description": "Scanner exit code: 0 policy clear, 1 confirmed P0, 2 incomplete or error.",
+      "value": "${{ steps.scan.outputs.exit-code }}"
+    }
+  },
+  "runs": {
+    "using": "composite",
+    "steps": [
+      {
+        "id": "scan",
+        "shell": "bash",
+        "env": {
+          "ACTION_ROOT": "${{ github.action_path }}",
+          "SCAN_PATH": "${{ inputs.path }}",
+          "SCAN_FAIL_ON": "${{ inputs.fail-on }}",
+          "SCAN_ALLOW_INCOMPLETE": "${{ inputs.allow-incomplete }}",
+          "SCAN_FORMAT": "${{ inputs.format }}"
+        },
+        "run": "node \"$ACTION_ROOT/scripts/actions/scan.mjs\""
+      }
+    ]
+  },
+  "branding": {
+    "icon": "check-circle",
+    "color": "green"
+  }
+}

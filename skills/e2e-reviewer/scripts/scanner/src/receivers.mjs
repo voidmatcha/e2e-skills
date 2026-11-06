@@ -1,32 +1,122 @@
 // SPDX-License-Identifier: Apache-2.0
 // Shared, source-only receiver proof. No type services or project code run.
-import { sourceModel, unwrap, member, isWritten, walk, objectMutationTarget, ts } from './source.mjs';
-
-const LOCATORS = new Set(['locator', 'getByRole', 'getByText', 'getByLabel', 'getByTestId',
-  'getByPlaceholder', 'getByAltText', 'getByTitle', 'frameLocator']);
-const REFINEMENTS = new Set(['filter', 'first', 'last', 'nth', 'and', 'or']);
+import { sourceModel, unwrap, member, isWritten, walk, objectMutationTarget, ts, PLAYWRIGHT_TEST_MODULES } from './source.mjs';
+import { LOCATORS, REFINEMENTS, plainLiteral, returnExpressions } from './summaries.mjs';
 // These official registrations receive test-scoped fixtures. describe/step do
 // not, and beforeAll/afterAll cannot consume the built-in test-scoped Page.
 const FIXTURE_REGISTRATIONS = new Set(['only', 'skip', 'fixme', 'fail', 'beforeEach', 'afterEach']);
 const result = (kind, reasons = []) => ({ kind, complete: reasons.length === 0, reasons });
+// Built-in fixtures with a tracked kind. browser, context and request are
+// proven non-Page, non-Locator objects; their newPage() yields a Page.
+const BUILT_IN_FIXTURES = new Set(['page', 'context', 'request', 'browser']);
 
+// Reasons for a member read left unresolved only because its object is an
+// unproven or partly proven class instance; detectors with a POM-specific
+// review lane may still take it.
+const UNPROVEN_INSTANCE = 'member of an unproven class instance', UNPROVEN_MEMBER_OF = 'page-object member is not proven';
+export const UNPROVEN_MEMBER = new Set([UNPROVEN_INSTANCE, UNPROVEN_MEMBER_OF]);
 export function createReceivers(bytes, filename, { scope } = {}) {
   const model = sourceModel(bytes, filename);
   const { source, checker } = model;
   const diagnostics = [...model.diagnostics];
   const active = new Set();
+  // test.use() in this file can replace a built-in fixture for its tests.
+  // Literal options that do not name the fixture leave it unchanged.
+  const useOverrides = new Map();
+  function useOverride(fixture) {
+    if (useOverrides.has(fixture)) return useOverrides.get(fixture);
+    let overridden = false;
+    walk(source, node => {
+      const access = !overridden && ts.isCallExpression(node) && member(node.expression);
+      if (!access || access.name !== 'use') return;
+      const owner = scope.expression(filename, access.object);
+      if (owner.complete && owner.kind !== 'playwright-test') return;
+      const options = node.arguments.length === 1 && unwrap(node.arguments[0]);
+      if (!options || !ts.isObjectLiteralExpression(options) || !options.properties.every(item =>
+        (ts.isPropertyAssignment(item) || ts.isShorthandPropertyAssignment(item)) &&
+        (ts.isIdentifier(item.name) || ts.isStringLiteral(item.name)) && item.name.text !== fixture)) overridden = true;
+    });
+    useOverrides.set(fixture, overridden);
+    return overridden;
+  }
+  // Playwright objects whose awaited methods never yield a Locator, and the
+  // methods among them that can yield a Page or a Page producer.
+  const PLAYWRIGHT_OBJECTS = new Set(['page', 'locator', 'context', 'browser', 'request', 'electron-app']);
+  // Awaiting a non-thenable value yields it unchanged, so the synchronous
+  // Locator and Page getters (`await page.getByRole(...)`, `await loc.page()`)
+  // count as producers too.
+  const PAGE_PRODUCERS = new Set(['newPage', 'newContext', 'opener', 'waitForEvent', 'firstWindow', 'launch',
+    'launchPersistentContext', 'connect', 'connectOverCDP', 'pages', 'contexts', 'windows', 'context', 'frame', 'mainFrame',
+    'page', 'owner', 'contentFrame', 'describe', 'frames', 'parentFrame', 'childFrames', ...LOCATORS, ...REFINEMENTS]);
+  // `await import('@playwright/test')` and friends: module provenance.
+  function awaitedOfficial(node) {
+    const value = scope.expression(filename, node);
+    return value.complete && value.kind !== 'none';
+  }
+  // A Page/Context producer is Playwright's method only on a binding with
+  // no property write in this file (`context.newPage = ...` replaces it).
+  function producerPatched(node) {
+    node = unwrap(node);
+    if (!ts.isIdentifier(node)) return false;
+    const symbol = checker.getSymbolAtLocation(node);
+    return Boolean(symbol && isWritten(source, checker, symbol, { properties: true }));
+  }
+  // A fixture value proven through test.extend. A member the fixture patched
+  // (`page.goto = ...`) is not the Playwright method, so any use of that
+  // member name in this file keeps the value unresolved.
+  let memberNames;
+  const useSiteDependent = new Set();
+  function fixtureProof(root, fixture, node, symbol) {
+    const proof = typeof scope.fixtureProof === 'function' ? scope.fixtureProof(filename, root, fixture) : null;
+    if (!proof) return null;
+    // test.use() may replace the fixture itself or any fixture its proof
+    // read (a custom `shell` handed the overridden `page`).
+    if ([fixture, ...(proof.names ?? [])].some(useOverride)) return result('unknown', ['fixture override is not proven']);
+    if (proof.patched.length) {
+      // The verdict now depends on the use site: never cache it per binding.
+      if (symbol) useSiteDependent.add(symbol);
+      // A direct member access on the fixture binding: only the patched
+      // names are not Playwright's.
+      const access = node && ts.isPropertyAccessExpression(node.parent) && node.parent.expression === node ? node.parent : null;
+      if (access) return proof.patched.includes(access.name.text) ? result('unknown', ['patched fixture member is used']) : result(proof.kind);
+      if (!memberNames) {
+        memberNames = new Set();
+        // Fixture definitions (extend object literals) patch the member;
+        // they are not its uses in this file's tests.
+        (function visit(node) {
+          const access = ts.isCallExpression(node) && member(node.expression);
+          if (access?.name === 'extend' && node.arguments.length === 1 && ts.isObjectLiteralExpression(unwrap(node.arguments[0]))) {
+            visit(node.expression);
+            return;
+          }
+          if (ts.isPropertyAccessExpression(node)) memberNames.add(node.name.text);
+          else if (ts.isElementAccessExpression(node)) {
+            const name = member(node)?.name;
+            memberNames.add(typeof name === 'string' ? name : '\0computed');
+          } else if (ts.isBindingElement(node) && ts.isObjectBindingPattern(node.parent)) {
+            const key = node.propertyName ?? node.name;
+            memberNames.add(ts.isIdentifier(key) || ts.isStringLiteral(key) ? key.text : '\0computed');
+          }
+          ts.forEachChild(node, visit);
+        })(source);
+      }
+      if (memberNames.has('\0computed') || proof.patched.some(name => memberNames.has(name)))
+        return result('unknown', ['patched fixture member is used']);
+    }
+    return proof.instance ? { ...result(proof.kind), instance: proof.instance } : result(proof.kind);
+  }
   function annotation(type) {
     if (!type) return null;
     let name;
     if (ts.isImportTypeNode(type) && !type.isTypeOf && ts.isLiteralTypeNode(type.argument) &&
-        ts.isStringLiteral(type.argument.literal) && type.argument.literal.text === '@playwright/test' &&
+        ts.isStringLiteral(type.argument.literal) && PLAYWRIGHT_TEST_MODULES.has(type.argument.literal.text) &&
         type.qualifier && ts.isIdentifier(type.qualifier)) name = type.qualifier.text;
     else if (ts.isTypeReferenceNode(type) && ts.isIdentifier(type.typeName)) {
       const symbol = checker.getSymbolAtLocation(type.typeName);
       const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
       if (declaration && ts.isImportSpecifier(declaration)) {
         const statement = declaration.parent.parent.parent;
-        if (ts.isImportDeclaration(statement) && statement.moduleSpecifier.text === '@playwright/test') {
+        if (ts.isImportDeclaration(statement) && PLAYWRIGHT_TEST_MODULES.has(statement.moduleSpecifier.text)) {
           name = (declaration.propertyName || declaration.name).text;
         }
       }
@@ -278,6 +368,319 @@ export function createReceivers(bytes, filename, { scope } = {}) {
     } finally { assumptions.delete(symbol); }
     return result(initial.kind);
   }
+  // ---- page objects and helper summaries (scope.constructed/member/called) ----
+  // A page-object instance: `new C(...)` of a proven pinned class, an
+  // unwritten const of one that is only ever read as `binding.<name>`, or a
+  // member proven to hold a nested page object. Returns { info, argument }
+  // for a proven instance, 'unproven' for an unproven `new` root, or null.
+  const memberOnly = new Map();
+  function readsOnlyMembers(symbol, name) {
+    if (memberOnly.has(symbol)) return memberOnly.get(symbol);
+    let only = true;
+    walk(source, item => {
+      if (!only || !ts.isIdentifier(item) || item === name) return;
+      if (checker.getSymbolAtLocation(item) !== symbol &&
+          !(ts.isShorthandPropertyAssignment(item.parent) && checker.getShorthandAssignmentValueSymbol(item.parent) === symbol)) return;
+      const parent = item.parent;
+      if (!ts.isPropertyAccessExpression(parent) || parent.expression !== item || parent.questionDotToken) only = false;
+    });
+    memberOnly.set(symbol, only);
+    return only;
+  }
+  // Every destructuring of the fixture name in this file (tests and hooks
+  // share one test-scoped value) binds an unwritten name read only as
+  // `binding.<member>`.
+  const fixtureConsumers = new Map();
+  function fixtureConsumersReadOnly(name) {
+    if (fixtureConsumers.has(name)) return fixtureConsumers.get(name);
+    let safe = true;
+    walk(source, item => {
+      if (!safe || !ts.isBindingElement(item) || !ts.isObjectBindingPattern(item.parent)) return;
+      const key = item.propertyName ?? item.name;
+      const text = ts.isIdentifier(key) || ts.isStringLiteral(key) ? key.text : null;
+      if (text !== name && text !== null && !item.dotDotDotToken) return;
+      if (item.dotDotDotToken || text === null || !ts.isIdentifier(item.name)) { safe = false; return; }
+      const symbol = checker.getSymbolAtLocation(item.name);
+      if (!symbol || isWritten(source, checker, symbol, { properties: true }) || !readsOnlyMembers(symbol, item.name)) safe = false;
+    });
+    fixtureConsumers.set(name, safe);
+    return safe;
+  }
+  function instanceOf(node, depth = 0) {
+    node = unwrap(node);
+    if (depth > 8 || typeof scope?.constructed !== 'function') return null;
+    if (node.kind === ts.SyntaxKind.ThisKeyword) return thisInstance(node);
+    if (ts.isNewExpression(node)) {
+      const info = scope.constructed(filename, node);
+      if (!info) return 'unproven';
+      const args = node.arguments ?? [];
+      return { info, argument: index => index < args.length && !args.slice(0, index + 1).some(ts.isSpreadElement) ?
+        expression(args[index]) : result('unknown', ['page object argument is not proven']) };
+    }
+    if (ts.isIdentifier(node)) {
+      const symbol = checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      // A test.extend fixture whose every definition is `use(new C(page))`.
+      if (declaration && ts.isBindingElement(declaration)) {
+        const value = expression(node);
+        if (!value.complete || value.kind !== 'page-object' || !value.instance) return null;
+        if (!fixtureConsumersReadOnly((declaration.propertyName || declaration.name).text)) return 'unproven';
+        const { pageObject, args } = value.instance;
+        return { info: pageObject, argument: index => args[index] && ['page', 'locator', 'context'].includes(args[index]) ?
+          result(args[index]) : result('unknown', ['page object argument is not proven']) };
+      }
+      if (!declaration || !ts.isVariableDeclaration(declaration) || !ts.isIdentifier(declaration.name) || !declaration.initializer) return null;
+      const initial = unwrap(declaration.initializer);
+      if (!ts.isNewExpression(initial)) return null;
+      if (!(declaration.parent.flags & ts.NodeFlags.Const) || isWritten(source, checker, symbol, { properties: true }) ||
+          !readsOnlyMembers(symbol, declaration.name)) return 'unproven';
+      return instanceOf(initial, depth + 1);
+    }
+    if (ts.isPropertyAccessExpression(node) && !node.questionDotToken) {
+      const owner = instanceOf(node.expression, depth + 1);
+      if (!owner || owner === 'unproven') return owner;
+      const summary = scope.member(owner.info, node.name.text);
+      if (!summary?.chain?.instance) return null;
+      const { instance, args } = summary.chain;
+      return { info: instance, argument: index => args[index] ? applyChain(owner, args[index]) :
+        result('unknown', ['page object argument is not proven']) };
+    }
+    return null;
+  }
+  // The kind of a summary chain for one owner's arguments. A chain on a
+  // value only declared Page or Locator stays type-only.
+  function applyChain(owner, chain) {
+    const base = owner.argument(chain.root.parameter);
+    if (!base.complete) return base;
+    let kind = base.kind;
+    for (const step of chain.steps) {
+      if (LOCATORS.has(step) && ['page', 'locator'].includes(kind) || REFINEMENTS.has(step) && kind === 'locator') kind = 'locator';
+      else if (LOCATORS.has(step) && ['page-type', 'locator-type'].includes(kind) || REFINEMENTS.has(step) && kind === 'locator-type') kind = 'locator-type';
+      else return result('unknown', ['summary chain does not apply to the argument']);
+    }
+    return result(kind);
+  }
+  // ---- `this` inside a class body ----
+  // The class whose instance `this` is: the nearest non-arrow function is a
+  // non-static method or accessor of a class declaration. A constructor or
+  // field initializer (members may be unassigned), a static member, a class
+  // expression or a computed member name is 'unproven'; a plain function or
+  // module-level `this` is null (unchanged).
+  function thisClass(node) {
+    for (let item = node, parent = node.parent; parent; item = parent, parent = parent.parent) {
+      if (ts.isComputedPropertyName(parent) || ts.isDecorator(parent)) return 'unproven';
+      if (ts.isArrowFunction(parent)) continue;
+      const owner = parent.parent;
+      if (ts.isPropertyDeclaration(parent) && parent.initializer === item ||
+          (ts.isMethodDeclaration(parent) || ts.isGetAccessorDeclaration(parent) || ts.isSetAccessorDeclaration(parent) ||
+            ts.isConstructorDeclaration(parent)) && parent.body === item) {
+        if (!owner || !ts.isClassLike(owner)) return null; // an object literal method
+        if (parent.modifiers?.some(entry => entry.kind === ts.SyntaxKind.StaticKeyword) || !ts.isClassDeclaration(owner)) return 'unproven';
+        // During construction a member may not be assigned yet.
+        if (ts.isConstructorDeclaration(parent) || ts.isPropertyDeclaration(parent)) return 'unproven';
+        return owner;
+      }
+      if (ts.isClassStaticBlockDeclaration(parent)) return 'unproven';
+      if (ts.isFunctionLike(parent) || ts.isClassLike(parent) || ts.isSourceFile(parent)) return null;
+    }
+    return null;
+  }
+  // A closed class: a non-exported declaration of this ES module that no
+  // other class extends and whose every reference is `new C(...)` (or a
+  // type). Each instance is used only as `new C(...).m()`, discarded, or held
+  // by an unwritten const read only as `x.<member>`, never rebound through
+  // `.call`/`.apply`/`.bind`. Nothing outside this file can reach the class
+  // or an instance, so every `this` is one of these constructions and no
+  // other code writes its members. Returns the `new` sites, or null.
+  const closedClasses = new Map();
+  function closedClass(klass) {
+    if (closedClasses.has(klass)) return closedClasses.get(klass);
+    let sites = [];
+    const symbol = klass.name && checker.getSymbolAtLocation(klass.name);
+    if (!symbol || symbol.declarations?.length !== 1 || !ts.isExternalModule(source) ||
+        klass.modifiers?.some(item => [ts.SyntaxKind.ExportKeyword, ts.SyntaxKind.DefaultKeyword, ts.SyntaxKind.DeclareKeyword].includes(item.kind)) ||
+        isWritten(source, checker, symbol, { properties: true })) sites = null;
+    const rebinding = access => {
+      const parent = access.parent;
+      return ts.isPropertyAccessExpression(parent) && parent.expression === access && ['call', 'apply', 'bind'].includes(parent.name.text);
+    };
+    const instanceUse = site => {
+      let item = site;
+      while (ts.isParenthesizedExpression(item.parent) || ts.isAsExpression(item.parent) || ts.isNonNullExpression(item.parent) ||
+          ts.isSatisfiesExpression(item.parent)) item = item.parent;
+      const parent = item.parent;
+      if (ts.isExpressionStatement(parent)) return true;
+      if (ts.isPropertyAccessExpression(parent) && parent.expression === item && !parent.questionDotToken)
+        return ts.isCallExpression(parent.parent) && parent.parent.expression === parent;
+      if (!ts.isVariableDeclaration(parent) || parent.initializer !== item || !ts.isIdentifier(parent.name) ||
+          !(parent.parent.flags & ts.NodeFlags.Const)) return false;
+      const binding = checker.getSymbolAtLocation(parent.name);
+      if (!binding || isWritten(source, checker, binding, { properties: true }) || !readsOnlyMembers(binding, parent.name)) return false;
+      let fixed = true;
+      walk(source, use => {
+        if (fixed && ts.isIdentifier(use) && use !== parent.name && checker.getSymbolAtLocation(use) === binding && rebinding(use.parent)) fixed = false;
+      });
+      return fixed;
+    };
+    if (sites) walk(source, item => {
+      if (!sites || !ts.isIdentifier(item) || item === klass.name || checker.getSymbolAtLocation(item) !== symbol) return;
+      const parent = item.parent;
+      if (ts.isNewExpression(parent) && parent.expression === item) { if (instanceUse(parent)) sites.push(parent); else sites = null; }
+      else if (!ts.isTypeReferenceNode(parent) && !ts.isTypeQueryNode(parent) &&
+          !(ts.isBinaryExpression(parent) && parent.right === item && parent.operatorToken.kind === ts.SyntaxKind.InstanceOfKeyword)) sites = null;
+    });
+    closedClasses.set(klass, sites);
+    return sites;
+  }
+  // The constructor parameter at `index` that `new C(...)` binds: the
+  // class's own constructor, or a same-file base's when it has none.
+  function constructorParameter(klass, index, depth = 0) {
+    if (depth > 8) return null;
+    const constructor = klass.members.find(item => ts.isConstructorDeclaration(item) && item.body);
+    if (constructor) return constructor.parameters[index] ?? null;
+    const heritage = klass.heritageClauses?.find(item => item.token === ts.SyntaxKind.ExtendsKeyword);
+    const base = heritage?.types.length === 1 && unwrap(heritage.types[0].expression);
+    const declaration = base && ts.isIdentifier(base) && checker.getSymbolAtLocation(base)?.declarations;
+    return declaration?.length === 1 && ts.isClassDeclaration(declaration[0]) ? constructorParameter(declaration[0], index, depth + 1) : null;
+  }
+  // `this` as a page-object owner. A constructor argument has the kind every
+  // construction site of a closed class passes, or else the kind its
+  // parameter is declared with (type-only); otherwise it is unresolved.
+  function thisInstance(node) {
+    // Code inside a closed class that is never constructed never runs (no
+    // instance exists), so its `this` reads decide nothing: unchanged.
+    let outer = node.parent;
+    while (outer && !ts.isClassLike(outer)) outer = outer.parent;
+    if (outer && ts.isClassDeclaration(outer) && closedClass(outer)?.length === 0) return null;
+    const klass = thisClass(node);
+    if (!klass) return null;
+    if (klass === 'unproven' || typeof scope.classOf !== 'function') return 'unproven';
+    const info = scope.classOf(filename, klass);
+    if (!info) return 'unproven';
+    const sites = closedClass(klass);
+    return { info, self: true, closed: Boolean(sites), argument: index => {
+      if (sites?.length) {
+        let kind = null;
+        for (const site of sites) {
+          const args = site.arguments ?? [];
+          if (index >= args.length || args.slice(0, index + 1).some(ts.isSpreadElement)) { kind = null; break; }
+          const value = expression(args[index]);
+          if (!value.complete || !['page', 'locator'].includes(value.kind) || kind && kind !== value.kind) { kind = null; break; }
+          kind = value.kind;
+        }
+        if (kind) return result(kind);
+      }
+      const parameter = constructorParameter(klass, index);
+      const declared = parameter && !parameter.dotDotDotToken && annotation(parameter.type);
+      return declared ? result(declared) : result('unknown', [UNPROVEN_MEMBER_OF]);
+    } };
+  }
+  function chainsKind(owner, chains) {
+    let kind = null;
+    for (const chain of chains) {
+      const value = applyChain(owner, chain);
+      if (!value.complete) return value;
+      if (kind && kind !== value.kind) return result('unknown', ['summary returns differ in kind']);
+      kind = value.kind;
+    }
+    return kind ? result(kind) : null;
+  }
+  // Only a proven member changes the verdict; any other member keeps the
+  // existing result below, including the bounded POM review candidates.
+  function pageObjectMember(node) {
+    const owner = instanceOf(node.expression);
+    if (!owner || owner === 'unproven') return null;
+    const summary = scope.member(owner.info, node.name.text);
+    if (!summary) return null;
+    // A method read as a value, or a nested page object, is neither. Inside
+    // an open class body a subclass could redeclare it.
+    if (summary.kind === 'call' || summary.chain.instance) return owner.self && !owner.closed ? result('unknown', [UNPROVEN_MEMBER_OF]) : result('none');
+    return applyChain(owner, summary.chain);
+  }
+  // A member read on a proven page object that runs no user code: stored
+  // fields and single-return quiet getters, through nested page objects,
+  // from a const bound to a quietly constructed instance.
+  function quietPageObjectRead(node, depth = 0) {
+    node = unwrap(node);
+    if (depth > 8 || !ts.isPropertyAccessExpression(node) || node.questionDotToken) return false;
+    const owner = instanceOf(node.expression);
+    if (!owner || owner === 'unproven') return false;
+    const summary = scope.member(owner.info, node.name.text);
+    if (summary?.kind !== 'value' || summary.quietRead === false) return false;
+    const object = unwrap(node.expression);
+    return ts.isIdentifier(object) || quietPageObjectRead(object, depth + 1);
+  }
+  // `new C(...)` of a proven class whose construction runs no user effect.
+  function quietConstruction(node) {
+    node = unwrap(node);
+    if (!ts.isNewExpression(node) || typeof scope?.constructed !== 'function') return false;
+    const info = scope.constructed(filename, node);
+    return Boolean(info && scope.quietConstruction(info));
+  }
+  function pageObjectCall(node) {
+    const callee = unwrap(node.expression);
+    if (!ts.isPropertyAccessExpression(callee) || callee.questionDotToken) return null;
+    const owner = instanceOf(callee.expression);
+    if (!owner || owner === 'unproven') return null;
+    const summary = scope.member(owner.info, callee.name.text);
+    return summary?.kind === 'call' ? chainsKind(owner, summary.chains) : null;
+  }
+  // A call of a pinned function whose every return is a Locator chain on
+  // one of its parameters: proven from the call-site arguments alone.
+  function summaryReturn(node) {
+    if (typeof scope?.called !== 'function' || !ts.isIdentifier(unwrap(node.expression))) return null;
+    const summary = scope.called(filename, node);
+    if (!summary) return null;
+    const args = node.arguments;
+    return chainsKind({ argument: index => index < args.length && !args.slice(0, index + 1).some(ts.isSpreadElement) ?
+      expression(args[index]) : result('unknown', ['helper argument is not proven']) }, summary.chains);
+  }
+  // A member read that module provenance calls `none` is neither a Page
+  // nor a Locator only when its object is proven not to hold one. An
+  // unresolved object (an awaited helper result, say) keeps the read
+  // unresolved, and so does a member of a page-object instance unless that
+  // member is proven (above) or is plain data or a method.
+  function memberRead(node) {
+    const access = member(node);
+    if (!access) return null;
+    const owner = expression(access.object);
+    if (!owner.complete) return owner;
+    if (owner.kind !== 'none') return null;
+    // `this.x` inside a class body: plain data only in a closed class, where
+    // no subclass or outside write can replace the member.
+    const instance = instanceOf(access.object);
+    if (instance === 'unproven') return literalConstruction(access.object, access.name) ? null :
+      result('unknown', [UNPROVEN_INSTANCE]);
+    if (instance && (access.name === null || instance.self && !instance.closed || !scope.dataMember(instance.info, access.name)))
+      return result('unknown', [UNPROVEN_MEMBER_OF]);
+    return null;
+  }
+  // `const o = new F()` (unwritten, read only as `o.<member>`) of a same-file
+  // function declaration whose every completion returns an object literal
+  // holding `name` as a plain literal, or not at all: the instance is that
+  // object.
+  function literalConstruction(node, name) {
+    node = unwrap(node);
+    if (name === null || !ts.isIdentifier(node)) return false;
+    const symbol = checker.getSymbolAtLocation(node);
+    const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+    if (!declaration || !ts.isVariableDeclaration(declaration) || !ts.isIdentifier(declaration.name) ||
+        !(declaration.parent.flags & ts.NodeFlags.Const) || isWritten(source, checker, symbol, { properties: true }) ||
+        !readsOnlyMembers(symbol, declaration.name)) return false;
+    const call = declaration.initializer && unwrap(declaration.initializer);
+    if (!call || !ts.isNewExpression(call) || !ts.isIdentifier(unwrap(call.expression))) return false;
+    const target = checker.getSymbolAtLocation(unwrap(call.expression));
+    const fn = target?.declarations?.length === 1 ? target.declarations[0] : null;
+    if (!fn || !ts.isFunctionDeclaration(fn) || !fn.body || fn.asteriskToken || fn.modifiers?.some(item => item.kind === ts.SyntaxKind.AsyncKeyword) || isWritten(source, checker, target, { properties: true })) return false;
+    const values = returnExpressions(fn);
+    return Boolean(values?.length) && values.every(value => {
+      value = unwrap(value);
+      if (!ts.isObjectLiteralExpression(value) || !value.properties.every(item => ts.isPropertyAssignment(item) &&
+          (ts.isIdentifier(item.name) || ts.isStringLiteral(item.name)))) return false;
+      const entries = value.properties.filter(item => item.name.text === name);
+      return entries.length === 0 || entries.length === 1 && plainLiteral(entries[0].initializer);
+    });
+  }
   function provenance(node) {
     if (diagnostics.length || !scope) return result('unknown', ['valid source and pinned scope are required']);
     node = unwrap(node);
@@ -323,37 +726,120 @@ export function createReceivers(bytes, filename, { scope } = {}) {
               root = inner.object;
             }
             const fixture = (declaration.propertyName || declaration.name).text;
-            if (fixture !== 'page') {
-              // A custom fixture is a Page only when every test.extend
-              // definition on the way down hands `use` the base Page fixture.
-              const kind = typeof scope.fixtureKind === 'function' ? scope.fixtureKind(filename, root, fixture) : null;
-              if (kind === 'page') return result('page');
+            if (!BUILT_IN_FIXTURES.has(fixture)) {
+              // A custom fixture has a kind only when every test.extend
+              // definition on the way down hands `use` a proven value.
+              const proof = fixtureProof(root, fixture, node, symbol);
+              if (proof) return proof;
             } else {
               const value = scope.expression(filename, root);
               if (!value.complete) return value;
-              return result(value.kind === 'playwright-test' ? 'page' : 'none');
+              if (value.kind !== 'playwright-test') return result('none');
+              if (useOverride(fixture)) return result('unknown', ['built-in fixture override is not proven']);
+              // An extension may replace the built-in: its definition must
+              // hand `use` a proven value of the same kind.
+              if (!value.extended) return result(fixture);
+              const proof = fixtureProof(root, fixture, node, symbol);
+              return proof?.kind === fixture || proof && !proof.complete ? proof : result('unknown', ['built-in fixture override is not proven']);
             }
           }
         }
       }
+      // A proven BrowserContext opens a new Page; any other awaited call keeps
+      // the module-level verdict below.
+      if (ts.isAwaitExpression(node)) {
+        const call = unwrap(node.expression);
+        const access = ts.isCallExpression(call) && !call.questionDotToken && member(call.expression);
+        if (access && !call.expression.questionDotToken && !call.arguments.some(ts.isSpreadElement)) {
+          // An unresolved owner keeps these Page-producing calls unresolved
+          // instead of the generic awaited-call verdict below.
+          if (['newPage', 'newContext'].includes(access.name) && call.arguments.length <= 1) {
+            const owner = expression(access.object);
+            if (!owner.complete) return owner;
+            if (producerPatched(access.object)) return result('unknown', ['patched provenance-producing method']);
+            if (access.name === 'newPage' && (owner.kind === 'context' && !call.arguments.length || owner.kind === 'browser')) return result('page');
+            if (access.name === 'newContext' && owner.kind === 'browser') return result('context');
+            // Any other owner (a user object, an unbound name) may still hand
+            // back a Page: unresolved, never a proven non-Page.
+            return result('unknown', ['unsupported provenance-producing call']);
+          }
+          // Electron: an ElectronApplication from the official _electron
+          // launcher, and its firstWindow() Page. windows()[i] stays unproven.
+          // A BrowserType from the official package launches a Browser.
+          if (access.name === 'launch' && call.arguments.length <= 1) {
+            const launcher = scope.expression(filename, access.object);
+            if (launcher.complete && launcher.kind === 'playwright-electron') return result('electron-app');
+            if (launcher.complete && launcher.kind === 'playwright-browser-type') return result('browser');
+          }
+          if (access.name === 'launchPersistentContext' && call.arguments.length <= 2) {
+            const launcher = scope.expression(filename, access.object);
+            if (launcher.complete && launcher.kind === 'playwright-browser-type') return result('context');
+          }
+          if (access.name === 'firstWindow' && call.arguments.length <= 1) {
+            const owner = expression(access.object);
+            if (!owner.complete) return owner;
+            if (producerPatched(access.object)) return result('unknown', ['patched provenance-producing method']);
+            if (owner.kind === 'electron-app') return result('page');
+            return result('unknown', ['unsupported provenance-producing call']);
+          }
+        }
+        // `await <Locator chain>` is that Locator: a Locator is not thenable.
+        if (ts.isCallExpression(call) && !call.questionDotToken) {
+          const chained = member(call.expression);
+          if (chained && !call.expression.questionDotToken && (LOCATORS.has(chained.name) || REFINEMENTS.has(chained.name))) {
+            const value = expression(call);
+            if (value.complete && value.kind === 'locator') return value;
+          }
+        }
+        // An awaited non-call value is the value itself unless it is a
+        // thenable: a proven Page or Locator, or proven data, keeps its kind;
+        // anything else may resolve to a Page or Locator.
+        if (!ts.isCallExpression(call) && !awaitedOfficial(node)) {
+          const value = expression(call);
+          if (!value.complete || ['page', 'locator'].includes(value.kind)) return value;
+          if (dataValue(call)) return result('none');
+          return result('unknown', ['awaited value is not proven']);
+        }
+        // Any other awaited call may resolve to a Page or Locator (a helper
+        // can return `page.locator(...)`), so its result is unresolved unless
+        // it is proven plain data or a Playwright method whose result is never
+        // a Page or Locator. Dynamic import() keeps its module verdict below.
+        if (ts.isCallExpression(call) && call.expression.kind !== ts.SyntaxKind.ImportKeyword && !awaitedOfficial(node)) {
+          if (awaitedData(call) || responseValue(node)) return result('none');
+          const method = !call.questionDotToken && member(call.expression);
+          if (method && !call.expression.questionDotToken && !PAGE_PRODUCERS.has(method.name)) {
+            const owner = expression(method.object);
+            if (owner.complete && PLAYWRIGHT_OBJECTS.has(owner.kind)) return result('none');
+          }
+          return result('unknown', ['unsupported provenance-producing call']);
+        }
+      }
       if (ts.isCallExpression(node) && !node.questionDotToken) {
         const access = member(node.expression);
+        const method = pageObjectCall(node);
+        if (method) return method;
         if (access && !node.expression.questionDotToken) {
           const parent = expression(access.object);
           if (!parent.complete) return parent;
           if (LOCATORS.has(access.name) && ['page', 'locator'].includes(parent.kind)) return result('locator');
           if (REFINEMENTS.has(access.name) && parent.kind === 'locator') return result('locator');
         }
-        const returned = helperReturn(node);
+        const returned = helperReturn(node) ?? summaryReturn(node);
         if (returned) return returned;
       }
       if (ts.isPropertyAccessExpression(node) && !node.questionDotToken) {
         const field = objectField(node.expression, node.name.text);
         if (field) return field;
+        const pom = pageObjectMember(node);
+        if (pom) return pom;
       }
       // The object itself is neither a Page nor a Locator.
       if (ts.isCallExpression(node) && objectReturns(node)) return result('none');
       const value = scope.expression(filename, node);
+      if (value.complete && value.kind === 'none') {
+        const read = memberRead(node);
+        if (read) return read;
+      }
       if (value.complete) return result(value.kind === 'playwright-expect' ? 'expect' : 'none');
       // A property of a proven Page or Locator (page.keyboard, page.mouse,
       // page.request, ...) is a Playwright helper object, never a Page or
@@ -378,9 +864,11 @@ export function createReceivers(bytes, filename, { scope } = {}) {
   const DATA_NAMESPACES = new Map([['JSON', new Set(['parse', 'stringify'])], ['Math', null],
     ['Object', new Set(['keys', 'values', 'entries'])], ['Date', new Set(['now', 'parse'])]]);
   const DATA_CONSTRUCTORS = new Set(['Date', 'RegExp', 'URL', 'URLSearchParams']);
+  const OBJECT_DATA_METHODS = new Set(['get', 'getAll', 'has', 'toJSON', 'toISOString', 'toUTCString', 'toDateString',
+    'toTimeString', 'toLocaleDateString', 'toLocaleTimeString', 'toLocaleString', 'getTime', 'valueOf']);
   const PLAYWRIGHT_DATA = new Set(['evaluate', 'evaluateAll', '$eval', '$$eval', 'textContent', 'innerText',
     'innerHTML', 'inputValue', 'getAttribute', 'allTextContents', 'allInnerTexts', 'isVisible', 'isHidden',
-    'isEnabled', 'isDisabled', 'isChecked', 'isEditable', 'count', 'boundingBox', 'title', 'content', 'ariaSnapshot']);
+    'isEnabled', 'isDisabled', 'isChecked', 'isEditable', 'count', 'boundingBox', 'title', 'content', 'ariaSnapshot', 'viewportSize']);
   const activeData = new Set();
   let globalNames;
   // An unbound global read, never declared or assigned anywhere in this file.
@@ -391,7 +879,7 @@ export function createReceivers(bytes, filename, { scope } = {}) {
       globalNames = new Set();
       walk(source, item => {
         if (ts.isIdentifier(item) && !ts.isPropertyAccessExpression(item.parent) && checker.getSymbolAtLocation(item) &&
-            [...DATA_GLOBALS, ...DATA_NAMESPACES.keys(), ...DATA_CONSTRUCTORS, 'Array'].includes(item.text)) globalNames.add(item.text);
+            [...DATA_GLOBALS, ...DATA_NAMESPACES.keys(), ...DATA_CONSTRUCTORS, 'Array', 'Promise'].includes(item.text)) globalNames.add(item.text);
         if (ts.isBinaryExpression(item) && item.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
             item.operatorToken.kind <= ts.SyntaxKind.LastAssignment) {
           let target = unwrap(item.left);
@@ -414,7 +902,7 @@ export function createReceivers(bytes, filename, { scope } = {}) {
     'localeCompare', 'test', 'trim', 'trimStart', 'trimEnd', 'toLowerCase', 'toUpperCase', 'padStart', 'padEnd',
     'repeat', 'normalize', 'substring', 'replace', 'replaceAll']);
   // Methods that only read their receiver; callbacks still get checked.
-  const READ_METHODS = new Set([...DATA_METHODS, 'map', 'flatMap', 'forEach', 'reduce', 'reduceRight', 'entries', 'keys', 'values',
+  const READ_METHODS = new Set([...DATA_METHODS, ...OBJECT_DATA_METHODS, 'map', 'flatMap', 'forEach', 'reduce', 'reduceRight', 'entries', 'keys', 'values',
     'sort', 'reverse']); // sort and reverse reorder; they insert nothing
   const READ_MATCHERS = new Set(['toEqual', 'toStrictEqual', 'toBe', 'toContain', 'toContainEqual', 'toMatchObject',
     'toHaveLength', 'toHaveProperty', 'toMatch', 'toBeGreaterThan', 'toBeGreaterThanOrEqual', 'toBeLessThan',
@@ -650,7 +1138,8 @@ export function createReceivers(bytes, filename, { scope } = {}) {
     let statement = declaration.parent;
     while (statement && !ts.isImportDeclaration(statement)) statement = statement.parent;
     return Boolean(statement && !statement.importClause?.isTypeOnly && ts.isStringLiteral(statement.moduleSpecifier) &&
-      statement.moduleSpecifier.text === '@playwright/test');
+      PLAYWRIGHT_TEST_MODULES.has(statement.moduleSpecifier.text) &&
+      (typeof scope?.officialSpecifier !== 'function' || scope.officialSpecifier(filename, statement.moduleSpecifier.text)));
   }
   // A built-in fixture can be replaced through a shared reference even
   // without a visible property assignment. Permit const aliases and direct
@@ -751,6 +1240,11 @@ export function createReceivers(bytes, filename, { scope } = {}) {
       }
       const access = member(parent);
       const call = parent?.parent;
+      // Playwright's expect() only reads its subject (toBeOK, toBeTruthy, ...).
+      if (ts.isCallExpression(parent) && parent.arguments.length === 1 && parent.arguments[0] === node && !parent.questionDotToken) {
+        const callee = scope.expression(filename, parent.expression);
+        return callee.complete && callee.kind === 'playwright-expect';
+      }
       return Boolean(access && access.object === node && RESPONSE_READS.has(access.name) && !parent.questionDotToken &&
         ts.isCallExpression(call) && call.expression === parent && !call.questionDotToken && !call.arguments.length);
     }
@@ -782,16 +1276,64 @@ export function createReceivers(bytes, filename, { scope } = {}) {
           node.arguments.some(ts.isSpreadElement)) return false;
       const access = member(node.expression);
       if (!access) return false;
-      if (REQUEST_METHODS.has(access.name) && officialFixture(access.object, 'request')) return true;
+      if (REQUEST_METHODS.has(access.name) && apiContext(access.object)) return true;
       if (access.name !== 'waitForResponse' || !officialFixture(access.object, 'page')) return false;
       const owner = provenance(access.object);
       return owner.complete && owner.kind === 'page';
     } finally { activeResponses.delete(node); }
   }
+  // An APIRequestContext: the official request fixture, `page.request` or
+  // `context.request` of a proven Page/BrowserContext, or an unwritten,
+  // read-only const from `await request.newContext()` on the official
+  // package export.
+  const activeContexts = new Set();
+  function apiContext(node, depth = 0) {
+    node = unwrap(node);
+    if (depth > 8 || activeContexts.has(node)) return false;
+    activeContexts.add(node);
+    try {
+      if (officialFixture(node, 'request')) return true;
+      if (ts.isPropertyAccessExpression(node) && !node.questionDotToken && node.name.text === 'request') {
+        const owner = provenance(node.expression);
+        return owner.complete && ['page', 'context'].includes(owner.kind);
+      }
+      if (!ts.isIdentifier(node)) return false;
+      const symbol = checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      if (!declaration || !ts.isVariableDeclaration(declaration) || !ts.isIdentifier(declaration.name) || !declaration.initializer ||
+          !(declaration.parent.flags & ts.NodeFlags.Const) || isWritten(source, checker, symbol, { properties: true }) ||
+          !fixtureReadOnly(symbol, declaration.name)) return false;
+      const awaited = unwrap(declaration.initializer);
+      const call = ts.isAwaitExpression(awaited) && unwrap(awaited.expression);
+      const access = call && ts.isCallExpression(call) && !call.questionDotToken && !call.expression.questionDotToken &&
+        call.arguments.length <= 1 && !call.arguments.some(ts.isSpreadElement) && member(call.expression);
+      return Boolean(access?.name === 'newContext' && officialExport(access.object, 'request'));
+    } finally { activeContexts.delete(node); }
+  }
+  // An unwritten import of `name` from the official Playwright test package.
+  function officialExport(node, name) {
+    node = unwrap(node);
+    if (!ts.isIdentifier(node)) return false;
+    const symbol = checker.getSymbolAtLocation(node);
+    const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+    if (!declaration || !ts.isImportSpecifier(declaration) || declaration.isTypeOnly ||
+        (declaration.propertyName || declaration.name).text !== name || isWritten(source, checker, symbol, { properties: true })) return false;
+    const statement = declaration.parent.parent.parent;
+    return Boolean(ts.isImportDeclaration(statement) && !statement.importClause?.isTypeOnly && ts.isStringLiteral(statement.moduleSpecifier) &&
+      PLAYWRIGHT_TEST_MODULES.has(statement.moduleSpecifier.text) &&
+      (typeof scope?.officialSpecifier !== 'function' || scope.officialSpecifier(filename, statement.moduleSpecifier.text)));
+  }
   function responseOk(node) {
     const access = ts.isCallExpression(node) && !node.questionDotToken && !node.expression.questionDotToken &&
       !node.arguments.length && member(node.expression);
     return Boolean(access?.name === 'ok' && responseValue(access.object));
+  }
+  // Every official zero-argument read of a proven APIResponse/Response is
+  // data or a Promise of data (headers, status, text, json, body, ...).
+  function responseRead(node) {
+    const access = ts.isCallExpression(node) && !node.questionDotToken && !node.expression.questionDotToken &&
+      !node.arguments.length && member(node.expression);
+    return Boolean(access && RESPONSE_READS.has(access.name) && responseValue(access.object));
   }
   function playwrightData(node) {
     node = unwrap(node);
@@ -813,6 +1355,13 @@ export function createReceivers(bytes, filename, { scope } = {}) {
   function awaitedData(node) {
     node = unwrap(node);
     if (playwrightData(node)) return true;
+    // `await Promise.all([...])` is the array of each element's awaited
+    // value: data when every element awaits to data. No spread or hole.
+    if (ts.isCallExpression(node) && !node.questionDotToken && node.arguments.length === 1) {
+      const access = member(node.expression), list = unwrap(node.arguments[0]);
+      if (access?.name === 'all' && ts.isPropertyAccessExpression(unwrap(node.expression)) && pureGlobal(access.object, new Set(['Promise'])) &&
+          ts.isArrayLiteralExpression(list) && list.elements.every(item => !ts.isSpreadElement(item) && !ts.isOmittedExpression(item) && awaitedData(item))) return true;
+    }
     if (ts.isCallExpression(node)) {
       const helper = helperReturns(node);
       if (helper) return helper.values.every(awaitedData);
@@ -852,7 +1401,7 @@ export function createReceivers(bytes, filename, { scope } = {}) {
       if (ts.isAwaitExpression(node)) return awaitedData(node.expression);
       if (ts.isNewExpression(node)) return pureGlobal(node.expression, DATA_CONSTRUCTORS);
       if (!ts.isCallExpression(node)) return false;
-      if (responseOk(node)) return true;
+      if (responseOk(node) || responseRead(node)) return true;
       if (pureGlobal(node.expression, DATA_GLOBALS)) return true;
       // Array(n) or Array(...values) holds only its data arguments.
       if (pureGlobal(node.expression, new Set(['Array']))) return node.arguments.every(dataValue);
@@ -863,10 +1412,15 @@ export function createReceivers(bytes, filename, { scope } = {}) {
         return unwrap(access.object).text !== 'Object' || access.name === 'keys' || node.arguments.every(dataValue);
       }
       if (access && DATA_METHODS.has(access.name) && dataValue(access.object)) return true;
-      if (access?.name === 'url' && !node.arguments.length) {
+      if (['url', 'viewportSize'].includes(access?.name) && !node.arguments.length) {
         const value = provenance(access.object);
         if (value.complete && value.kind === 'page') return true;
       }
+      // Built-in URL, URLSearchParams and Date reads on proven data. Data
+      // holds no functions (JSON, primitives, plain literals of data), so a
+      // method found on it is a built-in one.
+      if (access && OBJECT_DATA_METHODS.has(access.name) && dataValue(access.object) &&
+          node.arguments.every(item => !ts.isSpreadElement(item) && dataValue(item))) return true;
       const helper = helperReturns(node);
       return Boolean(helper && !helper.fn.modifiers?.some(item => item.kind === ts.SyntaxKind.AsyncKeyword) &&
         !helper.fn.asteriskToken && helper.values.every(dataValue));
@@ -889,7 +1443,7 @@ export function createReceivers(bytes, filename, { scope } = {}) {
       root = unwrap(root.expression);
     }
     const symbol = ts.isIdentifier(root) ? checker.getSymbolAtLocation(root) : null;
-    if (!symbol) return expression(node);
+    if (!symbol || useSiteDependent.has(symbol)) return expression(node);
     let results = bindingResults.get(symbol);
     if (!results) bindingResults.set(symbol, results = new Map());
     const key = JSON.stringify(path);
@@ -899,7 +1453,7 @@ export function createReceivers(bytes, filename, { scope } = {}) {
     }
     const value = expression(node);
     // These failures depend on the active traversal, not just the binding.
-    if (!value.reasons.some(reason => /cyclic|excessive|depth exceeds/.test(reason)))
+    if (!useSiteDependent.has(symbol) && !value.reasons.some(reason => /cyclic|excessive|depth exceeds/.test(reason)))
       results.set(key, { ...value, reasons: [...value.reasons] });
     return value;
   }
@@ -907,5 +1461,11 @@ export function createReceivers(bytes, filename, { scope } = {}) {
     // Plain-data proof and closed same-file helper call sites, for detectors
     // that narrow a candidate only on positive proof.
     data: node => !diagnostics.length && Boolean(scope) && dataValue(node),
-    helperCalls: fn => helperFunction(fn)?.calls ?? null };
+    helperCalls: fn => helperFunction(fn)?.calls ?? null,
+    // True inside a function passed to a proven Page/Locator evaluate-style
+    // method, which is serialized and runs in the browser.
+    inBrowserCallback,
+    // Page-object reads and constructions proven free of user effects.
+    quietPageObjectRead: node => !diagnostics.length && Boolean(scope) && quietPageObjectRead(node),
+    quietConstruction: node => !diagnostics.length && Boolean(scope) && quietConstruction(node) };
 }

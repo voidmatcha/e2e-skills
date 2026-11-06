@@ -68,6 +68,26 @@ Project lint policy cannot downgrade a confirmed P0. Bundled checks remain indep
 
 **Companion CI enforcement:** reuse an existing [`eslint-plugin-playwright/no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/blob/main/docs/rules/no-unnecessary-assertions.md) rule for the always-pass Locator-object class (`#4f`); installation is not a review prerequisite. Do not recommend `eslint-plugin-cypress-silent-pass@0.2.2`: queued `cy.get(...)` assertions can still fail when the query runs. Genuine synchronous-object cases still need bundled checks and semantic review.
 
+### Report completeness check
+
+An optional tool, not a required review step: check a draft report mechanically. Pass the report on stdin, so nothing is written, together with the same scan roots (rescanned in memory) or the `--report-file` you already have:
+
+```bash
+/bin/bash -p <skill-base>/scripts/scan.sh --check-report - <dir> <<'E2E_REVIEW_REPORT'
+<draft report>
+E2E_REVIEW_REPORT
+/bin/bash -p <skill-base>/scripts/scan.sh --check-report <report.md> --scan-report <report-file>
+```
+
+`--scan-json <file>` accepts a `--format json` result instead. The check is read-only. Exit 0 prints `CHECK-REPORT: COMPLETE`; exit 1 lists each gap; exit 2 means an input could not be read. Gaps are:
+
+- `UNVERDICTED file:line`: a scanner `[P0]` or `[P0?]` line that no verdict line and no finding cites.
+- `GROUP-REASON` / `NO-REASON`: a non-CONFIRMED verdict on a P0 line whose reason names a glob, a directory, or a group (`these`, `the other N lines`, `same reason`, `as above`) instead of the condition, or states no reason.
+- `LLM-COVERAGE <id>`: #1, #2, #12, #13 or #20–#23 has no line starting `<id>:` with `N/N files`, `sampled k/N files` or `N/A (<reason>)`. One line may list several ids (`#1/#2:`, `#20–#23:`).
+- `SAMPLING-UNQUANTIFIED`: such a line says sampled, spot-checked or not exhaustive without a `k/N` count where k < N.
+
+Accepted grammar. A citation is `path:N`, `path:N-M` (a range of at most ten lines covers every line; a longer one only its endpoints), a list after it (`path:N, :M and :O`, `path:N,M`, `path:N to :M`), `path: lines N, M and O`, or a backticked `:N` that refers to the last path cited on the same line or, in a nested bullet, to the path on its parent bullet. The path may be relative to the scan root or the project, matched by path suffix; a declared prefix such as `` `W/` = `platform/wab/playwright/` `` or `` `L/` (`platform/loader-tests/`) `` is expanded. A verdict line is a line or table row that cites the location and carries CONFIRMED, FALSE-POSITIVE, NEEDS-CONTEXT or SKIPPED-DORMANT, or refers to a finding (`— finding`, `part of the :250 finding`; `no finding` dismisses). A nested bullet without its own verdict inherits the verdict and reason of its nearest parent bullet that has one. A finding is a `## [P0]`, `## [P1]` or `## [P2]` section; any citation inside it counts. Fenced code is ignored.
+
 ## Suppression
 
 **Suppression — `// JUSTIFIED:`:** Treat `// JUSTIFIED:` as a request to suppress a documented exception, not as proof that every marked hit is safe. For P1/P2, skip only after confirming a concrete rationale in one of these positions:

@@ -9,7 +9,12 @@ import { spawn, spawnSync } from 'node:child_process';
 import { isDeepStrictEqual } from 'node:util';
 import toml from './vendor/smol-toml/index.cjs';
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-export const AGENTS = ['e2e-finding-verifier', 'e2e-failure-classifier'];
+export const SKILLS = ['e2e-debugger', 'e2e-reviewer', 'playwright-test-generator'];
+// What the installer scripts copy, as [source, destination]; listed by --dry-run before anything runs.
+export function installTargets(host, env) {
+  const skillRoots = [path.join(env.HOME, '.agents/skills'), ...(host === 'claude' ? [path.join(env.HOME, '.claude/skills')] : [])];
+  return skillRoots.flatMap(base => SKILLS.map(name => [path.join(ROOT, 'skills', name), path.join(base, name)]));
+}
 export const NODE_PATHS = ['/opt/homebrew/bin/node', '/usr/local/bin/node', '/usr/bin/node', '/bin/node'];
 export const CODEX_TOOLS = 'browser_click browser_close browser_console_messages browser_drag browser_evaluate browser_file_upload browser_generate_locator browser_handle_dialog browser_hover browser_navigate browser_navigate_back browser_network_request browser_network_requests browser_press_key browser_run_code_unsafe browser_select_option browser_snapshot browser_take_screenshot browser_type browser_verify_element_visible browser_verify_list_visible browser_verify_text_visible browser_verify_value browser_wait_for generator_read_log generator_setup_page generator_write_test planner_save_plan planner_setup_page test_debug test_list test_run'.split(' ').sort();
 const utf8 = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
@@ -67,20 +72,10 @@ export function run(command, cwd, env) {
   if (result.status !== 0) throw Error(`command failed (${result.status ?? result.signal}): ${command[0]}`);
   return result;
 }
-export function dedicatedPreflight(host, env) {
-  const base = host === 'codex' ? env.CODEX_HOME ?? path.join(env.HOME, '.codex') : env.CLAUDE_CONFIG_DIR ?? path.join(env.HOME, '.claude');
-  if (!path.isAbsolute(base)) throw Error('host configuration directory must be absolute');
-  const suffix = host === 'codex' ? '.toml' : '.md';
-  const source = path.join(ROOT, host === 'codex' ? '.codex/agents' : 'agents');
-  for (const name of AGENTS) {
-    const target = path.join(base, 'agents', name + suffix);
-    safePath(target);
-    const before = read(target);
-    if (before !== null && !before.equals(fs.readFileSync(path.join(source, name + suffix)))) {
-      const marker = host === 'codex' ? /^# e2e-skills Codex(\/OMX)? native agent:/m : /^<!-- e2e-skills Claude Code native agent:/m;
-      if (!marker.test(text(before))) throw Error(`dedicated agent conflicts with an existing file: ${target}`);
-    }
-  }
+// The skills installer writes below HOME (and ~/.claude for Claude Code); refuse a symlinked HOME or host directory first.
+export function homePreflight(host, env) {
+  if (!path.isAbsolute(env.HOME ?? '')) throw Error('HOME must be absolute');
+  safePath(path.join(env.HOME, host === 'claude' ? '.claude' : '.agents', '.e2e-skills-preflight'));
 }
 export function planFile(plan, target, content) {
   safePath(target);
@@ -402,16 +397,15 @@ export async function main(argv = process.argv.slice(2), hooks = {}) {
     console.log(JSON.stringify(report, null, 2));
     return report.status === 'SERVER_VERIFIED' ? 0 : 1;
   }
-  dedicatedPreflight(opts.host, env);
+  homePreflight(opts.host, env);
   const plan = project ? projectPlan(project, opts.host, env, opts.dryRun, hooks.run ?? run) : new Map();
   preflightBackups(plan);
   env.E2E_SKILLS_AGENTS = opts.host === 'claude' ? '-a claude-code -a codex' : '-a codex';
   const claudeDefault = path.join(env.HOME, '.claude');
   if (opts.host === 'claude' && (env.CLAUDE_CONFIG_DIR ?? claudeDefault) !== claudeDefault) throw Error('custom CLAUDE_CONFIG_DIR is not supported by the verified skills installer');
-  env.E2E_SKILLS_INSTALL_CODEX_AGENTS = opts.host === 'codex' ? '1' : '0';
   const commands = [['/bin/bash', '-p', path.join(ROOT, 'scripts/dev/reinstall-skills.sh')]];
-  if (opts.host === 'claude') commands.push(['/bin/bash', '-p', path.join(ROOT, 'scripts/dev/install-claude-agents.sh')]);
   for (const command of commands) console.log('Install: ' + shell(command));
+  for (const [source, target] of installTargets(opts.host, env)) console.log('Copy: ' + source + ' -> ' + target);
   for (const [target, { before, content }] of plan) console.log((same(before, content) ? 'Keep: ' : 'Prepare: ') + target);
   if (opts.dryRun) { console.log('Dry run: no files changed.'); return 0; }
   for (const command of commands) (hooks.install ?? ((command, cwd, env) => {
@@ -420,7 +414,7 @@ export async function main(argv = process.argv.slice(2), hooks = {}) {
     if (result.status !== 0) throw Error(`installer failed (${result.status ?? result.signal}): ${command[2]}`);
   }))(command, ROOT, env);
   applyPlan(plan);
-  console.log('Installed four skills and two dedicated agents for ' + opts.host + '.');
+  console.log('Installed ' + SKILLS.join(', ') + ' for ' + opts.host + '.');
   if (project) {
     console.log('Official planner/generator/healer definitions and project-scoped playwright-test MCP configured.');
     console.log('No project config executed, no seed/spec files copied, and no tests or browsers run.');

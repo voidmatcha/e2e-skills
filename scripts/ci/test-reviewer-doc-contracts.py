@@ -1174,7 +1174,7 @@ def verify_pattern_13_ownership_contract() -> None:
     assert "Before computing `Real P0 = N`" in skill
     assert "Before a Phase 2 finding is reported" in skill
     assert "Before a Phase 2 finding is reported" not in semantic_review
-    assert "../SKILL.md#verifying-findings-delegation-aware" in semantic_review
+    assert "../SKILL.md#verifying-findings-inline" in semantic_review
 
 
 def verify_pom_candidate_collector() -> None:

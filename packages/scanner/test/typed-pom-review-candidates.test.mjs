@@ -7,6 +7,7 @@ import path from 'node:path';
 import { reviewCandidates } from '../src/review-candidates.mjs';
 import { domQueries } from '../src/dom-queries.mjs';
 import { accessibleNames } from '../src/accessible-names.mjs';
+import { promises } from '../src/promises.mjs';
 import { inventory } from '../src/inventory.mjs';
 import { createScope } from '../src/scope.mjs';
 import { applyJustified } from '../src/justified.mjs';
@@ -57,7 +58,13 @@ test('field constructor links, import aliases and lexical arrow this retain cand
       'class PageObject { constructor(private page:BrowserPage){} row():Handle{return this.page.locator("x").last();}}',
     page('rows():Locator{return this.page.locator("x");} row():Locator{return this.rows().nth(2);}'),
     page('row(){ return (()=>this.page.locator("x").first())(); }'),
-  ]) assert.equal(scan(text).findings.filter(item => item.patternId === '#10a').length, 1, text);
+  ]) {
+    // `this.rows()` resolves to a declared Locator through the class summary,
+    // so the strict domQueries detector owns that anchor; exactly one owner.
+    let strict;
+    const result = scan(text, (_, { file, bytes, scope }) => { strict = domQueries(bytes, file, { scope }); });
+    assert.equal([...result.findings, ...strict.findings].filter(item => item.patternId === '#10a').length, 1, text);
+  }
 });
 test('foreign, shadowed, custom, array and unlinked annotations do not borrow POM anchors', () => {
   for (const text of [
@@ -92,7 +99,7 @@ test('mutated or escaping this and mutated constructor arguments fail closed', (
 });
 test('original typed Page parameters and Locator fields retain remaining eval anchors', () => {
   for (const [relative, required] of [
-    ['missing-await-contexts.spec.ts', [['#10c', 7], ['#16', 11]]],
+    ['missing-await-contexts.spec.ts', [['#10c', 7]]],
   ]) {
     const text = fs.readFileSync(new URL('../../../scripts/evals/skills/e2e-reviewer/files/' + relative, import.meta.url), 'utf8');
     const result = scan(text);
@@ -140,7 +147,13 @@ test('typed Locator field actions require exact constructor linkage and bare uno
     locator('run(){this.button.click();}'),
     locator('run(){this.button.click();}', 'this.button=page.getByRole("button");',
       "import type {Page,Locator} from '@playwright/test';"),
-  ]) assert.deepEqual(scan(text).findings.filter(item => item.patternId === '#16').map(item => item.disposition), ['candidate']);
+  ]) {
+    // The field is a declared Locator of the class summary: the strict
+    // promises detector owns the #16 anchor and the review lane yields.
+    let strict;
+    const result = scan(text, (_, { file, bytes, scope }) => { strict = promises(bytes, file, { scope }); });
+    assert.deepEqual([...result.findings, ...strict.findings].filter(item => item.patternId === '#16').map(item => item.disposition), ['candidate']);
+  }
   for (const text of [
     locator('async run(){await this.button.click();}'),
     locator('run(){return this.button.click();}'),

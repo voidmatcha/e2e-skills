@@ -6,16 +6,17 @@ Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatibl
 
 ## Repository Overview
 
-`e2e-skills` is a bundle of four Agent Skills for end-to-end test work on Playwright and Cypress projects:
+`e2e-skills` is a bundle of three Agent Skills for end-to-end test work on Playwright and Cypress projects:
 
 - `playwright-test-generator` — routes new-test generation to the official Playwright planner and generator when they are installed and their MCP tools are visible, with the 12 thin rules and safety instructions prepended, then the `e2e-reviewer` scanner gate and scoped test execution, with at most two parent-owned repairs for proven generation errors while preserving required behavior; when the agents are not set up it shows the setup guide and stops. A router, not a pipeline; the 2.x pipeline is archived at tag `v2.0.1`.
 - `e2e-reviewer` — static review of existing Playwright/Cypress specs against 24 anti-patterns grouped P0/P1/P2.
-- `playwright-debugger` — root-cause diagnosis from `playwright-report/`.
-- `cypress-debugger` — root-cause diagnosis from `cypress/reports/` (mochawesome / JUnit).
+- `e2e-debugger` — the thin debugger that replaces the two removed ones; debugs and safely fixes one failing Playwright/Cypress test: three reruns with retries off (mixed results: FLAKY, stop), an inline split of the cause into app, test, flaky, environment or unclear, a report-only suspected APP-REGRESSION, ENV or UNCLEAR, and a test-only repair without weakening that must keep P0 from rising and pass three reruns. It ships the memo's `When a test fails:` lines as `failure-rules.md` and may hand the repair to the official Playwright healer with those rules pasted in; the inline repair reaches the same outcome.
+
+The former `playwright-debugger` and `cypress-debugger` skills were removed and replaced by `e2e-debugger`; two Claude measurements found no accuracy gain over a plain agent. Failing tests go to `e2e-debugger`, which delivers the `When a test fails:` lines of the test-authoring memo with the request; `e2e-reviewer` covers tests made green by weakening them. CI (`review.sh` Check 4) fails if either skill directory or manifest entry comes back.
 
 The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.codex-plugin/`), a cross-agent skill source via the `skills` CLI, and the standalone npm scanner (`packages/scanner/`). Installed skills launch the bundled Node scanner through `skills/e2e-reviewer/scripts/scan.sh`; that file is a generated integrity-checking launcher, not a separate analyzer.
 
-**Product vs. infrastructure.** The four `skills/` directories above are the product — what a user installs and runs. `scripts/ci/` and the eval harnesses verify the product. Historical research evidence lives in a pinned Hugging Face snapshot; `benchmarks/` keeps its status index and restoration manifest. A typo fix or a small skill-wording change barely touches any of it — see `CONTRIBUTING.md`'s tier table before assuming a change needs the full process below.
+**Product vs. infrastructure.** The three `skills/` directories above are the product — what a user installs and runs. `scripts/ci/` and the eval harnesses verify the product. Historical research evidence lives in a pinned Hugging Face snapshot; `benchmarks/` keeps its status index and restoration manifest. A typo fix or a small skill-wording change barely touches any of it — see `CONTRIBUTING.md`'s tier table before assuming a change needs the full process below.
 
 ## Verification gate
 
@@ -38,24 +39,14 @@ For development and pre-commit checks, `ci-local.sh --changed origin/main` selec
 ├── .codex-plugin/          # Codex plugin manifest (interface display surface)
 │   └── plugin.json
 ├── AGENTS.md               # This file (cross-agent canonical guide)
-├── agents/                 # Claude Code subagents (plugin or explicit agent installer): read-only
-│   ├── e2e-finding-verifier.md    # adversarially verify ONE reviewer finding
-│   └── e2e-failure-classifier.md  # classify ONE failure into F1–F15
-├── .codex/agents/          # Codex-native TOML ports of the two subagents (optional)
-│   ├── e2e-finding-verifier.toml   # behavior-synced with agents/*.md; guarded by SP5
-│   └── e2e-failure-classifier.toml
 ├── benchmarks/             # STATUS.md + external-evidence.json; historical study files live on Hugging Face
-├── skills/                 # Four Agent Skills (the public surface)
+├── skills/                 # Two Agent Skills (the public surface)
 │   ├── playwright-test-generator/
 │   │   ├── SKILL.md        # Required: skill frontmatter + body (at most 7,168 bytes)
 │   │   ├── thin-rules.md   # the current 12-rule checklist; test-generator-router.py pins its product digest
 │   │   └── agents/openai.yaml
-│   ├── e2e-reviewer/
-│   │   └── references/      # e.g. scanner-workflow.md, semantic-review.md, verification-rules.md
-│   ├── playwright-debugger/
-│   │   └── references/      # e.g. artifact-extraction.md, classification-procedure.md, safety-procedures.md
-│   └── cypress-debugger/
-│       └── references/      # e.g. artifact-extraction.md, classification-procedure.md, safety-procedures.md
+│   └── e2e-reviewer/
+│       └── references/      # e.g. scanner-workflow.md, semantic-review.md, verification-rules.md
 ├── packages/scanner/        # Canonical Node scanner implementation and npm package
 ├── scripts/
 │   ├── ast-grep-rules/     # Developer-only postfix verification rules
@@ -79,7 +70,6 @@ Each `skills/<name>/SKILL.md` is the contract. Everything in the skill body shou
 - **Skill names**: kebab-case, must match the directory name and the `name:` in SKILL.md frontmatter.
 - **SKILL.md frontmatter**: `name`, `description`, `license`, `metadata: { author, version, frameworks, testing-types, languages }`. The description is the trigger surface — pack synonyms and the user's likely phrasing. The Agent Skills spec fixes the set of top-level keys and any other one is a validation error, so classification fields live under `metadata`, which the spec defines as a string-to-string map — comma-joined values, never YAML lists. `frameworks` must match the skill's real scope (`docs/framework-scope.md`); a skill that names a framework it does not support is a scope claim, not a hint.
 - **Pattern IDs**: 24 stable anti-pattern entries (`#1`–`#23` plus `#3b`) with P0/P1/P2 severity. IDs are stable; do not renumber. Severity rationale: P0 = silent always-pass, P1 = poor diagnostics, P2 = maintenance.
-- **Failure category IDs**: 15 codes (`F1`–`F15`) used by both debuggers. Codes are stable.
 - **JUSTIFIED comments**: `// JUSTIFIED: <reason>` on the line above the hit, above the start of a multi-line chain, or directly above a `page.evaluate()` / `page.waitForFunction()` callback whose body contains the hit. It does not reach past that: a marker above a `describe` or `test` does not cover the block, so use it where the finding is. Suppress for documented intent, never to hide a real finding.
 - **Severity-first organization**: tables in SKILL.md, README, and `docs/e2e-test-smells.md` group by P0/P1/P2 in the same order.
 - **English-only public surface**: SKILL.md, README, and `docs/` are English. CI enforces this (`Language` check). Sanctioned exception: root-level `README.<lang>.md` translations (`README.ko.md`, `README.ja.md`, `README.zh-cn.md`) and the language-switcher line in `README.md` that links to them. `README.md` (English) is canonical; translations follow it.
@@ -119,7 +109,6 @@ bash scripts/ci/check-verification-parity.sh
 bash scripts/ci/test-local-eslint-path.sh
 bash scripts/validate-evals.sh
 python3 scripts/ci/test-reviewer-scanner.py
-python3 scripts/ci/test-debugger-contracts.py
 python3 scripts/ci/test-generator-router.py
 python3 scripts/ci/test-external-evidence.py
 python3 scripts/dev/reviewer-contract.py --write --lean # taxonomy changes; requires Lean 4
@@ -157,26 +146,16 @@ The release protocol declares the host/model matrix and fixes the schedule and t
 # Clone any real Playwright/Cypress repo into testbed/ (gitignored) to exercise the skills
 git clone --depth 1 https://github.com/calcom/cal.diy testbed/cal.diy
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh testbed/cal.diy
-# Invoke e2e-reviewer / playwright-debugger via the agent runtime as usual.
+# Invoke e2e-reviewer via the agent runtime as usual.
 
-# Install the four skills from this repo as real copies (one-time setup; also cleans up any prior symlink install)
+# Install the three skills from this repo as real copies (one-time setup; also cleans up any prior symlink install)
 bash scripts/dev/reinstall-skills.sh
-
-# Optional: register the two named Codex-native e2e agents globally
-bash scripts/dev/install-codex-agents.sh
-
-# Optional: register the same two subagents for Claude Code at user level.
-# Prefer this over installing the plugin when the four skills are already
-# present through the skills CLI: plugin skills are namespaced rather than
-# deduplicated, so the plugin would load a second copy of every skill
-# description into each session just to deliver these two agents.
-bash scripts/dev/install-claude-agents.sh
 
 # Wire pushes of HEAD to main to refresh the installed copies (one-time, opt-in)
 bash scripts/dev/install-hooks.sh
 ```
 
-The reinstall script executes a verified `skills@1.5.21` artifact from an exact dependency lock, then replaces only the four e2e-skills as real copies. It verifies the canonical store, the requested Claude Code projection, and any Codex shadow before accepting the install; other installed skills are untouched. `--copy` mode snapshots the current working tree at invocation time, including uncommitted edits, so later source edits do not leak into the runtime until the next reinstall. The pre-push hook refreshes that snapshot only when the push sends the checked-out HEAD to `main` and `skills/` has no uncommitted edits, so the installed copy matches what was pushed; other pushes skip the refresh. When a pushed range touches `skills/*/scripts/` or their test suites, the hook also runs `scripts/dev/linux-script-check.sh` on the pushed commit, because `ci-local.sh` runs on macOS and the scripts also ship to Linux: a suite failure blocks the push, and a missing Docker daemon only warns. `E2E_SKILLS_SKIP_LINUX_CHECK=1` bypasses it; hosted CI still runs on Linux. `E2E_SKILLS_AGENTS` is restricted to the receiving surfaces this installer verifies (`claude-code` and `codex`; default: both). Named Codex-agent installation remains a separate global opt-in: run `scripts/dev/install-codex-agents.sh` directly, or set `E2E_SKILLS_INSTALL_CODEX_AGENTS=1` for an explicit combined reinstall; the default is `0`.
+The reinstall script executes a verified `skills@1.5.21` artifact from an exact dependency lock, then replaces only the three e2e-skills as real copies; it warns about, but never deletes, a leftover copy of a removed debugger skill. It verifies the canonical store, the requested Claude Code projection, and any Codex shadow before accepting the install; other installed skills are untouched. `--copy` mode snapshots the current working tree at invocation time, including uncommitted edits, so later source edits do not leak into the runtime until the next reinstall. The pre-push hook refreshes that snapshot only when the push sends the checked-out HEAD to `main` and `skills/` has no uncommitted edits, so the installed copy matches what was pushed; other pushes skip the refresh. When a pushed range touches `skills/*/scripts/` or their test suites, the hook also runs `scripts/dev/linux-script-check.sh` on the pushed commit, because `ci-local.sh` runs on macOS and the scripts also ship to Linux: a suite failure blocks the push, and a missing Docker daemon only warns. `E2E_SKILLS_SKIP_LINUX_CHECK=1` bypasses it; hosted CI still runs on Linux. `E2E_SKILLS_AGENTS` is restricted to the receiving surfaces this installer verifies (`claude-code` and `codex`; default: both).
 
 Development evals and fixtures stay in `scripts/evals/skills/<name>/`; fixed-project adapter experiments stay in `scripts/evals/hybrid-check-pilot/`. Neither ships inside installed skills. Preserve frozen benchmark snapshots on Hugging Face; relocation does not make historical measurements apply to new skill bytes.
 
@@ -186,15 +165,15 @@ Development evals and fixtures stay in `scripts/evals/skills/<name>/`; fixed-pro
 2. **Re-run the drift smoke test.** `scripts/ci/test-parity.sh` mutates known-bad versions of the files and asserts the parity check catches each one — keep it green when you add new parity rules.
 3. **Add or update evals when behavior changes.** Each skill's development cases live in `scripts/evals/skills/<name>/evals.json`, outside the installed skill tree. Eval IDs must follow the skill's naming convention (CI validates). Each new smell or behavior change should add at least two assertions: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 4. **Respect severity contracts.** P0 entries should be silent-always-pass smells; don't downgrade. P1/P2 should not creep into P0 just because they're easier to grep.
-5. **Keep subagent wiring delegation-aware.** The `agents/` subagents (`e2e-finding-verifier`, `e2e-failure-classifier`) are registered in Claude Code by the plugin or an explicit standalone/all-in-one agent installer. The `skills` CLI alone does not register them; Codex uses the separate TOML definitions. So any skill that delegates to a subagent MUST also carry an inline fallback that reaches an **identical** verdict from the same source of truth (`skills/e2e-reviewer/references/pattern-reference.md` for reviewer findings; the debugger `SKILL.md` F1–F15 tables for failures). Never make a subagent the only path to a verdict. The Codex-native `.codex/agents/*.toml` ports are an optional **third** copy of the same contract — kept from drifting by the `Subagent parity` **SP5** check in `scripts/ci/review.sh` (A1 absolute-path contract, verdict vocabulary, frozen F1–F15) — but Codex only registers them when the TOMLs sit in `~/.codex/agents/` (or a Codex checkout of this repo), never via `codex plugin add` or the `skills` CLI, so the inline fallback stays load-bearing on every host.
+5. **Keep every verdict inline.** There are no dedicated subagents: the former `e2e-finding-verifier` and `e2e-failure-classifier` (and their Codex TOML ports) were removed because the skills already reached the same verdicts inline, and real review runs on Claude and Codex never invoked the verifier. Reviewer findings are verified inline against `skills/e2e-reviewer/references/patterns/<id>.md` (generated from `pattern-reference.md`). Do not add a subagent, a delegation step or a second copy of that contract; the `Inline verdict contract` check in `scripts/ci/review.sh` and `scripts/ci/test-routing-contract.py` fail when one comes back. The generator still delegates to the user-installed official Playwright planner and generator; that is generation, not a verdict.
 
 ## Cross-host parity rules
 
-Both the Claude Code plugin and the Codex plugin expose the same four public skills from the shared `skills/` directory. The two manifests differ only in schema shape and host-specific display fields — never in skill behavior. CI enforces:
+Both the Claude Code plugin and the Codex plugin expose the same three public skills from the shared `skills/` directory. The two manifests differ only in schema shape and host-specific display fields — never in skill behavior. CI enforces:
 
 - **Version parity**: `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` (the `e2e-skills` entry), and `.codex-plugin/plugin.json` must share the same `version` string. Bump all three together.
-- **Taxonomy parity**: `scripts/ci/lib/reviewer_taxonomy_contract.py` owns the stable 24-entry reviewer ID/title/severity order, and `review.sh` checks it against the `e2e-reviewer/SKILL.md` Quick Reference. Manifest descriptions are concise host-specific package metadata; they identify the four generate, review, and debug skills without duplicating the full reviewer taxonomy. The `e2e-reviewer/SKILL.md` frontmatter remains the lean trigger description.
-- **Public skill surface**: `skills/<name>/SKILL.md` `name` field must match the directory name, and the four directory names must match `.claude-plugin/plugin.json` `skills` paths and the `$<skill>` invocation in each `agents/openai.yaml` `interface.default_prompt`. That file follows the schema codex-cli actually reads — `interface` plus optional `policy` and `dependencies` — so it carries no `name` field of its own.
+- **Taxonomy parity**: `scripts/ci/lib/reviewer_taxonomy_contract.py` owns the stable 24-entry reviewer ID/title/severity order, and `review.sh` checks it against the `e2e-reviewer/SKILL.md` Quick Reference. Manifest descriptions are concise host-specific package metadata; they identify the generate and review skills without duplicating the full reviewer taxonomy. The `e2e-reviewer/SKILL.md` frontmatter remains the lean trigger description.
+- **Public skill surface**: `skills/<name>/SKILL.md` `name` field must match the directory name, and the three directory names must match `.claude-plugin/plugin.json` `skills` paths and the `$<skill>` invocation in each `agents/openai.yaml` `interface.default_prompt`. That file follows the schema codex-cli actually reads — `interface` plus optional `policy` and `dependencies` — so it carries no `name` field of its own.
 - **Framework scope**: the word "Puppeteer" must not appear outside `docs/framework-scope.md`, including in any plugin manifest.
 
 When you bump the bundle version, touch all three manifests in one commit. The drift smoke test (`scripts/ci/test-parity.sh`) mutates each manifest in turn to verify the parity checks actually catch drift.
@@ -202,7 +181,7 @@ When you bump the bundle version, touch all three manifests in one commit. The d
 ## What Not to Do
 
 - Do **not** add new file types under `docs/` without linking them from `README.md` or referencing them from a CI script — the docs orphan check will fail.
-- Do **not** silently change a pattern ID, severity, or failure category code. Downstream evals and OSS adopters depend on them.
+- Do **not** silently change a pattern ID or severity. Downstream evals and OSS adopters depend on them.
 - Do **not** introduce out-of-scope framework code paths. Skills must say "out of scope" rather than emit half-working examples for Selenium/WebdriverIO/etc.
 - Do **not** push commits without running `/bin/bash -p scripts/ci/ci-local.sh`.
 - Keep detector IDs aligned across `packages/scanner/src/`, the canonical pattern contracts and the reviewer taxonomy contract. `scan.sh` only verifies and launches the generated bundle. Do not add a second lookup table for IDs or old shell detection rules.
@@ -210,15 +189,17 @@ When you bump the bundle version, touch all three manifests in one commit. The d
 
 ## Installation Paths Documented for Users
 
-`README.md` starts its Install section with the all-in-one installer and one cross-agent skills CLI command, followed by Claude Code and Codex plugin alternatives. Keep these paths synchronized:
+`README.md` starts its Install section (`## Install and try it`) with one primary command, then "use it" prompts, the one-time generator project setup, the no-install scanner for CI, and short alternatives and troubleshooting. `docs/installation.md` holds the details. Keep this list, the README (and its ko/ja/zh-cn translations) and the guide in lock-step; `review.sh` (README i18n parity) checks them:
 
-- **All-in-one**: from a reviewed checkout, `bash install.sh --host <claude|codex> [--project /path/to/project] [--dry-run]`. Reuses the verified skill/agent installers. Claude setup also prepares the shared canonical skill store through the Codex projection; dedicated agents target only the selected host. Project setup uses the installed Playwright CLI in a temporary workspace, copies official agent definitions without seed/spec files, and merges project MCP configuration after collision checks. It requires Node.js 22.20+ with npm/npx at standard system or Homebrew locations. Restart, approval, live tool discovery, fixtures and browser readiness remain separate.
-- **Claude Code**: plugin marketplace — `/plugin marketplace add voidmatcha/e2e-skills` → `/plugin install e2e-skills@voidmatcha` (reads `.claude-plugin/plugin.json` + `marketplace.json`).
-- **Codex**: the skills-only Codex CLI variant is `npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex`; Use `-a claude-code` for the Claude Code skills-only variant. The skill copies land in `~/.agents/skills/`, where Codex/omx auto-discovers their `SKILL.md` files. This path does not install the root `.codex-plugin/plugin.json`; that interface manifest belongs to the alternative Codex plugin marketplace path: `codex plugin marketplace add voidmatcha/e2e-skills` → `codex plugin add e2e-skills@voidmatcha`.
-- **skills.sh / other agents (Cursor, OpenCode, Gemini CLI, and more)**: one generalized section — the global install `npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all` is the primary command, with `-a <agent>` mentioned as the single-agent variant (agent names must be verified in the `vercel-labs/skills` supported-agents list; do not document names that are not in it).
-- **Manual clone for Claude Code**: clone the repository to `~/.claude/e2e-skills`, then symlink each of the four `skills/<name>` directories directly into `~/.claude/skills/<name>`; Claude Code documents direct per-skill roots and supports those symlinks. The commands in `docs/installation.md` must fail rather than overwrite an existing same-named skill and must tell users to verify all four through `/skills`.
+- **Primary, every agent**: `npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all`, the first command block in the README. The single-agent variant is `npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a <agent>` (for example `-a claude-code` or `-a codex`; agent names must be verified in the `vercel-labs/skills` supported-agents list). The skill copies land in `~/.agents/skills/` (with the Claude Code projection in `~/.claude/skills/`).
+- **Test generation, one-time project setup**: the generator never runs setup itself. When the official agents are missing it tells the user to run `npx --no-install playwright init-agents --loop=claude` (Claude Code) or `--loop=codex` (Codex) in the project root, then restart and approve the `playwright-test` MCP server; Codex also needs a session-wide `playwright-test` entry in `.codex/config.toml`. State only what is verified against Playwright's own source: in 1.62, `--loop=claude` writes `.claude/agents/playwright-test-{planner,generator,healer}.md` and replaces `.mcp.json`; `--loop=codex` writes `.codex/agents/playwright_test_{planner,generator,healer}.toml` with the server declared inside each file and no `.codex/config.toml`; both load the config and may write `specs/README.md` and a seed spec.
+- **No-install scanner for CI**: `npx --yes --package=@voidmatcha/e2e-skills-scanner@<version> e2e-skills scan path/to/tests --format text`.
+- **Alternatives**: the Claude Code plugin marketplace (`/plugin marketplace add voidmatcha/e2e-skills` → `/plugin install e2e-skills@voidmatcha`, reads `.claude-plugin/plugin.json` + `marketplace.json`) and the Codex plugin marketplace (`codex plugin marketplace add voidmatcha/e2e-skills` → `codex plugin add e2e-skills@voidmatcha`, reads `.codex-plugin/plugin.json`). Both install the same three skills; users pick one method because plugin skills are namespaced and would load twice.
+- **Troubleshooting**: the read-only `e2e-skills doctor --host <claude|codex> [--project PATH]`. It also warns (`REMOVED_SKILL_COPY`) about a leftover `playwright-debugger` or `cypress-debugger` copy and suggests removing it; it deletes nothing.
+- **Installer (guide only)**: `e2e-skills install --host <claude|codex> [--project PATH] [--dry-run]` or `bash install.sh` from a reviewed checkout installs the three skills and, with `--project`, runs `init-agents` in a temporary workspace, copies the official agent definitions without seed/spec files and merges project MCP configuration after collision checks. It requires Node.js 22.20+ with npm/npx at standard system or Homebrew locations. Restart, approval, live tool discovery, fixtures and browser readiness remain separate.
+- **Manual clone for Claude Code** (guide only): clone the repository to `~/.claude/e2e-skills`, then symlink each of the three `skills/<name>` directories directly into `~/.claude/skills/<name>`. The commands in `docs/installation.md` must fail rather than overwrite an existing same-named skill and must tell users to verify all three through `/skills`.
 
-The install paths above cover every supported host. Use the all-in-one route for guided Claude Code/Codex setup and the single `skills` CLI command for skills-only cross-agent installation; the host plugin marketplaces remain supported alternatives.
+There are no dedicated subagents to install on any path.
 
 ## License
 

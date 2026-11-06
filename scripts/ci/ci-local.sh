@@ -112,7 +112,7 @@ run_python -c 'import sys; assert __debug__; raise SystemExit(0)' ||
   fail "isolated Python runner contract"
 
 # Full runs do not depend on the selector, preserving the default gate.
-CI_GROUPS="generator verification install debuggers behavioral evidence holdout scanner harness fixtures tooling preflight postfix parity selfscan"
+CI_GROUPS="generator verification install behavioral evidence holdout scanner harness fixtures tooling preflight postfix parity selfscan"
 CI_SELECTED="$CI_GROUPS"
 CI_REASON="explicit or default full CI"
 if [ "$CI_MODE" = "scoped" ]; then
@@ -199,8 +199,6 @@ else
 fi
 
 step "Current documentation contracts"
-run_python scripts/ci/test-debugger-contracts.py || fail "test-debugger-contracts.py"
-
 run_python scripts/ci/test-current-docs.py || fail "test-current-docs.py"
 
 run_python scripts/ci/test-release-claims.py || fail "test-release-claims.py"
@@ -256,6 +254,9 @@ raise SystemExit(1)
 fi
 [ -n "$NODE_BIN" ] || fail "trusted Node.js runtime unavailable"
 
+step "Composite Action schema and smoke tests"
+"$NODE_BIN" --test scripts/ci/test-github-action.mjs || fail "test-github-action.mjs"
+
 if selected generator; then
 step "Generator contracts"
 run_python scripts/ci/test-generator-router.py || fail "test-generator-router.py"
@@ -270,11 +271,7 @@ step "Verification-rule parity"
 fi
 
 if selected install; then
-step "Codex agent packaging"
-/bin/bash -p scripts/ci/test-codex-agents.sh || fail "test-codex-agents.sh"
-/bin/bash -p scripts/ci/test-claude-agents.sh || fail "test-claude-agents.sh"
-run_python scripts/ci/test-codex-agent-install.py ||
-  fail "test-codex-agent-install.py"
+step "Codex packaging and skill installer"
 run_python scripts/ci/test-codex-manifest.py ||
   fail "test-codex-manifest.py"
 run_python scripts/ci/test-codex-smoke-contract.py ||
@@ -294,21 +291,6 @@ step "Behavioral eval harness"
 run_python scripts/ci/test-assertion-contracts.py || fail "test-assertion-contracts.py"
 run_python scripts/ci/test-routing-contract.py || fail "test-routing-contract.py"
 run_python scripts/ci/test-linux-script-check.py || fail "test-linux-script-check.py"
-run_python scripts/ci/test-residual-redos-budget.py ||
-  fail "test-residual-redos-budget.py"
-
-fi
-
-if selected debuggers; then
-step "Debugger contracts"
-run_python scripts/ci/test-cypress-debugger-artifact-download.py ||
-  fail "test-cypress-debugger-artifact-download.py"
-run_python scripts/ci/test-cypress-debugger-report-publish.py ||
-  fail "test-cypress-debugger-report-publish.py"
-run_python scripts/ci/test-playwright-debugger-artifact-download.py ||
-  fail "test-playwright-debugger-artifact-download.py"
-run_python scripts/ci/test-playwright-debugger-report-publish.py ||
-  fail "test-playwright-debugger-report-publish.py"
 
 fi
 

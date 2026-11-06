@@ -278,7 +278,7 @@ def main() -> None:
         )
         assert shadowed.returncode == 0, shadowed.stdout
         assert (
-            "verification parity: reviewer V1-V6 contract and debugger handoffs aligned"
+            "verification parity: reviewer V1-V6 contract aligned"
             in shadowed.stdout
         )
         assert not marker.exists(), (

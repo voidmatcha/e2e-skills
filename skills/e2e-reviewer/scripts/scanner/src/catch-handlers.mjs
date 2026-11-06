@@ -925,6 +925,256 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
     });
     return !unsupported && Boolean(assertion);
   }
+  // Quiet proofs for the narrowing rules below: an unresolved receiver keeps
+  // the candidate without adding a diagnostic of its own.
+  function quietKind(node, receiver = true) {
+    const value = receiver ? receivers.expression(node) : scope.expression(filename, node);
+    return value.complete ? value.kind : 'unknown';
+  }
+  function skipParens(node) {
+    while (node.parent && ts.isParenthesizedExpression(node.parent)) node = node.parent;
+    return node;
+  }
+  function primitiveLiteral(node) {
+    node = unwrap(node);
+    if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return { value: node.text };
+    if (ts.isNumericLiteral(node)) return { value: Number(node.text) };
+    if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.MinusToken && ts.isNumericLiteral(unwrap(node.operand)))
+      return { value: -Number(unwrap(node.operand).text) };
+    if (node.kind === ts.SyntaxKind.TrueKeyword) return { value: true };
+    if (node.kind === ts.SyntaxKind.FalseKeyword) return { value: false };
+    if (node.kind === ts.SyntaxKind.NullKeyword) return { value: null };
+    if (ts.isIdentifier(node) && node.text === 'undefined' && !receivers.checker.getSymbolAtLocation(node)?.declarations?.length)
+      return { value: undefined };
+    return null;
+  }
+  // The handler's fallback value when it is a concise-body primitive literal.
+  function literalFallback(call) {
+    const handler = unwrap(call.arguments[0]);
+    if (!(ts.isArrowFunction(handler) || ts.isFunctionExpression(handler)) || handler.asteriskToken ||
+        handler.modifiers?.some(item => item.kind === ts.SyntaxKind.AsyncKeyword) || ts.isBlock(handler.body)) return null;
+    return primitiveLiteral(handler.body);
+  }
+  function receiverCall(call) {
+    const receiver = unwrap(unwrap(call.expression).expression);
+    if (!ts.isCallExpression(receiver) || !ts.isPropertyAccessExpression(unwrap(receiver.expression))) return null;
+    const access = unwrap(receiver.expression);
+    return { call: receiver, name: access.name.text, object: access.expression, optional: Boolean(access.questionDotToken || receiver.questionDotToken) };
+  }
+  // C: `animation.finished.catch(...)` mapped over `getAnimations()` inside a
+  // proven browser callback. Animation.finished rejects only when the
+  // animation is cancelled, after which nothing is animating, and browser
+  // code cannot swallow a Playwright assertion or timeout.
+  function animationSettle(call) {
+    if (!receivers.inBrowserCallback(call)) return false;
+    const finished = unwrap(unwrap(call.expression).expression);
+    if (!ts.isPropertyAccessExpression(finished) || finished.questionDotToken || finished.name.text !== 'finished' ||
+        !ts.isIdentifier(unwrap(finished.expression))) return false;
+    const symbol = receivers.checker.getSymbolAtLocation(unwrap(finished.expression));
+    const parameter = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+    const mapper = parameter && ts.isParameter(parameter) && ts.isIdentifier(parameter.name) && !parameter.dotDotDotToken ? parameter.parent : null;
+    if (!mapper || !(ts.isArrowFunction(mapper) || ts.isFunctionExpression(mapper)) || mapper.parameters[0] !== parameter ||
+        ts.isBlock(mapper.body) || isWritten(source, receivers.checker, symbol)) return false;
+    let body = unwrap(mapper.body);
+    if (ts.isAwaitExpression(body)) body = unwrap(body.expression);
+    if (body !== call) return false;
+    const map = mapper.parent;
+    if (!ts.isCallExpression(map) || map.questionDotToken || map.arguments.length !== 1 || map.arguments[0] !== mapper) return false;
+    const access = dot(map.expression);
+    if (!access || access.name.text !== 'map') return false;
+    return animationList(access.expression, 0);
+  }
+  // A receiver whose getAnimations() is the DOM method: the unshadowed
+  // `document`, its body/documentElement, a document.querySelector(...) or
+  // getElementById(...) result (through an unwritten const), or the element
+  // parameter of a callback passed to evaluate() on a proven Locator. A user
+  // object with a getAnimations member is not one.
+  function nativeAnimatable(node, depth = 0) {
+    node = unwrap(node);
+    if (depth > 4) return false;
+    const unboundDocument = item => ts.isIdentifier(item) && item.text === 'document' && !receivers.checker.getSymbolAtLocation(item);
+    if (unboundDocument(node)) return true;
+    if (ts.isPropertyAccessExpression(node) && ['body', 'documentElement'].includes(node.name.text)) return unboundDocument(unwrap(node.expression));
+    if (ts.isCallExpression(node)) {
+      const access = dot(node.expression);
+      return Boolean(access && ['querySelector', 'getElementById'].includes(access.name.text) && unboundDocument(unwrap(access.expression)));
+    }
+    if (!ts.isIdentifier(node)) return false;
+    const symbol = receivers.checker.getSymbolAtLocation(node);
+    const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+    if (!declaration || isWritten(source, receivers.checker, symbol, { properties: true })) return false;
+    if (ts.isVariableDeclaration(declaration))
+      return Boolean(declaration.initializer && declaration.parent.flags & ts.NodeFlags.Const && nativeAnimatable(declaration.initializer, depth + 1));
+    if (!ts.isParameter(declaration) || declaration.dotDotDotToken) return false;
+    const fn = declaration.parent, call = fn.parent;
+    if (!(ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) || fn.parameters[0] !== declaration ||
+        !ts.isCallExpression(call) || call.arguments[0] !== fn) return false;
+    const evaluate = dot(call.expression);
+    return Boolean(evaluate && evaluate.name.text === 'evaluate' && quietKind(evaluate.expression) === 'locator');
+  }
+  function animationList(node, depth) {
+    node = unwrap(node);
+    if (depth > 8) return false;
+    if (ts.isIdentifier(node)) {
+      const symbol = receivers.checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      return Boolean(declaration && ts.isVariableDeclaration(declaration) && ts.isIdentifier(declaration.name) && declaration.initializer &&
+        declaration.parent.flags & ts.NodeFlags.Const && !isWritten(source, receivers.checker, symbol, { properties: true }) &&
+        receivers.inBrowserCallback(declaration) && animationList(declaration.initializer, depth + 1));
+    }
+    // `element?.getAnimations() ?? []`
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken) {
+      const right = unwrap(node.right);
+      return ts.isArrayLiteralExpression(right) && !right.elements.length && animationList(node.left, depth + 1);
+    }
+    if (!ts.isCallExpression(node) || !ts.isPropertyAccessExpression(unwrap(node.expression))) return false;
+    const access = unwrap(node.expression), name = access.name.text;
+    if (name === 'getAnimations') return node.arguments.length <= 1 && nativeAnimatable(access.expression);
+    return name === 'filter' && !node.questionDotToken && !access.questionDotToken && animationList(access.expression, depth + 1);
+  }
+  // J: a discarded `.catch` on closing or unrouting a proven Playwright
+  // object. A failed teardown leaves a resource alive; it cannot make a
+  // later assertion on the product pass.
+  const TEARDOWN = new Map([['close', ['page', 'context', 'browser', 'electron-app']], ['dispose', ['request']],
+    ['unroute', ['page', 'context']], ['unrouteAll', ['page', 'context']]]);
+  function teardownCatch(call) {
+    const receiver = receiverCall(call);
+    if (!receiver || !TEARDOWN.has(receiver.name) || !TEARDOWN.get(receiver.name).includes(quietKind(receiver.object))) return false;
+    let holder = skipParens(call).parent;
+    if (ts.isAwaitExpression(holder) || ts.isVoidExpression(holder)) holder = skipParens(holder).parent;
+    return ts.isExpressionStatement(holder);
+  }
+  // I: a proven response body read (`res.json()`/`res.text()`) whose literal
+  // fallback reaches only failure messages: a template or `+` operand of a
+  // `throw new Error(...)` message, an `expect(subject, message)` message or a
+  // `console.*` argument, directly or through a const read only there. A
+  // message cannot change whether a test passes, so swallowing the parse
+  // error hides nothing.
+  const MESSAGE_ERRORS = new Set(['Error', 'TypeError', 'RangeError']);
+  function messageUse(node) {
+    for (;;) {
+      const parent = node.parent;
+      if (ts.isParenthesizedExpression(parent) || ts.isAsExpression(parent) || ts.isNonNullExpression(parent) ||
+          ts.isTemplateSpan(parent) || ts.isTemplateExpression(parent) ||
+          ts.isBinaryExpression(parent) && parent.operatorToken.kind === ts.SyntaxKind.PlusToken) { node = parent; continue; }
+      // `body.slice(0, 300)`, `JSON.stringify(body)`, `String(body)`.
+      if (ts.isPropertyAccessExpression(parent) && parent.expression === node && !parent.questionDotToken &&
+          ['slice', 'substring', 'trim'].includes(parent.name.text) && ts.isCallExpression(parent.parent) &&
+          parent.parent.expression === parent && parent.parent.arguments.every(item => primitiveLiteral(item))) { node = parent.parent; continue; }
+      if (ts.isCallExpression(parent) && parent.arguments.length === 1 && parent.arguments[0] === node) {
+        const callee = unwrap(parent.expression), access = dot(callee);
+        const global = (item, name) => ts.isIdentifier(unwrap(item)) && unwrap(item).text === name && !receivers.checker.getSymbolAtLocation(unwrap(item));
+        if (global(callee, 'String') || access && access.name.text === 'stringify' && global(access.expression, 'JSON')) { node = parent; continue; }
+      }
+      break;
+    }
+    const parent = node.parent;
+    if (ts.isNewExpression(parent) && parent.arguments?.[0] === node && ts.isIdentifier(unwrap(parent.expression)) &&
+        MESSAGE_ERRORS.has(unwrap(parent.expression).text) && !receivers.checker.getSymbolAtLocation(unwrap(parent.expression)) &&
+        ts.isThrowStatement(skipParens(parent).parent)) return true;
+    if (ts.isCallExpression(parent) && parent.arguments.length === 2 && parent.arguments[1] === node && !parent.questionDotToken &&
+        quietKind(parent.expression) === 'expect') return true;
+    const consoleCall = ts.isCallExpression(parent) && parent.arguments.includes(node) && dot(parent.expression);
+    return Boolean(consoleCall && ts.isIdentifier(unwrap(consoleCall.expression)) && unwrap(consoleCall.expression).text === 'console' &&
+      !receivers.checker.getSymbolAtLocation(unwrap(consoleCall.expression)));
+  }
+  function messageOnlyBody(call) {
+    const receiver = receiverCall(call);
+    if (!receiver || receiver.optional || !['json', 'text'].includes(receiver.name) || receiver.call.arguments.length ||
+        receivers.inBrowserCallback(call) || !receivers.data(receiver.call)) return false;
+    const handler = unwrap(call.arguments[0]);
+    if (!(ts.isArrowFunction(handler) || ts.isFunctionExpression(handler)) || handler.asteriskToken || ts.isBlock(handler.body) ||
+        handler.modifiers?.some(item => item.kind === ts.SyntaxKind.AsyncKeyword)) return false;
+    const fallback = unwrap(handler.body);
+    if (!primitiveLiteral(fallback) && !(ts.isObjectLiteralExpression(fallback) && !fallback.properties.length) &&
+        !(ts.isArrayLiteralExpression(fallback) && !fallback.elements.length)) return false;
+    let value = skipParens(call);
+    if (ts.isAwaitExpression(value.parent)) value = value.parent;
+    while (ts.isParenthesizedExpression(value.parent) || ts.isAsExpression(value.parent) || ts.isNonNullExpression(value.parent)) value = value.parent;
+    const declaration = value.parent;
+    if (!ts.isVariableDeclaration(declaration) || declaration.initializer !== value) return messageUse(value);
+    if (!ts.isIdentifier(declaration.name) || !(declaration.parent.flags & ts.NodeFlags.Const)) return false;
+    const symbol = receivers.checker.getSymbolAtLocation(declaration.name);
+    if (!symbol || isWritten(source, receivers.checker, symbol, { properties: true })) return false;
+    let only = true, uses = 0;
+    walk(source, item => {
+      if (!only || !ts.isIdentifier(item) || item === declaration.name || receivers.checker.getSymbolAtLocation(item) !== symbol) return;
+      uses++;
+      if (!messageUse(item)) only = false;
+    });
+    return only && uses > 0;
+  }
+  // H triage (no verdict change): for a swallowed wait or navigation, name
+  // what was waited for and whether any later assertion in the same function
+  // re-checks it, and how a behavior-fault probe would decide it at runtime.
+  const WAITS = new Set(['waitFor', 'waitForLoadState', 'waitForURL', 'waitForSelector', 'waitForResponse', 'waitForRequest',
+    'waitForFunction', 'waitForEvent', 'waitForNavigation', 'goto']);
+  function swallowedWaitTriage(call) {
+    const receiver = receiverCall(call);
+    if (!receiver || !WAITS.has(receiver.name)) return null;
+    const text = node => node.getText(source).replace(/\s+/g, '');
+    const clip = value => value.length > 80 ? `${value.slice(0, 77)}...` : value;
+    const target = receiver.name === 'waitFor' ? text(receiver.object) : `${text(receiver.object)}.${receiver.name}(...)`;
+    let state = null;
+    if (receiver.name === 'waitFor') {
+      state = 'visible';
+      const options = receiver.call.arguments[0] && unwrap(receiver.call.arguments[0]);
+      const entry = options && ts.isObjectLiteralExpression(options) && options.properties.find(item =>
+        ts.isPropertyAssignment(item) && ts.isIdentifier(item.name) && item.name.text === 'state');
+      if (entry) state = ts.isStringLiteral(unwrap(entry.initializer)) ? unwrap(entry.initializer).text : 'dynamic';
+    }
+    let fn = call.parent;
+    while (fn && !ts.isFunctionLike(fn)) fn = fn.parent;
+    const reasserted = [];
+    let later = 0;
+    if (fn?.body) walk(fn.body, item => {
+      if (item.pos < call.end || !ts.isCallExpression(item) || !ts.isIdentifier(unwrap(item.expression)) || unwrap(item.expression).text !== 'expect') return;
+      later++;
+      if (receiver.name === 'waitFor' && item.arguments.length && text(item.arguments[0]) === text(receiver.object))
+        reasserted.push(source.getLineAndCharacterOfPosition(item.getStart(source)).line + 1);
+    });
+    const subject = receiver.name === 'waitFor' ? `waited locator ${clip(target)} (state '${state}')` : `swallowed ${clip(target)}`;
+    const hint = receiver.name === 'waitFor' && reasserted.length ?
+      `${subject} is re-asserted only at line ${reasserted.join(', ')}, not unconditionally in the same block after the catch` :
+      `${subject} is ${receiver.name === 'waitFor' ? 'never re-asserted' : 'not re-checked'} after the catch in this function; ` +
+      (later ? `check whether the ${later} later assertion(s) there depend on it` : 'no assertion follows it in this function; for a helper, check what its callers assert next');
+    const probe = `an e2e-skills-check probe in behavior-fault mode whose source edit keeps ${receiver.name === 'waitFor' ?
+      `${clip(target)} from reaching '${state}'` : `${receiver.name} from completing`}; SURVIVED with fault_reached confirms the swallowed wait, a linked failure (DETECTED) refutes it`;
+    return { shape: 'swallowed-wait', target: clip(target), ...(state ? { state } : {}), reassertedLines: reasserted, laterAssertions: later, hint, probe };
+  }
+  // F: the `.catch` result is what an awaited `expect.poll` callback returns,
+  // and its literal fallback cannot satisfy the literal matcher, so a
+  // persistent error keeps the poll failing until it times out.
+  function pollFallback(call) {
+    const fallback = literalFallback(call);
+    if (!fallback) return false;
+    let value = skipParens(call);
+    if (ts.isAwaitExpression(value.parent)) value = skipParens(value.parent);
+    let callback = value.parent;
+    if (ts.isReturnStatement(callback)) {
+      callback = callback.parent;
+      while (callback && !ts.isFunctionLike(callback)) callback = callback.parent;
+    } else if (!((ts.isArrowFunction(callback) || ts.isFunctionExpression(callback)) && callback.body === value)) return false;
+    if (!callback || !(ts.isArrowFunction(callback) || ts.isFunctionExpression(callback)) || callback.asteriskToken) return false;
+    const poll = skipParens(callback).parent;
+    if (!ts.isCallExpression(poll) || poll.questionDotToken || poll.arguments[0] !== skipParens(callback) && unwrap(poll.arguments[0]) !== callback ||
+        poll.arguments.length > 2) return false;
+    const pollAccess = dot(poll.expression);
+    if (!pollAccess || pollAccess.name.text !== 'poll' || !ts.isIdentifier(unwrap(pollAccess.expression)) ||
+        quietKind(pollAccess.expression) !== 'expect') return false;
+    let chain = skipParens(poll).parent, negated = false;
+    if (ts.isPropertyAccessExpression(chain) && chain.name.text === 'not' && !chain.questionDotToken) { negated = true; chain = skipParens(chain).parent; }
+    if (!ts.isPropertyAccessExpression(chain) || chain.questionDotToken) return false;
+    const matcher = chain.name.text, assertion = chain.parent;
+    if (!ts.isCallExpression(assertion) || assertion.expression !== chain || assertion.questionDotToken || !assertion.arguments.length ||
+        assertion.arguments.length > 2 || !ts.isAwaitExpression(skipParens(assertion).parent)) return false;
+    const expected = primitiveLiteral(assertion.arguments[0]);
+    if (!expected) return false;
+    const F = fallback.value, V = expected.value;
+    if (['toBe', 'toEqual', 'toStrictEqual'].includes(matcher)) return negated ? Object.is(F, V) : !Object.is(F, V) && F !== V;
+    if (matcher === 'toBeGreaterThan' && !negated) return typeof V === 'number' && (typeof F !== 'number' || F <= V);
+    return false;
+  }
   function abruptFinally(block) {
     let abrupt = false;
     (function visit(node) {
@@ -1037,6 +1287,7 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
       diagnostic(node, 'catch callback exceeds legacy 12-line lookahead'); return;
     }
     if (hasCleanup(node) || trailingCleanup(node) || reverifiedWait(node) || collectedErrors(node) || observedOriginalAwait(node)) return;
+    if (animationSettle(node) || teardownCatch(node) || pollFallback(node) || messageOnlyBody(node)) return;
     const parameterized = callback.parameters.length > 0;
     if (parameterized) {
       if (callback.parameters.length !== 1 || !ts.isIdentifier(callback.parameters[0].name) ||
@@ -1052,8 +1303,9 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
     }
     const variant = parameterized ? 'parameterized' :
       ts.isBlock(callback.body) && callback.body.statements.length === 0 ? 'empty' : 'fallback';
+    const triage = swallowedWaitTriage(node);
     findings.push({ patternId: '#3', severity: 'P0', disposition: 'candidate', origin: 'ast', variant,
-      file: filename, line: position.line + 1, column: position.character + 1, start, end: node.end });
+      file: filename, line: position.line + 1, column: position.character + 1, start, end: node.end, ...(triage ? { triage } : {}) });
   });
   return { findings, diagnostics };
 }

@@ -6,7 +6,7 @@
 
 **Open:** independent clean-case labels with a complete, auditable setup/caller/reverse-user boundary, so that false positives and the full reviewer's added value over no-skill and catalog-only baselines can be measured on a corpus the skill was not tuned on. Frozen specificity v4 remains blocked; the separate development work has not produced a release corpus or a specificity result. The [September planning snapshot](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/a8279e972f2ae5b7628ac9ec8ccfc4cdac380a1d/releases/v3.3.1/docs-archive-20261028/README.md) preserves replay counts, hashes, and verification limits.
 
-**Debuggers:** no measured lift over a taxonomy-free prompt on real failures, and only four independent real CI cases with a maintainer-linked cause are available, so a held-out test needs new cases captured while CI artifacts are still retained (about two weeks).
+**Debuggers:** `playwright-debugger` and `cypress-debugger` were removed after two Claude measurements on 24 real failure cases each found no accuracy gain over a plain agent; 3.5 replaces them with one thin `e2e-debugger`, which delivers the test-authoring memo's failure-handling lines with the request and adds a deterministic three-run flake check. Its measurement (official healer, healer plus memo, and the skill, per model) is pending. Earlier runs had also found no measured lift over a taxonomy-free prompt on real failures.
 
 ## Upstream contribution track
 

@@ -71,14 +71,14 @@ class LauncherTests(unittest.TestCase):
         self.sources[file] = file.read_bytes()
         return file
 
-    def run_scan(self, *arguments, expected=0, environment=None):
+    def run_scan(self, *arguments, expected=0, environment=None, stdin=None):
         env = dict(os.environ)
         for key in ("NODE_OPTIONS", "NODE_PATH", "BASH_ENV", "ENV", "E2E_SMELL_FAIL_ON"):
             env.pop(key, None)
         if environment:
             env.update(environment)
         result = subprocess.run(['/bin/bash', '-p', str(self.launcher), *map(str, arguments)],
-                                cwd=self.project, env=env, capture_output=True, text=True, timeout=30)
+                                cwd=self.project, env=env, capture_output=True, text=True, timeout=30, input=stdin)
         self.assertEqual(result.returncode, expected, (result.stdout, result.stderr))
         return result
 
@@ -156,6 +156,20 @@ class LauncherTests(unittest.TestCase):
         self.assertEqual(report.read_bytes(), before)
         self.run_scan('--report-file', self.project / 'invalid.txt', '--format', 'json', file, expected=2)
         self.assertFalse((self.project / 'invalid.txt').exists())
+
+    def test_check_report_reads_caller_stdin_and_writes_nothing(self):
+        # Node reads the launcher code on stdin, so `--check-report -` must get
+        # the caller's stdin through descriptor 3.
+        file = self.focused()
+        before = sorted(path.name for path in self.project.iterdir())
+        gap = self.run_scan('--check-report', '-', file, expected=1, stdin='no verdicts here\n')
+        self.assertIn('UNVERDICTED', gap.stdout)
+        self.assertIn('focused.spec.ts:1', gap.stdout)
+        coverage = ''.join(f'- {item}: 1/1 files.\n' for item in ('#1', '#2', '#12', '#13', '#20', '#21', '#22', '#23'))
+        report = '## [P0] focused.spec.ts:1 — #7 Focused test leak\n' + coverage
+        done = self.run_scan('--check-report', '-', file, stdin=report)
+        self.assertIn('CHECK-REPORT: COMPLETE: 1/1', done.stdout)
+        self.assertEqual(sorted(path.name for path in self.project.iterdir()), before)
 
     def test_parser_error_stays_incomplete_under_none_policy(self):
         file = self.put('broken.spec.ts', "import {test} from '@playwright/test';test(")

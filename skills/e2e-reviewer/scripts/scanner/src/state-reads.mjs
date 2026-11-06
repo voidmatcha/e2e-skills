@@ -185,6 +185,32 @@ export function stateReads(bytes, filename, { scope } = {}) {
     return Boolean(leaf && BOOLEAN_READS.has(leaf.access.name) && !leaf.call.arguments.length &&
       ['page', 'locator'].includes(kind(leaf.access.object)));
   }
+  // Playwright documents the `timeout` option of isVisible/isHidden as
+  // deprecated and ignored: the call returns immediately without waiting.
+  // Only a proven Page/Locator receiver and a literal `timeout` key count;
+  // unproven receivers add no diagnostic here.
+  function ignoredTimeout(node) {
+    node = unwrap(node);
+    if (!ts.isCallExpression(node) || node.questionDotToken || node.arguments.some(ts.isSpreadElement)) return false;
+    const access = dot(node.expression);
+    if (!access || !['isVisible', 'isHidden'].includes(access.name)) return false;
+    const owner = receivers.expression(access.object);
+    if (!owner.complete || !['page', 'locator'].includes(owner.kind)) return false;
+    const options = node.arguments[owner.kind === 'page' ? 1 : 0];
+    if (node.arguments.length !== (owner.kind === 'page' ? 2 : 1) || !options) return false;
+    const object = unwrap(options);
+    return ts.isObjectLiteralExpression(object) && object.properties.some(property =>
+      (ts.isPropertyAssignment(property) || ts.isShorthandPropertyAssignment(property)) &&
+      (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) && property.name.text === 'timeout');
+  }
+  walk(source, node => {
+    if (ts.isCallExpression(node) && ignoredTimeout(node) && !inRetry(node)) {
+      const start = node.getStart(source), position = source.getLineAndCharacterOfPosition(start);
+      findings.push({ patternId: '#4c-4e', severity: 'P1', disposition: 'confirmed', origin: 'ast',
+        variant: 'ignored-timeout', file: filename, line: position.line + 1, column: position.character + 1,
+        start, end: node.end });
+    }
+  });
   walk(source, node => {
     if (!ts.isCallExpression(node) || node.questionDotToken) return;
     const matcher = dot(node.expression);
@@ -196,6 +222,7 @@ export function stateReads(bytes, filename, { scope } = {}) {
         base.arguments.length > 2 || base.arguments.some(ts.isSpreadElement)) return;
     const subject = unwrap(base.arguments[0]);
     const direct = read(subject);
+    if (direct && ignoredTimeout(direct.call)) return;
     let nested = false;
     function nestedRead(child) {
       if (ts.isArrowFunction(child) || ts.isFunctionExpression(child)) return;

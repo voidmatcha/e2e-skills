@@ -3,7 +3,7 @@
 
 ## Recommended setup
 
-For reviewing and debugging in any agent, [install the skills with skills.sh](../README.md#review-and-debug-install-the-skills). For test generation in Claude Code or Codex, use the [paste-in prompt](../README.md#install-with-your-coding-agent-recommended) or the [e2e-skills installer](../README.md#test-generation-claude-code-and-codex) directly with your existing Playwright project. The installer prepares the four skills, the two dedicated subagents for the selected host, and the official Playwright agents and project MCP configuration when a project is supplied.
+Install the three skills with the one [skills CLI command](../README.md#install): `npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all`, or `--skill '*' -g -a <agent>` for one agent. Reviewing and fixing a failing test (`e2e-debugger`) then work in any supported agent. For test generation in Claude Code or Codex, also run `npx --no-install playwright init-agents --loop=claude` (or `--loop=codex`) once in your Playwright project and approve its MCP server, as the [README](../README.md#test-generation-one-time-project-setup) and [Manual generator setup](#manual-generator-setup) below describe. Alternatively, the [e2e-skills installer](#cli-installer) installs the three skills for the selected host and, when a project is supplied, prepares the official Playwright agents and project MCP configuration for you.
 
 After installation, run the printed diagnostic command when authorized for that exact command. If needed, restart the host yourself, complete project trust and MCP approval, then ask the agent to resume verification in the new session. It reports installation, server tools, session tools and approval separately. It must see `generator_write_test` in the active session before proceeding with generation. Installation does not create your application, its API or database, install project dependencies or browsers, or run tests.
 
@@ -11,7 +11,7 @@ The installer requires Node.js 22.20+ with npm and npx at standard system or Hom
 
 The reviewer includes its Node scanner and pinned TypeScript parser. Scanning, including the check after generation, requires Node.js 22+ at a standard system or Homebrew location; it does not require ripgrep, ast-grep or Python. See the [scanner prerequisites](../skills/e2e-reviewer/references/scanner-workflow.md#phase-1-mechanical-scan).
 
-The installer and portable probe runner also use Node.js. Debugger artifact helpers and the source-checkout registered-adapter pilot still use Python; their references describe the required interpreter.
+The installer and portable probe runner also use Node.js. The source-checkout registered-adapter pilot still uses Python; its reference describes the required interpreter.
 
 After this setup, do not repeat the manual steps below. They are alternatives for users who want to run the commands themselves or troubleshoot configuration.
 
@@ -23,21 +23,23 @@ cd e2e-skills
 bash install.sh --host codex --project /path/to/playwright-project
 ```
 
-Use `--host claude` for Claude Code. `--project` names the directory containing playwright.config.*. Omit it to install only the four skills and two dedicated agents. Add `--dry-run` to preview changes without executing installers or project code.
+Use `--host claude` for Claude Code. `--project` names the directory containing playwright.config.*. Omit it to install only the three skills. Add `--dry-run` to preview changes without executing installers or project code.
 
 ## CLI installer
 
-The npm CLI installs the same skills and agents without a repository clone. Preview the changes, then install and diagnose the selected host:
+The npm CLI installs the same skills without a repository clone. Preview the changes, then install and diagnose the selected host:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills install --host codex --project /path/to/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills doctor --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills install --host codex --project /path/to/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills install --host codex --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills doctor --host codex --project /path/to/playwright-project
 ```
 
-Use `--host claude` for Claude Code. Installation reuses the host installer described above; it does not create a project or install its dependencies or browsers. The default `doctor` checks project and user agent registrations and MCP configuration, returning candidate paths, missing requirements and next steps without executing project code. A discovered registration is `PRESENT_UNVERIFIED`: active-session tools and approvals remain unknown.
+Use `--host claude` for Claude Code. Installation reuses the host installer described above; it does not create a project or install its dependencies or browsers. The default `doctor` checks project and user agent registrations and MCP configuration, returning candidate paths, missing requirements and next steps without executing project code. With `--project`, it also lists the `playwright.config.*` files it finds (in a monorepo, candidates in subdirectories) with their owning package, names a missing `e2e-reviewer` as the step the generator's scanner gate needs, and reports whether `eslint-plugin-playwright` is listed as an optional recommendation; it reads these files as data and never loads the config. A discovered registration is `PRESENT_UNVERIFIED`: active-session tools and approvals remain unknown.
 
 Existing skill copies must match the package exactly. Older versions and local edits are preserved and stop installation; review the reported paths before retrying.
+
+The `playwright-debugger` and `cypress-debugger` skills were removed from the bundle. Neither the installer nor `doctor` deletes a copy left by an older install: the installer prints a warning for each one, and `doctor` lists it as a `REMOVED_SKILL_COPY` warning without changing its exit status. Remove such a copy yourself if you no longer use it, for example `npx --yes skills@1.5.21 remove playwright-debugger -g`. To debug and safely fix a failing test, use `e2e-debugger`, which includes the [failure-handling rules](test-authoring-memo.md#failure-handling) without instruction-file setup; for a test made green by weakening it, use `e2e-reviewer`.
 
 For a trusted project, explicitly add `--check-server` to `doctor` to start the configured MCP server and check `initialize` and `tools/list`. That check executes project code; it does not invoke MCP tools, launch a browser or run tests. A successful server check does not prove active-session readiness. Complete host restart, project trust and tool approval yourself where needed.
 
@@ -48,8 +50,8 @@ The same entry point forwards `scan PATH` to the existing scanner and `check ...
 The [test-authoring memo](test-authoring-memo.md) and the [test-failure policy](test-failure-policy.md) are not installed by `install` and not checked by `doctor`. To write them into a project's `CLAUDE.md` or `AGENTS.md` without pasting by hand, ask for them explicitly:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host claude --project /path/to/project --memo --policy --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host claude --project /path/to/project --memo --policy
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills guidance --host claude --project /path/to/project --memo --policy --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills guidance --host claude --project /path/to/project --memo --policy
 ```
 
 `--memo`, `--policy` or both are required. `--host claude` writes `CLAUDE.md` and `--host codex` writes `AGENTS.md` in the `--project` directory, creating the file if it is missing. Each text is inserted unchanged between two HTML comments, such as `<!-- e2e-skills:test-authoring-memo sha256=... -->` and `<!-- /e2e-skills:test-authoring-memo -->`. A rerun leaves a matching block alone (`CURRENT`), replaces only the text between the markers when it differs (`UPDATED`), and otherwise appends the block after one blank line (`ADDED`); bytes outside the markers are never changed. The command refuses a symlinked, hard-linked or non-regular instruction file and malformed markers, and writes nothing in that case. `--dry-run` prints the JSON report, including the text it would insert, and writes nothing.
@@ -64,7 +66,7 @@ A configured project with no spec files can generate its first tests; missing sp
 
 The bundled reviewer scanner does not require project ESLint configuration or rules. It uses its bundled checks and does not download ESLint. If compatible project lint is unavailable, report the optional ESLint stage as skipped, rather than claiming the generated tests are lint-clean; the scanner gate still applies.
 
-For additional checks, consider [eslint-plugin-playwright](https://github.com/playwright-community/eslint-plugin-playwright) and its recommended configuration, scoped to your Playwright tests. Installing it or modifying existing lint configuration requires a separate setup decision; the generator does neither automatically. Preserve existing project lint rules.
+For additional checks, consider [eslint-plugin-playwright](https://github.com/playwright-community/eslint-plugin-playwright) and its recommended configuration, scoped to your Playwright tests. `doctor --project` reports whether it is listed. Installing it or modifying existing lint configuration requires a separate setup decision; the generator does neither automatically. Preserve existing project lint rules.
 
 
 Before running project lint, inspect the existing scripts, lint and test configuration, fixtures and project conventions. Run only an explicitly approved command in a trusted checkout, with its environment and flags recorded. Project documentation is not execution approval; otherwise report it as `recommended/unexecuted`.
@@ -87,15 +89,24 @@ A successful check verifies the server's advertised tools, including `generator_
 
 ## Manual generator setup
 
-If you installed only the skills or plugin, you can use the [e2e-skills installer](../README.md#test-generation-claude-code-and-codex) to prepare the remaining setup. The generator skill itself installs nothing and changes no agent or MCP configuration.
+If you installed only the skills or plugin, run the steps below yourself, or use the [e2e-skills installer](#cli-installer) with `--project` to prepare them. The generator skill itself installs nothing and changes no agent or MCP configuration.
 
 ### Claude Code
 
-In your trusted existing Playwright project, follow the [official Playwright Test Agents setup](https://playwright.dev/docs/test-agents#getting-started): run `npx --no-install playwright init-agents --loop=claude`, review its generated agents and `.mcp.json`, then approve the MCP tools and restart the host. Unlike our installer, `init-agents` also writes a seed spec and `specs/README.md`.
+In your trusted existing Playwright project root, follow the [official Playwright Test Agents setup](https://playwright.dev/docs/test-agents#getting-started): run `npx --no-install playwright init-agents --loop=claude`. In Playwright 1.62 it loads `playwright.config.*`, writes `.claude/agents/playwright-test-planner.md`, `playwright-test-generator.md` and `playwright-test-healer.md`, and writes `.mcp.json` with a `playwright-test` server (`npx playwright run-test-mcp-server`). It replaces an existing `.mcp.json` instead of merging it, so back up other servers first; the installer merges instead. Review the generated files, restart Claude Code in the project and approve the `playwright-test` MCP server. Unlike our installer, `init-agents` also writes `specs/README.md` when `specs/` is missing and a `seed.spec.ts` in the test directory when no seed test exists.
 
 ### Codex
 
-`playwright-test-generator` works only with a session-wide `playwright-test` MCP server. Follow the [official Playwright Test Agents setup](https://playwright.dev/docs/test-agents#getting-started) for Codex and configure a session-wide `playwright-test` MCP entry in trusted-project `.codex/config.toml` or user `~/.codex/config.toml`; `init-agents` alone does not add it. The installer with `--project` prepares the project entry.
+`playwright-test-generator` works only with a session-wide `playwright-test` MCP server. In your trusted project root, run `npx --no-install playwright init-agents --loop=codex`, following the [official Playwright Test Agents setup](https://playwright.dev/docs/test-agents#getting-started). In Playwright 1.62 it writes `.codex/agents/playwright_test_planner.toml`, `playwright_test_generator.toml` and `playwright_test_healer.toml`; each declares `playwright-test` only inside its own agent file, and the command writes no `.codex/config.toml`. Then configure a session-wide `playwright-test` MCP entry in trusted-project `.codex/config.toml` or user `~/.codex/config.toml`, for example:
+
+```toml
+[mcp_servers.playwright-test]
+command = "npx"
+args = ["--no-install", "playwright", "run-test-mcp-server"]
+required = true
+```
+
+Restart Codex in the project and approve the server. The installer with `--project` prepares the project entry instead.
 
 The required server exposes `generator_write_test`. The general-purpose [Playwright MCP](https://github.com/microsoft/playwright-mcp) browser server is not a substitute. See the [generator setup steps](../skills/playwright-test-generator/SKILL.md#4-not-set-up) for exact requirements. Missing setup makes the generator show the guide and stop.
 
@@ -115,7 +126,7 @@ git clone https://github.com/voidmatcha/e2e-skills.git "$HOME/.claude/e2e-skills
 mkdir -p "$HOME/.claude/skills" || exit 1
 
 skip_link=
-for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
+for skill in playwright-test-generator e2e-reviewer e2e-debugger; do
   if [ -e "$HOME/.claude/skills/$skill" ] || [ -L "$HOME/.claude/skills/$skill" ]; then
     echo "Already exists, nothing linked: $HOME/.claude/skills/$skill" >&2
     skip_link=1
@@ -123,7 +134,7 @@ for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-
 done
 
 if [ -z "$skip_link" ]; then
-  for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
+  for skill in playwright-test-generator e2e-reviewer e2e-debugger; do
     ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill" || exit 1
   done
 else
@@ -132,4 +143,4 @@ fi
 )
 ```
 
-If any of the four names already exists under `~/.claude/skills/`, the commands print that path, return a nonzero status and link nothing, so an existing skill is never replaced and no link is nested inside it. Run `/skills` in Claude Code and confirm all four names appear.
+If any of the names already exists under `~/.claude/skills/`, the commands print that path, return a nonzero status and link nothing, so an existing skill is never replaced and no link is nested inside it. Run `/skills` in Claude Code and confirm all three names appear.

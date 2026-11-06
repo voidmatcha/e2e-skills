@@ -379,7 +379,7 @@ def validate_evidence_status(
             "evidence status current skill digest mismatch; "
             f"computed={current_skill_sha256}, "
             f"recorded={status['current_skill_sha256']}; "
-            "run scripts/dev/refresh-reviewer-evidence-digest.py"
+            "replay historical evidence with scripts/ci/ci-evidence.sh at its pinned source commit; do not rewrite frozen evidence for current product changes"
         )
     actual_missing = missing_complete_artifacts(evidence)
     if status["missing_required_artifacts"] != actual_missing:

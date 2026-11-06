@@ -13,7 +13,9 @@ const head = "import { test, expect, type Page } from '@playwright/test';\n";
 function run(detector, text) {
   const filename = '/pinned/case.spec.ts', bytes = Buffer.from(head + text);
   const manifest = { schema: 'node-candidate-inventory-v1', complete: true, errors: [],
-    root: { canonical: '/pinned', kind: 'directory' }, candidates: [{ path: filename,
+    root: { canonical: '/pinned', kind: 'directory' },
+    // The whole project root is scanned: every importer is pinned (closed world).
+    projectContext: { complete: true, requested: { kind: 'directory' }, scanRoot: '/pinned', projectRoot: '/pinned' }, candidates: [{ path: filename,
       identity: { size: String(bytes.length), sha256: createHash('sha256').update(bytes).digest('hex') } }] };
   const result = detector(bytes, filename, { scope: createScope({ manifest, sources: new Map([[filename, bytes]]) }) });
   return { ...result, hits: result.findings.filter(f => ['#4a', '#5a'].includes(f.patternId)).map(f => [f.patternId, f.line, f.variant ?? null]) };
@@ -41,6 +43,9 @@ test('#4a skips a built-in search result on plain data and keeps count/length >=
 test('#5a skips gates fixed by literal loop constants or literal helper arguments that run at least once', () => {
   const loop = run(conditionalAssertions, spec("for (const n of [4, 5, 6]) {\n  if (n < 6) await expect(page.getByTestId('low')).toHaveText('2');\n}"));
   assert.deepEqual(loop.hits, []);
+  // A never-written const array of primitives is the same literal data.
+  const named = run(conditionalAssertions, spec("const values = [4, 5];\nfor (const n of values) {\n  await page.getByTestId(String(n)).click();\n  if (n < 6) await expect(page.getByTestId('low')).toHaveText('2');\n}"));
+  assert.deepEqual(named.hits, []);
   const helper = run(conditionalAssertions, "async function stats(page: Page, total: string, low?: string) {\n" +
     "  await expect(page.getByTestId('total')).toHaveText(total);\n  if (low !== undefined) await expect(page.getByTestId('low')).toHaveText(low);\n}\n" +
     spec("await stats(page, '3', '1');\nawait stats(page, '4');"));
@@ -49,13 +54,15 @@ test('#5a skips gates fixed by literal loop constants or literal helper argument
   // conditions keep the P0 candidate.
   for (const [label, text, line] of [
     ['never true', spec("for (const n of [1, 2]) {\n  if (n > 5) await expect(page.getByTestId('low')).toHaveText('2');\n}"), 4],
+    // A gate on the helper's own parameter is decided at the call site: the
+    // test call passing an app-state value is the candidate.
     ['app-state argument', "async function stats(page: Page, low?: string | null) {\n  if (low) await expect(page.getByTestId('low')).toHaveText(low);\n}\n" +
-      spec("await stats(page, await page.getByTestId('seed').textContent());"), 3],
+      spec("await stats(page, await page.getByTestId('seed').textContent());"), 6],
     ['exported helper', "export async function stats(page: Page, low?: string) {\n  if (low) await expect(page.getByTestId('low')).toHaveText(low);\n}\n" +
-      spec("await stats(page, '1');"), 3],
+      spec("await stats(page, await page.getByTestId('seed').textContent());"), 6],
     ['outer parameter in a nested callback', "async function stats(page: Page, low?: string) {\n  await page.waitForTimeout(1).then(async () => { if (low) await expect(page.getByTestId('low')).toHaveText(low); });\n}\n" +
       spec("await stats(page, '1');"), 3],
-    ['loop over a named array', spec("const values = [4, 5];\nfor (const n of values) {\n  if (n < 6) await expect(page.getByTestId('low')).toHaveText('2');\n}"), 5],
+    ['loop over a mutated named array', spec("const values = [4, 5];\nvalues.push(7);\nfor (const n of values) {\n  if (n < 6) await expect(page.getByTestId('low')).toHaveText('2');\n}"), 6],
     ['app state', spec("if (await page.getByRole('alert').isVisible()) await expect(page.getByRole('alert')).toHaveText('Saved');"), 3],
   ]) assert.ok(run(conditionalAssertions, text).hits.some(h => h[1] === line), label);
 });

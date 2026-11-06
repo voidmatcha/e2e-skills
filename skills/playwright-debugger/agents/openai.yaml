@@ -1,7 +1,0 @@
-interface:
-  display_name: Playwright Debugger
-  short_description: Debug Playwright failures
-  default_prompt: Use $playwright-debugger to find the root cause of a failed Playwright test from playwright-report/ or a trace.
-
-policy:
-  allow_implicit_invocation: true

@@ -18,11 +18,13 @@ test('actual legacy missing-await fixture: direct slice, consumed guards and dec
   const actual = promises(bytes, file, { scope });
   assert.deepEqual(actual.findings.filter(x => x.patternId === '#15').map(x => x.line), [24]);
   const lines = actual.findings.filter(x => x.patternId === '#16').map(x => x.line);
-  assert.deepEqual(lines, [25,32,108,114,117,118,119,120,121,122,123,124,127,129,130,131,132,133,134,135,136,167,169,194,195]);
+  assert.deepEqual(lines, [11,25,32,108,114,117,118,119,120,121,122,123,124,127,129,130,131,132,133,134,135,136,167,169,194,195]);
   for (const line of [16,43,47,55,61,68,73,78,84,92,99,140,141,144,160,161,162,163,170,171,193,197]) assert.ok(!lines.includes(line), String(line));
-  assert.deepEqual(actual.findings.filter(x => x.disposition === 'candidate').map(x => x.line), [32,108,127,129,130,131,132,133,134,135,136,169,194,195]);
-  // Shared receiver analysis deliberately does not prove POM property fields.
-  assert.ok(!lines.includes(11));
+  assert.deepEqual(actual.findings.filter(x => x.disposition === 'candidate').map(x => x.line), [11,32,108,127,129,130,131,132,133,134,135,136,169,194,195]);
+  // `this.submitButton` in the closed SettingsPage class is the Locator its
+  // only construction builds, so the legacy POM triage gap is now an AST
+  // candidate (an action inside a POM method, never a confirmed finding).
+  assert.equal(actual.findings.find(x => x.patternId === '#16' && x.line === 11).disposition, 'candidate');
 
   const env = { ...process.env, PATH: '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin',
     E2E_SMELL_ALLOW_PROJECT_ESLINT: '0', E2E_SMELL_NO_ESLINT_DOWNLOAD: '1',

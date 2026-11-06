@@ -59,7 +59,7 @@ function location(file, root) {
 }
 
 /** Format a validated canonical report. No source snippets, titles, or reasons are copied. */
-export function formatLegacyReport(report, { root, verbose = false } = {}) {
+export function formatLegacyReport(report, { root, verbose = false, unresolvedImports = [] } = {}) {
   const { summary, complete, tolerated } = checked(report);
   // Validate a supplied root even if there are no findings.
   if (root !== undefined && (typeof root !== 'string' || !path.isAbsolute(root))) throw new TypeError('display root must be absolute');
@@ -67,11 +67,17 @@ export function formatLegacyReport(report, { root, verbose = false } = {}) {
     'Node source scan (canonical report view)',
     `Coverage: BOUNDED; discovery: ${report.execution.complete ? 'COMPLETE' : 'INCOMPLETE'}.`,
   ];
+  // One count of unresolved analysis, shared by this header, the listed
+  // locations and the --allow-incomplete line; review tasks are a subset.
+  const gaps = report.execution.diagnostics ?? [];
+  const gapFiles = new Set(gaps.filter(item => typeof item?.file === 'string').map(item => item.file)).size;
   if (report.schema === 'e2e-skills-node-scan-v1') headers.push(
     `Semantic review: ${report.review.required ? 'REQUIRED' : 'no retained candidates'}; compatibility contract: DEVELOPMENT.`,
     `Review obligations: ${report.review.obligations.length}, linked to retained candidates.`,
-    `Unresolved analysis tasks: ${report.review.analysisTasks?.length ?? 0}; separate from findings, execution status unchanged.`,
+    `Unresolved analysis: ${gaps.length} location(s) in ${gapFiles} file(s), not findings; ${report.review.analysisTasks?.length ?? 0} of them are source-linked review tasks; execution status unchanged.`,
   );
+  if (Array.isArray(report.outOfScope) && report.outOfScope.length) headers.push(
+    `Out of scope: ${report.outOfScope.length} file(s) use a test runner outside the supported frameworks (docs/framework-scope.md); they were not analysed and are not counted as incomplete.`);
   if (Array.isArray(report.trustedModules) && report.trustedModules.length) headers.push(
     `Trusted modules: ${report.trustedModules.map(item => `${escaped(item.specifier)} -> ${location(item.path, root)}`).join(', ')} (declared by --trust-module).`);
   if (!complete) headers.push(
@@ -83,7 +89,6 @@ export function formatLegacyReport(report, { root, verbose = false } = {}) {
     headers.push(`ALLOW-INCOMPLETE: ${unanalyzed.files ?? 0} file(s) with ${unanalyzed.locations ?? 0} unresolved location(s) were NOT fully analyzed; that code is NOT checked.`,
       'ALLOW-INCOMPLETE: the exit status reflects only the findings that were analyzed; it is not a clean result for the unanalyzed code.');
   }
-  const gaps = report.execution.diagnostics ?? [];
   const guidance = {
     'propagation-unsupported': 'Trace catch propagation and helper callers against the required test outcome; no defect is established.',
     'binding-mutable': 'Verify receiver identity and writes before treating it as a framework object.',
@@ -93,13 +98,23 @@ export function formatLegacyReport(report, { root, verbose = false } = {}) {
   };
   const visibleGaps = gaps.filter(item => Object.hasOwn(guidance, item?.code) && typeof item.file === 'string');
   if (visibleGaps.length) {
-    headers.push('Unresolved analysis (not findings; scan remains incomplete):');
+    headers.push(`Unresolved analysis with review guidance (${visibleGaps.length} of ${gaps.length} location(s); not findings; scan remains incomplete):`);
     for (const item of visibleGaps.slice(0, 20)) {
       const at = Number.isSafeInteger(item.line) && item.line > 0 ? `:${item.line}` :
         Number.isSafeInteger(item.start) && item.start >= 0 ? ` at offset ${item.start}` : '';
       headers.push(`  ${location(item.file, root)}${at}: ${item.code}. ${guidance[item.code]}`);
     }
     if (visibleGaps.length > 20) headers.push(`  ${visibleGaps.length - 20} more; see JSON diagnostics.`);
+  }
+  // Relative imports the scan could not follow: the importing file was not
+  // fully analysed. Only a short relative specifier is shown, escaped; the
+  // entry must match a reported import-missing diagnostic.
+  const missing = (Array.isArray(unresolvedImports) ? unresolvedImports : []).filter(item =>
+    typeof item?.file === 'string' && typeof item.specifier === 'string' && /^\.\.?\//.test(item.specifier) && item.specifier.length <= 200 &&
+    gaps.some(gap => gap?.code === 'import-missing' && gap.file === item.file && gap.start === item.start));
+  if (missing.length) {
+    for (const item of missing.slice(0, 20)) headers.push(`Unanalysed (import not found): ${location(item.file, root)} -> ${escaped(item.specifier)}`);
+    if (missing.length > 20) headers.push(`Unanalysed (import not found): +${missing.length - 20} more; see JSON diagnostics (import-missing).`);
   }
   if (!report.execution.complete && report.execution.diagnostics?.some(item => item.code === 'unsupported-entry')) headers.push(
     'No override bypasses unsupported entries. Rerun on regular files or directories within the authorized scope; do not follow symbolic links without authorization.',
@@ -148,13 +163,18 @@ export function formatLegacyReport(report, { root, verbose = false } = {}) {
         full.push(`  ${location(file, root)}: ${lines.length} hit${lines.length === 1 ? '' : 's'}, line${lines.length === 1 ? '' : 's'} ${lines.join(', ')}: #10c`);
       continue;
     }
-    for (const finding of findings) full.push(`  ${location(finding.file, root)}:${finding.line}: ${finding.patternId}`);
+    for (const finding of findings) {
+      full.push(`  ${location(finding.file, root)}:${finding.line}: ${finding.patternId}`);
+      // Triage context for the review step; it never changes the verdict.
+      if (typeof finding.triage?.hint === 'string') full.push(`    hint: ${escaped(finding.triage.hint)}`, `    probe: ${escaped(finding.triage.probe)}`);
+    }
   }
   // This counts retained AST-origin findings; no ast-grep backend invocation is implied.
   const ast = `AST-origin total: ${summary.counts.ast} hit(s); retained findings, not ast-grep execution.`;
   const label = complete ? 'Summary:' : report.schema === 'e2e-skills-node-scan-v1' ? 'Summary [INCOMPLETE]:' : 'Summary [PARTIAL COVERAGE]:';
   const c = summary.counts;
   const final = `${label} ${c.total} total hit(s), ${c.p0} P0, ${c.p1p2} P1/P2 heuristic, ${c.triage} LLM-triage, ${c.p0Candidate} P0 candidate; ${c.ast} AST-origin hit(s), canonical retained findings.` +
+    (missing.length ? ` ${missing.length} relative import(s) not found; importing files not fully analysed.` : '') +
     (tolerated ? ' ALLOW-INCOMPLETE: unanalyzed code is NOT checked; exit status covers analyzed findings only.' : '');
   full.push('', ast, '', final);
   digest.push('', ast, '', 'Hits per file:');

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Bounded raw #9/#9b slice. Suppression, full Page lineage and tier dedupe are
 // intentionally caller responsibilities; this is not a standalone verdict.
-import { member, unwrap, walk, isWritten, ts } from './source.mjs';
+import { member, unwrap, walk, isWritten, ts, PLAYWRIGHT_TEST_MODULES } from './source.mjs';
 import { createReceivers } from './receivers.mjs';
 
 export function waits(bytes, filename, { scope } = {}) {
@@ -29,7 +29,7 @@ export function waits(bytes, filename, { scope } = {}) {
     const definitions = checker.getSymbolAtLocation(type.typeName)?.declarations;
     if (definitions?.length !== 1 || !ts.isImportSpecifier(definitions[0])) return false;
     const imported = definitions[0], statement = imported.parent.parent.parent;
-    return ts.isImportDeclaration(statement) && statement.moduleSpecifier.text === '@playwright/test' &&
+    return ts.isImportDeclaration(statement) && PLAYWRIGHT_TEST_MODULES.has(statement.moduleSpecifier.text) &&
       (imported.propertyName || imported.name).text === 'Page';
   }
   walk(source, node => {

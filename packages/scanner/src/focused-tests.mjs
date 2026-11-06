@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Bounded #7 detector: shared Playwright provenance and proven Cypress globals.
 // Without shared scope, only the direct-import fallback is available.
-import { sourceModel, member, unwrap, walk, ts } from './source.mjs';
+import { sourceModel, member, unwrap, walk, ts, PLAYWRIGHT_TEST_MODULES } from './source.mjs';
 
 export function focusedTests(bytes, filename, { scope } = {}) {
   const model = sourceModel(bytes, filename);
@@ -43,7 +43,7 @@ export function focusedTests(bytes, filename, { scope } = {}) {
     /(?:^|[\\/])cypress[\\/]/.test(filename) || /\.cy\.[^\\/]+$/.test(filename)) &&
     (!hasForeignModule || hasCypressModule || hasCypressRuntime);
   for (const statement of source.statements) {
-    if (!ts.isImportDeclaration(statement) || statement.moduleSpecifier.text !== '@playwright/test' ||
+    if (!ts.isImportDeclaration(statement) || !PLAYWRIGHT_TEST_MODULES.has(statement.moduleSpecifier.text) ||
         !statement.importClause || statement.importClause.isTypeOnly) continue;
     const bindings = statement.importClause.namedBindings;
     if (bindings && ts.isNamespaceImport(bindings)) namespaces.add(checker.getSymbolAtLocation(bindings.name));

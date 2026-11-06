@@ -73,8 +73,8 @@ test('helper parameters and results resolve only for closed, consistently called
   const call = "test('x', async ({ page }) => { expect(row(page)).toBeTruthy(); });\n";
   assert.equal(subject(head + helper + call).kind, 'locator');
   assert.equal(subject(head + "const row = function (page: Page) { return page.locator('li').first(); };\n" + call).kind, 'locator');
-  // Escapes, exports, mixed or missing arguments, spreads, recursion, async
-  // and value-less completions keep the previous unresolved result.
+  // A return summary depends only on the call-site argument, so escapes,
+  // exports and other callers with other arguments do not change it.
   for (const [label, text] of [
     ['exported', head + 'export ' + helper + call],
     ['escaped as a value', head + helper + call + 'const alias = row;\n'],
@@ -82,8 +82,12 @@ test('helper parameters and results resolve only for closed, consistently called
     ['export specifier', head + helper + call + 'export { row };\n'],
     ['mixed arguments', head + helper + call + "test('y', async ({ page }) => { row(page.locator('x')); });\n"],
     ['unproven argument', head + helper + call + 'function other(p: Page) { row(p); }\n'],
-    ['missing argument', head + "function row(page?: Page) { return page.locator('li'); }\n" + call + 'row();\n'],
     ['spread argument', head + helper + call + 'const args: [Page] = [] as any; row(...args);\n'],
+  ]) assert.equal(subject(text).kind, 'locator', label);
+  // Missing arguments, recursion, async, value-less completions,
+  // reassigned parameters and overloads keep the previous unresolved result.
+  for (const [label, text] of [
+    ['missing argument', head + "function row(page?: Page) { return page.locator('li'); }\n" + call + 'row();\n'],
     ['recursive', head + "function row(page: Page): any { return row(page); }\n" + call],
     ['async result', head + "async function row(page: Page) { return page.locator('li'); }\n" + call],
     ['bare return', head + "function row(page: Page) { if (page) return; return page.locator('li'); }\n" + call],

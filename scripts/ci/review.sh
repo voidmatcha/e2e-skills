@@ -286,7 +286,7 @@ if errors:
     sys.exit(1)
 PY
   then
-    ok "all four trigger fixtures are structurally valid with at least eight cases per label"
+    ok "every skill trigger fixture is structurally valid with at least eight cases per label"
   else
     err "skill trigger fixture validation failed"
   fi
@@ -766,29 +766,27 @@ if section_only:
         f"e2e-reviewer/references/pattern-reference.md sections have IDs missing from Quick Reference: {sorted(section_only)}"
     )
 
-# Check 4: debugger evals.json may only reference F-codes from SKILL.md F-table
-for skill in ('playwright-debugger', 'cypress-debugger'):
-    md_path = pathlib.Path('skills') / skill / 'SKILL.md'
-    evals_path = pathlib.Path('scripts/evals/skills') / skill / 'evals.json'
-    md_text = md_path.read_text(encoding='utf-8')
-    evals = json.loads(evals_path.read_text(encoding='utf-8'))
-    skill_codes = set(re.findall(r'\|\s*(F\d+)\s*\|', md_text))
-    seen = set()
-
-    def scan(obj):
-        if isinstance(obj, str):
-            seen.update(re.findall(r'\bF\d+\b', obj))
-        elif isinstance(obj, list):
-            for v in obj:
-                scan(v)
-        elif isinstance(obj, dict):
-            for v in obj.values():
-                scan(v)
-
-    scan(evals)
-    missing = seen - skill_codes
-    if missing:
-        errors.append(f"{evals_path}: F-codes not in SKILL.md taxonomy: {sorted(missing)}")
+# Check 4: the removed debugger skills stay removed. A skill directory, eval
+# directory, or manifest entry for either one must not reappear.
+# `e2e-debugger` is their thin replacement and is allowed: the exact names
+# below are matched, and neither is a substring of `e2e-debugger`.
+REMOVED_SKILLS = ('playwright-debugger', 'cypress-debugger')
+for skill in REMOVED_SKILLS:
+    for base in ('skills', 'scripts/evals/skills'):
+        if (pathlib.Path(base) / skill).exists():
+            errors.append(f"{base}/{skill}: the debugger skills were removed and must not reappear")
+    manifest_texts = {
+        '.claude-plugin/plugin.json': json.dumps(plugin),
+        '.claude-plugin/marketplace.json': json.dumps(market),
+        '.codex-plugin/plugin.json': json.dumps(codex_plugin),
+    }
+    for rel, text in manifest_texts.items():
+        if skill in text:
+            errors.append(f"{rel}: names the removed skill {skill}")
+    openai_yamls = sorted(pathlib.Path('skills').glob('*/agents/openai.yaml'))
+    for yaml_path in openai_yamls:
+        if skill in yaml_path.read_text(encoding='utf-8'):
+            errors.append(f"{yaml_path}: names the removed skill {skill}")
 
 # Check 5: the canonical reviewer taxonomy must preserve all Quick Reference
 # IDs, titles, order, and severity without storing the taxonomy in package copy.
@@ -875,7 +873,7 @@ if errors:
     sys.exit(1)
 PY
   then
-    ok "reviewer IDs, titles, order, severities, and debugger F-codes consistent"
+    ok "reviewer IDs, titles, order, severities consistent; removed debugger skills absent"
   else
     err "reviewer taxonomy parity check failed"
   fi
@@ -1081,8 +1079,7 @@ import sys
 required = {
     'playwright-test-generator': ('Playwright',),
     'e2e-reviewer': ('Playwright', 'Cypress'),
-    'playwright-debugger': ('Playwright',),
-    'cypress-debugger': ('Cypress',),
+    'e2e-debugger': ('Playwright', 'Cypress'),
 }
 errors = []
 for skill, words in required.items():
@@ -1108,16 +1105,15 @@ else
   err "python3 not available; cannot run skill trigger boundary check"
 fi
 
-section "Subagent parity"
-# AGENTS.md rule 5: a subagent must never be the ONLY path to a verdict — the
-# inline fallback must reach an identical verdict from the same source of truth.
-# These checks freeze that contract and guard the A1 fix (agents must be handed
-# an absolute source-of-truth path, since their CWD is the project under review,
-# not this repo). A relative `skills/...` read target silently resolves nowhere.
+section "Inline verdict contract"
+# AGENTS.md rule 5: there are no dedicated subagents. Every verdict is reached
+# inline from one source of truth: the per-pattern contracts for reviewer
+# findings. These checks keep the removed agents from coming back as a second, drifting copy.
 if command -v python3 >/dev/null 2>&1; then
   if python3 - <<'PY'
 import pathlib
 import re
+import subprocess
 import sys
 
 errors = []
@@ -1131,171 +1127,88 @@ def read(rel):
     return p.read_text(encoding="utf-8")
 
 
-verifier = read("agents/e2e-finding-verifier.md")
-classifier = read("agents/e2e-failure-classifier.md")
 reviewer = read("skills/e2e-reviewer/SKILL.md")
-pw_dbg = read("skills/playwright-debugger/SKILL.md")
-cy_dbg = read("skills/cypress-debugger/SKILL.md")
 
-# SP1 — A1 regression guard: each agent must document that the caller passes an
-# absolute source-of-truth path (CWD is the target project, not this repo).
-for name, text in (("e2e-finding-verifier", verifier), ("e2e-failure-classifier", classifier)):
-    if "absolute path" not in text or "working directory" not in text:
-        errors.append(
-            f"agents/{name}.md: must state the caller passes the absolute "
-            "source-of-truth path (its working directory is the target project). "
-            "Do not hardcode a repo-relative skills/... read target."
-        )
-
-# SP2 — delegating skills must actually hand the subagent that absolute path.
-# Anchor the check to the delegation lines themselves (every line naming the
-# agent), NOT the whole file — otherwise an unrelated 'absolute' elsewhere would
-# keep the guard green after a delegation sentence drops the path contract (the
-# A1 bug). Every such line must carry it: the debuggers state the contract twice
-# (the inline-default step and the unconditional user-named-call rule), and a
-# user-forced delegation in 3.3.1 skipped the only line that had it.
-for rel, text, agent in (
-    ("skills/e2e-reviewer/SKILL.md", reviewer, "e2e-finding-verifier"),
-    ("skills/playwright-debugger/SKILL.md", pw_dbg, "e2e-failure-classifier"),
-    ("skills/cypress-debugger/SKILL.md", cy_dbg, "e2e-failure-classifier"),
+# IV1 — the removed dedicated subagents stay removed: no agent files and no
+# shipped surface (skills, manifests, installers) that names them.
+REMOVED_AGENTS = ("e2e-finding-verifier", "e2e-failure-classifier")
+for rel in (
+    "agents/e2e-finding-verifier.md",
+    "agents/e2e-failure-classifier.md",
+    ".codex/agents/e2e-finding-verifier.toml",
+    ".codex/agents/e2e-failure-classifier.toml",
+    "scripts/dev/install-claude-agents.sh",
+    "scripts/dev/install-codex-agents.sh",
 ):
-    delegation_lines = [ln for ln in text.splitlines() if agent in ln]
-    if not delegation_lines:
-        errors.append(f"{rel}: lost the {agent} delegation block")
-    elif not all("absolute" in ln for ln in delegation_lines):
-        errors.append(
-            f"{rel}: the {agent} delegation line must pass the subagent an absolute "
-            "source-of-truth path (the word 'absolute' is missing from a line that "
-            "names the agent)."
-        )
+    if pathlib.Path(rel).exists():
+        errors.append(f"{rel}: the dedicated subagents were removed; verdicts are inline only")
+try:
+    tracked = subprocess.check_output(
+        ["git", "ls-files", "-co", "--exclude-standard", "--",
+         "skills", ".claude-plugin", ".codex-plugin", "install.sh", "scripts/dev"],
+        text=True,
+    ).splitlines()
+except Exception:
+    tracked = []
+for rel in tracked:
+    path = pathlib.Path(rel)
+    if not path.is_file() or "/vendor/" in rel or path.suffix not in {".md", ".json", ".yaml", ".sh", ".mjs", ".py", ".toml"}:
+        continue
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    for agent in REMOVED_AGENTS:
+        if agent in text:
+            errors.append(f"{rel}: names the removed dedicated subagent {agent}")
 
-# SP3 — verdict vocabulary parity: the verifier's three verdicts must appear in
-# BOTH the subagent and the e2e-reviewer inline fallback, so both paths agree.
-verdicts = ("CONFIRMED", "FALSE-POSITIVE", "NEEDS-CONTEXT")
-for verdict in verdicts:
-    if verdict not in verifier:
-        errors.append(f"agents/e2e-finding-verifier.md: missing verdict term {verdict}")
+# IV2 — the reviewer decides inline and never delegates the verdict.
+for rel, text, anchor in (
+    ("skills/e2e-reviewer/SKILL.md", reviewer, "Verify every finding inline"),
+):
+    if anchor not in text:
+        errors.append(f"{rel}: must state the inline verdict rule ({anchor!r})")
+    if re.search(r"delegate only when uncertain|native `(?:verifier|debugger)` role|If delegating", text):
+        errors.append(f"{rel}: still routes the verdict to a subagent; verdicts are inline only")
+
+# IV3 — the inline reviewer verdict vocabulary.
+for verdict in ("CONFIRMED", "FALSE-POSITIVE", "NEEDS-CONTEXT"):
     if verdict not in reviewer:
         errors.append(
-            f"skills/e2e-reviewer/SKILL.md: inline fallback missing verdict term "
-            f"{verdict} (must match the subagent verdict set)"
+            f"skills/e2e-reviewer/SKILL.md: inline verification missing verdict term {verdict}"
         )
 
-# SP3b — F1-vs-F7 is decided by the isolation probe, and a read-only classifier
-# can never run it. The no-probe verdict term must therefore exist on every path
-# that can return one, or the delegated path silently guesses F1 from the error
-# text — which the debugger skills say is wrong about half the time.
-# The bare token is not enough: both debugger skills use CANNOT_VERIFY elsewhere
-# for proof labelling, so a token check stays green even if the F1/F7 rule itself
-# is deleted. Require the rule, by the pair it names.
-for label, text in (
-    ("skills/playwright-debugger/SKILL.md", pw_dbg),
-    ("skills/cypress-debugger/SKILL.md", cy_dbg),
+# IV4 — e2e-debugger classifies inline, ships the memo's failure-handling lines
+# unchanged in failure-rules.md, keeps the deterministic flake check, and keeps
+# the inline repair path when it hands a repair to the official healer.
+import hashlib
+safe_fix = read("skills/e2e-debugger/SKILL.md")
+rules_path = pathlib.Path("skills/e2e-debugger/failure-rules.md")
+# sha256 of the `When a test fails:` lines of test-authoring memo v5.
+SAFE_FIX_RULES_SHA256 = "8bbaa9b4cba7c52f3feee8f5fdda99a43486688b1fed4b04caf35680e48b9721"
+if not rules_path.is_file():
+    errors.append(f"{rules_path}: expected file is missing")
+elif hashlib.sha256(rules_path.read_bytes()).hexdigest() != SAFE_FIX_RULES_SHA256:
+    errors.append(f"{rules_path}: must stay byte-identical to the memo v5 failure-handling lines")
+if len(safe_fix.encode("utf-8")) > 5120:
+    errors.append("skills/e2e-debugger/SKILL.md: exceeds the 5120-byte budget")
+for anchor in (
+    "Classify inline",
+    "ENV:",
+    "Run without asking",
+    "Ask first",
+    "`failure-rules.md`",
+    "--repeat-each=3 --retries=0",
+    "--config retries=0",
+    "Mixed results: FLAKY",
+    "APP-REGRESSION",
+    "TEST-DEFECT-FIXED",
+    "UNCLEAR",
+    "Never edit product code",
+    "pasted in full, not paths",
+    "both paths must reach the same outcome",
+    "the P0 count must not rise",
+    "Install nothing",
 ):
-    if "CANNOT_VERIFY" not in text or "between F1 and F7" not in text:
-        errors.append(
-            f"{label}: missing the CANNOT_VERIFY rule for F1 versus F7 when the "
-            "isolation probe was not performed"
-        )
-# A delegated classifier needs the term twice: in the procedure, so it knows when
-# the verdict applies, and in the output contract, so the verdict is legal to
-# return. Either one alone lets the path fall back to guessing.
-classifier_copies = [("agents/e2e-failure-classifier.md", classifier)]
-codex_classifier = pathlib.Path(".codex/agents/e2e-failure-classifier.toml")
-if codex_classifier.is_file():
-    classifier_copies.append(
-        (str(codex_classifier), codex_classifier.read_text(encoding="utf-8"))
-    )
-for label, text in classifier_copies:
-    if text.count("CANNOT_VERIFY") < 2:
-        errors.append(
-            f"{label}: missing the CANNOT_VERIFY term in both the procedure and "
-            "the output contract (F1/F7 has no probe on a read-only path)"
-        )
-
-# SP4 — F-code taxonomy frozen at F1–F15, shared by both debuggers and the
-# classifier; nobody may invent F16+.
-EXPECTED_FCODES = {f"F{i}" for i in range(1, 16)}
-# A new code beyond F15 (F16–F99), by word boundary so it never matches inside a
-# larger token. The freeze phrase "F16+" is stripped before probing.
-NEW_FCODE = re.compile(r"\bF(?:1[6-9]|[2-9][0-9])\b")
-
-# The two debugger SKILL.md files carry the canonical F1–F15 tables: the set of
-# `| Fn |` table codes must be EXACTLY {F1..F15}. This catches BOTH a dropped code
-# and an added F16+/F17 row — a bare "F16" substring check would miss both.
-for rel, text in (
-    ("skills/playwright-debugger/SKILL.md", pw_dbg),
-    ("skills/cypress-debugger/SKILL.md", cy_dbg),
-):
-    table_codes = set(re.findall(r"\|\s*(F\d+)\s*\|", text))
-    if table_codes != EXPECTED_FCODES:
-        missing = sorted(EXPECTED_FCODES - table_codes, key=lambda c: int(c[1:]))
-        extra = sorted(table_codes - EXPECTED_FCODES, key=lambda c: int(c[1:]))
-        errors.append(
-            f"{rel}: F-code table must be exactly F1–F15 "
-            f"(missing={missing or '-'}, unexpected={extra or '-'})"
-        )
-
-# All three files (incl. the prose classifier that has no table) must reference
-# the range endpoints by WORD BOUNDARY — so "F1" cannot vacuously match inside
-# "F15" — and must contain no F16+ code, allowing only the freeze phrase.
-for rel, text in (
-    ("agents/e2e-failure-classifier.md", classifier),
-    ("skills/playwright-debugger/SKILL.md", pw_dbg),
-    ("skills/cypress-debugger/SKILL.md", cy_dbg),
-):
-    probe = text.replace("F16+", "")
-    for code in ("F1", "F15"):
-        if not re.search(rf"\b{code}\b", probe):
-            errors.append(f"{rel}: F-code taxonomy must reference {code}")
-    if NEW_FCODE.search(probe):
-        errors.append(f"{rel}: F-codes are frozen at F1–F15; found a new F16+ code")
-
-# SP5 — Codex/OMX-native TOML ports (optional third copy of each subagent
-# contract). If present under .codex/agents/, they must NOT drift from the .md
-# agents / inline fallback: same A1 absolute-path contract, same verdict set, same
-# frozen F1–F15 taxonomy. Skipped silently when a port is absent (they are not
-# required — but a shipped port that drifts is exactly what this guards).
-for rel in (".codex/agents/e2e-finding-verifier.toml", ".codex/agents/e2e-failure-classifier.toml"):
-    p = pathlib.Path(rel)
-    if not p.is_file():
-        continue
-    text = p.read_text(encoding="utf-8")
-    if "absolute" not in text.lower() or "working directory" not in text:
-        errors.append(
-            f"{rel}: must state the caller passes the absolute source-of-truth path "
-            "(its working directory is the target project, not this repo)."
-        )
-    if rel.endswith("e2e-finding-verifier.toml"):
-        for verdict in verdicts:
-            if verdict not in text:
-                errors.append(f"{rel}: missing verdict term {verdict} (must match the subagent verdict set)")
-    if rel.endswith("e2e-failure-classifier.toml"):
-        # allow both freeze phrasings ("F16+" and "F16 or higher")
-        probe = text.replace("F16+", "").replace("F16 or higher", "")
-        for code in ("F1", "F15"):
-            if not re.search(rf"\b{code}\b", probe):
-                errors.append(f"{rel}: F-code taxonomy must reference {code}")
-        if NEW_FCODE.search(probe):
-            errors.append(f"{rel}: F-codes are frozen at F1–F15; found a new F16+ code")
-
-# SP6 — a skills-CLI install does not register custom TOMLs. Latest Codex can
-# still preserve independent review through standard native roles, so named
-# agents must be an optimization rather than the only delegation path.
-if "native `verifier` role" not in reviewer or "named registration is an optimization" not in reviewer:
-    errors.append(
-        "skills/e2e-reviewer/SKILL.md: must fall back from the named agent to "
-        "the native verifier role before the inline fallback"
-    )
-for rel, text in (
-    ("skills/playwright-debugger/SKILL.md", pw_dbg),
-    ("skills/cypress-debugger/SKILL.md", cy_dbg),
-):
-    if "native `debugger` role" not in text or "named registration is an optimization" not in text:
-        errors.append(
-            f"{rel}: must fall back from the named classifier to the native "
-            "debugger role before the inline fallback"
-        )
+    if anchor not in safe_fix:
+        errors.append(f"skills/e2e-debugger/SKILL.md: missing contract phrase {anchor!r}")
 
 if errors:
     for error in errors:
@@ -1303,12 +1216,12 @@ if errors:
     sys.exit(1)
 PY
   then
-    ok "subagents and inline fallbacks share one verdict/taxonomy source of truth"
+    ok "verdicts are inline only; one verdict/taxonomy source of truth; e2e-debugger contract intact"
   else
-    err "subagent parity check failed"
+    err "inline verdict contract check failed"
   fi
 else
-  err "python3 not available; cannot run subagent parity check"
+  err "python3 not available; cannot run inline verdict contract check"
 fi
 
 section "Markdown links"
@@ -1497,8 +1410,7 @@ def check_manual_clone_contract(path, text, errors):
         'git clone https://github.com/voidmatcha/e2e-skills.git '
         '"$HOME/.claude/e2e-skills"',
         'mkdir -p "$HOME/.claude/skills"',
-        "for skill in playwright-test-generator e2e-reviewer "
-        "playwright-debugger cypress-debugger; do",
+        "for skill in playwright-test-generator e2e-reviewer e2e-debugger; do",
         'ln -s "$HOME/.claude/e2e-skills/skills/$skill" '
         '"$HOME/.claude/skills/$skill"',
         'if [ -e "$HOME/.claude/skills/$skill" ] || '
@@ -1509,7 +1421,7 @@ def check_manual_clone_contract(path, text, errors):
     if any(token not in text for token in required):
         errors.append(
             f"README i18n parity: {path} manual Claude Code clone must expose "
-            "four direct per-skill roots, refuse to link over an existing same-named "
+            "three direct per-skill roots, refuse to link over an existing same-named "
             "skill, and document /skills verification"
         )
     if "~/.claude/skills/e2e-skills" in text:
@@ -1520,47 +1432,45 @@ def check_manual_clone_contract(path, text, errors):
 
 
 def check_codex_install_and_delegation_contract(path, text, errors):
-    codex_heading = "\n### Codex\n"
-    start = text.find(codex_heading)
-    if start < 0:
-        errors.append(f"README i18n parity: {path} missing Codex install section")
-        return
-    end = text.find("\n### ", start + len(codex_heading))
-    section = text[start:end if end >= 0 else len(text)]
-    install_prompt = (
-        "Install e2e-skills for my current host and Playwright project with "
-        "`npx --yes --package=@voidmatcha/e2e-skills-scanner@"
-    )
+    # The install section leads with exactly one skills CLI command, tells a new
+    # user the host-specific official-agent setup the generator asks for, and
+    # keeps the session-wide Codex MCP boundary in the linked guide. There are
+    # no dedicated subagents to install, so no README may offer them again.
     shared_cli = "npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all"
-    if text.count(install_prompt) != 1 or text.count(shared_cli) != 1:
+    if text.count(shared_cli) != 1:
         errors.append(
-            f"README i18n parity: {path} install must keep one current-host "
-            "all-in-one prompt and one shared skills CLI command"
+            f"README i18n parity: {path} install must lead with exactly one "
+            "shared skills CLI command"
         )
-    # Detailed setup lives in one linked guide; keep its session-wide MCP
-    # boundary and the README's inline fallback enforceable after relocation.
+    first_fence = text.find("```bash\n")
+    if first_fence < 0 or not text[first_fence:].startswith("```bash\n" + shared_cli + "\n"):
+        errors.append(
+            f"README i18n parity: {path} the first command block must be the "
+            "skills CLI install command"
+        )
     guide = installation_guide(path, text, errors)
     scope_phrase = "works only with a session-wide `playwright-test` MCP server"
-    inline_phrases = {
-        "README.md": "Review and debugging also work inline without them.",
-        "README.ko.md": "리뷰와 실패 분석은 전용 agent 없이도 현재 세션에서 동작합니다.",
-        "README.ja.md": "レビューと失敗分析は専用エージェントなしでもインラインで動作します。",
-        "README.zh-cn.md": "审查和失败分析在没有专用代理时也可内联执行。",
-    }
-    delegation_tokens = (
-        "`playwright-test-generator`",
-        "`playwright-test`",
-        "bash scripts/dev/install-codex-agents.sh",
+    required = (
+        "npx --no-install playwright init-agents --loop=claude",
+        "npx --no-install playwright init-agents --loop=codex",
+        "`generator_write_test`",
         "`.codex/config.toml`",
-        inline_phrases[pathlib.Path(path).name],
-        scope_phrase,
+        "e2e-skills doctor --host",
+        "/plugin install e2e-skills@voidmatcha",
+        "codex plugin add e2e-skills@voidmatcha",
+        "e2e-skills scan path/to/tests --format text",
     )
-    missing = [token for token in delegation_tokens if token not in section + guide]
+    missing = [token for token in required if token not in text]
+    if scope_phrase not in guide:
+        missing.append(scope_phrase)
     if missing:
         errors.append(
-            f"README i18n parity: {path} Codex delegation limits missing "
-            f"tokens {missing!r}"
+            f"README i18n parity: {path} install section missing tokens {missing!r}"
         )
+    for stale in ("install-codex-agents", "install-claude-agents", "dedicated subagent",
+                  "Install e2e-skills for my current host"):
+        if stale in text or stale in guide:
+            errors.append(f"README i18n parity: {path} still documents removed install path {stale!r}")
 
 
 def taxonomy_contract(text):
@@ -1574,10 +1484,7 @@ def taxonomy_contract(text):
             if pattern_id in pattern_severity:
                 duplicates.append(pattern_id)
             pattern_severity[pattern_id] = f"P{heading.group(1)}"
-    f_codes = collections.Counter(
-        int(code) for code in re.findall(r"^\| F(\d+) \|", text, re.M)
-    )
-    return pattern_severity, duplicates, f_codes
+    return pattern_severity, duplicates
 
 
 def check_readme_intro_contract(path, text, merged_heading, false_green_heading, errors):
@@ -1616,7 +1523,7 @@ def check_readme_intro_contract(path, text, merged_heading, false_green_heading,
 
 scanner_transcript_re = re.compile(
     r"^```console\n"
-    r"\$ npx --yes --package=@voidmatcha/e2e-skills-scanner@[0-9]+\.[0-9]+\.[0-9]+ e2e-skills scan tests/\n\n"
+    r"\$ npx --yes --package=@voidmatcha/e2e-skills-scanner@[0-9]+\.[0-9]+\.[0-9]+ e2e-skills scan tests/ --format text\n"
     r"(.*?)"
     r"^```$",
     re.M | re.S,
@@ -1632,6 +1539,7 @@ def check_scanner_transcript_contract(path, text, errors):
         return None
     transcript = matches[0].strip()
     required_lines = (
+        "Node source scan (canonical report view)",
         "[P0][CONFIRMED] #4f Static finding (2 hits)",
         '"login.spec.ts":5: #4f',
         '"login.spec.ts":6: #4f',
@@ -1674,16 +1582,14 @@ canonical_commands, canonical_urls = install_contract(canonical)
 if not canonical_commands or not canonical_urls:
     print("README i18n parity: canonical install command/URL contract is empty", file=sys.stderr)
     raise SystemExit(1)
-canonical_patterns, canonical_duplicates, canonical_f_codes = taxonomy_contract(canonical)
+canonical_patterns, canonical_duplicates = taxonomy_contract(canonical)
 expected_pattern_ids = {
     "1", "2", "3", "3b", "4", "5", "6", "7", "8", "9", "10", "11",
     "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23",
 }
-expected_f_codes = collections.Counter({number: 1 for number in range(1, 16)})
 if (
     set(canonical_patterns) != expected_pattern_ids
     or canonical_duplicates
-    or canonical_f_codes != expected_f_codes
 ):
     print(
         "README i18n parity: canonical taxonomy contract is incomplete or duplicated",
@@ -1739,16 +1645,15 @@ contract_re = re.compile(
     re.S,
 )
 contract_hashes = {
-    "README.md": "e384d5bf89f43deabaa23335f5d548b88f87159ab7f7da56522e80dac430ba2f",
-    "README.ko.md": "f51e96db05992e9d75aff4a7d63bd48b2ebb837864c3d08275cfe0baeb4048d1",
-    "README.ja.md": "b0fccb288f3c7f8b45024a87fcb78e0cb6dd069b6bd57fde003bd5a512e70a79",
-    "README.zh-cn.md": "5ce9fb7d4be14d678addba0f29b00b54e152266f5c10b0cb9280574402221588"
+    "README.md": "61978a66c58fb8f3d444a75ac1c49dd65412a80547bcc223a766efc671e4946b",
+    "README.ko.md": "f61b7e49b25ac6566c52f8719ae4627a59836bb4f58fcb393eb3a7e48566aa99",
+    "README.ja.md": "1188e5137da2b04e32b70934aad9d9eda766ed89c5ff398c1d95072ab4bbc8b5",
+    "README.zh-cn.md": "c67aabf1348b859a7ae4953dbd987aca7128cda7ac89b605dc11db37f45b7227"
 }
 contract_tokens = (
     "24",
     "P0/P1/P2",
     "e2e-skills scan",
-    "F1–F15",
     "--isolation-wrapper",
 )
 read_scope_start = "<!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->"
@@ -1880,14 +1785,10 @@ for path in translations:
         errors.append(
             f"README i18n parity: {path} canonical repository URLs differ from README.md"
         )
-    patterns, duplicates, f_codes = taxonomy_contract(text)
+    patterns, duplicates = taxonomy_contract(text)
     if patterns != canonical_patterns or duplicates:
         errors.append(
             f"README i18n parity: {path} pattern ID/severity contract differs from README.md"
-        )
-    if f_codes != canonical_f_codes:
-        errors.append(
-            f"README i18n parity: {path} F1-F15 taxonomy contract differs from README.md"
         )
     check_protected_contract(path, text)
     check_scanner_read_scope_contract(path, text)

@@ -1,7 +1,7 @@
 {
   "name": "e2e-skills",
-  "version": "3.4.0",
-  "description": "Four agent skills for Playwright and Cypress end-to-end tests: generate new Playwright specs through the installed official Playwright agents with a short rules checklist and a scanner gate, review existing specs or PR diffs, and debug failed runs.",
+  "version": "3.4.1",
+  "description": "Three agent skills for Playwright and Cypress end-to-end tests: generate new Playwright specs through the installed official Playwright agents with a short rules checklist and a scanner gate, review existing specs or PR diffs, and debug a failing test, fixing it safely (flake check, no product-code edits, no weakened assertions).",
   "author": {
     "name": "YONGJAE LEE"
   },
@@ -18,8 +18,6 @@
     "test-quality",
     "review",
     "audit",
-    "debug",
-    "trace",
     "failure",
     "page-object-model",
     "pom",
@@ -30,9 +28,6 @@
     "coverage",
     "severity",
     "ci",
-    "ci-failure",
-    "playwright-debugger",
-    "cypress-debugger",
     "test-review",
     "pull-request-review",
     "diff-review",
@@ -51,18 +46,18 @@
     "e2e-test-automation",
     "playwright-test-generator",
     "cypress-test-review",
-    "flaky-test-debugging",
-    "root-cause-analysis",
     "test-smell-scanner",
     "false-positive-tests",
-    "ci-test-debugging",
-    "browser-testing"
+    "browser-testing",
+    "flaky-test-fix",
+    "debug",
+    "e2e-debugger"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "e2e-skills",
-    "shortDescription": "Generate, review, debug E2E",
-    "longDescription": "AI agent testing toolkit with four skills shared between Claude Code and Codex from ./skills/: playwright-test-generator (router: installed official Playwright agents with a short rules checklist prepended → e2e-reviewer scanner gate → scoped test execution; setup guide when the agents are missing), e2e-reviewer (static review of Playwright and Cypress specs or PR/diff-scoped test changes against 24 anti-patterns grouped P0/P1/P2 by severity — silent always-pass, poor diagnostics, maintenance), playwright-debugger (root-cause diagnosis from playwright-report/), cypress-debugger (root-cause diagnosis from cypress/reports/ mochawesome or JUnit). Use it for E2E test automation, Playwright test generation, Cypress test review, PR/diff review, flaky test debugging, false-positive detection, and test smell scanning. Includes a standalone Node scanner (e2e-skills scan) for CI use without an agent runtime.",
+    "shortDescription": "Generate, review, fix E2E",
+    "longDescription": "AI agent testing toolkit with three skills shared between Claude Code and Codex from ./skills/: playwright-test-generator (router: installed official Playwright agents with a short rules checklist prepended → e2e-reviewer scanner gate → scoped test execution; setup guide when the agents are missing), e2e-reviewer (static review of Playwright and Cypress specs or PR/diff-scoped test changes against 24 anti-patterns grouped P0/P1/P2 by severity — silent always-pass, poor diagnostics, maintenance) and e2e-debugger (thin debugger for one failing Playwright or Cypress test: three reruns with retries off to catch a flake, then splits the cause into app, test, flaky, environment or unclear; reports suspected app regressions without changing product code and repairs only test defects without weakening assertions). Use it for E2E test automation, Playwright test generation, Cypress test review, PR/diff review, failing-test debugging with safe repair, false-positive detection, and test smell scanning. Includes a standalone Node scanner (e2e-skills scan) for CI use without an agent runtime.",
     "developerName": "YONGJAE LEE",
     "category": "Developer Tools",
     "capabilities": [
@@ -74,7 +69,7 @@
     "defaultPrompt": [
       "Generate Playwright E2E tests for a named page or flow with a scanner gate.",
       "Review existing Playwright/Cypress specs or PR/diff-scoped test changes for 24 P0/P1/P2 anti-patterns.",
-      "Diagnose failed Playwright/Cypress tests with root-cause classification."
+      "Debug a failing Playwright/Cypress test and fix it safely; never edit product code."
     ],
     "brandColor": "#2563eb",
     "composerIcon": "./assets/icon.svg",

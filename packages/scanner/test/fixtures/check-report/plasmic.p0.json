@@ -1,0 +1,690 @@
+{
+ "findings": [
+  {
+   "file": "platform/loader-tests/src/playwright-tests/helpers/website.ts",
+   "line": 66,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1104,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1118,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1129,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1144,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1231,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1241,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1251,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1261,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1271,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1281,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1291,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1301,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1311,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/nextjs-plasmic-react-aria.spec.ts",
+   "line": 1321,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/shared/cms-test.ts",
+   "line": 22,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/shared/cms-test.ts",
+   "line": 41,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/nextjs/vanilla-cookieconsent.spec.ts",
+   "line": 187,
+   "patternId": "#4f",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/playwright-utils.ts",
+   "line": 113,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/loader-tests/src/playwright-tests/playwright-utils.ts",
+   "line": 72,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/pagination.spec.ts",
+   "line": 114,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/pagination.spec.ts",
+   "line": 133,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/pagination.spec.ts",
+   "line": 158,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/pagination.spec.ts",
+   "line": 201,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/pagination.spec.ts",
+   "line": 244,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/pagination.spec.ts",
+   "line": 287,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/pagination.spec.ts",
+   "line": 380,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/pagination.spec.ts",
+   "line": 75,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/pagination.spec.ts",
+   "line": 96,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/segmented.spec.ts",
+   "line": 102,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/antd5/segmented.spec.ts",
+   "line": 286,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/arbitrary-css-selectors.spec.ts",
+   "line": 86,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/copilot-chat.spec.ts",
+   "line": 149,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/data-rep.spec.ts",
+   "line": 110,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/data-rep.spec.ts",
+   "line": 124,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/data-rep.spec.ts",
+   "line": 137,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/data-rep.spec.ts",
+   "line": 64,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/data-rep.spec.ts",
+   "line": 76,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/data-rep.spec.ts",
+   "line": 86,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/data-tokens.spec.ts",
+   "line": 434,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/forms/dynamic-initial-value.spec.ts",
+   "line": 196,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-antd.spec.ts",
+   "line": 41,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-antd.spec.ts",
+   "line": 59,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-antd5.spec.ts",
+   "line": 41,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-antd5.spec.ts",
+   "line": 59,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-rich-calendar.spec.ts",
+   "line": 242,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-rich-calendar.spec.ts",
+   "line": 328,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-rich-layout.spec.ts",
+   "line": 165,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-rich-table.spec.ts",
+   "line": 139,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-tiptap.spec.ts",
+   "line": 112,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-tiptap.spec.ts",
+   "line": 117,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-tiptap.spec.ts",
+   "line": 201,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/hostless-tiptap.spec.ts",
+   "line": 58,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/imported-token-overrides.spec.ts",
+   "line": 113,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/imported-token-overrides.spec.ts",
+   "line": 142,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/imported-token-overrides.spec.ts",
+   "line": 1716,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/imported-token-overrides.spec.ts",
+   "line": 1718,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/imported-token-overrides.spec.ts",
+   "line": 212,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/imported-token-overrides.spec.ts",
+   "line": 270,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/page-links.spec.ts",
+   "line": 121,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/plexus-installation.spec.ts",
+   "line": 102,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/e2e/routing-branches.spec.ts",
+   "line": 38,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/components/left-panel.ts",
+   "line": 149,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/components/right-panel.ts",
+   "line": 390,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/components/right-panel.ts",
+   "line": 552,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/components/right-panel.ts",
+   "line": 893,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 1153,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 564,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 605,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 669,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 846,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 861,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 875,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 882,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 887,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/models/studio-model.ts",
+   "line": 897,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 125,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 136,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 176,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 181,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 193,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 198,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 210,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 215,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 324,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 384,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 534,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 592,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 608,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 710,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/auto-open-utils.ts",
+   "line": 715,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/import-utils.ts",
+   "line": 110,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/import-utils.ts",
+   "line": 13,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/import-utils.ts",
+   "line": 64,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/studio-utils.ts",
+   "line": 121,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/studio-utils.ts",
+   "line": 164,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/studio-utils.ts",
+   "line": 198,
+   "patternId": "#5a",
+   "severity": "P0",
+   "disposition": "candidate"
+  },
+  {
+   "file": "platform/wab/playwright/utils/studio-utils.ts",
+   "line": 25,
+   "patternId": "#3",
+   "severity": "P0",
+   "disposition": "candidate"
+  }
+ ]
+}

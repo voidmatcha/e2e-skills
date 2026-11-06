@@ -1,0 +1,7 @@
+interface:
+  display_name: E2E Debugger
+  short_description: Debug a failing E2E test and fix it safely
+  default_prompt: Use $e2e-debugger to debug a failing or flaky Playwright or Cypress test and fix it without changing product code.
+
+policy:
+  allow_implicit_invocation: true

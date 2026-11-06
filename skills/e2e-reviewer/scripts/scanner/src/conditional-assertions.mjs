@@ -2,6 +2,7 @@
 // Source-shape #5a candidates, not a decision that a required assertion is bypassed.
 import { createReceivers } from './receivers.mjs';
 import { unwrap, walk, member, isWritten, objectMutationTarget, ts } from './source.mjs';
+import { gateHelper, parameterGates, helperCallSites, staticArgument } from './parameter-gates.mjs';
 
 const AWAITED_CONDITION = '#5a condition dataflow from an awaited variable is outside this inline slice';
 const BOOLEAN_READS = new Set(['isVisible', 'isEnabled', 'isChecked', 'isDisabled', 'isEditable', 'isHidden']);
@@ -332,7 +333,9 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
   // It is excluded only when evaluating it over every value combination shows
   // the branch runs at least once; an always-false gate stays a candidate.
   const STATIC = Symbol('static-unknown');
-  function literalValue(node) {
+  // A row field that is not literal data: reading it is never evaluated.
+  const OPAQUE = Symbol('static-opaque');
+  function literalValue(node, rows = false) {
     node = unwrap(node);
     if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
     if (ts.isNumericLiteral(node)) return Number(node.text);
@@ -342,34 +345,47 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
     if (ts.isIdentifier(node) && node.text === 'undefined' && !checker.getSymbolAtLocation(node)?.declarations?.length) return undefined;
     if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.MinusToken && ts.isNumericLiteral(unwrap(node.operand)))
       return -Number(unwrap(node.operand).text);
-    // A data row such as { skin: 'dark', width: 2 }: literal fields only.
+    // A data row such as { skin: 'dark', width: 2 }: literal fields only. As a
+    // loop row, a non-literal field is opaque, and a tuple row is an array.
     if (ts.isObjectLiteralExpression(node)) {
       const row = Object.create(null);
       for (const item of node.properties) {
         if (!ts.isPropertyAssignment(item) || !(ts.isIdentifier(item.name) || ts.isStringLiteral(item.name)) ||
-            Object.hasOwn(row, item.name.text)) return STATIC;
-        const value = literalValue(item.initializer);
-        if (value === STATIC) return STATIC;
+            Object.hasOwn(row, item.name.text)) return rows ? OPAQUE : STATIC;
+        const value = literalValue(item.initializer, rows);
+        if (value === STATIC) { if (!rows) return STATIC; row[item.name.text] = OPAQUE; continue; }
         row[item.name.text] = value;
       }
       return row;
     }
-    return STATIC;
+    if (rows && ts.isArrayLiteralExpression(node)) {
+      return node.elements.map(item => ts.isSpreadElement(item) || ts.isOmittedExpression(item) ? OPAQUE :
+        literalValue(item, true) === STATIC ? OPAQUE : literalValue(item, true));
+    }
+    return rows ? OPAQUE : STATIC;
   }
+  const primitive = value => value === null || typeof value !== 'object';
   // Rows hold only primitive fields, so reading a field cannot leak a row.
-  // The array itself may only be the source of a for...of whose row binding is
-  // used solely as `row.<field>` reads; anything else could add or mutate rows.
-  function rowsOnlyIterated(symbol, declarationName) {
+  // The array itself may only be the source of a for...of. A row binding is
+  // read solely as `row.<field>` unless every row is a primitive; a
+  // destructured row binds each field once, with no default or rest element.
+  function rowsOnlyIterated(symbol, declarationName, values) {
     let safe = true;
     walk(source, node => {
       if (!safe || !ts.isIdentifier(node) || node === declarationName || checker.getSymbolAtLocation(node) !== symbol) return;
       const loop = node.parent;
       if (!ts.isForOfStatement(loop) || loop.expression !== node || loop.awaitModifier || !ts.isVariableDeclarationList(loop.initializer) ||
-          loop.initializer.declarations.length !== 1 || !ts.isIdentifier(loop.initializer.declarations[0].name)) { safe = false; return; }
-      const rowName = loop.initializer.declarations[0].name;
-      if (!fieldReadsOnly(rowName, 0)) safe = false;
+          loop.initializer.declarations.length !== 1) { safe = false; return; }
+      const binding = loop.initializer.declarations[0].name;
+      if (ts.isIdentifier(binding)) { if (!values.every(primitive) && !fieldReadsOnly(binding, 0)) safe = false; }
+      else if (!simplePattern(binding)) safe = false;
     });
     return safe;
+  }
+  function simplePattern(pattern) {
+    return (ts.isObjectBindingPattern(pattern) || ts.isArrayBindingPattern(pattern)) && pattern.elements.every(item =>
+      ts.isOmittedExpression(item) || ts.isBindingElement(item) && !item.dotDotDotToken && !item.initializer &&
+        ts.isIdentifier(item.name) && !(item.propertyName && !ts.isIdentifier(item.propertyName) && !ts.isStringLiteral(item.propertyName)));
   }
   // The binding is only read as `binding.<field>`, or passed to a closed
   // same-file helper whose matching parameter obeys the same rule.
@@ -395,32 +411,102 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
   }
   // The literal rows of a loop source: a direct array literal, or a const
   // array literal that is never written, including through its elements.
-  function literalRows(node) {
+  function literalRows(node, binding) {
     node = unwrap(node);
     if (ts.isIdentifier(node)) {
       const symbol = checker.getSymbolAtLocation(node);
       const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
       if (!declaration || !ts.isVariableDeclaration(declaration) || !declaration.initializer ||
-          !(declaration.parent.flags & ts.NodeFlags.Const) || isWritten(source, checker, symbol, { properties: true }) ||
-          !rowsOnlyIterated(symbol, declaration.name)) return null;
-      node = unwrap(declaration.initializer);
+          !(declaration.parent.flags & ts.NodeFlags.Const) || isWritten(source, checker, symbol, { properties: true })) return null;
+      const rows = literalRows(declaration.initializer, binding);
+      return rows && rowsOnlyIterated(symbol, declaration.name, rows) ? rows : null;
     }
     if (!ts.isArrayLiteralExpression(node) || !node.elements.length) return null;
-    const rows = node.elements.map(literalValue);
-    return rows.includes(STATIC) ? null : rows;
+    // A row may hold opaque fields beside literal ones; only literal fields
+    // are ever evaluated.
+    const rows = node.elements.map(item => ts.isSpreadElement(item) ? STATIC : literalValue(item, true));
+    return rows.includes(STATIC) || rows.includes(OPAQUE) ? null : rows;
   }
+  // A loop whose body can stop or skip an iteration early (break, continue,
+  // return) may never reach the gated branch, so its domain is not used.
+  function earlyExit(loop) {
+    let exits = false;
+    (function visit(node, breakAbsorbed, continueAbsorbed) {
+      if (exits || ts.isFunctionLike(node) || ts.isClassLike(node)) return;
+      if (ts.isReturnStatement(node) || ts.isBreakStatement(node) && (node.label || !breakAbsorbed) ||
+          ts.isContinueStatement(node) && (node.label || !continueAbsorbed)) { exits = true; return; }
+      const iteration = ts.isIterationStatement(node, false);
+      ts.forEachChild(node, child => visit(child, breakAbsorbed || iteration || ts.isSwitchStatement(node), continueAbsorbed || iteration));
+    })(loop.statement, false, false);
+    return exits;
+  }
+  // `for (let i = A; i < B; i++)` with numeric literal bounds and no other
+  // write to `i`: the indices the loop visits, at most 256 of them.
+  function indexDomain(declaration, symbol) {
+    const list = declaration.parent, loop = list.parent;
+    if (!ts.isForStatement(loop) || loop.initializer !== list || list.declarations.length !== 1 || !declaration.initializer ||
+        !loop.condition || !loop.incrementor || earlyExit(loop)) return null;
+    const start = literalValue(declaration.initializer);
+    const condition = unwrap(loop.condition), step = unwrap(loop.incrementor);
+    if (typeof start !== 'number' || !Number.isInteger(start) || !ts.isBinaryExpression(condition) ||
+        !ts.isIdentifier(unwrap(condition.left)) || checker.getSymbolAtLocation(unwrap(condition.left)) !== symbol) return null;
+    const bound = literalValue(condition.right), operator = condition.operatorToken.kind;
+    if (typeof bound !== 'number' || ![ts.SyntaxKind.LessThanToken, ts.SyntaxKind.LessThanEqualsToken].includes(operator)) return null;
+    const increments = (ts.isPostfixUnaryExpression(step) || ts.isPrefixUnaryExpression(step)) && step.operator === ts.SyntaxKind.PlusPlusToken &&
+      ts.isIdentifier(unwrap(step.operand)) && checker.getSymbolAtLocation(unwrap(step.operand)) === symbol ||
+      ts.isBinaryExpression(step) && step.operatorToken.kind === ts.SyntaxKind.PlusEqualsToken && ts.isIdentifier(unwrap(step.left)) &&
+      checker.getSymbolAtLocation(unwrap(step.left)) === symbol && literalValue(step.right) === 1;
+    if (!increments) return null;
+    // No write to the index outside the incrementor.
+    let written = false;
+    walk(loop.statement, node => {
+      if (written) return;
+      const target = ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+        node.operatorToken.kind <= ts.SyntaxKind.LastAssignment ? node.left :
+        (ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
+          [ts.SyntaxKind.PlusPlusToken, ts.SyntaxKind.MinusMinusToken].includes(node.operator) ? node.operand : null;
+      if (target && ts.isIdentifier(unwrap(target)) && checker.getSymbolAtLocation(unwrap(target)) === symbol) written = true;
+    });
+    if (written) return null;
+    const values = [];
+    for (let index = start; operator === ts.SyntaxKind.LessThanToken ? index < bound : index <= bound; index++) {
+      if (values.length >= 256) return null;
+      values.push(index);
+    }
+    return values.length ? { group: loop, values } : null;
+  }
+  // The value domain of one condition identifier, as { group, values }:
+  // identifiers bound by the same loop share a group, whose values are taken
+  // together from one iteration.
   function staticDomain(identifier, statement, depth = 0) {
     const symbol = checker.getSymbolAtLocation(identifier);
     const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
-    if (!declaration || isWritten(source, checker, symbol)) return null;
+    if (!declaration) return null;
+    if (ts.isVariableDeclaration(declaration) && ts.isIdentifier(declaration.name) && ts.isForStatement(declaration.parent.parent))
+      return indexDomain(declaration, symbol);
+    if (isWritten(source, checker, symbol)) return null;
+    if (ts.isBindingElement(declaration) && ts.isIdentifier(declaration.name)) {
+      const pattern = declaration.parent, variable = pattern.parent, list = variable?.parent, loop = list?.parent;
+      if (!ts.isVariableDeclaration(variable) || variable.name !== pattern || !simplePattern(pattern) || !ts.isForOfStatement(loop) ||
+          loop.initializer !== list || loop.awaitModifier || variable.initializer || earlyExit(loop)) return null;
+      const rows = literalRows(loop.expression, pattern);
+      if (!rows) return null;
+      const key = ts.isArrayBindingPattern(pattern) ? pattern.elements.indexOf(declaration) :
+        (declaration.propertyName ?? declaration.name).text;
+      const values = rows.map(row => row !== null && typeof row === 'object' && Object.hasOwn(row, key) ? row[key] :
+        row !== null && typeof row === 'object' ? undefined : OPAQUE);
+      return { group: loop, values };
+    }
     if (ts.isVariableDeclaration(declaration) && ts.isIdentifier(declaration.name)) {
       const list = declaration.parent, loop = list.parent;
       if (ts.isForOfStatement(loop) && loop.initializer === list && !loop.awaitModifier && !declaration.initializer) {
-        return literalRows(loop.expression);
+        if (earlyExit(loop)) return null;
+        const rows = literalRows(loop.expression, declaration.name);
+        return rows && { group: loop, values: rows };
       }
       if (list.flags & ts.NodeFlags.Const && declaration.initializer) {
         const value = literalValue(declaration.initializer);
-        return value === STATIC ? null : [value];
+        return value === STATIC ? null : { group: symbol, values: [value] };
       }
       return null;
     }
@@ -441,13 +527,13 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
         if (value === STATIC && ts.isIdentifier(argument) && depth < 4) {
           const passed = staticDomain(argument, call, depth + 1);
           if (!passed) return null;
-          domain.push(...passed);
+          domain.push(...passed.values);
           continue;
         }
         if (value === STATIC) return null;
         domain.push(value);
       }
-      return domain;
+      return { group: symbol, values: domain };
     }
     return null;
   }
@@ -555,7 +641,10 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
     }
     return false;
   }
-  function reachableStaticCondition(condition) {
+  // `includes` / `startsWith` / `endsWith` evaluated on literal strings and
+  // arrays only; any other call keeps the condition unsupported.
+  const STATIC_CALLS = new Set(['includes', 'startsWith', 'endsWith']);
+  function reachableStaticCondition(condition, fixed = null) {
     const statement = condition.parent, names = new Map();
     let supported = true;
     (function collect(node) {
@@ -566,7 +655,7 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
         const symbol = checker.getSymbolAtLocation(node);
         if (!symbol) { supported = false; return; }
         if (!names.has(symbol)) {
-          const domain = staticDomain(node, statement);
+          const domain = fixed?.get(symbol) ?? staticDomain(node, statement);
           if (!domain) { supported = false; return; }
           names.set(symbol, domain);
         }
@@ -579,16 +668,45 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
       if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken) { collect(node.operand); return; }
       if (ts.isPropertyAccessExpression(node) && !node.questionDotToken) { collect(node.expression); return; }
       if (ts.isTypeOfExpression(node)) { collect(node.expression); return; }
+      if (ts.isArrayLiteralExpression(node) && ts.isPropertyAccessExpression(node.parent) && node.parent.expression === node) {
+        node.elements.forEach(item => { if (ts.isSpreadElement(item)) supported = false; else collect(item); }); return;
+      }
+      if (ts.isCallExpression(node) && !node.questionDotToken && ts.isPropertyAccessExpression(unwrap(node.expression)) &&
+          !unwrap(node.expression).questionDotToken && STATIC_CALLS.has(unwrap(node.expression).name.text) &&
+          node.arguments.length === 1 && !ts.isSpreadElement(node.arguments[0])) {
+        collect(unwrap(node.expression).expression); collect(node.arguments[0]); return;
+      }
       supported = false;
     })(condition);
     if (!supported || !names.size) return false;
-    const symbols = [...names.keys()];
-    if (symbols.reduce((total, symbol) => total * names.get(symbol).length, 1) > 256) return false;
+    // Identifiers bound by one loop take their values from the same iteration.
+    const groups = new Map();
+    for (const [symbol, domain] of names) {
+      if (!groups.has(domain.group)) groups.set(domain.group, { size: domain.values.length, symbols: [] });
+      const group = groups.get(domain.group);
+      if (group.size !== domain.values.length) return false;
+      group.symbols.push(symbol);
+    }
+    const order = [...groups.values()];
+    if (order.reduce((total, group) => total * group.size, 1) > 256) return false;
     function evaluate(node, values) {
+      const value = evaluateInner(node, values);
+      if (value === OPAQUE) throw new Error('opaque static value');
+      return value;
+    }
+    function evaluateInner(node, values) {
       node = unwrap(node);
       const literal = literalValue(node);
       if (literal !== STATIC) return literal;
       if (ts.isIdentifier(node)) return values.get(checker.getSymbolAtLocation(node));
+      if (ts.isArrayLiteralExpression(node)) return node.elements.map(item => evaluate(item, values));
+      if (ts.isCallExpression(node)) {
+        const access = unwrap(node.expression), receiver = evaluate(access.expression, values), argument = evaluate(node.arguments[0], values);
+        const name = access.name.text;
+        if (typeof receiver === 'string' && typeof argument === 'string') return receiver[name](argument);
+        if (Array.isArray(receiver) && name === 'includes' && primitive(argument) && receiver.every(primitive)) return receiver.includes(argument);
+        throw new Error('unsupported static call');
+      }
       if (ts.isPropertyAccessExpression(node)) {
         const row = evaluate(node.expression, values);
         if (row === null || typeof row !== 'object') throw new Error('static property of a non-row');
@@ -620,10 +738,60 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
       throw new Error('unsupported static operator');
     }
     function some(index, values) {
-      if (index === symbols.length) return Boolean(evaluate(condition, values));
-      return names.get(symbols[index]).some(value => some(index + 1, new Map(values).set(symbols[index], value)));
+      if (index === order.length) return Boolean(evaluate(condition, values));
+      const group = order[index];
+      for (let row = 0; row < group.size; row++) {
+        const next = new Map(values);
+        for (const symbol of group.symbols) next.set(symbol, names.get(symbol).values[row]);
+        if (some(index + 1, next)) return true;
+      }
+      return false;
     }
     try { return some(0, new Map()); } catch { return false; }
+  }
+  // G: a gate on the `browserName`/`isMobile` fixtures or `testInfo.project.name`
+  // of the test callback that holds it. Every statically parsed Playwright
+  // config that runs this file (scope.projectsFor) must have a project in
+  // which the condition is true, so the assertion runs in every run that
+  // runs the test. Skip/fixme/fail/use calls anywhere in the file, an
+  // extended or modified test, or any other read of testInfo keep the gate.
+  function projectGate(condition) {
+    if (typeof scope?.projectsFor !== 'function' || /\b(?:skip|fixme|fail|use|slow)\s*\(/.test(source.text)) return false;
+    let fn = condition.parent;
+    while (fn && !ts.isFunctionLike(fn)) fn = fn.parent;
+    const call = fn?.parent;
+    if (!fn || !(ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) || !ts.isCallExpression(call) || call.questionDotToken ||
+        call.arguments.at(-1) !== fn || !ts.isIdentifier(unwrap(call.expression))) return false;
+    const registration = scope.expression(filename, unwrap(call.expression));
+    if (!registration.complete || registration.kind !== 'playwright-test' || registration.extended) return false;
+    const fixtures = fn.parameters[0]?.name, info = fn.parameters[1]?.name, bound = new Map();
+    if (fixtures && ts.isObjectBindingPattern(fixtures)) for (const element of fixtures.elements) {
+      const key = element.propertyName ?? element.name;
+      if (element.dotDotDotToken || element.initializer || !ts.isIdentifier(element.name) || !ts.isIdentifier(key)) continue;
+      if (['browserName', 'isMobile'].includes(key.text)) bound.set(checker.getSymbolAtLocation(element.name), key.text);
+    }
+    if (info && ts.isIdentifier(info) && !fn.parameters[1].initializer && !fn.parameters[1].dotDotDotToken) bound.set(checker.getSymbolAtLocation(info), 'testInfo');
+    for (const symbol of bound.keys()) if (!symbol || isWritten(source, checker, symbol, { properties: true })) return false;
+    let used = false, shaped = true;
+    walk(condition, node => {
+      if (!ts.isIdentifier(node)) return;
+      const role = bound.get(checker.getSymbolAtLocation(node));
+      if (!role) return;
+      used = true;
+      if (role !== 'testInfo') return;
+      const project = node.parent, name = project?.parent;
+      if (!(ts.isPropertyAccessExpression(project) && project.expression === node && project.name.text === 'project' && !project.questionDotToken &&
+          ts.isPropertyAccessExpression(name) && name.expression === project && name.name.text === 'name' && !name.questionDotToken)) shaped = false;
+    });
+    if (!used || !shaped) return false;
+    const runs = scope.projectsFor(filename);
+    if (!runs) return false;
+    return runs.every(projects => {
+      const group = {}, fixed = new Map();
+      for (const [symbol, role] of bound) fixed.set(symbol, { group, values: projects.map(project =>
+        role === 'testInfo' ? { project: { name: project.name } } : project[role]) });
+      return reachableStaticCondition(condition, fixed);
+    });
   }
   function proveActionOnly(branch) {
     let proven = true;
@@ -709,6 +877,316 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
     findings.at(-1).evidence = { kind: 'unresolved-assert-ok',
       requirements: ['verify-runtime-assertion-binding', 'verify-branch-reachability', 'verify-required-test-outcome'] };
   }
+  // pattern-reference #5a mechanical confirmation. The one promoted shape: an
+  // else-less if directly in a proven Playwright test(...) callback body, whose
+  // then-branch holds every assertion of that test as a direct, unaliased
+  // expect(...), gated by a non-waiting state or count read on a proven
+  // Page/Locator (inline, or through one same-function const/let). Anything the
+  // scanner cannot prove, such as a helper that may assert, an assertion in a
+  // nested function, an aliased or wrapped expect, or an unresolved receiver,
+  // leaves the finding a candidate.
+  const GATE_READS = new Set([...BOOLEAN_READS, 'count']);
+  function chainRoot(node) {
+    let root = unwrap(node);
+    while (ts.isPropertyAccessExpression(root) || ts.isCallExpression(root) || ts.isElementAccessExpression(root)) root = unwrap(root.expression);
+    return root;
+  }
+  function pageRooted(call) {
+    if (call.questionDotToken || ts.isIdentifier(unwrap(call.expression))) return false;
+    const root = chainRoot(call.expression);
+    if (ts.isIdentifier(root) && root.text === 'console' && !checker.getSymbolAtLocation(root)) return true;
+    if (ts.isIdentifier(root) && ['page', 'locator'].includes(quietKind(root))) return true;
+    // A page-object read that runs no user code and yields a Page/Locator.
+    for (let node = unwrap(call.expression); ts.isPropertyAccessExpression(node) || ts.isCallExpression(node) ||
+        ts.isElementAccessExpression(node); node = unwrap(node.expression)) {
+      if (ts.isPropertyAccessExpression(node) && receivers.quietPageObjectRead(node) && ['page', 'locator'].includes(quietKind(node))) return true;
+    }
+    return false;
+  }
+  function directExpect(call) {
+    const root = chainRoot(call.expression);
+    if (!ts.isIdentifier(root) || root.text !== 'expect' || quietKind(root) !== 'expect') return false;
+    const declarations = checker.getSymbolAtLocation(root)?.declarations ?? [];
+    if (declarations.length !== 1 || !ts.isImportSpecifier(declarations[0]) || declarations[0].isTypeOnly ||
+        (declarations[0].propertyName ?? declarations[0].name).text !== 'expect') return false;
+    // The chain must start with expect(...) itself, not expect.soft/poll/configure.
+    let node = call;
+    for (;;) {
+      if (ts.isCallExpression(node)) {
+        if (node.questionDotToken) return false;
+        if (unwrap(node.expression) === root) return true;
+      } else if (!ts.isPropertyAccessExpression(node) || node.questionDotToken) return false;
+      node = unwrap(node.expression);
+    }
+  }
+  const falseCallback = fn => ts.isArrowFunction(fn) && !fn.parameters.length && !fn.asteriskToken &&
+    unwrap(fn.body).kind === ts.SyntaxKind.FalseKeyword;
+  // Every call is a proven Page/Locator call (or console); assertions only as
+  // allowed; no function other than a `.catch(() => false)` callback; no throw.
+  function provenStatements(root, { assertions, catchFalse }) {
+    let proven = true, asserted = false;
+    walk(root, node => {
+      if (!proven) return;
+      if (ts.isThrowStatement(node) || ts.isTaggedTemplateExpression(node) ||
+          ts.isNewExpression(node) && !receivers.quietConstruction(node)) { proven = false; return; }
+      if (ts.isFunctionLike(node)) {
+        const call = node.parent;
+        if (!(catchFalse && falseCallback(node) && ts.isCallExpression(call) && call.arguments.length === 1 &&
+            call.arguments[0] === node && dot(call.expression)?.name === 'catch')) proven = false;
+        return;
+      }
+      if (!ts.isCallExpression(node)) return;
+      if (assertions && directExpect(node)) { asserted = true; return; }
+      if (!pageRooted(node)) proven = false;
+    });
+    return proven && (!assertions || asserted);
+  }
+  function gateRead(condition) {
+    let read = false;
+    walk(condition, node => {
+      if (read || !ts.isCallExpression(node) || node.questionDotToken) return;
+      const access = dot(node.expression);
+      if (access && GATE_READS.has(access.name) && !node.arguments.length && ['page', 'locator'].includes(quietKind(access.object))) read = true;
+    });
+    return read && provenStatements(condition, { assertions: false, catchFalse: true });
+  }
+  // A gate is bypassable only if it can be false. Confirm just the shapes
+  // whose falsity is certain to be reachable: a boolean state read or its
+  // negation, and a Locator count compared with a numeric literal in a way
+  // some count fails. `count() >= 0`, `read || true` and any other compound
+  // condition stay review candidates.
+  function fallibleCondition(condition) {
+    let node = unwrap(condition);
+    if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken) node = unwrap(node.operand);
+    const read = value => {
+      value = unwrap(value);
+      if (!ts.isAwaitExpression(value)) return null;
+      let call = unwrap(value.expression);
+      // `read().catch(() => <literal>)`: the read itself can still be false.
+      const handler = ts.isCallExpression(call) && !call.questionDotToken && dot(call.expression)?.name === 'catch' &&
+        call.arguments.length === 1 && unwrap(call.arguments[0]);
+      if (handler && ts.isArrowFunction(handler) && !handler.parameters.length && !ts.isBlock(handler.body) &&
+          [ts.SyntaxKind.FalseKeyword, ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.NumericLiteral].includes(unwrap(handler.body).kind))
+        call = unwrap(dot(call.expression).object);
+      const access = ts.isCallExpression(call) && !call.questionDotToken && dot(call.expression);
+      return access && GATE_READS.has(access.name) && !call.arguments.length && ['page', 'locator'].includes(quietKind(access.object)) ? access.name : null;
+    };
+    // A bare read is false for a hidden element or a zero count.
+    if (read(node)) return true;
+    if (!ts.isBinaryExpression(node)) return false;
+    const number = value => {
+      value = unwrap(value);
+      if (ts.isNumericLiteral(value)) return Number(value.text);
+      if (ts.isPrefixUnaryExpression(value) && value.operator === ts.SyntaxKind.MinusToken && ts.isNumericLiteral(unwrap(value.operand)))
+        return -Number(unwrap(value.operand).text);
+      return null;
+    };
+    const K = ts.SyntaxKind;
+    let operator = node.operatorToken.kind, bound;
+    if (read(node.left) === 'count' && (bound = number(node.right)) !== null) { /* count <op> n */ }
+    else if (read(node.right) === 'count' && (bound = number(node.left)) !== null) {
+      // n <op> count, rewritten as count <op'> n
+      operator = { [K.LessThanToken]: K.GreaterThanToken, [K.LessThanEqualsToken]: K.GreaterThanEqualsToken,
+        [K.GreaterThanToken]: K.LessThanToken, [K.GreaterThanEqualsToken]: K.LessThanEqualsToken }[operator] ?? operator;
+    } else return false;
+    // Some nonnegative integer count makes the comparison false.
+    const holds = count => ({ [K.GreaterThanToken]: count > bound, [K.GreaterThanEqualsToken]: count >= bound,
+      [K.LessThanToken]: count < bound, [K.LessThanEqualsToken]: count <= bound, [K.EqualsEqualsEqualsToken]: count === bound,
+      [K.EqualsEqualsToken]: count == bound, [K.ExclamationEqualsEqualsToken]: count !== bound, [K.ExclamationEqualsToken]: count != bound })[operator];
+    if (holds(0) === undefined) return false;
+    // Counts are unbounded above, so only small counts and the bound itself matter.
+    const probes = [0, 1, 2];
+    if (Number.isInteger(bound) && bound >= 0) probes.push(bound, bound + 1);
+    if (Number.isFinite(bound)) probes.push(Math.max(0, Math.ceil(bound) + 1), Math.max(0, Math.floor(bound)));
+    probes.push(Number.MAX_SAFE_INTEGER);
+    return probes.some(count => !holds(count));
+  }
+  function confirmedGate(statement) {
+    if (statement.elseStatement) return false;
+    const body = statement.parent, callback = body?.parent, call = callback?.parent;
+    if (!body || !ts.isBlock(body) || !(ts.isArrowFunction(callback) || ts.isFunctionExpression(callback)) ||
+        callback.body !== body || callback.asteriskToken || !ts.isCallExpression(call) || call.questionDotToken ||
+        call.arguments.length < 2 || call.arguments.at(-1) !== callback) return false;
+    const callee = unwrap(call.expression);
+    if (!ts.isIdentifier(callee) || !['test', 'it'].includes(callee.text) || !testRoot(callee)) return false;
+    if (!provenStatements(statement.thenStatement, { assertions: true, catchFalse: false })) return false;
+    let condition = unwrap(statement.expression), variable = null;
+    if (ts.isIdentifier(condition)) {
+      const symbol = checker.getSymbolAtLocation(condition);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      const list = declaration?.parent, holder = list?.parent;
+      if (!declaration || !ts.isVariableDeclaration(declaration) || !ts.isIdentifier(declaration.name) || !declaration.initializer ||
+          !ts.isVariableDeclarationList(list) || list.declarations.length !== 1 || !(list.flags & (ts.NodeFlags.Const | ts.NodeFlags.Let)) ||
+          !ts.isVariableStatement(holder) || holder.parent !== body || holder.end > statement.getStart(source) ||
+          isWritten(source, checker, symbol, { properties: true })) return false;
+      variable = holder; condition = declaration.initializer;
+    }
+    if (!gateRead(condition) || !fallibleCondition(condition)) return false;
+    // Every other statement of the test runs only proven, assertion-free calls.
+    return body.statements.every(item => item === statement || item === variable ||
+      provenStatements(item, { assertions: false, catchFalse: false }));
+  }
+  // fp shape B: a helper gate on the helper's own parameters. The helper's
+  // candidate moves to each proven test call passing a runtime argument.
+  function gateContext(file, gateSource, gateChecker) {
+    const kindOf = node => scope.expression(file, node);
+    return { file, source: gateSource, checker: gateChecker,
+      isExpect: node => { const value = kindOf(node); return value.complete && value.kind === 'playwright-expect'; },
+      isTest: node => { const value = kindOf(node); return value.complete && value.kind === 'playwright-test'; } };
+  }
+  const localGates = gateContext(filename, source, checker);
+  // The call runs inside a callback registered on a proven Playwright test
+  // object (a test, step or hook), not in another helper.
+  function testCall(call, context) {
+    let fn = call.parent;
+    while (fn && !ts.isFunctionLike(fn)) fn = fn.parent;
+    if (!fn || !(ts.isArrowFunction(fn) || ts.isFunctionExpression(fn))) return false;
+    let holder = fn;
+    while (ts.isParenthesizedExpression(holder.parent)) holder = holder.parent;
+    const registration = holder.parent;
+    if (!ts.isCallExpression(registration) || registration.arguments.at(-1) !== holder) return false;
+    let root = unwrap(registration.expression);
+    while (ts.isPropertyAccessExpression(root)) root = unwrap(root.expression);
+    return ts.isIdentifier(root) && context.isTest(root);
+  }
+  // A static argument: omitted, literal data, or (in this file) an
+  // identifier the existing literal-data rule gives a domain.
+  function staticCallArgument(call, index, local) {
+    if (staticArgument(call, index)) return true;
+    const argument = local && call.arguments.length > index ? unwrap(call.arguments[index]) : null;
+    return Boolean(argument && ts.isIdentifier(argument) && !call.arguments.slice(0, index + 1).some(ts.isSpreadElement) &&
+      staticDomain(argument, call));
+  }
+  // Whether the helper-side candidate for this gate is withheld: every
+  // same-file call site is visible, and each one passing a runtime value
+  // runs in a proven test, where it becomes the candidate instead. A closed
+  // helper whose calls all pass literal data keeps the literal-data rule.
+  function suppressedGate(fn, statement, context, local) {
+    const helper = gateHelper(fn), indices = helper && parameterGates(fn, context).get(statement);
+    const sites = indices && helperCallSites(helper, context);
+    if (!sites) return null;
+    // An exported helper's decision must not depend on this file's literal
+    // domains, so an importer reaches the same verdict from pinned source.
+    const runtime = sites.calls.filter(call => [...indices].some(index =>
+      sites.exported ? !staticArgument(call, index) : !staticCallArgument(call, index, local)));
+    if (!sites.exported && !runtime.length) return null;
+    if (runtime.some(call => !testCall(call, context))) return null;
+    if (sites.exported && !importerCallsTraced(context.file, sites.names, indices, new Set())) return null;
+    return indices;
+  }
+  // Every pinned importer of an exported helper reaches it only through
+  // calls the caller-side rule (parameterGateCall) sees: `name(...)` from a
+  // named import or `ns.name(...)` from a namespace import, each in a proven
+  // test or passing literal data for every gating parameter. Named re-exports
+  // are followed to their importers. `export *`, a default import,
+  // require()/import(), an alias or any use of the function as a value is
+  // out of sight, so the candidate stays at the helper.
+  function importerCallsTraced(target, names, indices, seen) {
+    if (seen.has(target) || seen.size >= 16) return false;
+    seen.add(target);
+    const importers = scope?.importersOf?.(target);
+    if (!importers) return false;
+    for (const { file, model, references } of importers) {
+      for (const reference of references) {
+        if (!ts.isExportDeclaration(reference) || reference.isTypeOnly) continue;
+        const clause = reference.exportClause;
+        // scope.importedFunction resolves named re-exports only, so a call
+        // through `export *` would not reach the caller-side rule.
+        if (!clause || ts.isNamespaceExport(clause)) return false;
+        const forwarded = new Set(clause.elements.filter(element => !element.isTypeOnly &&
+          names.has((element.propertyName || element.name).text)).map(element => element.name.text));
+        if (forwarded.has('default')) return false;
+        if (forwarded.size && !importerCallsTraced(file, forwarded, indices, seen)) return false;
+      }
+    }
+    for (const { file, model, references } of importers) {
+      const importerContext = gateContext(file, model.source, model.checker);
+      const uses = name => {
+        const symbol = model.checker.getSymbolAtLocation(name), found = [];
+        if (!symbol) return null;
+        walk(model.source, node => {
+          if (ts.isIdentifier(node) && node !== name && !ts.isImportSpecifier(node.parent) && !ts.isNamespaceImport(node.parent) &&
+              model.checker.getSymbolAtLocation(node) === symbol) found.push(node);
+        });
+        return found;
+      };
+      const calls = [];
+      for (const reference of references) {
+        if (ts.isExportDeclaration(reference)) continue; // followed above
+        if (!ts.isImportDeclaration(reference)) return false;
+        const clause = reference.importClause;
+        if (!clause || clause.isTypeOnly) continue;
+        if (clause.name) return false;
+        const bindings = clause.namedBindings;
+        if (!bindings) continue;
+        if (ts.isNamespaceImport(bindings)) {
+          const found = uses(bindings.name);
+          if (!found) return false;
+          for (const use of found) {
+            const access = use.parent;
+            if (!ts.isPropertyAccessExpression(access) || access.expression !== use) return false;
+            if (!names.has(access.name.text)) continue;
+            const call = access.parent;
+            if (!ts.isCallExpression(call) || call.expression !== access || call.questionDotToken || access.questionDotToken) return false;
+            calls.push(call);
+          }
+          continue;
+        }
+        for (const element of bindings.elements) {
+          if (element.isTypeOnly || !names.has((element.propertyName || element.name).text)) continue;
+          const found = uses(element.name);
+          if (!found) return false;
+          for (const use of found) {
+            const call = use.parent;
+            if (!ts.isCallExpression(call) || call.expression !== use || call.questionDotToken) return false;
+            calls.push(call);
+          }
+        }
+      }
+      if (calls.some(call => [...indices].some(index => !staticArgument(call, index)) && !testCall(call, importerContext))) return false;
+    }
+    return true;
+  }
+  function helperParameterGate(statement) {
+    let fn = statement.parent;
+    while (fn && !ts.isFunctionLike(fn)) fn = fn.parent;
+    return Boolean(fn && suppressedGate(fn, statement, localGates, true));
+  }
+  // The gated helper a call names, in this file or through a pinned import.
+  function calledHelper(call) {
+    const callee = unwrap(call.expression);
+    if (call.questionDotToken) return null;
+    // `ns.helper(...)` through `import * as ns from './helpers'`.
+    if (ts.isPropertyAccessExpression(callee) && !callee.questionDotToken && ts.isIdentifier(unwrap(callee.expression))) {
+      const namespace = checker.getSymbolAtLocation(unwrap(callee.expression));
+      const declaration = namespace?.declarations?.length === 1 ? namespace.declarations[0] : null;
+      if (!declaration || !ts.isNamespaceImport(declaration) || declaration.parent.isTypeOnly) return null;
+      const statement = declaration.parent.parent;
+      const target = scope.importedFunction(filename, statement.moduleSpecifier.text, callee.name.text);
+      return target && { fn: target.fn, context: gateContext(target.file, target.model.source, target.model.checker), local: false };
+    }
+    if (!ts.isIdentifier(callee)) return null;
+    const symbol = checker.getSymbolAtLocation(callee);
+    const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+    if (!declaration) return null;
+    if (ts.isFunctionDeclaration(declaration)) return { fn: declaration, context: localGates, local: true };
+    if (ts.isVariableDeclaration(declaration) && declaration.initializer && ts.isFunctionLike(unwrap(declaration.initializer)))
+      return { fn: unwrap(declaration.initializer), context: localGates, local: true };
+    if (!ts.isImportSpecifier(declaration) || declaration.isTypeOnly || declaration.parent.parent.isTypeOnly) return null;
+    const statement = declaration.parent.parent.parent;
+    const target = scope.importedFunction(filename, statement.moduleSpecifier.text, (declaration.propertyName || declaration.name).text);
+    return target && { fn: target.fn, context: gateContext(target.file, target.model.source, target.model.checker), local: false };
+  }
+  function parameterGateCall(call) {
+    const helper = calledHelper(call);
+    if (!helper || !gateHelper(helper.fn)) return;
+    const gates = parameterGates(helper.fn, helper.context);
+    if (!gates.size || !testCall(call, localGates)) return;
+    for (const statement of gates.keys()) {
+      const indices = suppressedGate(helper.fn, statement, helper.context, helper.local);
+      if (indices && [...indices].some(index => !staticCallArgument(call, index, true))) { record(call, 'helper-parameter-gate'); return; }
+    }
+  }
   walk(source, node => {
     if (ts.isIfStatement(node)) {
       const before = diagnostics.length, pending = [];
@@ -726,11 +1204,13 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
       const actionOnly = branch => !branch || proveActionOnly(branch);
       const notBypass = thenAssertion && elseAssertion ||
         !thenAssertion && !elseAssertion && actionOnly(node.thenStatement) && actionOnly(node.elseStatement);
+      const recorded = findings.length;
       if (!notBypass) for (const [anchor, variant] of pending) record(anchor, variant);
       // Also not a bypass: a gate fixed by literal test data that runs the
       // branch, or a branch that asserts the very value its condition tests.
       const selfChecking = thenAssertion && !node.elseStatement && selfCheckingCondition(node);
-      if (thenAssertion && !elseAssertion && !reachableStaticCondition(node.expression) && !selfChecking && !alwaysTruthyCondition(node.expression))
+      if (thenAssertion && !elseAssertion && !reachableStaticCondition(node.expression) && !selfChecking && !alwaysTruthyCondition(node.expression) &&
+          !helperParameterGate(node) && !projectGate(node.expression))
         record(node, 'conditional-assertion');
       else if (!thenAssertion) unboundAssertCandidate(node);
       // Neither the self-checking shape nor an if/else asserting on both paths
@@ -743,6 +1223,16 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
         for (let index = conditionEnd - 1; index >= before; index--)
           if (diagnostics[index].message === AWAITED_CONDITION) diagnostics.splice(index, 1);
       }
+      // Promote only a decided candidate whose analysis left no open question,
+      // together with the condition-read anchors recorded for the same if.
+      const gated = findings.at(-1);
+      if (gated?.variant === 'conditional-assertion' && gated.start === node.getStart(source) &&
+          diagnostics.length === before && confirmedGate(node)) {
+        for (const finding of findings.slice(recorded)) {
+          finding.disposition = 'confirmed';
+          finding.evidence = { kind: 'state-read-gates-every-assertion' };
+        }
+      }
       // A recorded IfStatement spans both branches, so its existing review
       // candidate already covers a proven else assertion. Retain diagnostics
       // for deferred analysis within either branch and for else-only gaps.
@@ -750,6 +1240,9 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
         diagnostic(node.elseStatement, '#5a else-body assertion mapping is outside this legacy if-body slice');
     } else if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
       if (assertionIn(node.right)) record(node, 'logical-assertion');
+    } else if (ts.isCallExpression(node) && (ts.isIdentifier(unwrap(node.expression)) ||
+        ts.isPropertyAccessExpression(unwrap(node.expression)) && ts.isIdentifier(unwrap(unwrap(node.expression).expression)))) {
+      parameterGateCall(node);
     } else if (ts.isConditionalExpression(node)) {
       const yes = assertionIn(node.whenTrue), no = assertionIn(node.whenFalse);
       if (yes || no) record(node, 'ternary-assertion');

@@ -4,10 +4,7 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-import subprocess
-import sys
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -15,15 +12,6 @@ SMOKE = ROOT / "scripts/ci/codex-smoke.sh"
 CI_LOCAL = ROOT / "scripts/ci/ci-local.sh"
 PYTHON_ISOLATION_INIT = ROOT / "scripts/ci/lib/init-python-isolation.sh"
 FIXTURE_ROOT = ROOT / "scripts/ci/fixtures/codex-smoke"
-MOCHAWESOME = FIXTURE_ROOT / "mochawesome.json"
-PLAYWRIGHT_LAUNCHER = (
-    ROOT / "skills/playwright-debugger/scripts/run-artifact-reader.sh"
-)
-PLAYWRIGHT_FIXTURE_ROOT = ROOT / "scripts/evals/skills/playwright-debugger/files"
-PLAYWRIGHT_FIXTURE = PLAYWRIGHT_FIXTURE_ROOT / "results-selector-timeout.json"
-CYPRESS_READER = (
-    ROOT / "skills/cypress-debugger/scripts/read-cypress-artifact.py"
-)
 GENERATOR = ROOT / "skills/playwright-test-generator/SKILL.md"
 GENERATOR_THIN_RULES = ROOT / "skills/playwright-test-generator/thin-rules.md"
 
@@ -52,76 +40,12 @@ def main() -> None:
     assert 'contains "$out" "AuthRequired"' in smoke
     assert "operator MCP startup leaked into isolated Codex output" in smoke
 
-    playwright_launcher_path = (
-        "$SKILLS_ROOT/playwright-debugger/scripts/run-artifact-reader.sh"
-    )
-    assert 'check "playwright-debugger" "F2"' in smoke
-    assert playwright_launcher_path in smoke
-    assert (
-        f"{playwright_launcher_path} --project-root $PLAYWRIGHT_FIXTURE_ROOT "
-        "-- report --report-root $PLAYWRIGHT_FIXTURE_ROOT $PLAYWRIGHT_FIXTURE"
-    ) in smoke
-    assert "classify only the first failure" in smoke
-
-    reader_path = (
-        "$SKILLS_ROOT/cypress-debugger/scripts/read-cypress-artifact.py"
-    )
-    assert reader_path in smoke
-    assert (
-        f"python3 {reader_path} mochawesome "
-        "--artifact-root $FIXTURES $FIXTURES/mochawesome.json"
-    ) in smoke
-    assert "Do not read the raw JSON directly" in smoke
-
-    result = subprocess.run(
-        [
-            sys.executable,
-            str(CYPRESS_READER),
-            "mochawesome",
-            "--artifact-root",
-            str(FIXTURE_ROOT),
-            str(MOCHAWESOME),
-        ],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        timeout=10,
-        check=False,
-    )
-    assert result.returncode == 0, result.stderr
-    payload = json.loads(result.stdout)
-    failures = payload["failures"]
-    assert len(failures) == 1
-    failure = failures[0]
-    assert failure["state"] == "failed"
-    assert "Expected to find element" in failure["error"]
-    assert "[data-testid=\"submit-order\"]" in failure["error"]
-
-    playwright_result = subprocess.run(
-        [
-            str(PLAYWRIGHT_LAUNCHER),
-            "--project-root",
-            str(PLAYWRIGHT_FIXTURE_ROOT),
-            "--",
-            "report",
-            "--report-root",
-            str(PLAYWRIGHT_FIXTURE_ROOT),
-            str(PLAYWRIGHT_FIXTURE),
-        ],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        timeout=10,
-        check=False,
-    )
-    assert playwright_result.returncode == 0, playwright_result.stderr
-    playwright_failures = json.loads(playwright_result.stdout)
-    assert len(playwright_failures) == 2
-    first_playwright_failure = playwright_failures[0]
-    assert first_playwright_failure["outcome"] == "unexpected"
-    first_attempt = first_playwright_failure["attempts"][0]
-    assert first_attempt["status"] == "failed"
-    assert "locator('#submit-btn')" in first_attempt["error"]
+    # The debugger skills were removed; their checks must not come back.
+    for removed in ("playwright-debugger", "cypress-debugger", "F1-F15"):
+        assert removed not in smoke.replace("The debugger checks were dropped", ""), removed
+    assert 'check "e2e-reviewer" "#4f"' in smoke
+    assert (FIXTURE_ROOT / "silent.spec.ts").is_file()
+    assert "all 3 checks passed" in smoke
 
     assert "run_python scripts/ci/test-codex-smoke-contract.py" in ci_local
     assert 'source "$REPO_ROOT/scripts/ci/lib/init-python-isolation.sh"' in ci_local
@@ -133,7 +57,7 @@ def main() -> None:
     assert "bash scripts/ci/codex-smoke.sh" not in ci_local
     print(
         "codex smoke contract: pass "
-        "(current generator probe, bounded Playwright/Cypress readers, valid fixtures, "
+        "(current generator and reviewer probes, valid fixtures, "
         "no live Codex/network in ordinary CI)"
     )
 

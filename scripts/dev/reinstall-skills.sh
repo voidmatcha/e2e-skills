@@ -10,8 +10,6 @@
 #   E2E_SKILLS_AGENTS  default: "-a claude-code -a codex"
 #                      trusted receiving-surface verification currently
 #                      supports claude-code and codex only
-#   E2E_SKILLS_INSTALL_CODEX_AGENTS  default: "0"
-#                      (set to "1" to install the optional named Codex agents globally)
 
 set -euo pipefail
 set -f
@@ -37,7 +35,9 @@ BASH_CMD=/bin/bash
 KILL=/bin/kill
 
 REPO_ROOT="$(cd "$("$DIRNAME" "$0")/../.." && "$PWD_CMD" -P)"
-SKILLS=(cypress-debugger e2e-reviewer playwright-debugger playwright-test-generator)
+SKILLS=(e2e-debugger e2e-reviewer playwright-test-generator)
+# Skills an older bundle shipped. A leftover copy is reported, never deleted.
+REMOVED_SKILLS=(playwright-debugger cypress-debugger)
 SKILLS_CLI_PACKAGE="skills"
 SKILLS_CLI_VERSION="1.5.21"
 SKILLS_CLI_SPEC="$SKILLS_CLI_PACKAGE@$SKILLS_CLI_VERSION"
@@ -628,14 +628,6 @@ verify_receiving_surface() {
 }
 
 # Validate every environment-controlled input before touching an installation.
-case "${E2E_SKILLS_INSTALL_CODEX_AGENTS:-0}" in
-  0|1) ;;
-  *)
-    echo "reinstall-skills: E2E_SKILLS_INSTALL_CODEX_AGENTS must be 0 or 1" >&2
-    exit 2
-    ;;
-esac
-
 if [ -n "${E2E_SKILLS_AGENTS:-}" ]; then
   # shellcheck disable=SC2206
   AGENTS_FLAGS=($E2E_SKILLS_AGENTS)
@@ -698,7 +690,7 @@ fi
 
 # The skills CLI's global canonical store is ~/.agents/skills; host-specific
 # locations are links managed by the CLI. Snapshot existing copies before
-# remove so an add failure can restore the same four-skill contents and links.
+# remove so an add failure can restore the same bundle contents and links.
 ROLLBACK_ROOT="$STAGING_ROOT/rollback"
 ROLLBACK_SKILLS=()
 "$MKDIR" -p "$ROLLBACK_ROOT/skills"
@@ -732,7 +724,7 @@ restore_previous_state() {
   local rollback_remove_status
   local rollback_add_status=0
 
-  echo "reinstall-skills: $failed_operation failed with original status $original_status; restoring previous four-skill state" >&2
+  echo "reinstall-skills: $failed_operation failed with original status $original_status; restoring previous bundle state" >&2
 
   # First remove every managed target that the failed operation may have
   # created, then restore only the skills that existed in the snapshot.
@@ -751,7 +743,7 @@ restore_previous_state() {
     return 1
   fi
 
-  echo "reinstall-skills: $failed_operation failed; previous four-skill state restored" >&2
+  echo "reinstall-skills: $failed_operation failed; previous bundle state restored" >&2
 }
 
 MUTATION_STARTED=0
@@ -794,6 +786,20 @@ trap 'handle_signal TERM' TERM
 # `skills add --copy` owns overwrite handling and replaces each selected target.
 # Avoid a separate remove-first window; the staged snapshot below restores the
 # complete previous set if the add performs a partial replacement and fails.
+# Report copies of removed skills left by an older install. They are user
+# files: name them and suggest removal, but never delete them here.
+warn_removed_skill_copies() {
+  local skill
+  local location
+  for skill in "${REMOVED_SKILLS[@]}"; do
+    for location in "$HOME/.agents/skills" "$HOME/.claude/skills" "$HOME/.codex/skills"; do
+      if [ -e "$location/$skill" ] || [ -L "$location/$skill" ]; then
+        echo "reinstall-skills: warning: $location/$skill is a copy of the removed skill $skill, replaced by e2e-debugger; it is no longer updated. Remove it yourself (for example: npx --yes $SKILLS_CLI_SPEC remove $skill -g). This script does not delete it." >&2
+      fi
+    done
+  done
+}
+
 echo "reinstall-skills: replacing install from $REPO_ROOT as real copies (--copy)"
 MUTATION_STARTED=1
 if run_skills_cli add "$REPO_ROOT" --skill "${SKILLS[@]}" -g "${AGENTS_FLAGS[@]}" --copy -y; then
@@ -811,25 +817,7 @@ else
   exit "$add_status"
 fi
 
-# The skills CLI installs SKILL.md bundles, not Codex-native agent TOMLs.
-# Installing the optional named agents is a separate global write and requires
-# an explicit opt-in.
-case "${E2E_SKILLS_INSTALL_CODEX_AGENTS:-0}" in
-  0) ;;
-  1)
-    if printf '%s\n' "${AGENTS_FLAGS[@]}" | "$GREP" -q '^codex$'; then
-      if "$BASH_CMD" -p "$REPO_ROOT/scripts/dev/install-codex-agents.sh"; then
-        :
-      else
-        agent_status=$?
-        if ! restore_previous_state "optional Codex agent install" "$agent_status"; then
-          exit 1
-        fi
-        exit "$agent_status"
-      fi
-    fi
-    ;;
-esac
-
 MUTATION_STARTED=0
 trap - HUP INT TERM
+warn_removed_skill_copies
+

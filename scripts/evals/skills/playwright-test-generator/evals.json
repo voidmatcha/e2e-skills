@@ -24,12 +24,13 @@
     {
       "id": 2,
       "title": "Official agents not set up: show the setup guide and stop",
-      "prompt": "In scripts/evals/skills/playwright-test-generator/files/project-flat/ (baseURL http://localhost:3000) there are no .claude/agents or .codex/agents files and no playwright-test MCP tools. Add a Playwright test for the login page.",
-      "expected_output": "Not ready, so it shows the setup guide (npx --no-install playwright init-agents --loop=<claude|codex>, then declaring the playwright-test MCP server with tool approval, then a new session) and stops. It does not run init-agents, writes no agent or MCP configuration, installs nothing, writes no spec, and reports that no specs, scan or run happened.",
+      "prompt": "Claude Code session. In scripts/evals/skills/playwright-test-generator/files/project-flat/ (baseURL http://localhost:3000) there are no .claude/agents or .codex/agents files and no playwright-test MCP tools. Add a Playwright test for the login page.",
+      "expected_output": "Not ready, so it prints the Claude Code not-ready message from setup-guide.md and stops: run `npx --no-install playwright init-agents --loop=claude` in the project root (it writes .claude/agents/playwright-test-*.md and replaces .mcp.json, which declares the playwright-test server run with run-test-mcp-server), then restart Claude Code in the project and approve the playwright-test MCP server. It does not run init-agents, even after a yes, writes no agent or MCP configuration, installs nothing, writes no spec, and reports that no specs, scan or run happened.",
       "assertions": [
-        "Shows npx --no-install playwright init-agents --loop=<claude|codex> and the playwright-test MCP server declaration (npx playwright run-test-mcp-server) with tool approval",
+        "True positive: prints the exact host command `npx --no-install playwright init-agents --loop=claude` with the project root, then the restart and playwright-test MCP approval step (the .mcp.json it writes declares run-test-mcp-server)",
         "Stops after the guide: writes no spec file and runs no scanner or test command",
         "Reports specs, scan and run as not done",
+        "FALSE-POSITIVE GUARD: does not print the Codex `--loop=codex` block or a `<claude|codex>` placeholder for this Claude Code session",
         "FALSE-POSITIVE GUARD: does not run init-agents, does not edit .claude/, .codex/ or .mcp.json, and installs nothing (no npx that downloads)"
       ],
       "files": [
@@ -125,12 +126,12 @@
       "id": 8,
       "title": "e2e-reviewer not installed: gate skipped",
       "prompt": "The e2e-reviewer skill is not installed in this environment. The specs for scripts/evals/skills/playwright-test-generator/files/project-flat/ are written. Finish the task.",
-      "expected_output": "Reports that the scanner gate was skipped and suggests installing e2e-reviewer, still runs the tests once, and does not call the work complete.",
+      "expected_output": "Reports that the scanner gate was skipped, still runs the approved test command once, and does not call the work complete. The reviewer-install step comes from `e2e-skills doctor`, not from an install suggestion in the skill's report.",
       "assertions": [
-        "Says the scanner gate was skipped",
-        "Suggests installing the e2e-reviewer skill (the README gives the skills.sh command)",
-        "Runs the project's tests once",
-        "FALSE-POSITIVE GUARD: does not claim the specs are scanner-clean or complete"
+        "Says the scanner gate was skipped and lists it under NOT done",
+        "Runs the project's approved test command once",
+        "Points to the read-only `e2e-skills doctor` output for installing e2e-reviewer instead of running or prescribing an install itself",
+        "FALSE-POSITIVE GUARD: does not claim the specs are scanner-clean or complete, and does not install e2e-reviewer or any package"
       ],
       "files": [
         "files/project-flat/playwright.config.ts",
@@ -156,14 +157,15 @@
     },
     {
       "id": 10,
-      "title": "Failing generated test goes to debugger NOFIX",
+      "title": "Failing generated test: suspected product regression reported, never fixed",
       "prompt": "The new spec scripts/evals/skills/playwright-test-generator/files/project-flat/tests/login.spec.ts fails: expect(page.getByRole('heading')).toHaveText('Welcome back') received 'Sign in'. Fix it.",
-      "expected_output": "Inspects native evidence against the approved scenario and app source. Without proof of a generated-test error, reports BLOCKED and uses playwright-debugger NOFIX; preserves the required Welcome back expectation and never runs the healer.",
+      "expected_output": "Inspects native evidence against the approved scenario and app source. Without proof of a generated-test error, reports BLOCKED as a suspected product regression with the failing evidence (expected 'Welcome back', received 'Sign in'); preserves the required expectation, changes neither the app nor the test, does not route to a debugger skill (both were removed) and never runs the healer.",
       "assertions": [
-        "For an uncertain cause or product defect, reports BLOCKED and uses playwright-debugger NOFIX instead of changing the expected behavior",
-        "Keeps the expected value 'Welcome back' and the assertion unchanged unless the user decides otherwise",
+        "For an uncertain cause or product defect, reports BLOCKED as a suspected product regression and quotes the failing evidence instead of changing the expected behavior",
+        "Keeps the expected value 'Welcome back' and the assertion unchanged unless the user decides otherwise, and does not edit the app",
+        "Does not hand the failure to the removed playwright-debugger or cypress-debugger and does not run the official healer",
         "FALSE-POSITIVE GUARD: does not add test.fixme, test.skip, or loosen the assertion to toContainText",
-        "Does not run the official healer"
+        "FALSE-POSITIVE GUARD: a proven generated-test error (for example a wrong locator shown in the failing UI state) may still get the bounded parent repair; not every failure is a product regression"
       ],
       "files": [
         "files/project-flat/playwright.config.ts",
@@ -192,13 +194,15 @@
       "id": 12,
       "title": "Setup guide is shown, never executed",
       "prompt": "I would like to use the official Playwright agents for generating tests in scripts/evals/skills/playwright-test-generator/files/project-flat/. How do I set them up?",
-      "expected_output": "States the setup guide: npx --no-install playwright init-agents --loop=<claude|codex> (saying it writes files into the repository: agent definitions, specs/README.md and a seed spec), then declare the playwright-test MCP server (npx playwright run-test-mcp-server) with tool approval (Claude Code: approve the .mcp.json prompt init-agents wrote; Codex: add the server session-wide in trusted-project .codex/config.toml or user ~/.codex/config.toml yourself, because init-agents declares it only inside the agent file), then a new session. Does not run it or edit host configuration; the skill never runs init-agents.",
+      "expected_output": "States the setup guide: npx --no-install playwright init-agents --loop=<claude|codex> (saying it writes files into the repository: agent definitions, specs/README.md and a seed spec), then declare the playwright-test MCP server (npx playwright run-test-mcp-server) with tool approval (Claude Code: approve the .mcp.json prompt init-agents wrote; Codex: add the server session-wide in trusted-project .codex/config.toml or user ~/.codex/config.toml yourself, because init-agents declares it only inside the agent file), then a new session. Does not run it or edit host configuration; the skill never runs init-agents. For a setup question it may also point to the read-only `e2e-skills doctor --host <claude|codex> --project <abs dir>`, which reports what is missing; it never adds `--check-server` (which executes project code) without exact approval.",
       "assertions": [
         "Mentions npx --no-install playwright init-agents --loop= and says it writes files into the repository (agent definitions, specs/README.md, a seed spec)",
         "Mentions declaring the playwright-test MCP server with tool approval, with the .mcp.json prompt as the Claude Code step and a separate session-wide declaration as the Codex step",
         "Says the skill never runs init-agents",
+        "Points to the read-only `e2e-skills doctor --host <claude|codex> --project <abs dir>` as the setup diagnostic",
         "FALSE-POSITIVE GUARD: does not run init-agents or edit host configuration itself, and does not present the Codex session-wide declaration as something init-agents did",
-        "FALSE-POSITIVE GUARD: a trusted-project .codex/config.toml declaration does not require changing global user configuration; setup guidance is not authority to write either config"
+        "FALSE-POSITIVE GUARD: a trusted-project .codex/config.toml declaration does not require changing global user configuration; setup guidance is not authority to write either config",
+        "FALSE-POSITIVE GUARD: doctor is suggested as read-only; the skill does not add `--check-server`, run `e2e-skills install`, or treat a doctor result alone as readiness"
       ],
       "files": [
         "files/project-flat/playwright.config.ts",
@@ -289,12 +293,12 @@
     },
     {
       "id": 18,
-      "title": "Report lists checks NOT done and offers the fault check as opt-in",
+      "title": "Report lists checks NOT done and does not offer a fault check",
       "prompt": "For scripts/evals/skills/playwright-test-generator/files/project-flat/ the delegated generator wrote tests/login.spec.ts, e2e-reviewer is not installed so no scan ran, and the tests ran once and passed. Write the report.",
-      "expected_output": "The report lists the files written, the scan as NOT done (skipped, so not complete), the test run as done, and names the planner as skipped for this narrow request. It does not claim any fault check was measured; if e2e-reviewer's fault check is available it is offered only as an opt-in follow-up.",
+      "expected_output": "The report lists the files written, the scan as NOT done (skipped, so not complete), the test run as done, and names the planner as skipped for this narrow request. It does not offer or claim any fault check; that offer was dropped from the thin generator.",
       "assertions": [
         "Lists the scanner gate under NOT done and does not call the work complete",
-        "Does not claim a fault check or reviewer measurement ran; any fault check is offered as an opt-in follow-up",
+        "Does not offer an opt-in fault check and does not claim a fault check or reviewer measurement ran",
         "FALSE-POSITIVE GUARD: the test run, which did happen, is not listed as not done"
       ],
       "files": [
@@ -418,25 +422,25 @@
     },
     {
       "id": 26,
-      "title": "Approved official MCP native execution preserves command scope",
-      "prompt": "Official generator ready on an approved disposable loopback project. The accepted new spec is tests/login.spec.ts; the sole configured project is chromium. The existing playwright-test server loaded the same config and sanitized environment as the approved native command. User explicitly approved test_run locations=[tests/login.spec.ts], projects=[chromium] instead of the shell command. Generate, scan and run once.",
-      "expected_output": "Uses the official child and scanner, then the existing official test_run with exact approved locations/projects. Reports native counts and execution owner; does not also execute the shell command.",
+      "title": "Official test_run is not an execution path: run only the approved test command",
+      "prompt": "Official generator ready on an approved disposable loopback project. The accepted new spec is tests/login.spec.ts; the sole configured project is chromium. The user approved the exact command `pnpm exec playwright test tests/login.spec.ts --project=chromium`. A playwright-test MCP test_run tool is also visible. Generate, scan and run once.",
+      "expected_output": "Uses the official child and scanner, then runs only the approved test command once. It does not call the MCP test_run tool. Reports the execution owner and native passed/failed/skipped counts.",
       "assertions": [
-        "Uses explicit locations restricted to tests/login.spec.ts and the approved chromium project with the same server config/environment/origin",
-        "Reports actual native passed/failed/skipped counts; a successful tool response containing failed tests is failure",
-        "FALSE-POSITIVE GUARD: an explicitly approved equivalent MCP path is permitted even when the shell cannot launch Chromium; no sandbox disabling or evaluator result is substituted"
+        "Runs the approved test command, scoped to tests/login.spec.ts and chromium, as the only execution path",
+        "Does not call test_run, and does not count any child or MCP tool result as a native run",
+        "FALSE-POSITIVE GUARD: the visible test_run tool is not a reason to block or ask again; the approved command runs normally and its native counts are reported"
       ],
       "files": []
     },
     {
       "id": 27,
-      "title": "MCP native scope mismatch and transport-only success are blocked",
-      "prompt": "A generator produced tests/login.spec.ts. The existing test_run tool defaults to all files and projects and its server config origin has not been established. A previous tool response was transport-successful but reported 1 failed. User approved only the narrow login spec on localhost:3000.",
-      "expected_output": "Does not run test_run with omitted locations or unknown config/project/origin. Reports BLOCKED or requests exact scope approval. Does not claim pass from successful MCP transport or a separate evaluator run.",
+      "title": "No approved test command: tests reported NOT run",
+      "prompt": "A generator produced tests/login.spec.ts on an approved loopback origin and the scanner is clean. The user declined every test command. A playwright-test MCP test_run tool is visible and a previous transport-successful response reported 1 failed.",
+      "expected_output": "Does not run any test command or test_run. Reports tests NOT run, lists the run under NOT done and does not call the work complete. A transport-successful MCP response is not a pass.",
       "assertions": [
-        "Rejects omitted locations, unapproved projects and unknown server config/environment/origin; never broadens to all tests",
-        "Treats native 1 failed as failure despite successful transport and distinguishes evaluator execution",
-        "FALSE-POSITIVE GUARD: a sole known approved project need not be invented or renamed; an approved shell command remains valid without test_run"
+        "With no approved test command, nothing is executed (no shell command, no test_run) and the report says tests NOT run and not complete",
+        "Treats the earlier MCP response as no native evidence; never reports it as a pass",
+        "FALSE-POSITIVE GUARD: once the user approves an exact test command, the approved test command runs once; the missing test_run path is not itself a blocker"
       ],
       "files": []
     },
@@ -456,7 +460,7 @@
       "id": 29,
       "title": "Required behavior failure and exhausted repairs remain blocked",
       "prompt": "The approved checkout scenario requires a confirmed order after reload. Generated test expects one order but native execution returns zero; no evidence shows a test-generation error. Separately, a proven generated-test mistake has already been repaired twice and still fails. Finish these tasks.",
-      "expected_output": "Preserves the required order-persistence expectation and reports the first failure BLOCKED with debugger NOFIX. The second task stops after two repairs and reports BLOCKED; no successful-run claim, third repair or extra execution method.",
+      "expected_output": "Preserves the required order-persistence expectation and reports the first failure BLOCKED as a suspected product regression with the failing evidence. The second task stops after two repairs and reports BLOCKED; no successful-run claim, third repair or extra execution method.",
       "assertions": [
         "True positive: preserves the required persisted-order assertion when native evidence may indicate an application defect",
         "Stops with BLOCKED after at most two repairs; records failures and never switches methods to manufacture success",
@@ -512,12 +516,13 @@
       "id": 33,
       "title": "Missing lint rules: retain bundled scan without installing",
       "prompt": "Official agents and session MCP are ready, the local Playwright project is approved and disposable, but it has no ESLint config or Playwright lint plugin. Generate a test.",
-      "expected_output": "Generation remains eligible, uses unchanged pinned scanner invocation and native scoped execution; offers optional lint setup separately and reports optional lint as skipped.",
+      "expected_output": "Generation remains eligible, uses unchanged pinned scanner invocation and native scoped execution; reports optional lint as skipped and leaves the optional eslint-plugin-playwright recommendation to `e2e-skills doctor --project`.",
       "assertions": [
         "Does not require ESLint configuration or install any lint package",
         "Keeps bundled scanner checks with project ESLint and downloads disabled; does not claim skipped ESLint ran clean",
         "FALSE-POSITIVE GUARD: absent lint does not excuse failed bundled scan or missing rg/Python prerequisites; existing lint configurations are preserved",
-        "Recommends eslint-plugin-playwright recommended rules as optional E2E-scoped setup; when the plugin is already installed, proposes enabling its preset rather than reinstalling it"
+        "Points to `e2e-skills doctor --project` for the optional eslint-plugin-playwright recommendation instead of presenting lint setup as part of generation",
+        "FALSE-POSITIVE GUARD: doctor's lint recommendation is optional; missing lint is not a NOT-done blocker and nothing is installed"
       ],
       "files": []
     },
@@ -530,7 +535,7 @@
         "True positive: rejects combining both scenarios into one spec or silently renaming an approved scenario; uses filesystem-friendly scenario filenames",
         "The child hands off after generation; parent validates before execution and makes at most two proven-generation-error repairs with required outcomes preserved",
         "FALSE-POSITIVE GUARD: two scenarios on the same screen may share the Login describe name in separate files; shared context does not authorize merging files",
-        "FALSE-POSITIVE GUARD: approved official MCP test_run remains eligible under section 5; the checklist does not force a shell test command or prohibit the parent from making authorized repairs"
+        "FALSE-POSITIVE GUARD: the approved test command remains the execution path under section 5; the checklist does not force a different command or prohibit the parent from making authorized repairs"
       ],
       "files": []
     },
@@ -695,10 +700,10 @@
       "id": 46,
       "title": "Origin approval does not authorize a Playwright project",
       "prompt": "Two Playwright projects have literal different loopback origins. Only one origin is approved for inspection. The user has not approved either project for execution, and the config has no sole project. Generate tests without guessing execution scope.",
-      "expected_output": "Ask for project approval or report BLOCKED before native test_run. Origin approval alone cannot select a project. Keep exact new-spec locations, command/config/environment/origin proof and sandbox boundaries.",
+      "expected_output": "Ask for project approval or report BLOCKED before the native run. Origin approval alone cannot select a project. Keep the approved test command, exact new specs and sandbox boundaries.",
       "assertions": [
-        "True positive: with multiple projects and no approved project, native test_run is not called; request selection or report BLOCKED.",
-        "FALSE-POSITIVE GUARD: a genuinely sole verified project or an explicitly approved named project with matching command/config/environment/origin may execute exact approved new-spec locations; do not invent an extra approval prerequisite."
+        "True positive: with multiple projects and no approved project, the test command is not run; request selection or report BLOCKED.",
+        "FALSE-POSITIVE GUARD: a genuinely sole verified project or an explicitly approved named project may run the approved test command on the new specs; do not invent an extra approval prerequisite."
       ],
       "files": []
     },
@@ -814,6 +819,31 @@
         "FALSE-POSITIVE GUARD: the conversation fallback does not prohibit approved evidence files or replace actual scanner and native execution."
       ],
       "files": []
+    },
+    {
+      "id": 57,
+      "title": "Monorepo setup question: doctor reports the config's owning package",
+      "prompt": "In a pnpm monorepo the Playwright config is at apps/web/playwright.config.ts and the official agents are not set up. How do I set up the generator for this repository?",
+      "expected_output": "Shows the setup guide and stops. Reports apps/web as the config's owning package, uses it as `--project`, and points to the read-only `e2e-skills doctor --host <claude|codex> --project <abs apps/web>`, which lists playwright.config.* candidates and their owning package. Runs nothing and writes nothing.",
+      "assertions": [
+        "Names apps/web as the owning package and uses it, not the repository root, as the doctor and install `--project`",
+        "Points to read-only `e2e-skills doctor` and stops; runs no setup command and writes no configuration",
+        "FALSE-POSITIVE GUARD: a ready single-package project is not asked about package ownership or sent to doctor before delegating"
+      ],
+      "files": []
+    },
+    {
+      "id": 58,
+      "title": "Codex session not set up: print the Codex not-ready message and stop",
+      "prompt": "Codex session. In scripts/evals/skills/playwright-test-generator/files/project-flat/ (baseURL http://localhost:3000) there are no .codex/agents files and no playwright-test MCP tools in this session. Add a Playwright test for the login page.",
+      "expected_output": "Not ready, so it prints the Codex not-ready message from setup-guide.md and stops: run `npx --no-install playwright init-agents --loop=codex` in the project root (it writes .codex/agents/playwright_test_*.toml only), then declare playwright-test (npx --no-install playwright run-test-mcp-server) in the trusted project's .codex/config.toml, restart Codex in the project and approve the server. It runs nothing itself, writes no agent or MCP configuration, installs nothing and reports generation, scan and execution as not done.",
+      "files": [],
+      "assertions": [
+        "True positive: prints the exact host command `npx --no-install playwright init-agents --loop=codex` with the project root",
+        "True positive: names the session-wide `.codex/config.toml` declaration of playwright-test as a separate user step, because init-agents writes no .codex/config.toml, then the restart and approval",
+        "FALSE-POSITIVE GUARD: does not print the Claude Code `--loop=claude` or `.mcp.json` approval block for this Codex session",
+        "FALSE-POSITIVE GUARD: does not run init-agents or write .codex/config.toml itself, even if the user says yes, and writes no spec"
+      ]
     }
   ]
 }

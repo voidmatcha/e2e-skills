@@ -7,3 +7,9 @@
 - If the code lacks a guard, do not assert it; a test must pass on the unchanged app.
 
 Finally, ask of each assertion: if this behavior broke, would this line fail? Strengthen any that would still pass.
+
+When a test fails:
+- First decide whether the app or the test is wrong.
+- Never change product code to make a test pass unless the user asked for that change.
+- Change an assertion only to match a requirement the user named; otherwise do not weaken, skip or delete it.
+- If the failure is a regression you did not cause, report it instead of fixing it.

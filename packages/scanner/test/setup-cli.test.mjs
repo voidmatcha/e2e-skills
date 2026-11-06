@@ -48,10 +48,19 @@ test('Commander rejects ambiguous input before payload access and normalizes equ
   assert.deepEqual(fs.readdirSync(f.home), []);
 });
 test('scan/check forward exact arguments and exit status without loading installer', async () => {
-  for (const [args, expected] of [[['scan', 'tests with spaces', '--json'], ['--scan', 'tests with spaces', '--json']], [['scan', '--help'], ['--help']], [['check', 'verify', '--input', 'x'], ['verify', '--input', 'x']]]) {
+  for (const [args, expected] of [[['scan', 'tests with spaces', '--json'], ['--scan', 'tests with spaces', '--json']], [['check', 'verify', '--input', 'x'], ['verify', '--input', 'x']]]) {
     const calls = [];
     assert.equal(await main(args, { spawnSync: (node, argv) => { calls.push(argv); return { status: 7 }; }, runtimeRoot: '/missing' }), 7);
     assert.deepEqual(calls[0].slice(1), expected);
+  }
+});
+test('scan --help shows the e2e-skills scan usage without running the scanner', async () => {
+  for (const args of [['scan', '--help'], ['scan', '-h'], ['scan', 'tests', '--help']]) {
+    const help = await capture(() => main(args, { spawnSync: () => assert.fail('scanner executed'), runtimeRoot: '/missing' }));
+    assert.equal(help.result, 0);
+    assert.match(help.output, /^Usage: e2e-skills scan PATH /);
+    assert.match(help.output, /--allow-incomplete/);
+    assert.doesNotMatch(help.output, /e2e-skills-scan|--experimental-|--bounded-static/);
   }
 });
 test('payload content, missing, unexpected, empty directory and symlink tampering fail closed', () => {
@@ -73,6 +82,10 @@ for (const host of ['codex', 'claude']) {
     const f = fixture();
     const dry = await capture(() => main(['install', '--host', host, '--dry-run'], f));
     assert.equal(dry.result, 0); assert.match(dry.output, /Dry run: no files changed/); assert.deepEqual(fs.readdirSync(f.home), []);
+    const copies = [...dry.output.matchAll(/^Copy: (\S+) -> (\S+)$/gm)].map(match => match[2]);
+    const skillRoots = host === 'claude' ? ['.agents/skills', '.claude/skills'] : ['.agents/skills'];
+    assert.deepEqual(copies, skillRoots.flatMap(root => ['e2e-debugger', 'e2e-reviewer', 'playwright-test-generator'].map(name => root + '/' + name)).map(rel => path.join(f.home, rel)));
+    assert.equal(dry.output.includes('/agents/e2e-'), false, 'no dedicated agent copies are planned');
     const foreign = path.join(f.home, '.agents/skills/e2e-reviewer'); fs.mkdirSync(foreign, { recursive: true }); fs.writeFileSync(path.join(foreign, 'SKILL.md'), '---\nname: e2e-reviewer\n---\nforeign');
     await assert.rejects(main(['install', '--host', host], f), /foreign or modified/);
     assert.equal(fs.readFileSync(path.join(foreign, 'SKILL.md'), 'utf8').includes('foreign'), true);
@@ -81,7 +94,7 @@ for (const host of ['codex', 'claude']) {
     const f = fixture();
     const result = await capture(() => main(['doctor', '--host', host], { ...f, checkSetup: () => assert.fail('server spawned'), spawnSync: () => assert.fail('spawned') }));
     const report = JSON.parse(result.output);
-    assert.equal(result.result, 1); assert.equal(report.agents.length, 2); assert.equal(report.session_tools, 'UNKNOWN'); assert.equal(report.approval, 'UNKNOWN'); assert.equal(report.browser, 'UNKNOWN'); assert.equal(report.server, 'NOT_CHECKED'); assert.ok(report.requirements.length); assert.ok(report.next_steps.length); assert.deepEqual(fs.readdirSync(f.home), []);
+    assert.equal(result.result, 1); assert.equal('agents' in report, false); assert.equal(report.session_tools, 'UNKNOWN'); assert.equal(report.approval, 'UNKNOWN'); assert.equal(report.browser, 'UNKNOWN'); assert.equal(report.server, 'NOT_CHECKED'); assert.ok(report.requirements.length); assert.ok(report.next_steps.length); assert.deepEqual(fs.readdirSync(f.home), []);
   });
 }
 test('doctor checks project config without executing it; explicit server check routes existing discovery only', async () => {
@@ -109,9 +122,9 @@ test('builder preserves modes, refuses unrelated output and ancestor symlinks, c
 });
 test('Claude projection is required; missing Codex shadow remains optional', async () => {
   const f = fixture();
-  for (const name of ['cypress-debugger', 'e2e-reviewer', 'playwright-debugger', 'playwright-test-generator']) fs.cpSync(path.join(runtime, 'skills', name), path.join(f.home, '.agents/skills', name), { recursive: true });
+  for (const name of ['e2e-debugger', 'e2e-reviewer', 'playwright-test-generator']) fs.cpSync(path.join(runtime, 'skills', name), path.join(f.home, '.agents/skills', name), { recursive: true });
   const claude = JSON.parse((await capture(() => main(['doctor', '--host', 'claude'], f))).output);
-  assert.equal(claude.requirements.filter(entry => entry.path.includes('/.claude/skills/')).length, 4);
+  assert.equal(claude.requirements.filter(entry => entry.path.includes('/.claude/skills/')).length, 3);
   const codex = JSON.parse((await capture(() => main(['doctor', '--host', 'codex'], f))).output);
   assert.equal(codex.requirements.filter(entry => entry.path.includes('/.codex/skills/')).length, 0);
 });
@@ -142,16 +155,13 @@ test('symlinked ancestors of HOME are resolved; symlinked HOME and host destinat
     const dry = await capture(() => main(['install', '--host', host, '--dry-run'], hooks));
     assert.equal(dry.result, 0); assert.match(dry.output, /Dry run: no files changed/);
     const report = JSON.parse((await capture(() => main(['doctor', '--host', host], hooks))).output);
-    assert.equal(report.agents.every(entry => entry.status === 'MISSING' && entry.path.startsWith(path.join(real, 'home') + path.sep)), true);
+    assert.equal(report.skills.every(entry => entry.path.startsWith(path.join(real, 'home') + path.sep)), true);
   }
   assert.deepEqual(fs.readdirSync(path.join(real, 'home')), []);
   const outside = path.join(temp, 'ancestor-outside'); fs.mkdirSync(outside);
-  for (const [host, folder] of [['claude', '.claude'], ['codex', '.codex']]) {
+  for (const [host, folder] of [['claude', '.claude'], ['codex', '.agents']]) {
     const f = fixture(); fs.symlinkSync(outside, path.join(f.home, folder));
     await assert.rejects(main(['install', '--host', host, '--dry-run'], f), /refusing symlinked destination/);
-    assert.equal(JSON.parse((await capture(() => main(['doctor', '--host', host], f))).output).agents.every(entry => entry.status === 'UNSAFE'), true);
-    const agents = fixture(), dir = path.join(agents.home, folder); fs.mkdirSync(dir); fs.symlinkSync(outside, path.join(dir, 'agents'));
-    await assert.rejects(main(['install', '--host', host, '--dry-run'], agents), /refusing symlinked destination/);
   }
   const linkedHome = path.join(temp, 'linked-home'); fs.symlinkSync(path.join(real, 'home'), linkedHome);
   await assert.rejects(main(['install', '--host', 'claude', '--dry-run'], { ...fixture(), cleanEnv: () => ({ HOME: linkedHome, PATH: '/usr/bin:/bin' }) }), /refusing symlinked destination/);
@@ -173,7 +183,7 @@ test('project agent directories and special files are unsafe requirements', asyn
   const f = fixture(), project = path.join(f.home, 'project');
   const agents = path.join(project, '.codex/agents'); fs.mkdirSync(agents, { recursive: true });
   fs.mkdirSync(path.join(agents, 'playwright_test_planner.toml'));
-  fs.symlinkSync(path.join(runtime, '.codex/agents/e2e-finding-verifier.toml'), path.join(agents, 'playwright_test_generator.toml'));
+  fs.symlinkSync(path.join(runtime, 'install.sh'), path.join(agents, 'playwright_test_generator.toml'));
   const report = JSON.parse((await capture(() => main(['doctor', '--host', 'codex', '--project', project], f))).output);
   assert.equal(report.project_agents[0].status, 'UNSAFE'); assert.equal(report.project_agents[1].status, 'UNSAFE');
   assert.equal(report.requirements.filter(entry => entry.component === 'official_agent').length, 3);
@@ -181,10 +191,10 @@ test('project agent directories and special files are unsafe requirements', asyn
 test('author payload excludes Python caches and other generated/private entries', () => {
   const source = path.join(temp, 'cache-source'); fs.cpSync(runtime, source, { recursive: true });
   for (const name of ['__pycache__/module.cpython-314.pyc', '.cache/state', 'node_modules/private/index.js', 'test-results/result.json', 'playwright-report/index.html', '.npmrc', 'private.local.md', '.DS_Store']) {
-    const target = path.join(source, 'skills/cypress-debugger/scripts', name); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, 'generated private fixture');
+    const target = path.join(source, 'skills/e2e-reviewer/scripts', name); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, 'generated private fixture');
   }
   const output = path.join(temp, 'cache-output'); buildSetupRuntime(source, output);
   const manifest = JSON.parse(fs.readFileSync(path.join(output, 'inventory.json'), 'utf8'));
-  for (const name of ['__pycache__/module.cpython-314.pyc', '.cache/state', 'node_modules/private/index.js', 'test-results/result.json', 'playwright-report/index.html', '.npmrc', 'private.local.md', '.DS_Store']) assert.equal(Object.hasOwn(manifest.files, 'skills/cypress-debugger/scripts/' + name), false);
+  for (const name of ['__pycache__/module.cpython-314.pyc', '.cache/state', 'node_modules/private/index.js', 'test-results/result.json', 'playwright-report/index.html', '.npmrc', 'private.local.md', '.DS_Store']) assert.equal(Object.hasOwn(manifest.files, 'skills/e2e-reviewer/scripts/' + name), false);
   verifyRuntime(output);
 });

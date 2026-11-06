@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Bounded raw #8a/#8b/#8c and #4a/#4b/#4f detectors.
 // Suppression, semantic adjudication and dedupe belong to callers.
-import { createReceivers } from './receivers.mjs';
+import { createReceivers, UNPROVEN_MEMBER } from './receivers.mjs';
 import { unwrap, walk, member, literalString, isWritten, objectMutationTarget, ts } from './source.mjs';
 
 const MODIFIERS = new Set(['not', 'resolves', 'rejects']);
@@ -309,11 +309,22 @@ export function assertions(bytes, filename, { scope } = {}) {
     if (literalDestructuredScalar(call.arguments[0])) return null;
     const before = diagnostics.length;
     if (proven(call.arguments[0], 'locator')) return { call, disposition: 'confirmed' };
+    // A value only declared Locator (a typed parameter, or a page-object
+    // member built from one) is a review candidate, never a silent pass.
+    if (diagnostics.length === before && receivers.expression(call.arguments[0]).kind === 'locator-type')
+      return { call, disposition: 'candidate', evidence: { kind: 'unresolved-locator',
+        requirements: ['verify-runtime-binding', 'verify-required-test-outcome'] } };
     if (diagnostics.length > before) {
       const query = unknownFactoryQuery(call.arguments[0]);
       if (query || unknownFactoryIdentifier(call.arguments[0], call)) {
         return { call, disposition: 'candidate', evidence: { kind: query ? 'unresolved-query' : 'unresolved-locator',
           requirements: ['verify-runtime-binding', 'verify-required-test-outcome'] } };
+      }
+      // An unproven page-object member keeps the POM gap message, which
+      // links the retained #4f review candidate.
+      if (diagnostics.length === before + 1 && UNPROVEN_MEMBER.has(diagnostics.at(-1).message) && pomTruthinessGap(call, false)) {
+        diagnostics.pop();
+        pomTruthinessGap(call);
       }
     }
     if (diagnostics.length === before) pomTruthinessGap(call);
@@ -334,46 +345,49 @@ export function assertions(bytes, filename, { scope } = {}) {
     }
     return false;
   }
-  function pomTruthinessGap(call) {
+  // Records the POM gap diagnostic for a matching shape; with emit false it
+  // only reports whether the shape matches.
+  function pomTruthinessGap(call, emit = true) {
     const subject = unwrap(call.arguments[0]), field = dot(subject);
-    if (!field || !/(?:Button|Link|Input|Field|Checkbox|Radio|Select|Dialog|Modal|Toast|Banner|Heading|Label|Tab|Menu|Item|Row|Cell|Locator|Element)$/.test(field.name)) return;
+    if (!field || !/(?:Button|Link|Input|Field|Checkbox|Radio|Select|Dialog|Modal|Toast|Banner|Heading|Label|Tab|Menu|Item|Row|Cell|Locator|Element)$/.test(field.name)) return false;
     const root = unwrap(field.object);
     let declaration;
     if (ts.isIdentifier(root) && /Page$/.test(root.text) && insideTest(call)) {
       const symbol = receivers.checker.getSymbolAtLocation(root);
       const variable = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
       if (!variable || !ts.isVariableDeclaration(variable) || !variable.initializer ||
-          !(variable.parent.flags & ts.NodeFlags.Const)) return;
+          !(variable.parent.flags & ts.NodeFlags.Const)) return false;
       const constructor = unwrap(variable.initializer);
       if (!ts.isNewExpression(constructor) || !ts.isIdentifier(constructor.expression) ||
-          !/Page$/.test(constructor.expression.text)) return;
+          !/Page$/.test(constructor.expression.text)) return false;
       const definitions = receivers.checker.getSymbolAtLocation(constructor.expression)?.declarations;
       if (definitions?.length) {
-        if (definitions.length !== 1 || !(ts.isClassDeclaration(definitions[0]) || ts.isImportSpecifier(definitions[0]))) return;
+        if (definitions.length !== 1 || !(ts.isClassDeclaration(definitions[0]) || ts.isImportSpecifier(definitions[0]))) return false;
         if (ts.isClassDeclaration(definitions[0])) declaration = definitions[0];
       }
     } else if (root.kind === ts.SyntaxKind.ThisKeyword) {
       for (let parent = subject.parent; parent; parent = parent.parent) {
-        if (ts.isFunctionDeclaration(parent) || ts.isFunctionExpression(parent)) return;
+        if (ts.isFunctionDeclaration(parent) || ts.isFunctionExpression(parent)) return false;
         if (ts.isClassDeclaration(parent)) { declaration = parent; break; }
       }
-      if (!declaration?.name || !/Page$/.test(declaration.name.text)) return;
+      if (!declaration?.name || !/Page$/.test(declaration.name.text)) return false;
       let hasTest = false;
       walk(source, node => { if (testRegistration(node)) hasTest = true; });
-      if (!hasTest) return;
-    } else return;
+      if (!hasTest) return false;
+    } else return false;
     // A known scalar/object field is ordinary state, even when its spelling
     // resembles a POM handle. Naming alone never establishes a Locator.
     const property = declaration?.members.find(item => item.name &&
       (ts.isIdentifier(item.name) || ts.isStringLiteral(item.name)) && item.name.text === field.name);
     if (property) {
-      if (!ts.isPropertyDeclaration(property)) return;
+      if (!ts.isPropertyDeclaration(property)) return false;
       const initial = property.initializer && unwrap(property.initializer);
       if (initial && (ts.isLiteralExpression(initial) || ts.isObjectLiteralExpression(initial) ||
           ts.isArrayLiteralExpression(initial) || [ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.FalseKeyword,
-            ts.SyntaxKind.NullKeyword].includes(initial.kind))) return;
+            ts.SyntaxKind.NullKeyword].includes(initial.kind))) return false;
     }
-    diagnostic(subject, '#4f POM member truthiness requires unsupported runtime Locator provenance');
+    if (emit) diagnostic(subject, '#4f POM member truthiness requires unsupported runtime Locator provenance');
+    return true;
   }
 
   function discarded(node, awaited) {
@@ -399,16 +413,25 @@ export function assertions(bytes, filename, { scope } = {}) {
         !isWritten(source, receivers.checker, symbol) && searchResult(declaration.initializer, depth + 1));
     }
     const SEARCH = ['indexOf', 'lastIndexOf', 'findIndex', 'findLastIndex', 'search'];
+    // `x ?? -1`: the negative fallback itself fails `>= 0`.
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken) {
+      const right = unwrap(node.right);
+      return ts.isPrefixUnaryExpression(right) && right.operator === ts.SyntaxKind.MinusToken &&
+        ts.isNumericLiteral(unwrap(right.operand)) && Number(unwrap(right.operand).text) > 0;
+    }
     // `await locator.evaluateAll(items => items.findIndex(...))`: the browser
-    // callback searches its Element array, which yields -1 on no match.
+    // callback searches its Element array, which yields -1 on no match. The
+    // same holds for `evaluate(() => [...nodes].findIndex(...))` on an array
+    // literal or `Array.from(...)` built inside the browser callback.
     if (ts.isAwaitExpression(node)) {
       const call = unwrap(node.expression), access = ts.isCallExpression(call) && member(call.expression);
-      const callback = access?.name === 'evaluateAll' && call.arguments.length >= 1 && unwrap(call.arguments[0]);
-      if (!callback || !(ts.isArrowFunction(callback) || ts.isFunctionExpression(callback)) ||
-          !callback.parameters[0] || !ts.isIdentifier(callback.parameters[0].name)) return false;
+      const callback = ['evaluate', 'evaluateAll'].includes(access?.name) && call.arguments.length >= 1 && unwrap(call.arguments[0]);
+      if (!callback || !(ts.isArrowFunction(callback) || ts.isFunctionExpression(callback))) return false;
+      const items = access.name === 'evaluateAll' && callback.parameters[0] && ts.isIdentifier(callback.parameters[0].name)
+        ? callback.parameters[0].name.text : null;
       const owner = receivers.expression(access.object);
       if (!owner.complete || !['page', 'locator'].includes(owner.kind)) return false;
-      const items = callback.parameters[0].name.text, values = [];
+      const values = [];
       if (!ts.isBlock(callback.body)) values.push(callback.body);
       else {
         const last = callback.body.statements.at(-1);
@@ -425,31 +448,91 @@ export function assertions(bytes, filename, { scope } = {}) {
         value = unwrap(value);
         const search = ts.isCallExpression(value) && member(value.expression);
         const receiver = search && unwrap(search.object);
-        return Boolean(search && SEARCH.includes(search.name) && ts.isIdentifier(receiver) && receiver.text === items);
+        return Boolean(search && SEARCH.includes(search.name) && receiver &&
+          (items !== null && ts.isIdentifier(receiver) && receiver.text === items || browserArray(receiver)));
       });
     }
     if (!ts.isCallExpression(node)) return false;
     const access = member(node.expression);
-    return Boolean(access && SEARCH.includes(access.name) && receivers.data(access.object));
+    return Boolean(access && SEARCH.includes(access.name) && (receivers.data(access.object) || searchable(access.object)));
   }
-  // `box.x` / `box.y` of `const box = await locator.boundingBox()`: Playwright
-  // reports page coordinates, which are negative for an element scrolled or
-  // positioned off-screen, so `>= 0` can fail and is not a #4a invariant.
+  // Inside a browser callback: an array literal, or Array.from(...) on the
+  // unshadowed global, is a real Array whose search methods yield -1.
+  function browserArray(node) {
+    node = unwrap(node);
+    if (ts.isArrayLiteralExpression(node)) return true;
+    const access = ts.isCallExpression(node) && !node.questionDotToken && member(node.expression);
+    const root = access && unwrap(access.object);
+    return Boolean(access?.name === 'from' && ts.isIdentifier(root) && root.text === 'Array' &&
+      !receivers.checker.getSymbolAtLocation(root)?.declarations?.length);
+  }
+  // A value that is a built-in Array or string (or throws when read): text
+  // and serialized evaluate results from a proven Page/Locator, and Array or
+  // string methods applied to such a value. Its search methods are the
+  // built-ins, which yield -1 on no match.
+  const TEXT_READS = new Set(['allTextContents', 'allInnerTexts', 'textContent', 'innerText', 'innerHTML', 'inputValue', 'getAttribute']);
+  const SERIALIZED_READS = new Set(['evaluate', 'evaluateAll', '$eval', '$$eval']);
+  const DERIVED = new Set(['map', 'filter', 'slice', 'concat', 'flat', 'flatMap', 'sort', 'reverse', 'toSorted', 'toReversed',
+    'split', 'trim', 'trimStart', 'trimEnd', 'toLowerCase', 'toUpperCase', 'replace', 'replaceAll', 'substring']);
+  // The binding never escapes: every use reads one of its members, so no
+  // other code can redefine its search methods.
+  function memberUsesOnly(symbol, name) {
+    let only = true;
+    walk(source, node => {
+      if (!only || !ts.isIdentifier(node) || node === name || receivers.checker.getSymbolAtLocation(node) !== symbol) return;
+      let use = node;
+      while (ts.isParenthesizedExpression(use.parent) || ts.isNonNullExpression(use.parent)) use = use.parent;
+      if (!(ts.isPropertyAccessExpression(use.parent) && use.parent.expression === use)) only = false;
+    });
+    return only;
+  }
+  function searchable(node, depth = 0) {
+    node = unwrap(node);
+    if (depth > 8) return false;
+    if (ts.isIdentifier(node)) {
+      const symbol = receivers.checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      return Boolean(declaration && ts.isVariableDeclaration(declaration) && ts.isIdentifier(declaration.name) &&
+        declaration.initializer && declaration.parent.flags & ts.NodeFlags.Const &&
+        !isWritten(source, receivers.checker, symbol, { properties: true }) && memberUsesOnly(symbol, declaration.name) &&
+        searchable(declaration.initializer, depth + 1));
+    }
+    if (ts.isArrayLiteralExpression(node)) return true;
+    if (ts.isAwaitExpression(node)) {
+      const call = unwrap(node.expression);
+      const access = ts.isCallExpression(call) && !call.questionDotToken && dot(call.expression);
+      if (!access || !(TEXT_READS.has(access.name) || SERIALIZED_READS.has(access.name))) return false;
+      const owner = receivers.expression(access.object);
+      return owner.complete && (owner.kind === 'locator' || owner.kind === 'page' && access.name !== 'allTextContents' && access.name !== 'allInnerTexts');
+    }
+    const access = ts.isCallExpression(node) && !node.questionDotToken && dot(node.expression);
+    return Boolean(access && DERIVED.has(access.name) && searchable(access.object, depth + 1));
+  }
+  // `box.x` / `box.y` of `const box = await locator.boundingBox()`, or of
+  // `(await locator.boundingBox())!` directly: Playwright reports page
+  // coordinates, which are negative for an element scrolled or positioned
+  // off-screen, so `>= 0` can fail and is not a #4a invariant. The receiver
+  // must be a proven Locator or a parameter annotated with Playwright's
+  // Locator type; width and height are never negative and stay candidates.
+  function boundingBoxCall(node) {
+    const awaited = unwrap(node);
+    const call = ts.isAwaitExpression(awaited) && unwrap(awaited.expression);
+    const access = call && ts.isCallExpression(call) && !call.questionDotToken && !call.arguments.length && dot(call.expression);
+    if (!access || access.name !== 'boundingBox') return false;
+    const owner = receivers.expression(access.object);
+    return owner.complete && ['locator', 'locator-type'].includes(owner.kind);
+  }
   function boxCoordinate(node) {
     node = unwrap(node);
     if (!ts.isPropertyAccessExpression(node) || !['x', 'y'].includes(node.name.text)) return false;
     const box = unwrap(node.expression);
+    if (ts.isAwaitExpression(box)) return boundingBoxCall(box);
     if (!ts.isIdentifier(box)) return false;
     const symbol = receivers.checker.getSymbolAtLocation(box);
     const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
     if (!declaration || !ts.isVariableDeclaration(declaration) || !ts.isIdentifier(declaration.name) || !declaration.initializer ||
         !(declaration.parent.flags & ts.NodeFlags.Const) || isWritten(source, receivers.checker, symbol, { properties: true })) return false;
-    const awaited = unwrap(declaration.initializer);
-    const call = ts.isAwaitExpression(awaited) && unwrap(awaited.expression);
-    const access = call && ts.isCallExpression(call) && !call.questionDotToken && !call.arguments.length && dot(call.expression);
-    if (!access || access.name !== 'boundingBox') return false;
-    const owner = receivers.expression(access.object);
-    return owner.complete && owner.kind === 'locator';
+    return boundingBoxCall(declaration.initializer);
   }
   // expect.poll(fn).toBeGreaterThanOrEqual(0) passes on its first sample
   // when the polled value cannot be negative, so it never waits.
@@ -459,9 +542,110 @@ export function assertions(bytes, filename, { scope } = {}) {
     const access = member(node.expression);
     return Boolean(access?.name === 'poll' && ts.isIdentifier(unwrap(access.object)) && proven(access.object, 'expect'));
   }
+  // `await <proven Locator>.count()` directly, or through a same-function,
+  // never-written const bound to exactly that awaited call. A count is a
+  // nonnegative integer, so `>= 0` and `> -1` cannot fail.
+  function locatorCount(node) {
+    node = unwrap(node);
+    if (ts.isIdentifier(node)) {
+      const symbol = receivers.checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      if (!declaration || !ts.isVariableDeclaration(declaration) || !ts.isIdentifier(declaration.name) ||
+          !declaration.initializer || !(declaration.parent.flags & ts.NodeFlags.Const) ||
+          isWritten(source, receivers.checker, symbol, { properties: true }) ||
+          ts.getContainingFunction(declaration) !== ts.getContainingFunction(node)) return false;
+      node = unwrap(declaration.initializer);
+    }
+    if (!ts.isAwaitExpression(node)) return false;
+    const call = unwrap(node.expression);
+    const access = ts.isCallExpression(call) && !call.questionDotToken && !call.arguments.length && dot(call.expression);
+    if (!access || access.name !== 'count') return false;
+    const owner = receivers.expression(access.object);
+    return owner.complete && owner.kind === 'locator';
+  }
+  function negativeOne(node) {
+    node = unwrap(node);
+    return ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.MinusToken &&
+      ts.isNumericLiteral(node.operand) && node.operand.getText(source) === '1';
+  }
+  // `expect(x || true).toBeTruthy()`: a `||` with a truthy literal operand is
+  // truthy whatever `x` is. `x ?? <defined literal>` is never undefined.
+  function truthyLiteral(node) {
+    node = unwrap(node);
+    if (node.kind === ts.SyntaxKind.TrueKeyword) return true;
+    if (ts.isNumericLiteral(node)) { const value = Number(node.text); return Number.isFinite(value) && value !== 0; }
+    return (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) && node.text.length > 0;
+  }
+  // A value that is always a boolean: a boolean literal, a negation, a
+  // comparison, an awaited state read on a proven Page/Locator, or a
+  // never-written same-function const bound to one of these.
+  const STATE_BOOLEANS = new Set([...BOOLEAN_STATE]);
+  function booleanValue(node, depth = 0) {
+    node = unwrap(node);
+    if (depth > 8) return false;
+    if ([ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.FalseKeyword].includes(node.kind)) return true;
+    if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken) return true;
+    if (ts.isBinaryExpression(node) && [ts.SyntaxKind.EqualsEqualsEqualsToken, ts.SyntaxKind.ExclamationEqualsEqualsToken,
+      ts.SyntaxKind.EqualsEqualsToken, ts.SyntaxKind.ExclamationEqualsToken, ts.SyntaxKind.LessThanToken, ts.SyntaxKind.LessThanEqualsToken,
+      ts.SyntaxKind.GreaterThanToken, ts.SyntaxKind.GreaterThanEqualsToken].includes(node.operatorToken.kind)) return true;
+    if (ts.isIdentifier(node)) {
+      const symbol = receivers.checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      return Boolean(declaration && ts.isVariableDeclaration(declaration) && ts.isIdentifier(declaration.name) && declaration.initializer &&
+        declaration.parent.flags & ts.NodeFlags.Const && !isWritten(source, receivers.checker, symbol) &&
+        ts.getContainingFunction(declaration) === ts.getContainingFunction(node) && booleanValue(declaration.initializer, depth + 1));
+    }
+    if (ts.isBinaryExpression(node) && [ts.SyntaxKind.BarBarToken, ts.SyntaxKind.AmpersandAmpersandToken].includes(node.operatorToken.kind))
+      return booleanValue(node.left, depth + 1) && booleanValue(node.right, depth + 1);
+    if (!ts.isAwaitExpression(node)) return false;
+    let call = unwrap(node.expression);
+    // `read().catch(() => false)`: the fallback is a boolean literal too.
+    const fallback = ts.isCallExpression(call) && !call.questionDotToken && dot(call.expression)?.name === 'catch' &&
+      call.arguments.length === 1 && unwrap(call.arguments[0]);
+    if (fallback && ts.isArrowFunction(fallback) && !ts.isBlock(fallback.body) &&
+        [ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.FalseKeyword].includes(unwrap(fallback.body).kind)) call = unwrap(dot(call.expression).object);
+    const access = ts.isCallExpression(call) && !call.questionDotToken && dot(call.expression);
+    if (!access || !STATE_BOOLEANS.has(access.name)) return false;
+    const owner = receivers.expression(access.object);
+    return owner.complete && ['page', 'locator'].includes(owner.kind);
+  }
+  function alwaysTruthyAssertion(node) {
+    if (!ts.isCallExpression(node) || node.questionDotToken) return;
+    const matcher = dot(node.expression);
+    if (!matcher) return;
+    const name = matcher.name;
+    if (!((['toBeTruthy', 'toBeDefined'].includes(name) && !node.arguments.length) ||
+        (name === 'toBe' && node.arguments.length === 1 && unwrap(node.arguments[0]).kind === ts.SyntaxKind.TrueKeyword))) return;
+    const base = unwrap(matcher.object);
+    // Any modifier (.not, .resolves, .rejects) changes the meaning.
+    if (!ts.isCallExpression(base) || base.questionDotToken || base.arguments.length < 1 || base.arguments.length > 2) return;
+    const subject = unwrap(base.arguments[0]);
+    if (!ts.isBinaryExpression(subject)) return;
+    const operator = subject.operatorToken.kind;
+    // `||` returns an operand, not a boolean: `'yes' || true` is 'yes', which
+    // fails toBe(true). Truthiness matchers pass on any truthy literal side;
+    // toBe(true) only when the result is provably the boolean true, that is
+    // `true || x`, or `x || true` with x provably boolean.
+    const isTrue = node => unwrap(node).kind === ts.SyntaxKind.TrueKeyword;
+    const vacuous = operator === ts.SyntaxKind.BarBarToken
+      ? name === 'toBe' ? isTrue(subject.left) || isTrue(subject.right) && booleanValue(subject.left)
+        : truthyLiteral(subject.right) || truthyLiteral(subject.left)
+      : operator === ts.SyntaxKind.QuestionQuestionToken && name === 'toBeDefined' && truthyLiteral(subject.right);
+    // `x || true` under toBe(true) with x not provably boolean passes for
+    // every boolean or falsy x: a review candidate, not a confirmed defect.
+    const likely = !vacuous && operator === ts.SyntaxKind.BarBarToken && name === 'toBe' && isTrue(subject.right);
+    if (!(vacuous || likely) || !expectCall(base, { soft: true })) return;
+    record('#4a', base, node.end, vacuous ? 'confirmed' : 'candidate');
+  }
   function matcherCandidate(node) {
     if (!ts.isCallExpression(node) || node.questionDotToken) return;
     const matcher = dot(node.expression);
+    if (matcher?.name === 'toBeGreaterThan' && node.arguments.length === 1 && negativeOne(node.arguments[0]) &&
+        ts.isCallExpression(unwrap(matcher.object))) {
+      const call = expectCall(matcher.object, { soft: true });
+      if (call && locatorCount(call.arguments[0])) record('#4a', unwrap(node.expression).name, node.end, 'confirmed');
+      return;
+    }
     if (!matcher || !['toBeGreaterThanOrEqual', 'toBeAttached'].includes(matcher.name)) return;
     let base = matcher.object, modifier;
     const modifiers = [];
@@ -481,8 +665,9 @@ export function assertions(bytes, filename, { scope } = {}) {
     // `>= 0` can fail and is not a #4a invariant.
     if (call && matcher.name === 'toBeGreaterThanOrEqual' && !modifiers.length &&
         (searchResult(call.arguments[0]) || boxCoordinate(call.arguments[0]))) return;
+    const confirmed = call && matcher.name === 'toBeGreaterThanOrEqual' && !modifiers.length && locatorCount(call.arguments[0]);
     record(matcher.name === 'toBeAttached' ? '#4b' : '#4a', unwrap(node.expression).name,
-      node.end, 'candidate', matcher.name === 'toBeAttached' ? 'P1' : 'P0');
+      node.end, confirmed ? 'confirmed' : 'candidate', matcher.name === 'toBeAttached' ? 'P1' : 'P0');
   }
 
   // An ambient, unmodified Chai expect plus proven Cypress context supplies a
@@ -525,6 +710,7 @@ export function assertions(bytes, filename, { scope } = {}) {
     // Called matcher candidates also occur inside returns, callback expressions
     // and template substitutions; the discarded-expression rules below do not.
     matcherCandidate(node);
+    alwaysTruthyAssertion(node);
     if (!ts.isExpressionStatement(node)) return;
     let expression = unwrap(node.expression);
     const awaited = ts.isAwaitExpression(expression);

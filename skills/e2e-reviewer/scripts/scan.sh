@@ -26,7 +26,9 @@ if [[ -z "$scanner_node" ]]; then
   exit 2
 fi
 
-"$scanner_node" --input-type=module - "${BASH_SOURCE[0]}" "$@" <<'SCANNER_NODE'
+# Node reads this launcher code on stdin; the caller's stdin stays readable as
+# descriptor 3 for `--check-report -`.
+E2E_SKILLS_REPORT_FD=3 "$scanner_node" --input-type=module - "${BASH_SOURCE[0]}" "$@" 3<&0 <<'SCANNER_NODE'
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -74,6 +76,9 @@ try {
   const supplied = process.argv.slice(3);
   if (supplied.length === 1 && ['--help', '-h'].includes(supplied[0])) {
     process.argv = [process.execPath, path.join(root, manifest.entrypoint), '--help'];
+  } else if (supplied.includes('--check-report')) {
+    // Report completeness check: its own arguments, no implied scan mode.
+    process.argv = [process.execPath, path.join(root, manifest.entrypoint), ...supplied];
   } else {
     let hasRoot = false, hasFormat = false, hasReport = false;
     for (let index = 0; index < supplied.length; index++) {

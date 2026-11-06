@@ -124,13 +124,41 @@ test('analysis tasks alone require review but never clear incomplete execution o
   const input = report([], { full: true, errors: ['unresolved analysis'] });
   input.review.analysisTasks = [{ status: 'UNRESOLVED' }];
   input.review.required = true;
+  input.execution.diagnostics = [{ code: 'provenance-unsupported', file: '/review/tests/example.spec.ts', line: 2 }];
   const output = formatLegacyReport(input);
   assert.equal(output.exitCode, 2);
   assert.match(output.text, /Semantic review: REQUIRED/);
-  assert.match(output.text, /Unresolved analysis tasks: 1/);
+  assert.match(output.text, /^Unresolved analysis: 1 location\(s\) in 1 file\(s\), not findings; 1 of them are source-linked review tasks;/m);
   assert.equal(input.counts.total, 0);
   input.review.analysisTasks = 'invalid';
   assert.throws(() => formatLegacyReport(input));
+});
+
+test('unresolved analysis counts agree across the header, the list and --allow-incomplete', () => {
+  // Regression: the header counted only review tasks (57) while the list showed
+  // guided diagnostics (302) and --allow-incomplete counted every location (1368).
+  const errors = ['analysis incomplete: /review/tests/a.spec.ts: stateReads could not establish its contract'];
+  const summary = summarize([], { failOn: 'p0', incomplete: errors, allowIncomplete: true });
+  const diagnostics = [
+    { code: 'provenance-unsupported', file: '/review/tests/a.spec.ts' },
+    { code: 'provenance-unsupported', file: '/review/tests/a.spec.ts', line: 4 },
+    { code: 'analysis-unknown', file: '/review/tests/a.spec.ts', line: 7 },
+    { code: 'import-missing', file: '/review/tests/b.spec.ts', start: 0 },
+  ];
+  const input = { schema: 'e2e-skills-node-scan-v1', status: 'INCOMPLETE',
+    coverage: { complete: false, limitations: [] },
+    compatibility: { contract: 'source-review-v1', status: 'development' },
+    review: { required: true, candidates: 0, obligations: [], analysisTasks: [{ status: 'UNRESOLVED' }] },
+    execution: { complete: false, exitCode: summary.exitCode, incomplete: errors, diagnostics,
+      allowIncomplete: { ...summary.allowIncomplete, unanalyzed: { files: 2, locations: diagnostics.length } } },
+    counts: summary.counts, findings: [], failOn: 'p0' };
+  const { text, exitCode } = formatLegacyReport(input, { root: '/review' });
+  assert.equal(exitCode, 0);
+  assert.match(text, /^Unresolved analysis: 4 location\(s\) in 2 file\(s\), not findings; 1 of them are source-linked review tasks;/m);
+  assert.match(text, /^Unresolved analysis with review guidance \(3 of 4 location\(s\);/m);
+  assert.equal(text.split('\n').filter(line => /^  "tests\/a\.spec\.ts"/.test(line)).length, 3);
+  assert.match(text, /^ALLOW-INCOMPLETE: 2 file\(s\) with 4 unresolved location\(s\) were NOT fully analyzed/m);
+  assert.doesNotMatch(text, /Unresolved analysis tasks:/);
 });
 
 test('paths stay traceable while terminal control and injected Summary lines are escaped', () => {

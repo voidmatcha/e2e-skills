@@ -8,7 +8,7 @@ import { discoverProjectContext, revalidateProjectContext } from './project-cont
 const EXTENSIONS = new Set(['ts', 'js', 'tsx', 'jsx', 'mts', 'mjs', 'cts', 'cjs']);
 const EXCLUDED = new Set(['node_modules', '.git', 'playwright-report', 'test-results', 'dist', 'build', '.next', 'out', 'coverage']);
 const SOURCE_ROOTS = new Set(['src', 'test', 'tests', 'e2e', 'spec', 'specs', 'playwright', 'cypress', 'support', 'fixtures']);
-const INTENTIONAL_FIXTURES = /(?:^|\/)evals\/files(?:\/|$)|(?:^|\/)scripts\/evals\/skills\/(?:e2e-reviewer|playwright-test-generator|playwright-debugger|cypress-debugger)\/files(?:\/|$)|(?:^|\/)scripts\/ci\/fixtures(?:\/|$)/;
+const INTENTIONAL_FIXTURES = /(?:^|\/)evals\/files(?:\/|$)|(?:^|\/)scripts\/evals\/skills\/(?:e2e-reviewer|playwright-test-generator)\/files(?:\/|$)|(?:^|\/)scripts\/ci\/fixtures(?:\/|$)/;
 const BUNDLED_PARSER = 'skills/e2e-reviewer/scripts/scanner/vendor/typescript/typescript.cjs';
 const BUNDLED_PARSER_SHA256 = '569177652966bd528c319171c7dd22860dbf72bde116cbc4f644f1d02bb12e39';
 const FIELDS = ['dev', 'ino', 'mode', 'size', 'mtimeNs', 'ctimeNs'];

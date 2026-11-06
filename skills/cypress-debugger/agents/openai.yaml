@@ -1,7 +1,0 @@
-interface:
-  display_name: Cypress Debugger
-  short_description: Debug Cypress failures
-  default_prompt: Use $cypress-debugger to find the root cause of a failed Cypress test from its mochawesome or JUnit report.
-
-policy:
-  allow_implicit_invocation: true

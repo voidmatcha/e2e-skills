@@ -2991,13 +2991,14 @@ def assert_generated_spec_shapes_resolve() -> None:
 def assert_p0_candidates_skip_provably_safe_shapes() -> None:
     """An indexOf result can be -1 and a gate fixed by literal loop constants or
     literal helper arguments is not app state: neither is a #4a/#5a candidate.
-    count() >= 0 stays #4a. The action-only visibility gate on line 11 is not
-    a #5a candidate either (round-6 #5a contract)."""
+    count() >= 0 on a proven Locator is a confirmed #4a, so the p0 policy
+    fails. The action-only visibility gate on line 11 is not a #5a candidate
+    either (round-6 #5a contract)."""
     result = node_scan_fixture("p0-candidate-narrowing.spec.ts")
-    assert result.returncode == 0, result.stdout
+    assert result.returncode == 1, result.stdout
     assert result.report["execution"]["diagnostics"] == [], result.report
-    assert [(item["patternId"], item["line"]) for item in result.report["findings"]
-            if item["patternId"] in {"#4a", "#5a"}] == [("#4a", 26)], result.report
+    assert [(item["patternId"], item["line"], item["disposition"]) for item in result.report["findings"]
+            if item["patternId"] in {"#4a", "#5a"}] == [("#4a", 26, "confirmed")], result.report
 
 
 def assert_helper_objects_and_read_only_data_resolve() -> None:
@@ -3023,29 +3024,70 @@ def assert_field_scan_shapes_narrow_p0_candidates() -> None:
                   if item["severity"] == "P0") == [("#3", 33), ("#4a", 32)], result.report
 
 
+def assert_settle_and_sentinel_shapes_narrow_p0_candidates() -> None:
+    """Development-data false-positive shapes: a literal-loop gate, an
+    Animation.finished settle-wait, a boundingBox x, a findIndex result, a
+    poll fallback that cannot pass and a discarded unroute are not P0
+    candidates; a boundingBox width >= 0, a swallowed reload before an
+    assertion and (since the E exclusion was withdrawn: the later assertion
+    need not depend on the skipped action) a state read gating only an
+    action still are."""
+    result = node_scan_fixture("settle-and-sentinel-shapes.spec.ts")
+    assert result.returncode == 0, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert sorted((item["patternId"], item["line"]) for item in result.report["findings"]
+                  if item["severity"] == "P0") == [("#3", 19), ("#3", 29), ("#4a", 16)], result.report
+
+
 def assert_conditional_paths_need_one_sided_assertions() -> None:
     """#5a contract: an if/else asserting on both paths and a visibility gate
     around an assertion-free branch are not candidates; a visibility gate around
     the only assertion of a test still is."""
     result = node_scan_fixture("conditional-paths.spec.ts")
-    assert result.returncode == 0, result.stdout
+    # Line 16 is the mechanically confirmed #5a shape, so the p0 policy fails.
+    assert result.returncode == 1, result.stdout
     assert result.report["execution"]["diagnostics"] == [], result.report
-    assert sorted((item["patternId"], item["line"], item.get("variant")) for item in result.report["findings"]
-                  if item["severity"] == "P0") == [("#5a", 16, "conditional-assertion"),
-                                                    ("#5a", 16, "inline-visibility-condition")], result.report
+    assert sorted((item["patternId"], item["line"], item.get("variant"), item["disposition"]) for item in result.report["findings"]
+                  if item["severity"] == "P0") == [("#5a", 16, "conditional-assertion", "confirmed"),
+                                                    ("#5a", 16, "inline-visibility-condition", "confirmed")], result.report
 
 
 def assert_round7_shapes_resolve_and_narrow() -> None:
     """Round 7: an attribute-guaranteed getAttribute gate, a boundingBox x/y
     check, a collected-and-asserted cleanup error and page.route helper calls
     are not P0 candidates; an always-true count check and a one-shot
-    visibility gate around the only assertion still are."""
+    visibility gate around the only assertion still are. The count check is a
+    proven Locator count, so it is a confirmed #4a and the p0 policy fails."""
     result = node_scan_fixture("round7-shapes.spec.ts")
+    assert result.returncode == 1, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert sorted((item["patternId"], item["line"], item.get("variant"), item["disposition"]) for item in result.report["findings"]
+                  if item["severity"] == "P0") == [("#4a", 16, None, "confirmed"), ("#5a", 36, "conditional-assertion", "candidate"),
+                                                    ("#5a", 36, "inline-visibility-condition", "candidate")], result.report
+
+
+def assert_invariant_predicates_are_confirmed_p0() -> None:
+    """#4a: a || with a truthy literal operand and a proven Locator count()
+    compared as >= 0 or > -1 cannot fail, so both are confirmed P0. A || of
+    two reads and a >= 1 count check can fail and stay clean."""
+    result = node_scan_fixture("invariant-predicates.spec.ts")
+    assert result.returncode == 1, result.stdout
+    assert result.report["execution"]["diagnostics"] == [], result.report
+    assert sorted((item["patternId"], item["line"], item["disposition"]) for item in result.report["findings"]
+                  if item["severity"] == "P0") == [("#4a", 6, "confirmed"), ("#4a", 19, "confirmed"),
+                                                    ("#4a", 21, "confirmed")], result.report
+
+
+def assert_ignored_isvisible_timeout_is_confirmed_p1() -> None:
+    """#4c-4e: Playwright ignores the timeout option of isVisible/isHidden, so
+    a gate on isVisible({ timeout }) is a one-shot read (confirmed P1).
+    toBeVisible({ timeout }) and waitFor({ state, timeout }) retry and stay clean."""
+    result = node_scan_fixture("ignored-timeout.spec.ts")
     assert result.returncode == 0, result.stdout
     assert result.report["execution"]["diagnostics"] == [], result.report
-    assert sorted((item["patternId"], item["line"], item.get("variant")) for item in result.report["findings"]
-                  if item["severity"] == "P0") == [("#4a", 16, None), ("#5a", 36, "conditional-assertion"),
-                                                    ("#5a", 36, "inline-visibility-condition")], result.report
+    assert [(item["patternId"], item["line"], item["severity"], item["disposition"], item.get("variant"))
+            for item in result.report["findings"] if item["patternId"] == "#4c-4e"] == [
+        ("#4c-4e", 6, "P1", "confirmed", "ignored-timeout")], result.report
 
 
 def assert_uncalled_matchers_are_p0() -> None:
@@ -4366,11 +4408,14 @@ def assert_empty_catch_best_effort_and_lifecycle_exemptions() -> None:
 
         # The afterEach/afterAll cleanup catches (lines 3 and 9) are not
         # candidates: they run after the test's assertions and no expect
-        # follows them. Setup and in-test catches stay candidates; the old
-        # best-effort versus outcome-sensitive partition is still not claimed.
+        # follows them. Nor is the discarded context.close() catch on line
+        # 13: a failed teardown of a proven Playwright object cannot make a
+        # later assertion pass. Setup and other in-test catches stay
+        # candidates; the old best-effort versus outcome-sensitive partition
+        # is still not claimed.
         assert sorted((Path(item["file"]).name, item["line"]) for item in result.report["findings"]
                       if item["patternId"] == "#3" and item["disposition"] == "candidate") == [
-            ("empty-catch.spec.ts", line) for line in (6, 12, 13, 14)
+            ("empty-catch.spec.ts", line) for line in (6, 12, 14)
         ], result.report
 
         cleanup_only = root / "cleanup-only.spec.ts"
@@ -5491,6 +5536,7 @@ def assert_v10_semantic_boundaries() -> None:
             "  if (await page.getByRole('dialog').isVisible()) {\n"
             "    await expect(page.getByRole('dialog')).toBeVisible();\n"
             "  }\n"
+            "  await expect(page).toHaveURL('/');\n"
             "});\n",
             encoding="utf-8",
         )
@@ -5501,6 +5547,21 @@ def assert_v10_semantic_boundaries() -> None:
         assert p0.returncode == 0
         assert p0_candidate.returncode == 1
         assert p0_candidate.report["counts"]["p0Candidate"] > 0
+        # Without the unconditional assertion the gate holds the test's only
+        # assertion: the mechanically confirmed #5a shape fails the p0 policy.
+        confirmed = root / "confirmed.spec.ts"
+        confirmed.write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('candidate', async ({ page }) => {\n"
+            "  if (await page.getByRole('dialog').isVisible()) {\n"
+            "    await expect(page.getByRole('dialog')).toBeVisible();\n"
+            "  }\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        confirmed_p0 = node_scan(confirmed, {"E2E_SMELL_FAIL_ON": "p0"})
+        assert confirmed_p0.returncode == 1
+        assert confirmed_p0.report["counts"]["p0"] == 2 and confirmed_p0.report["counts"]["p0Candidate"] == 0
 
 
 def assert_v11_final_boundaries() -> None:
@@ -7480,11 +7541,16 @@ def assert_main_inline_contract() -> None:
     # Line 15 only dismisses an optional banner (no assertion in the branch):
     # not a #5a candidate since the round-6 #5a contract change.
     assert {item['line'] for item in exclusions.report['findings'] if item['patternId'] == '#5a'} == {64}
-    assert all(item['disposition'] == 'candidate' for item in exclusions.report['findings'])
+    # Line 64 is the mechanically confirmed #5a shape (pattern-reference #5a):
+    # an else-less isVisible gate holding the test's only assertion. Its
+    # inline condition anchor is promoted with it; every other hit stays triage.
+    assert sorted((item['line'], item.get('variant')) for item in exclusions.report['findings']
+                  if item['disposition'] == 'confirmed') == [(64, 'conditional-assertion'), (64, 'inline-visibility-condition')]
+    assert all(item['disposition'] == 'candidate' for item in exclusions.report['findings'] if item['patternId'] != '#5a')
     assert not any(item['patternId'] == '#16' or item['line'] == 33 for item in exclusions.report['findings'])
     # The custom flags.isEnabled call at line 24 is not a proven Locator read;
     # its original uncertainty remains diagnostic rather than an invented hit.
-    assert exclusions.report['counts'] == dict(total=7, p0=0, p1p2=0, triage=7, p0Candidate=2, ast=7, confirmed=0)
+    assert exclusions.report['counts'] == dict(total=7, p0=2, p1p2=0, triage=5, p0Candidate=0, ast=7, confirmed=2)
 
     contexts_path = EVAL_FILES / 'missing-await-contexts.spec.ts'
     # returnDispatchedChange(page: Page) is a closed same-file helper called
@@ -7582,8 +7648,11 @@ def main() -> None:
         assert_p0_candidates_skip_provably_safe_shapes,
         assert_helper_objects_and_read_only_data_resolve,
         assert_field_scan_shapes_narrow_p0_candidates,
+        assert_settle_and_sentinel_shapes_narrow_p0_candidates,
         assert_conditional_paths_need_one_sided_assertions,
         assert_round7_shapes_resolve_and_narrow,
+        assert_invariant_predicates_are_confirmed_p0,
+        assert_ignored_isvisible_timeout_is_confirmed_p1,
         assert_playwright_rules_skip_cypress_only_files_but_allow_mixed_files,
         assert_initialized_module_state_only,
         assert_positional_selector_is_always_triage,

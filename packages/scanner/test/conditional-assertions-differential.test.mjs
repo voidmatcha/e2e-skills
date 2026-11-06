@@ -60,9 +60,15 @@ print(json.dumps(out))`, legacyOracleFile('regression/test-reviewer-scanner.py')
   const contract=['boolean-consumers.spec.ts:5:P0:candidate','documented-exclusions.spec.ts:15:P0:candidate'];
   assert.ok(observed.includes(gap),output);assert.ok(observed.includes(difference),output);
   for(const value of contract){assert.ok(observed.includes(value),value);assert.ok(!expected.includes(value),value);}
+  // pattern-reference #5a mechanical confirmation: the native scanner promotes
+  // this one else-less, sole-assertion state-read gate to confirmed; legacy
+  // reports the same location as a candidate, so compare locations.
+  const promoted=['auth.spec.ts:42:P0:confirmed','documented-exclusions.spec.ts:64:P0:confirmed'];
+  assert.deepEqual([...new Set(expected.filter(value=>value.endsWith(':confirmed')))],promoted);
+  const located=expected.map(value=>value.replace(/:confirmed$/,':candidate'));
   const parity=[...new Set(observed.filter(value=>value!==difference&&!contract.includes(value)))].sort();
   assert.equal(parity.length,7,output);
-  assert.deepEqual(parity,[...new Set(expected)].sort(),output);
+  assert.deepEqual(parity,[...new Set(located)].sort(),output);
   t.diagnostic(JSON.stringify({matchedUniqueFindings:parity.length,diagnosticRetainedGenericAssertCandidate:[gap],
-    intentionalLegacyShadowFalsePositive:[difference],intentionalContractDivergence:contract,fullParity:false}));
+    intentionalLegacyShadowFalsePositive:[difference],intentionalContractDivergence:contract,confirmedPromotion:promoted,fullParity:false}));
 });

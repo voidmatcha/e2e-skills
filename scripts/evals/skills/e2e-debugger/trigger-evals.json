@@ -1,0 +1,107 @@
+[
+  {
+    "id": "debug-failing-playwright-test",
+    "query": "Debug this failing Playwright test in tests/checkout.spec.ts.",
+    "should_trigger": true
+  },
+  {
+    "id": "why-is-test-failing",
+    "query": "Why is this e2e test failing? It worked yesterday.",
+    "should_trigger": true
+  },
+  {
+    "id": "debug-flaky-cypress",
+    "query": "Debug the flaky Cypress spec that fails one run in five.",
+    "should_trigger": true
+  },
+  {
+    "id": "fix-failing-checkout-spec",
+    "query": "This Playwright test is failing, fix it.",
+    "should_trigger": true
+  },
+  {
+    "id": "repair-red-ci-e2e",
+    "query": "Our E2E job is red on tests/cart.spec.ts, can you repair the test?",
+    "should_trigger": true
+  },
+  {
+    "id": "heal-broken-login-test",
+    "query": "The login Playwright test broke after yesterday's merge; heal it.",
+    "should_trigger": true
+  },
+  {
+    "id": "flaky-cypress-spec",
+    "query": "cypress/e2e/search.cy.ts fails sometimes in CI, please fix the flaky test.",
+    "should_trigger": true
+  },
+  {
+    "id": "make-failing-test-pass-safely",
+    "query": "Get the failing profile E2E test passing again without hiding a real bug.",
+    "should_trigger": true
+  },
+  {
+    "id": "timeout-failure-fix",
+    "query": "tests/upload.spec.ts keeps timing out on the toHaveText check, fix the test.",
+    "should_trigger": true
+  },
+  {
+    "id": "broken-locator-after-redesign",
+    "query": "After the redesign the signup Playwright spec can't find the submit button; fix the spec.",
+    "should_trigger": true
+  },
+  {
+    "id": "failing-e2e-after-pr",
+    "query": "This E2E test started failing after my PR, fix it please.",
+    "should_trigger": true
+  },
+  {
+    "id": "is-this-test-flaky",
+    "query": "Is the settings Playwright test flaky or is it a real failure? Fix it if it's the test.",
+    "should_trigger": true
+  },
+  {
+    "id": "write-new-checkout-tests",
+    "query": "Write new Playwright tests for the checkout flow.",
+    "should_trigger": false
+  },
+  {
+    "id": "review-spec-smells",
+    "query": "Review tests/e2e for silent-pass anti-patterns.",
+    "should_trigger": false
+  },
+  {
+    "id": "unit-test-failing",
+    "query": "My Jest unit test for the date formatter is failing, fix it.",
+    "should_trigger": false
+  },
+  {
+    "id": "fix-app-bug-directly",
+    "query": "The save button crashes the app; fix the React component.",
+    "should_trigger": false
+  },
+  {
+    "id": "set-up-playwright",
+    "query": "Set up Playwright in this new project.",
+    "should_trigger": false
+  },
+  {
+    "id": "scan-pr-diff",
+    "query": "Scan this PR diff of Cypress specs for P0 smells.",
+    "should_trigger": false
+  },
+  {
+    "id": "explain-playwright-config",
+    "query": "Explain what retries and repeatEach do in playwright.config.ts.",
+    "should_trigger": false
+  },
+  {
+    "id": "generate-cypress-tests",
+    "query": "Generate Cypress component tests for the Button.",
+    "should_trigger": false
+  },
+  {
+    "id": "speed-up-suite",
+    "query": "Make our Playwright suite run faster with sharding.",
+    "should_trigger": false
+  }
+]

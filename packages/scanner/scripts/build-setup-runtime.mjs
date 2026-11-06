@@ -21,7 +21,7 @@ function collect(relative) {
   else if (stat.isFile()) { files.set(relative, fs.readFileSync(source)); modes.set(relative, stat.mode & 0o777); }
   else throw Error(`setup source is not a regular file/directory: ${relative}`);
 }
-for (const file of ['install.sh', 'LICENSE', 'NOTICE', ...['setup.mjs', 'reinstall-skills.sh', 'install-codex-agents.sh', 'install-claude-agents.sh', 'skills-cli-bootstrap-package.json', 'skills-cli-bootstrap-package-lock.json', 'skills-cli-installed-tree-sha256.json'].map(name => 'scripts/dev/' + name), 'scripts/dev/vendor/smol-toml', 'agents/e2e-finding-verifier.md', 'agents/e2e-failure-classifier.md', '.codex/agents/e2e-finding-verifier.toml', '.codex/agents/e2e-failure-classifier.toml', ...['cypress-debugger', 'e2e-reviewer', 'playwright-debugger', 'playwright-test-generator'].map(name => 'skills/' + name)]) collect(file);
+for (const file of ['install.sh', 'LICENSE', 'NOTICE', ...['setup.mjs', 'reinstall-skills.sh', 'skills-cli-bootstrap-package.json', 'skills-cli-bootstrap-package-lock.json', 'skills-cli-installed-tree-sha256.json'].map(name => 'scripts/dev/' + name), 'scripts/dev/vendor/smol-toml', ...['e2e-debugger', 'e2e-reviewer', 'playwright-test-generator'].map(name => 'skills/' + name)]) collect(file);
 const manifest = { version: 1, generator: 'e2e-skills-setup-runtime', files: Object.fromEntries([...files].sort(([a], [b]) => a.localeCompare(b, 'en')).map(([name, bytes]) => [name, { sha256: crypto.createHash('sha256').update(bytes).digest('hex'), size: bytes.length, mode: modes.get(name) }])) };
 modes.set('inventory.json', 0o644);
 files.set('inventory.json', Buffer.from(JSON.stringify(manifest, null, 2) + '\n'));
