@@ -168,6 +168,8 @@ This one command installs the three skills globally for all [supported agents](h
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
 
+Review and debugging work right away. Test generation also needs Playwright's official test agents and their `playwright-test` MCP server, set up once per project with `npx playwright init-agents`; see [one-time project setup](#test-generation-one-time-project-setup).
+
 ### 3. Scan your tests
 
 A static scan takes about 30 seconds on a typical test directory (Node.js 22+):

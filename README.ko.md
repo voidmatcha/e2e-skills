@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=7d001785c89da1630d42b4e182b259910057ac92891e3601f8f848b36f7a40e9; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=c5eee1e984548a82e606b783855db2358191081d8858c51fe0adbc3582fefac1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -169,6 +169,8 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --h
 ```bash
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
+
+리뷰와 디버깅은 바로 쓸 수 있습니다. 테스트 생성에는 Playwright 공식 test agents와 `playwright-test` MCP 서버가 더 필요하며, 프로젝트마다 한 번 `npx playwright init-agents`로 설정합니다. [한 번만 하는 프로젝트 설정](#테스트-생성-한-번만-하는-프로젝트-설정)을 참고하세요.
 
 ### 3. 테스트 스캔하기
 
