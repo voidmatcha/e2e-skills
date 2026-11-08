@@ -39,7 +39,12 @@ test('swallowed waits keep their #3 candidate and gain exact triage context', t 
   // The doory/gridfinity TP shape: never re-asserted, one later assertion.
   assert.equal(byLine.get(4).disposition, 'candidate');
   assert.deepEqual({ ...byLine.get(4).triage, hint: undefined, probe: undefined },
-    { shape: 'swallowed-wait', target: 'expanded', state: 'visible', reassertedLines: [], laterAssertions: 1, hint: undefined, probe: undefined });
+    { shape: 'swallowed-wait', target: 'expanded', state: 'visible', reassertedLines: [], laterAssertions: 1,
+      timeout: { effective: 'finite', source: 'option', ms: 2000 }, hint: undefined, probe: undefined });
+  // No Playwright configuration: the default timeouts are not provable, so the
+  // no-option waits stay P0 candidates with an unknown-timeout hint.
+  assert.equal(byLine.get(10).severity, 'P0');
+  assert.equal(byLine.get(10).triage.timeout.effective, 'unknown');
   assert.match(byLine.get(4).triage.hint, /never re-asserted after the catch/);
   assert.match(byLine.get(4).triage.probe, /behavior-fault/);
   // Re-asserted only inside a branch: not the reverifiedWait exclusion.

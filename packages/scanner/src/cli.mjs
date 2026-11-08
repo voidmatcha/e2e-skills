@@ -22,6 +22,7 @@ import { pageReads } from './page-reads.mjs';
 import { cypressAssignment } from './cypress-assignment.mjs';
 import { domQueries } from './dom-queries.mjs';
 import { catchHandlers } from './catch-handlers.mjs';
+import { playwrightWaitTimeouts } from './wait-timeouts.mjs';
 import { timeoutZero } from './timeout-zero.mjs';
 import { softAssertions } from './soft-assertions.mjs';
 import { cypressCallbacks } from './cypress-callbacks.mjs';
@@ -31,7 +32,7 @@ import { accessibleNames } from './accessible-names.mjs';
 import { conditionalAssertions } from './conditional-assertions.mjs';
 import { credentials } from './credentials.mjs';
 import { analysisDiagnostic, inventoryDiagnostic, analysisReviewTasks } from './diagnostics.mjs';
-import { formatLegacyReport, writeLegacyReportFile } from './compat-report.mjs';
+import { formatLegacyReport, incompleteWarning, writeLegacyReportFile } from './compat-report.mjs';
 import { reviewCandidates } from './review-candidates.mjs';
 import { handoffDiagnostics } from './review-obligations.mjs';
 import { prepareImportSnapshot } from './import-snapshot.mjs';
@@ -221,6 +222,9 @@ if (process.argv.slice(2).includes('--check-report')) {
         incomplete.push('scope incomplete: pinned source graph could not be validated');
         if (bounded) diagnostics.push({ code: 'scope-incomplete', detector: 'scope', file: baseline.root.canonical });
       }
+      // #3 swallowed waits: the effective Playwright timeout, where statically known.
+      const waitTimeouts = importSnapshot?.diagnostics.length ? { known: false, reason: 'relative import snapshot incomplete' } :
+        playwrightWaitTimeouts({ configurationAnalysis, sources: importSnapshot?.sources ?? sources });
       for (const candidate of baseline.candidates) {
         try {
           if (!sources.has(candidate.path)) continue;
@@ -230,7 +234,7 @@ if (process.argv.slice(2).includes('--check-report')) {
           if (foreignRunner) { outOfScope.push({ file: candidate.path, framework: foreignRunner }); continue; }
           const results = [{ detector: 'focusedTests', ...focusedTests(bytes, candidate.path, { scope }) }];
           if (staticMode) {
-            for (const detector of [waits, assertions, suiteData, controlFlow, networkIdle, actions, promises, pageReads, cypressAssignment, domQueries, catchHandlers, timeoutZero, softAssertions, cypressCallbacks, stateReads, collections, accessibleNames, conditionalAssertions, credentials, reviewCandidates]) results.push({ detector: detector.name, ...detector(bytes, candidate.path, { scope }) });
+            for (const detector of [waits, assertions, suiteData, controlFlow, networkIdle, actions, promises, pageReads, cypressAssignment, domQueries, catchHandlers, timeoutZero, softAssertions, cypressCallbacks, stateReads, collections, accessibleNames, conditionalAssertions, credentials, reviewCandidates]) results.push({ detector: detector.name, ...detector(bytes, candidate.path, { scope, waitTimeouts }) });
           }
           for (const result of results) {
             const processed = staticMode ? applyJustified(bytes, candidate.path, result.findings) :
@@ -364,6 +368,9 @@ if (process.argv.slice(2).includes('--check-report')) {
       duplicates: deduplicated.duplicates.map(({ finding, retained, reason, ruleClass }) => ({
         finding: publicFinding(finding), retained: publicFinding(retained), reason, ruleClass })),
       suppressed: suppressed.map(publicFinding), ...(!bounded ? summary : {}) };
+    // --allow-incomplete can exit 0; say on stderr, in either format, that this is not a clean result.
+    const warning = args.allowIncomplete ? incompleteWarning(report) : null;
+    if (warning) process.stderr.write(`${warning}\n`);
     if (args.format === 'text') {
       // Text-only context: relative imports that were not found. JSON keeps
       // its location-only diagnostics.

@@ -290,16 +290,18 @@ export function prepareImportSnapshot({ manifest, sources } = {}) {
         if (suffix) matched = matched.slice(0, matched.length - suffix.length);
       } else if (specifier !== key) continue;
       if (prefix.length <= longest) continue;
+      // The targets are an ordered fallback list: the first that resolves
+      // is the module, and later ones are never consulted.
       for (const value of values) {
         const target = path.resolve(base, value.includes('*') ? value.replace('*', matched) : value);
         if (framework && target.split(path.sep).includes('node_modules')) {
           // Opaque installed package: only an exact absence check is unknown.
-          if (within(root, target) && pin(target).kind !== 'absent') { longest = prefix.length; selected = PACKAGE; }
+          if (within(root, target) && pin(target).kind !== 'absent') { longest = prefix.length; selected = PACKAGE; break; }
           continue;
         }
         const found = existing(target);
         if (found === undefined) return { unknown: true };
-        if (found) { longest = prefix.length; selected = found; }
+        if (found) { longest = prefix.length; selected = found; break; }
       }
     }
     if (!selected || selected === PACKAGE) return { package: true };

@@ -1211,9 +1211,14 @@ assert_fails "e2e-debugger — inline repair fallback removed" \
   "missing contract phrase 'both paths must reach the same outcome'"
 restore "$file"
 
-# The install section leads with the one skills CLI command and names the
-# host-specific official-agent setup; the generator needs a session-wide
-# playwright-test MCP server on Codex (no role selector).
+# Quick start begins with the memo, then shared install and static scan.
+file="README.md"
+backup "$file"
+mutate "$file" "guidance --host codex --project . --memo" "guidance --host codex --project . --policy"
+assert_fails "README quick start — memo command is required first" \
+  "README.md quick start must follow memo, install, scan order"
+restore "$file"
+
 file="README.md"
 backup "$file"
 mutate \

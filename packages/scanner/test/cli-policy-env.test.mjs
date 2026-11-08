@@ -10,7 +10,7 @@ test('bounded CLI respects legacy policy environment and explicit flag precedenc
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'e2e-policy-env-'));
   try {
     const file=path.join(dir,'case.spec.ts');
-    fs.writeFileSync(file,"import {test,expect} from '@playwright/test'; test('x',async({page})=>{ expect((await page.locator('x').count()) - 1).toBeGreaterThanOrEqual(0); });\n");
+    fs.writeFileSync(file,"import {test,expect} from '@playwright/test'; test('x',async({page})=>{ expect((await page.locator('x').count()) + 1).toBeGreaterThanOrEqual(0); });\n");
     const run=(value,args=[])=>spawnSync(process.execPath,[cli.pathname,'--bounded-static',file,...args],{env:{...process.env,E2E_SMELL_FAIL_ON:value},encoding:'utf8',timeout:20000});
     for(const [value,exit] of [['',0],['p0',0],['none',0],['p0-candidate',1]]) {
       const result=run(value);assert.equal(result.status,exit,result.stderr);

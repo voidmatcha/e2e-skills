@@ -22,10 +22,10 @@ Classify inline. Never change product code; never weaken a test. First read this
 
 ## 2. Flake check
 
-Rerun the failing test 3 times with retries off, using that test command:
+Before rerunning, follow `rerun-scope.md` to isolate the named test; if blocked, propose a command and stop.
 
-- Playwright: append `<spec>:<line> --repeat-each=3 --retries=0`.
-- Cypress: run it 3 times with `--spec <spec> --config retries=0`.
+- Playwright: `--repeat-each=3 --retries=0`.
+- Cypress: 3 runs with `--config retries=0`.
 
 - Mixed results: FLAKY. Report each run's outcome and error; stop; change nothing. Never "fix" timing: no longer timeouts, retries, `test.slow()` or sleeps unless the user asks.
 - All 3 pass: not reproduced; report UNCLEAR and stop.

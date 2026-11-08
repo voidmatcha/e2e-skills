@@ -291,6 +291,15 @@ export function createSummaries({ model, resolveModule, official, texts }) {
         }
         else if ((ts.isPropertyAccessExpression(target) || ts.isElementAccessExpression(target)) &&
             unwrap(target.expression).kind === ts.SyntaxKind.SuperKeyword) dynamic = true;
+        else if (ts.isPropertyAccessExpression(target) || ts.isElementAccessExpression(target)) {
+          // A write under a stored member (`this.page.locator = f`,
+          // `delete this.x[k]`) changes what that member's chain reaches:
+          // count it as a write of the member itself.
+          let object = unwrap(target.expression);
+          while (thisMember(object) === undefined && (ts.isPropertyAccessExpression(object) || ts.isElementAccessExpression(object)))
+            object = unwrap(object.expression);
+          if (thisMember(object) !== undefined) write(object);
+        }
       }
     };
     walk(node, item => {

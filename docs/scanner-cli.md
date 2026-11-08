@@ -2,21 +2,21 @@
 
 Static Playwright and Cypress test review with configuration context and explicitly approved probes. The scanner finds candidates; an LLM reviews context, selects checks and interprets the evidence. Scanning never starts a probe.
 
-The commands below pin version `3.4.1`.
+The commands below pin version `3.5.0`.
 
 Requires Node.js 22+. The scan, check and unified CLIs do not require Python. Probe execution additionally requires a trusted, prepared project.
 
 ## Run with npx
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills-scan --scan /absolute/project/tests --format text
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills-scan --scan /absolute/project/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
 ```
 
 Or install locally:
 
 ```bash
-npm install --save-dev @voidmatcha/e2e-skills-scanner@3.4.1
+npm install --save-dev @voidmatcha/e2e-skills-scanner@3.5.0
 npx e2e-skills-scan --scan ./tests --format json
 npx e2e-skills-check --help
 ```
@@ -32,12 +32,12 @@ The reviewer skill includes its own scanner, so reviewing an existing project do
 The unified CLI provides `e2e-skills install`, `doctor`, `guidance`, `scan` and `check`:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills install --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills doctor --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills guidance --host codex --project /absolute/playwright-project --memo --policy --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills scan /absolute/playwright-project/tests --format json
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.1 e2e-skills check --help
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills install --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills doctor --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project /absolute/playwright-project --memo --policy --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan /absolute/playwright-project/tests --format json
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills check --help
 ```
 
 Command and option parsing for `install`, `doctor` and `guidance` uses the pinned MIT-licensed [Commander.js](https://github.com/tj/commander.js) package. Scanner and check arguments are passed through to their existing CLIs.
@@ -189,6 +189,24 @@ node src/check-cli.mjs probe \
 ```
 
 Probe execution requires a trusted, prepared project. The bundled Node runner is byte-identical to the skill's `run-probe.mjs`; a parity test guards that copy. It freezes commands and source hashes, then runs normal, changed and restored copies. Commands retain host and network access. No dependencies, browser, project, observer or test command are installed or inferred. Output directories must be fresh and outside the source project. `SURVIVED` is an observed result, not a passing quality gate; inspect the verdict, not just exit status.
+
+## Glossary
+
+Terms used in the text report, one line each:
+
+- **P0 candidate** (`[P0?]`): an unconfirmed candidate that would be P0 if confirmed; it fails the run only with `--fail-on p0-candidate`.
+- **LLM-TRIAGE**: a candidate the scanner could not confirm mechanically; confirm or reject it with the `e2e-reviewer` skill or by hand.
+- **REVIEW-HINT** (`[P2?][REVIEW-HINT]`): a candidate shape that source review showed is rarely the defect its pattern names, such as `>= 0` on a coordinate or difference, a discarded `undefined` catch fallback on a supported action, or an assertion gate based only on run configuration. It stays listed under its pattern ID with the reason, but at P2, outside the P0 candidate count and all `--fail-on` gates, including `any`, which counts only confirmed findings. JSON marks it with `reviewHint: { rule, reason }`.
+- **Coverage: BOUNDED**: the scan runs a fixed set of rule checks, not the full 24-pattern taxonomy; `discovery` says whether those checks finished on all requested code.
+- **INCOMPLETE**: some locations were not analysed, so they were not checked; exit 0 with `--allow-incomplete` is not a clean result for them.
+- **analysis-unknown**: the analyser met a source shape it does not support, so that location was not analysed.
+- **propagation-unsupported**: the scanner could not trace whether a `try`/`catch` passes an error on or swallows it, so that catch was not checked.
+- **provenance-unsupported**: the scanner could not prove where a value such as `page`, a locator or `expect` comes from (for example a page-object member or an ambiguous import), so code using it was not checked.
+- **replacement scan**: the `--scan` static-review contract (JSON `e2e-skills-node-scan-v1`) that replaces the legacy shell analyzer; a complete one finished discovery on every requested file.
+- **canonical report view**: the text report is a rendering of the same canonical report that `--format json` prints; it adds no findings of its own.
+- **compatibility contract: DEVELOPMENT**: the `source-review-v1` report contract is still in development; its fields can change between releases.
+
+The text report starts with the status, the counts of confirmed P0 findings, P0 candidates and unresolved locations, and what to do next; the `Summary` line at the end keeps the full counts. `--format json` lists every unresolved location under `execution.diagnostics`.
 
 ## Historical validation
 

@@ -84,7 +84,7 @@ test('#4a count guards: >= 1, .not, arithmetic and user objects stay unconfirmed
     "const items = page.locator('.row');",
     'expect(await items.count()).toBeGreaterThanOrEqual(1);',
     'expect(await items.count()).not.toBeGreaterThanOrEqual(0);',
-    'expect((await items.count()) - 1).toBeGreaterThanOrEqual(0);',
+    'expect((await items.count()) + 1).toBeGreaterThanOrEqual(0);',
     'const store = { count: async () => 3 };',
     'expect(await store.count()).toBeGreaterThanOrEqual(0);',
     'expect(await store.count()).toBeGreaterThan(-1);',

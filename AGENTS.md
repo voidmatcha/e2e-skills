@@ -40,11 +40,14 @@ For development and pre-commit checks, `ci-local.sh --changed origin/main` selec
 │   └── plugin.json
 ├── AGENTS.md               # This file (cross-agent canonical guide)
 ├── benchmarks/             # STATUS.md + external-evidence.json; historical study files live on Hugging Face
-├── skills/                 # Two Agent Skills (the public surface)
+├── skills/                 # Three Agent Skills (the public surface)
 │   ├── playwright-test-generator/
 │   │   ├── SKILL.md        # Required: skill frontmatter + body (at most 7,168 bytes)
 │   │   ├── thin-rules.md   # the current 12-rule checklist; test-generator-router.py pins its product digest
 │   │   └── agents/openai.yaml
+│   ├── e2e-debugger/
+│   │   ├── SKILL.md
+│   │   └── failure-rules.md
 │   └── e2e-reviewer/
 │       └── references/      # e.g. scanner-workflow.md, semantic-review.md, verification-rules.md
 ├── packages/scanner/        # Canonical Node scanner implementation and npm package

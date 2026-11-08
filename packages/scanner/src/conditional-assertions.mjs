@@ -3,6 +3,7 @@
 import { createReceivers } from './receivers.mjs';
 import { unwrap, walk, member, isWritten, objectMutationTarget, ts } from './source.mjs';
 import { gateHelper, parameterGates, helperCallSites, staticArgument } from './parameter-gates.mjs';
+import { demoteToReviewHint } from './review-hints.mjs';
 
 const AWAITED_CONDITION = '#5a condition dataflow from an awaited variable is outside this inline slice';
 const BOOLEAN_READS = new Set(['isVisible', 'isEnabled', 'isChecked', 'isDisabled', 'isEditable', 'isHidden']);
@@ -793,6 +794,86 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
       return reachableStaticCondition(condition, fixed);
     });
   }
+  // Review hint: a gate that reads only run configuration, never product
+  // state: `process.env.*`, `process.platform`, the `browserName`, `isMobile`
+  // or `viewport` fixtures, `testInfo.project.*` / `test.info().project.*`,
+  // `page.viewportSize()`, `isCI`, and a never-written const or a parameter
+  // holding one of these, combined only with literals, operators and pure
+  // string/array helpers. G above drops the gate outright when every
+  // project that runs the file takes the assertion branch; this keeps the
+  // rest listed at P2: which configurations CI runs is a review question.
+  const CONFIG_FIXTURES = new Set(['browserName', 'isMobile', 'viewport']);
+  const CONFIG_NAMES = new Set(['browserName', 'isMobile', 'isCI', 'projectName']);
+  const PURE_METHODS = new Set(['includes', 'startsWith', 'endsWith', 'toLowerCase', 'toUpperCase', 'trim', 'match', 'test', 'split', 'some', 'every']);
+  const PURE_FUNCTIONS = new Set(['Boolean', 'Number', 'String', 'parseInt', 'parseFloat']);
+  function configurationCondition(condition) {
+    let read = false;
+    function config(node, depth) {
+      node = unwrap(node);
+      if (depth > 8) return false;
+      if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node) || ts.isNumericLiteral(node) ||
+          ts.isRegularExpressionLiteral(node) || [ts.SyntaxKind.TrueKeyword, ts.SyntaxKind.FalseKeyword, ts.SyntaxKind.NullKeyword].includes(node.kind) ||
+          ts.isIdentifier(node) && node.text === 'undefined' && !checker.getSymbolAtLocation(node)?.declarations?.length) return true;
+      if (ts.isTemplateExpression(node)) return node.templateSpans.every(span => config(span.expression, depth + 1));
+      if (ts.isArrayLiteralExpression(node)) return node.elements.every(item => !ts.isSpreadElement(item) && config(item, depth + 1));
+      if (ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken) return config(node.operand, depth + 1);
+      if (ts.isTypeOfExpression(node)) return config(node.expression, depth + 1);
+      if (ts.isBinaryExpression(node)) {
+        const operator = node.operatorToken.kind;
+        if (operator === ts.SyntaxKind.EqualsToken || operator === ts.SyntaxKind.CommaToken ||
+            operator >= ts.SyntaxKind.FirstAssignment && operator <= ts.SyntaxKind.LastAssignment) return false;
+        return config(node.left, depth + 1) && config(node.right, depth + 1);
+      }
+      if (ts.isConditionalExpression(node)) return config(node.condition, depth + 1) && config(node.whenTrue, depth + 1) && config(node.whenFalse, depth + 1);
+      // process.env.X, process.env['X'], process.platform
+      const root = ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node) ? unwrap(node.expression) : null;
+      if (root && ts.isIdentifier(root) && root.text === 'process' && !checker.getSymbolAtLocation(root)?.declarations?.some(item => item.getSourceFile() === source)) {
+        if (ts.isPropertyAccessExpression(node) && node.name.text === 'platform') return read = true;
+        return false;
+      }
+      if (root && ts.isPropertyAccessExpression(root) && root.name.text === 'env' && ts.isIdentifier(unwrap(root.expression)) &&
+          unwrap(root.expression).text === 'process' && !checker.getSymbolAtLocation(unwrap(root.expression))?.declarations?.some(item => item.getSourceFile() === source)) {
+        if (ts.isElementAccessExpression(node) && !config(node.argumentExpression, depth + 1)) return false;
+        return read = true;
+      }
+      // <testInfo>.project.<...> and test.info().project.<...>
+      if (ts.isPropertyAccessExpression(node) && node.name.text === 'project') {
+        const owner = unwrap(node.expression);
+        const info = ts.isCallExpression(owner) && !owner.arguments.length && dot(owner.expression)?.name === 'info' ||
+          ts.isIdentifier(owner) && checker.getSymbolAtLocation(owner)?.declarations?.some(item => ts.isParameter(item) && ts.isIdentifier(item.name) &&
+            ['testInfo', 'info', 'workerInfo'].includes(item.name.text));
+        if (info) return read = true;
+      }
+      // <page>.viewportSize()
+      if (ts.isCallExpression(node) && !node.arguments.length && dot(node.expression)?.name === 'viewportSize') return read = true;
+      if (ts.isPropertyAccessExpression(node)) {
+        // A member of a configuration value (`viewport.width`, `project.name.length`).
+        return config(node.expression, depth + 1) && read;
+      }
+      if (ts.isCallExpression(node)) {
+        if (node.arguments.some(argument => ts.isSpreadElement(argument) || !config(argument, depth + 1))) return false;
+        const callee = unwrap(node.expression);
+        if (ts.isIdentifier(callee)) return PURE_FUNCTIONS.has(callee.text) && !checker.getSymbolAtLocation(callee)?.declarations?.some(item => item.getSourceFile() === source);
+        const access = ts.isPropertyAccessExpression(callee) ? callee : null;
+        return Boolean(access && PURE_METHODS.has(access.name.text) && config(access.expression, depth + 1));
+      }
+      if (!ts.isIdentifier(node)) return false;
+      const symbol = checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      if (!declaration || isWritten(source, checker, symbol, { properties: true })) return false;
+      if (ts.isBindingElement(declaration) && ts.isObjectBindingPattern(declaration.parent) && ts.isParameter(declaration.parent.parent) &&
+          !declaration.dotDotDotToken && !declaration.initializer) {
+        const key = declaration.propertyName ?? declaration.name;
+        return ts.isIdentifier(key) && CONFIG_FIXTURES.has(key.text) && (read = true);
+      }
+      if (ts.isParameter(declaration) && ts.isIdentifier(declaration.name) && !declaration.initializer && !declaration.dotDotDotToken)
+        return CONFIG_NAMES.has(declaration.name.text) && (read = true);
+      if (ts.isImportSpecifier(declaration)) return (declaration.propertyName ?? declaration.name).text === 'isCI' && (read = true);
+      return Boolean(ts.isVariableDeclaration(declaration) && ts.isIdentifier(declaration.name) && declaration.initializer &&
+        declaration.parent.flags & ts.NodeFlags.Const && config(declaration.initializer, depth + 1));
+    }
+    return config(condition, 0) && read;
+  }
   function proveActionOnly(branch) {
     let proven = true;
     walk(branch, node => {
@@ -1233,19 +1314,28 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
           finding.evidence = { kind: 'state-read-gates-every-assertion' };
         }
       }
+      if (gated?.variant === 'conditional-assertion' && gated.start === node.getStart(source) && gated.disposition === 'candidate' &&
+          configurationCondition(node.expression))
+        for (const finding of findings.slice(recorded)) demoteToReviewHint(finding, 'run-configuration-gate');
       // A recorded IfStatement spans both branches, so its existing review
       // candidate already covers a proven else assertion. Retain diagnostics
       // for deferred analysis within either branch and for else-only gaps.
       if (elseAssertion && !thenAssertion)
         diagnostic(node.elseStatement, '#5a else-body assertion mapping is outside this legacy if-body slice');
     } else if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) {
-      if (assertionIn(node.right)) record(node, 'logical-assertion');
+      if (assertionIn(node.right)) {
+        record(node, 'logical-assertion');
+        if (configurationCondition(node.left)) demoteToReviewHint(findings.at(-1), 'run-configuration-gate');
+      }
     } else if (ts.isCallExpression(node) && (ts.isIdentifier(unwrap(node.expression)) ||
         ts.isPropertyAccessExpression(unwrap(node.expression)) && ts.isIdentifier(unwrap(unwrap(node.expression).expression)))) {
       parameterGateCall(node);
     } else if (ts.isConditionalExpression(node)) {
       const yes = assertionIn(node.whenTrue), no = assertionIn(node.whenFalse);
-      if (yes || no) record(node, 'ternary-assertion');
+      if (yes || no) {
+        record(node, 'ternary-assertion');
+        if (configurationCondition(node.condition)) demoteToReviewHint(findings.at(-1), 'run-configuration-gate');
+      }
     }
   });
   return { findings, diagnostics };

@@ -4,24 +4,45 @@
 
 <h1 align="center">E2E Skills</h1>
 
-**E2E テストを持つ人気の React トピックのリポジトリ 200 件をソースレビューした結果、17.5%（95% CI 12.9–23.4%）に、機能が壊れても成功し得るテストが見つかりました。** [範囲と方法](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)。
+**E2E テストを持つ人気の React トピックのリポジトリ 200 件をソースレビューした結果、17.0%（95% CI 12.4–22.8%）に、機能が壊れても成功し得るテストが見つかりました。** [範囲と方法](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)。
+
+数値には [timeout の再監査による訂正](CHANGELOG.md#swallowed-wait-re-audit)を反映しています。リンク先の HF スナップショットには訂正前の数値が残っています。
 
 <!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
 
-skill をインストール：
+### 1. 無料のメモから始める
+
+skill をインストールせずに、[メモの本文](docs/test-authoring-memo.md#the-memo)をプロジェクトの `AGENTS.md`（Codex）または `CLAUDE.md`（Claude Code）へコピーできます。既存の指示は残してください。メモは無料ですが、モデルの実行にはトークンを使います。
+
+**healer の保護指針：** 用意した regression 16 件の実験では、アプリコードの変更は 136 語の memo で 10/16 件、memo v5 で 0/16 件でした。Claude と Codex を別々に測定し、両方で同じ結果でした。[実験条件と限界](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)。
+
+プロジェクトのディレクトリから CLI で追加することもできます（Node.js 22+ が必要）：
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project . --memo
+```
+
+`CLAUDE.md` には `--host claude`、プレビューには `--dry-run` を使います。このコマンドは skill をインストールせず、メモだけを書き込みます。測定時の構成では、プロジェクトの指示ファイルにメモが必要です。
+
+### 2. skill でワークフローにつなげる
+
+生成、レビュー、安全な debugging にこれらの指針を取り入れ、scanner と実行による確認につなげるには、skill をインストールしてください：
 
 ```bash
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
 
+### 3. テストをスキャンする
+
 30 秒の静的スキャンを試す（Node.js 22+ が必要。実際の時間はリポジトリによります）：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
 ```
 
-- **オープンソース：** Claude のソースレビューでは 35/200 件、Claude と Codex が同じ箇所を確認したリポジトリは 33/200 件でした。[結果](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)。
-- **healer の保護指針：** 用意した 2 つのアプリセットで失敗時の対処指針を追加すると、アプリコードの変更は 16/16 から Claude 0/16、Codex 1/16 に減りました。 **TODO: リリース前に、この healer 再現実験の公開根拠リンクを追加する。**
+レポートの `INCOMPLETE` は一部のコードを解析できなかったという意味なので、終了コード 0 でもクリーンな結果ではありません（[用語](docs/scanner-cli.md#glossary)）。`npx` が `ETARGET` で失敗する場合は `.npmrc` に `min-release-age` が設定されています。コマンドの前に `npm_config_min_release_age=0` を付けてください。
+
+- **オープンソース：** Claude のソースレビューでは 34/200 件、Claude と Codex が同じ箇所を確認したリポジトリは 32/200 件でした。[結果](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)。
 - **レビュー費用：** Claude `claude-sonnet-5-5`、high effort の記録では 1 リポジトリ約 $1–2（追加サンプルの範囲：$0.58–1.96）でした。[費用表](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)。
 
 これらは記載した条件での観測です。ソース判定は実行による証明ではなく、無作為標本でもありません。レビュー結果はモデルとプロジェクトに依存します。[データと範囲](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106)。
@@ -42,7 +63,7 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan tests/ 
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=85776e6792ecbcf8a92d6ddfc32ff87ec120ae76a5ce98a377c232ddecb3fc16; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=9b13f8b7d4c2e03acad41e721f4de4941ba2a048651d486ea48a96bfb86969b5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
@@ -124,11 +145,16 @@ test('shows the welcome message', async ({ page }) => {
 同梱スキャナーは、プロジェクト設定なしで false-green assertion を検出します。以下はテキストレポートです（`--format text` を付けない場合、同じ結果を JSON で出力します）。
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan tests/ --format text
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text
 Node source scan (canonical report view)
+Status: COMPLETE; confirmed P0: 2, P0 candidates: 0, unresolved locations: 0.
+Next:
+  - Fix 2 confirmed P0 finding(s) ([P0][CONFIRMED] below).
+Terms: https://github.com/voidmatcha/e2e-skills/blob/main/docs/scanner-cli.md#glossary
+
 Coverage: BOUNDED; discovery: COMPLETE.
-Semantic review: no retained candidates; compatibility contract: DEVELOPMENT.
-Review obligations: 0, linked to retained candidates.
+Semantic review: no LLM-triage candidates or source-linked analysis tasks; compatibility contract: DEVELOPMENT.
+Review obligations: 0 unresolved location(s) covered by reviewing a retained candidate.
 Unresolved analysis: 0 location(s) in 0 file(s), not findings; 0 of them are source-linked review tasks; execution status unchanged.
 Project configuration: UNAVAILABLE; declared settings only, runner selection unchanged.
 Configuration files: 0; unresolved configuration observations: 1.
@@ -210,8 +236,8 @@ npx --no-install playwright init-agents --loop=codex    # Codex
 エージェントに失敗経路もテストさせたい場合は、[テスト作成メモ](docs/test-authoring-memo.md)をエージェントが読み込む指示ファイルに追加できます。Claude Code では E2E テストディレクトリを、Codex ではリポジトリのルートを指定します。Codex を E2E テストディレクトリで起動する場合は、そのディレクトリを指定してください。先に `--dry-run` を付けると内容を確認できます。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --host codex --project path/to/repository --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project path/to/repository --memo
 ```
 
 開発段階のパイロットでは、最も大きな差を生んだのはメモファイルでした。メモファイルがない場合、スキルが検出した失敗経路の fault は Claude で 54 件中 42 件、Codex で 54 件中 27 件で、ルートの指示ファイルにメモがある場合（53/54、45/54）より少なくなりました。
@@ -221,12 +247,12 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills guidance --h
 スキャナーはスキルをインストールしなくても動くため、ローカルでも CI でもそのまま使えます。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan path/to/tests --format text
 ```
 
-実際のリポジトリでは、スキャンが `INCOMPLETE`、終了コード 2 で終わることがよくあります。一部のコードを解析できなかったという意味で、テストが失敗したという意味ではありません。同じテストに対して `e2e-reviewer` スキルを実行するようエージェントに依頼してください。CI では `--allow-incomplete` を付けると、終了コードは解析できた finding だけに従います。レポートの読み方: `P0`（`[P0][CONFIRMED]`）は、何も確認せずに通過しうるテストであることが機械的に確認されたものです。`LLM-TRIAGE` は `e2e-reviewer` スキルが確認または棄却する未確認の候補で、`P0 candidate`（`[P0?]`）は確認されれば P0 になる候補です。`provenance-unsupported` は、`page` などの値の出どころをスキャナーが証明できず、そのコードを検査していないことを意味します。
+実際のリポジトリでは、スキャンが `INCOMPLETE`、終了コード 2 で終わることがよくあります。一部のコードを解析できなかったという意味で、テストが失敗したという意味ではありません。同じテストに対して `e2e-reviewer` スキルを実行するようエージェントに依頼してください。CI では `--allow-incomplete` を付けると、終了コードは解析できた finding だけに従います。レポートの読み方: `P0`（`[P0][CONFIRMED]`）は、何も確認せずに通過しうるテストであることが機械的に確認されたものです。`LLM-TRIAGE` は `e2e-reviewer` スキルが確認または棄却する未確認の候補で、`P0 candidate`（`[P0?]`）は確認されれば P0 になる候補です。`provenance-unsupported` は、`page` などの値の出どころをスキャナーが証明できず、そのコードを検査していないことを意味します。 レポートのその他の用語は[用語集](docs/scanner-cli.md#glossary)で定義しています。
 
-`npx` が `ETARGET`（"No matching version found ... with a date before"）で失敗する場合は、`.npmrc` に `min-release-age` が設定されています。この設定は、指定した日数より新しいリリースを隠します。`.npmrc` は編集せず、この固定バージョンのコマンドだけで解除してください: `npm_config_min_release_age=0 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text`
+`npx` が `ETARGET`（"No matching version found ... with a date before"）で失敗する場合は、`.npmrc` に `min-release-age` が設定されています。この設定は、指定した日数より新しいリリースを隠します。`.npmrc` は編集せず、この固定バージョンのコマンドだけで解除してください: `npm_config_min_release_age=0 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan path/to/tests --format text`
 
 ### その他のインストール方法とトラブルシューティング
 
@@ -247,7 +273,7 @@ codex plugin add e2e-skills@voidmatcha
 スキルが表示されない、または生成の準備が整わないままの場合は、読み取り専用の診断を実行してください。インストール済みのスキルのコピー（古い重複コピーと、削除された debugger スキルの残ったコピーを含む）、公式エージェントと MCP の設定、次の手順を報告し、何も変更しません。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills doctor --host claude --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills doctor --host claude --project /path/to/playwright-project
 ```
 
 Codex では `--host codex` を使ってください。前提条件、プロジェクト設定まで行うインストーラー、手動設定については[インストールガイド](docs/installation.md)を参照してください。
@@ -363,14 +389,14 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 
 ## 失敗デバッグ
 
-**3.5 で置き換え。** `playwright-debugger` と `cypress-debugger` は、薄い `e2e-debugger` 1 つに置き換えられました。実際の失敗ケース各 24 件で Claude を 2 回測定したところ、以前のデバッガーは通常のエージェントより正確ではなく（20/24 対 22/24、3.4.0 では 22/24 対 23/24）、コストは約 1.6–1.7 倍、実行時間は約 1.8 倍でした。失敗中のテストは普段の言葉（"This test is failing, fix it."）で依頼すると、[`e2e-debugger`](skills/e2e-debugger/SKILL.md) がその依頼に [test-authoring memo](docs/test-authoring-memo.md#failure-handling) の失敗時の項目を適用するため、instruction ファイルの設定は不要です。テストを retry なしで 3 回再実行し、結果が混在すれば FLAKY と報告して止まります。そうでなければアプリとテストのどちらが誤っているかを判断し、アプリの regression が疑われる場合は製品コードもテストも変えずに報告し、テストの欠陥が証明された場合だけテストを弱めずに修正して、変更した spec をスキャンし 3 回連続の成功を確認します。同じルールをプロンプトに貼り付けて公式 Playwright healer に修正を任せることもあります。根拠: 2 つのアプリセットでの開発段階の再現実験（モデルごとにアプリ regression 16 件）で、テスト修正を頼まれた公式 healer は、memo の失敗時の項目がないと Claude と Codex の両方で 16/16 件アプリコードを変更し、その項目を instruction ファイルに入れると 0/16（Claude）と 1/16（Codex）に減りました。skill は instruction ファイルなしでこの項目を届けますが、この届け方はまだ測定していません。assertion を弱めて成功させたテストには `e2e-reviewer` を使ってください。以前のインストールで残ったデバッガーのコピーについて、インストーラーと `e2e-skills doctor` は警告するだけで削除しません。使わない場合はご自身で削除してください。
+**3.5 で置き換え。** `playwright-debugger` と `cypress-debugger` は、薄い `e2e-debugger` 1 つに置き換えられました。実際の失敗ケース各 24 件で Claude を 2 回測定したところ、以前のデバッガーは通常のエージェントより正確ではなく（20/24 対 22/24、3.4.0 では 22/24 対 23/24）、コストは約 1.6–1.7 倍、実行時間は約 1.8 倍でした。失敗中のテストは普段の言葉（"This test is failing, fix it."）で依頼すると、[`e2e-debugger`](skills/e2e-debugger/SKILL.md) がその依頼に [test-authoring memo](docs/test-authoring-memo.md#failure-handling) の失敗時の項目を適用するため、instruction ファイルの設定は不要です。テストを retry なしで 3 回再実行し、結果が混在すれば FLAKY と報告して止まります。そうでなければアプリとテストのどちらが誤っているかを判断し、アプリの regression が疑われる場合は製品コードもテストも変えずに報告し、テストの欠陥が証明された場合だけテストを弱めずに修正して、変更した spec をスキャンし 3 回連続の成功を確認します。同じルールをプロンプトに貼り付けて公式 Playwright healer に修正を任せることもあります。根拠: [用意した healer 実験](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)で、Claude Sonnet 5.5 と Codex GPT-6 Sol はそれぞれ、136 語の memo では regression 16 件中 10 件でアプリコードを変更し、memo v5（301 語）では 0 件でした。両条件ともルートの instruction ファイルに memo を置き、各ケースを 1 回ずつ実行しました。この結果だけでは文言と長さの効果を切り分けられません。skill は instruction ファイルなしで失敗時の対処指針を届けますが、この届け方はまだ測定していません。assertion を弱めて成功させたテストには `e2e-reviewer` を使ってください。以前のインストールで残ったデバッガーのコピーについて、インストーラーと `e2e-skills doctor` は警告するだけで削除しません。使わない場合はご自身で削除してください。
 
 ## スタンドアロンスキャナー
 
 AI agent に依頼せず、コードスキャナーだけを直接実行できます。レビューする問題候補を探す道具であり、テストの実行や、意図した動作を検証しているかの判断は行いません。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.4.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan path/to/tests --format text
 ```
 
 Node.js 22 以降が必要で、TypeScript パーサーは同梱されています。npx はキャッシュにない package と依存関係をダウンロードします。scanner 自体は tool のダウンロード、プロジェクト設定コードの読み込み、テストの実行を行いません。構造化された出力には `--format json`、レポートの保存には `--report-file <new-file>` を使います。既存ファイルは上書きしません。

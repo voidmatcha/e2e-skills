@@ -42,6 +42,12 @@ test('--allow-incomplete exits by the policy on analyzed findings and reports wh
   assert.equal(text.status, 0);
   assert.match(text.stdout, /^ALLOW-INCOMPLETE: 1 file\(s\) with \d+ unresolved location\(s\) were NOT fully analyzed; that code is NOT checked\.$/m);
   assert.match(text.stdout, /^Summary \[INCOMPLETE\]:/m);
+  // The same one-line warning goes to stderr in either format, and tops the text report.
+  const warning = /^INCOMPLETE: \d+ locations? in 1 file (?:was|were) not analysed \u2014 this is not a clean result\.\n$/;
+  assert.match(text.stderr, warning);
+  assert.match(allowed.stderr, warning);
+  assert.equal(text.stdout.split('\n')[2], text.stderr.trimEnd());
+  assert.equal(scan(clean, '--format', 'text').stderr, '');
 
   const weak = project(t, { 'tests/a.spec.ts': unresolved + "  expect(page.getByRole('main')).toBeTruthy();\n});\n" });
   const failing = scan(weak, '--format', 'json', '--allow-incomplete');

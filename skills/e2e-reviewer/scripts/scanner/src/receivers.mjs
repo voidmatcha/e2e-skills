@@ -504,6 +504,24 @@ export function createReceivers(bytes, filename, { scope } = {}) {
       const parent = access.parent;
       return ts.isPropertyAccessExpression(parent) && parent.expression === access && ['call', 'apply', 'bind'].includes(parent.name.text);
     };
+    // A method read as a value (`const f = p.m`, `[o].forEach(p.m)`) can be
+    // called with any receiver later, so a member access naming a method
+    // must be the callee of its own call. A computed method name could be
+    // any member, so then every member access must be a callee.
+    let computedMethod = false;
+    const methods = new Set();
+    for (const entry of klass.members) {
+      if (!ts.isMethodDeclaration(entry) || entry.modifiers?.some(item => item.kind === ts.SyntaxKind.StaticKeyword)) continue;
+      if (ts.isIdentifier(entry.name) || ts.isStringLiteral(entry.name) || ts.isPrivateIdentifier(entry.name)) methods.add(entry.name.text);
+      else computedMethod = true;
+    }
+    const calledAccess = access => {
+      let item = access;
+      while (ts.isParenthesizedExpression(item.parent) || ts.isNonNullExpression(item.parent)) item = item.parent;
+      return ts.isCallExpression(item.parent) && item.parent.expression === item;
+    };
+    const extracted = access => !calledAccess(access) &&
+      (computedMethod || ts.isElementAccessExpression(access) || methods.has(access.name.text));
     const instanceUse = site => {
       let item = site;
       while (ts.isParenthesizedExpression(item.parent) || ts.isAsExpression(item.parent) || ts.isNonNullExpression(item.parent) ||
@@ -518,10 +536,20 @@ export function createReceivers(bytes, filename, { scope } = {}) {
       if (!binding || isWritten(source, checker, binding, { properties: true }) || !readsOnlyMembers(binding, parent.name)) return false;
       let fixed = true;
       walk(source, use => {
-        if (fixed && ts.isIdentifier(use) && use !== parent.name && checker.getSymbolAtLocation(use) === binding && rebinding(use.parent)) fixed = false;
+        if (fixed && ts.isIdentifier(use) && use !== parent.name && checker.getSymbolAtLocation(use) === binding &&
+            (rebinding(use.parent) || ts.isPropertyAccessExpression(use.parent) && extracted(use.parent))) fixed = false;
       });
       return fixed;
     };
+    // The same holds for `this.m` / `this[k]` read as a value inside the class.
+    if (sites) walk(klass, item => {
+      if (!sites || item.kind !== ts.SyntaxKind.ThisKeyword || thisClass(item) !== klass) return;
+      let access = item;
+      while (ts.isParenthesizedExpression(access.parent) || ts.isNonNullExpression(access.parent)) access = access.parent;
+      const parent = access.parent;
+      if ((ts.isPropertyAccessExpression(parent) || ts.isElementAccessExpression(parent)) && parent.expression === access &&
+          (ts.isElementAccessExpression(parent) ? !calledAccess(parent) : extracted(parent))) sites = null;
+    });
     if (sites) walk(source, item => {
       if (!sites || !ts.isIdentifier(item) || item === klass.name || checker.getSymbolAtLocation(item) !== symbol) return;
       const parent = item.parent;

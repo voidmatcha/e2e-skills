@@ -264,6 +264,9 @@ run_python scripts/ci/test-generator-router.py || fail "test-generator-router.py
 fi
 
 if selected verification; then
+step "Debugger rerun scope contract"
+run_python scripts/ci/test-debugger-rerun-scope.py || fail "test-debugger-rerun-scope.py"
+
 step "Verification-rule parity"
 # Check the terminal proof boundary itself, not incidental mentions in the V6 packet instructions.
 /bin/bash -p scripts/ci/check-verification-parity.sh || fail "check-verification-parity.sh"

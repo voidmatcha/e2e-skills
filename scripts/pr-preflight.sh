@@ -15,6 +15,9 @@
 #
 # Usage: bash scripts/pr-preflight.sh <testbed-repo-path> <changed-spec-file>...
 #   changed files are paths relative to the testbed repo root
+# Stage 1 compares tracked HEAD snapshots plus the named edits, including imports
+# and configs. Untracked dependencies, submodules, or snapshots above 50000
+# entries / 256 MiB fail closed; unrelated worktree edits are not scanned.
 # Env:
 #   PREFLIGHT_RUN_SPECS=0       disable stage 5; incomplete unless the task is
 #                               explicitly declared semantic-only
@@ -270,14 +273,78 @@ print(total, p0, candidate, ast_count)
 }
 
 # ---- Stage 1: smell delta ---------------------------------------------------
-# Preserve relative paths on both sides. Only changed files are staged; a
-# missing required import graph must remain an incomplete scanner result.
-for f in "${FILES[@]}"; do
-  mkdir -p "$TMP/baseline/$(dirname "$f")" "$TMP/after/$(dirname "$f")"
-  git -C "$REPO" show "HEAD:$f" > "$TMP/baseline/$f" 2>/dev/null || rm -f "$TMP/baseline/$f" # new file -> absent from baseline (intentional)
-  cp "$REPO/$f" "$TMP/after/$f"
-done
+# Preserve tracked HEAD context (imports/configs) on both sides; overlay only
+# the requested edits. Unrelated worktree changes must not influence the delta.
 scan_failed=0
+if ! python3 - "$REPO" "$TMP" "${FILES[@]}" > "$TMP/snapshot.err" 2>&1 <<'SNAPSHOT'
+import os, pathlib, shutil, subprocess, sys
+repo, temp = map(pathlib.Path, sys.argv[1:3])
+base, after = temp / "baseline", temp / "after"
+base.mkdir()
+entries = subprocess.check_output(["git", "-C", str(repo), "ls-tree", "-rz", "HEAD"]).split(b"\0")
+# Bound temporary disk use; reaching a limit is an explicit failure, not a subset.
+if len(entries) > 50001:
+    raise SystemExit("snapshot exceeds 50000 tracked entries")
+size_total = 0
+with subprocess.Popen(["git", "-C", str(repo), "cat-file", "--batch"], stdin=subprocess.PIPE, stdout=subprocess.PIPE) as blobs:
+    for entry in filter(None, entries):
+        meta, raw = entry.split(b"\t", 1)
+        mode, kind, oid = meta.split()
+        name = os.fsdecode(raw)
+        parts = pathlib.PurePosixPath(name).parts
+        if not parts or name.startswith("/") or any(p in (".", "..", ".git") for p in parts):
+            raise SystemExit("unsafe tracked snapshot path")
+        target = base.joinpath(*parts)
+        if kind != b"blob":
+            raise SystemExit("snapshot requires materialized tracked files; submodules are unsupported")
+        blobs.stdin.write(oid + b"\n")
+        blobs.stdin.flush()
+        header = blobs.stdout.readline().split()
+        if len(header) != 3 or header[1] != b"blob":
+            raise SystemExit("cannot read snapshot blob")
+        size = int(header[2]); size_total += size
+        if size_total > 256 * 1024 * 1024:
+            raise SystemExit("snapshot exceeds 256 MiB (two copies required)")
+        data = blobs.stdout.read(size)
+        if len(data) != size or blobs.stdout.read(1) != b"\n":
+            raise SystemExit("truncated snapshot blob")
+        parent = base
+        for part in parts[:-1]:
+            parent /= part
+            if parent.is_symlink() or (parent.exists() and not parent.is_dir()):
+                raise SystemExit("snapshot parent is not a regular directory")
+            parent.mkdir(exist_ok=True)
+        if mode == b"120000":
+            target.symlink_to(os.fsdecode(data))
+        elif mode in (b"100644", b"100755"):
+            # Exclusive creation rejects case-folded aliases and symlink leaves.
+            with target.open("xb") as output:
+                output.write(data)
+        else:
+            raise SystemExit("unsupported snapshot file mode")
+    blobs.stdin.close()
+    if blobs.wait() != 0:
+        raise SystemExit("snapshot blob reader failed")
+shutil.copytree(base, after, symlinks=True)
+for name in sys.argv[3:]:
+    source, target = repo / name, after / name
+    # Recheck paths before reading/writing; never follow a snapshot symlink.
+    for root in (repo, after):
+        path = root
+        for part in pathlib.PurePosixPath(name).parts:
+            path /= part
+            if path.is_symlink():
+                raise SystemExit("changed path crosses a symlink")
+    if not source.is_file():
+        raise SystemExit("changed file disappeared")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source, target)
+SNAPSHOT
+then
+  scan_failed=1
+  echo "    snapshot: failed to prepare complete comparison context"
+  tail -10 "$TMP/snapshot.err" | sed 's/^/    snapshot: /'
+fi
 if scan_counts "$TMP/baseline" > "$TMP/baseline.counts" 2> "$TMP/baseline.scan.err"; then
   read -r bt bp bc ba < "$TMP/baseline.counts"
 else

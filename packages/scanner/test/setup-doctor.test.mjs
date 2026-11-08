@@ -148,6 +148,49 @@ test('doctor warns about a stale Codex legacy copy that shadows the canonical st
   assert.deepEqual(snapshot(f.home), before);
   assert.deepEqual(report.warnings.map(entry => [entry.skill, entry.copies.map(copy => copy.version)]), [['playwright-test-generator', ['3.4.1', '2.0.1']]]);
 });
+test('doctor excludes disabled Codex plugins and historical cache versions from loaded duplicates', async () => {
+  const f = fixture(), user = path.join(f.home, 'custom-codex');
+  skillCopy(path.join(f.home, '.agents/skills/e2e-reviewer'), '3.5.0');
+  for (const version of ['3.3.0', '3.4.1'])
+    skillCopy(path.join(user, 'plugins/cache/voidmatcha/e2e-skills', version, 'skills/e2e-reviewer'), version);
+  fs.writeFileSync(path.join(user, 'config.toml'), '[plugins."e2e-skills@voidmatcha"]\nenabled = false # retained cache\n');
+  const before = snapshotFiles(f.home);
+  const report = await doctor(repo, setup, { host: 'codex' }, { HOME: f.home, CODEX_HOME: user }, () => assert.fail('server executed'));
+  assert.deepEqual(report.warnings, []);
+  assert.deepEqual(snapshotFiles(f.home), before);
+});
+test('doctor reports enabled Codex cache versions as unverified rather than loaded duplicates', async () => {
+  const f = fixture(), user = path.join(f.home, '.codex');
+  skillCopy(path.join(f.home, '.agents/skills/e2e-reviewer'), '3.5.0');
+  for (const version of ['3.3.0', '3.4.1', '3.5.0'])
+    skillCopy(path.join(user, 'plugins/cache/voidmatcha/e2e-skills', version, 'skills/e2e-reviewer'), version);
+  fs.writeFileSync(path.join(user, 'config.toml'), '[plugins."e2e-skills@voidmatcha"]\nenabled = true\n');
+  const before = snapshotFiles(f.home);
+  const report = await doctor(repo, setup, { host: 'codex' }, { HOME: f.home }, () => assert.fail('server executed'));
+  assert.equal(report.warnings.some(entry => entry.kind === 'DUPLICATE_SKILL_COPIES'), false);
+  const warning = report.warnings.find(entry => entry.kind === 'PLUGIN_CACHE_UNVERIFIED');
+  assert.ok(warning);
+  assert.equal(warning.plugin, 'e2e-skills@voidmatcha');
+  assert.equal(warning.status, 'UNKNOWN');
+  assert.match(warning.message, /active version and loading are unverified/);
+  assert.equal(report.warnings.length, 1);
+  assert.equal(report.runtime_resolution, 'UNKNOWN');
+  assert.deepEqual(snapshotFiles(f.home), before);
+});
+test('doctor keeps invalid Codex plugin configuration uncertain and does not interpret nested enabled flags', async () => {
+  const f = fixture(), user = path.join(f.home, '.codex');
+  skillCopy(path.join(f.home, '.agents/skills/e2e-reviewer'), '3.5.0');
+  skillCopy(path.join(user, 'plugins/cache/voidmatcha/e2e-skills/3.4.1/skills/e2e-reviewer'), '3.4.1');
+  for (const config of [
+    '[plugins."e2e-skills@voidmatcha"]\nenabled = false\nenabled = true\n',
+    '[plugins."e2e-skills@voidmatcha".mcp_servers.docs]\nenabled = false\n',
+  ]) {
+    fs.writeFileSync(path.join(user, 'config.toml'), config);
+    const report = await doctor(repo, setup, { host: 'codex' }, { HOME: f.home }, () => assert.fail('server executed'));
+    assert.equal(report.warnings.some(entry => entry.kind === 'DUPLICATE_SKILL_COPIES'), false);
+    assert.ok(report.warnings.some(entry => entry.kind === 'PLUGIN_CACHE_UNVERIFIED' && entry.status === 'UNKNOWN'));
+  }
+});
 test('doctor never follows a project skill symlink and bounds what it reads from skill copies', async () => {
   const f = fixture(), project = path.join(f.home, 'project'), secret = path.join(f.home, 'secret');
   fs.mkdirSync(path.join(project, '.claude/skills'), { recursive: true });

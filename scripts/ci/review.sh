@@ -1432,22 +1432,22 @@ def check_manual_clone_contract(path, text, errors):
 
 
 def check_codex_install_and_delegation_contract(path, text, errors):
-    # The install section leads with exactly one skills CLI command, tells a new
-    # user the host-specific official-agent setup the generator asks for, and
-    # keeps the session-wide Codex MCP boundary in the linked guide. There are
-    # no dedicated subagents to install, so no README may offer them again.
+    # Quick start is memo -> skill installation -> static scan. Keep exactly
+    # one shared install command and the host-specific setup contract below.
     shared_cli = "npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all"
     if text.count(shared_cli) != 1:
         errors.append(
             f"README i18n parity: {path} install must lead with exactly one "
             "shared skills CLI command"
         )
-    first_fence = text.find("```bash\n")
-    if first_fence < 0 or not text[first_fence:].startswith("```bash\n" + shared_cli + "\n"):
-        errors.append(
-            f"README i18n parity: {path} the first command block must be the "
-            "skills CLI install command"
-        )
+    blocks = re.findall(r"```bash\n(.*?)\n```", text, re.S)
+    memo_command = re.compile(r"npx --yes --package=@voidmatcha/e2e-skills-scanner@[0-9]+\.[0-9]+\.[0-9]+ e2e-skills guidance --host codex --project \. --memo")
+    scan_command = re.compile(r"npx --yes --package=@voidmatcha/e2e-skills-scanner@[0-9]+\.[0-9]+\.[0-9]+ e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete")
+    if (len(blocks) < 3 or not memo_command.fullmatch(blocks[0])
+            or blocks[1] != shared_cli or not scan_command.fullmatch(blocks[2])):
+        errors.append(f"README i18n parity: {path} quick start must follow memo, install, scan order")
+    if '(docs/test-authoring-memo.md#the-memo)' not in text:
+        errors.append(f"README i18n parity: {path} missing manual memo copy link")
     guide = installation_guide(path, text, errors)
     scope_phrase = "works only with a session-wide `playwright-test` MCP server"
     required = (

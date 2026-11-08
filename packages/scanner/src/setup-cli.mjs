@@ -162,10 +162,9 @@ function skillVersion(directory) {
     return /^[ \t]+version:[ \t]*["']?([^"'\s#]+)/m.exec(block)?.[1] ?? null;
   } catch { return null; }
 }
-// Plugin-managed skill roots the host loads. Claude Code records active plugin
-// install paths in installed_plugins.json; Codex enables a plugin in config.toml
-// and reads it from its plugin cache. Malformed or absent files add nothing.
-function pluginSkillRoots(host, env, project) {
+// Claude records install paths. Codex's cache directories do not identify its
+// selected version: report them as uncertain, never as loaded duplicate skills.
+function pluginSkillRoots(host, env, project, parseToml, warnings) {
   const roots = [];
   try {
     if (host === 'claude') {
@@ -181,10 +180,23 @@ function pluginSkillRoots(host, env, project) {
       }
     } else {
       const base = env.CODEX_HOME ?? path.join(env.HOME, '.codex');
-      const config = fs.readFileSync(path.join(base, 'config.toml'), 'utf8');
-      for (const match of config.matchAll(/^\[plugins\.["']e2e-skills@([A-Za-z0-9._-]+)["']\]/gm)) {
+      const configPath = path.join(base, 'config.toml');
+      if (!exists(configPath)) return roots;
+      const uncertain = (where, plugin) => warnings.push({ kind: 'PLUGIN_CACHE_UNVERIFIED', status: 'UNKNOWN', path: where,
+        ...(plugin ? { plugin } : {}),
+        message: `Codex plugin cache may contain retained copies; active version and loading are unverified at ${where}. ` +
+          'Verify the effective plugin configuration and selected installed version before removing copies. Doctor changed nothing.' });
+      let config;
+      try {
+        const source = boundedRead(configPath, MAX_SKILL_MD);
+        if (!source || !parseToml) throw Error('configuration unreadable');
+        config = parseToml(source.toString('utf8'));
+      } catch { if (exists(path.join(base, 'plugins/cache'))) uncertain(path.join(base, 'plugins/cache')); return roots; }
+      for (const [plugin, settings] of Object.entries(config.plugins ?? {})) {
+        const match = /^e2e-skills@([A-Za-z0-9._-]+)$/.exec(plugin);
+        if (!match || settings?.enabled === false) continue;
         const cache = path.join(base, 'plugins/cache', match[1], 'e2e-skills');
-        for (const version of fs.readdirSync(cache).sort()) roots.push(path.join(cache, version, 'skills'));
+        if (exists(cache)) uncertain(cache, plugin);
       }
     }
   } catch { /* absent or unreadable plugin metadata: nothing to compare */ }
@@ -192,7 +204,7 @@ function pluginSkillRoots(host, env, project) {
 }
 // Read-only: the same e2e-skills skill name loaded from more than one place
 // with different versions or contents means the host may run a stale copy.
-export function duplicateSkillWarnings(host, env, project = null) {
+export function duplicateSkillWarnings(host, env, project = null, parseToml = null) {
   const roots = host === 'claude'
     ? [path.join(env.CLAUDE_CONFIG_DIR ?? path.join(env.HOME, '.claude'), 'skills')]
     : [path.join(env.HOME, '.agents/skills'), path.join(env.HOME, '.codex/skills'),
@@ -201,8 +213,8 @@ export function duplicateSkillWarnings(host, env, project = null) {
   // never followed through a symlink.
   const projectRoot = project ? path.join(project, host === 'claude' ? '.claude/skills' : '.agents/skills') : null;
   if (projectRoot) roots.push(projectRoot);
-  roots.push(...pluginSkillRoots(host, env, project));
   const warnings = [];
+  roots.push(...pluginSkillRoots(host, env, project, parseToml, warnings));
   for (const name of skills) {
     const copies = [], seen = new Set(), skipped = [];
     for (const root of roots) {
@@ -296,7 +308,10 @@ export async function doctor(root, setup, opts, env, check = setup.checkSetup) {
     .filter(target => { try { return fs.lstatSync(target).isFile(); } catch { return false; } });
   const hostConfiguration = setup.inspectHostConfiguration(opts.project ? fs.realpathSync(opts.project) : null, opts.host, env);
   // Warnings never change the exit status; only requirements do.
-  const warnings = duplicateSkillWarnings(opts.host, env, opts.project ? fs.realpathSync(opts.project) : null);
+  // Reuse the trusted setup runtime's TOML parser; no project code is loaded.
+  const parseToml = opts.host === 'codex'
+    ? (await import(pathToFileURL(path.join(root, 'scripts/dev/vendor/smol-toml/index.cjs')).href)).default.parse : null;
+  const warnings = duplicateSkillWarnings(opts.host, env, opts.project ? fs.realpathSync(opts.project) : null, parseToml);
   for (const target of legacyAgents) warnings.push({ kind: 'LEGACY_AGENT_COPY', path: target,
     message: `${target} is a dedicated agent from an older e2e-skills install; the skills no longer use it and reach the same verdicts inline. Delete it if you do not use it yourself. Doctor changed nothing.` });
   for (const entry of removedSkillCopies(opts.host, env)) warnings.push({ kind: 'REMOVED_SKILL_COPY', skill: entry.skill, path: entry.path,

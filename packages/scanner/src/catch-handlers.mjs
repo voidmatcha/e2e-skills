@@ -3,8 +3,9 @@
 // These are review candidates; broader propagation analysis remains diagnostic.
 import { createReceivers } from './receivers.mjs';
 import { isWritten, member, objectMutationTarget, unwrap, walk, ts } from './source.mjs';
+import { demoteToReviewHint } from './review-hints.mjs';
 
-export function catchHandlers(bytes, filename, { scope } = {}) {
+export function catchHandlers(bytes, filename, { scope, waitTimeouts } = {}) {
   const receivers = createReceivers(bytes, filename, { scope });
   const { source, diagnostics: parseErrors } = receivers;
   const findings = [], diagnostics = [...parseErrors];
@@ -948,6 +949,29 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
       return { value: undefined };
     return null;
   }
+  // Review hint: `await x.act().catch(() => undefined);` as a statement. The
+  // fallback is `undefined` and nothing reads it, so the only harm is a later
+  // step that depends on the swallowed call, which is what review decides.
+  // Kept at P0: an empty block body (`() => {}`), a stored or returned
+  // result, any wait (swallowed waits have their own timeout triage), state
+  // checks, count(), matchers, polls, toPass, test.step and other calls that
+  // take a callback, Promise combinators, then/finally, assertion-named
+  // helpers, and a receiver that is not a direct method call.
+  const KEEP_RECEIVERS = new Set(['isVisible', 'isHidden', 'isEnabled', 'isDisabled', 'isChecked', 'isEditable', 'count',
+    'waitForTimeout', 'toPass', 'poll', 'step', 'all', 'allSettled', 'any', 'race', 'then', 'finally', 'catch']);
+  const ASSERTING_NAME = /^(?:to[A-Z]|expect|assert|verify|check|ensure|should|validate|wait|poll)/;
+  function discardedFallback(call) {
+    const fallback = literalFallback(call);
+    if (!fallback || fallback.value !== undefined) return false;
+    const handler = unwrap(call.arguments[0]);
+    if (handler.parameters.length || !ts.isIdentifier(unwrap(handler.body))) return false;
+    const receiver = receiverCall(call);
+    if (!receiver || WAITS.has(receiver.name) || KEEP_RECEIVERS.has(receiver.name) || ASSERTING_NAME.test(receiver.name) ||
+        receiver.call.arguments.some(argument => ts.isArrowFunction(unwrap(argument)) || ts.isFunctionExpression(unwrap(argument)))) return false;
+    let value = skipParens(call);
+    if (ts.isAwaitExpression(value.parent) || ts.isVoidExpression(value.parent)) value = skipParens(value.parent);
+    return ts.isExpressionStatement(value.parent);
+  }
   // The handler's fallback value when it is a concise-body primitive literal.
   function literalFallback(call) {
     const handler = unwrap(call.arguments[0]);
@@ -1109,6 +1133,41 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
   // re-checks it, and how a behavior-fault probe would decide it at runtime.
   const WAITS = new Set(['waitFor', 'waitForLoadState', 'waitForURL', 'waitForSelector', 'waitForResponse', 'waitForRequest',
     'waitForFunction', 'waitForEvent', 'waitForNavigation', 'goto']);
+  // Index of the options argument for each wait, and the timeout family
+  // Playwright Test applies when no `timeout` option is given.
+  const WAIT_OPTIONS = { waitFor: [0, 'action'], waitForSelector: [1, 'action'], waitForResponse: [1, 'action'],
+    waitForRequest: [1, 'action'], waitForEvent: [1, 'action'], waitForFunction: [2, 'action'],
+    waitForLoadState: [1, 'navigation'], waitForURL: [1, 'navigation'], waitForNavigation: [0, 'navigation'], goto: [1, 'navigation'] };
+  // These can reject at once on a non-timeout failure (a network error, a
+  // throwing page predicate), so no timeout does not make the catch inert.
+  const IMMEDIATE_REJECTION = new Set(['goto', 'waitForFunction']);
+  // A `.catch` can swallow a TimeoutError only when the call has a finite
+  // timeout. With none, a target that never arrives fails at the test timeout.
+  function effectiveTimeout(receiver) {
+    const [index, family] = WAIT_OPTIONS[receiver.name];
+    const unknown = reason => ({ effective: 'unknown', reason });
+    const argument = receiver.call.arguments[index] && unwrap(receiver.call.arguments[index]);
+    if (argument && !(receiver.name === 'waitForEvent' && (ts.isArrowFunction(argument) || ts.isFunctionExpression(argument)))) {
+      if (!ts.isObjectLiteralExpression(argument)) return unknown('the options argument is not an object literal');
+      if (argument.properties.some(item => !ts.isPropertyAssignment(item) && !ts.isShorthandPropertyAssignment(item)))
+        return unknown('the options object has a spread or computed member');
+      const entry = argument.properties.find(item => item.name && (ts.isIdentifier(item.name) || ts.isStringLiteral(item.name)) && item.name.text === 'timeout');
+      if (entry) {
+        const value = ts.isPropertyAssignment(entry) ? unwrap(entry.initializer) : null;
+        if (!value || !ts.isNumericLiteral(value)) return unknown('the timeout option is not a numeric literal');
+        return Number(value.text) > 0 ? { effective: 'finite', source: 'option', ms: Number(value.text) } :
+          { effective: 'none', source: 'option timeout: 0' };
+      }
+    }
+    if (!framework.frameworks.includes('playwright') || framework.frameworks.includes('cypress'))
+      return unknown('the file is not proven Playwright-only');
+    const owner = receivers.expression(receiver.object);
+    if (!owner.complete || !['page', 'locator'].includes(owner.kind)) return unknown('the receiver is not a proven Playwright page or locator');
+    if (!waitTimeouts?.known) return unknown(waitTimeouts?.reason || 'the project configuration was not analyzed');
+    const field = family === 'navigation' ? 'navigationTimeout' : 'actionTimeout';
+    return waitTimeouts[field] > 0 ? { effective: 'finite', source: `${waitTimeouts.config} use.${field}`, ms: waitTimeouts[field] } :
+      { effective: 'none', source: `${waitTimeouts.config} sets no use.${field}; the Playwright Test default is 0 (no limit)` };
+  }
   function swallowedWaitTriage(call) {
     const receiver = receiverCall(call);
     if (!receiver || !WAITS.has(receiver.name)) return null;
@@ -1140,7 +1199,16 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
       (later ? `check whether the ${later} later assertion(s) there depend on it` : 'no assertion follows it in this function; for a helper, check what its callers assert next');
     const probe = `an e2e-skills-check probe in behavior-fault mode whose source edit keeps ${receiver.name === 'waitFor' ?
       `${clip(target)} from reaching '${state}'` : `${receiver.name} from completing`}; SURVIVED with fault_reached confirms the swallowed wait, a linked failure (DETECTED) refutes it`;
-    return { shape: 'swallowed-wait', target: clip(target), ...(state ? { state } : {}), reassertedLines: reasserted, laterAssertions: later, hint, probe };
+    const timeout = effectiveTimeout(receiver);
+    // Only a provable no-timeout wait whose sole failure mode is waiting is
+    // downgraded; goto and waitForFunction can still reject at once.
+    const inert = timeout.effective === 'none' && !IMMEDIATE_REJECTION.has(receiver.name);
+    const timeoutHint = timeout.effective === 'finite' ? `; finite timeout ${timeout.ms} ms (${timeout.source}), so the catch can swallow a TimeoutError` :
+      inert ? `no finite timeout: cannot swallow a timeout (${timeout.source}). A target that never ${receiver.name === 'waitFor' ? `reaches '${state}'` : 'arrives'} fails at the test timeout instead of passing silently; only non-timeout errors such as a strict-mode violation or a closed page reach the catch, so this is a diagnostics issue at most. ` :
+      timeout.effective === 'none' ? `; no finite timeout (${timeout.source}), but ${receiver.name} can still reject at once on a non-timeout failure` :
+      `; effective timeout unknown (${timeout.reason}): establish a finite timeout before treating this as a silent pass`;
+    return { shape: 'swallowed-wait', target: clip(target), ...(state ? { state } : {}), reassertedLines: reasserted, laterAssertions: later,
+      timeout: { ...timeout, ...(inert ? { inert: true } : {}) }, hint: inert ? timeoutHint + hint : hint + timeoutHint, probe };
   }
   // F: the `.catch` result is what an awaited `expect.poll` callback returns,
   // and its literal fallback cannot satisfy the literal matcher, so a
@@ -1304,8 +1372,10 @@ export function catchHandlers(bytes, filename, { scope } = {}) {
     const variant = parameterized ? 'parameterized' :
       ts.isBlock(callback.body) && callback.body.statements.length === 0 ? 'empty' : 'fallback';
     const triage = swallowedWaitTriage(node);
-    findings.push({ patternId: '#3', severity: 'P0', disposition: 'candidate', origin: 'ast', variant,
+    // A provably no-timeout swallowed wait cannot silently pass: P2 diagnostics.
+    findings.push({ patternId: '#3', severity: triage?.timeout.inert ? 'P2' : 'P0', disposition: 'candidate', origin: 'ast', variant,
       file: filename, line: position.line + 1, column: position.character + 1, start, end: node.end, ...(triage ? { triage } : {}) });
+    if (variant === 'fallback' && !triage && discardedFallback(node)) demoteToReviewHint(findings.at(-1), 'discarded-fallback');
   });
   return { findings, diagnostics };
 }

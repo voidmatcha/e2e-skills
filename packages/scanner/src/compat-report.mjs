@@ -51,6 +51,44 @@ function escaped(value) {
     character => `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`);
 }
 
+const plural = (count, word) => `${count} ${word}${count === 1 ? '' : 's'}`;
+const GLOSSARY = 'https://github.com/voidmatcha/e2e-skills/blob/main/docs/scanner-cli.md#glossary';
+
+/** One plain line for an INCOMPLETE scan, shared by the text report and the --allow-incomplete stderr warning. */
+export function incompleteWarning(report) {
+  if (report?.schema !== 'e2e-skills-node-scan-v1' || report.status !== 'INCOMPLETE') return null;
+  const gaps = Array.isArray(report.execution?.diagnostics) ? report.execution.diagnostics : [];
+  if (!gaps.length) return 'INCOMPLETE: part of the requested scan was not analysed \u2014 this is not a clean result.';
+  const files = new Set(gaps.filter(item => typeof item?.file === 'string').map(item => item.file)).size;
+  return `INCOMPLETE: ${plural(gaps.length, 'location')}${files ? ` in ${plural(files, 'file')}` : ''} ` +
+    `${gaps.length === 1 ? 'was' : 'were'} not analysed \u2014 this is not a clean result.`;
+}
+
+// The actionable summary printed first; the bottom Summary line is unchanged.
+function overview(report, counts, tolerated) {
+  const gaps = report.execution.diagnostics ?? [];
+  const status = report.status ?? (report.execution.complete ? 'COMPLETE' : 'INCOMPLETE');
+  const lines = [`Status: ${status}; confirmed P0: ${counts.p0}, P0 candidates: ${counts.p0Candidate}, unresolved locations: ${gaps.length}.`];
+  const warning = incompleteWarning(report);
+  if (warning) lines.push(warning);
+  if (warning && counts.total === 0) lines.push(`No findings in the analysed code; ${gaps.length ?
+    `${plural(gaps.length, 'location')} ${gaps.length === 1 ? 'was' : 'were'}` : 'part of the requested scan was'} not analysed.`);
+  if (warning && tolerated) lines.push('Exit status: --allow-incomplete applied; it covers only the analysed code.');
+  else if (warning && report.execution.allowIncomplete) lines.push('Exit status: 2; --allow-incomplete does not cover this kind of gap.');
+  else if (warning) lines.push('Exit status: 2 because the scan is INCOMPLETE; in CI, --allow-incomplete makes it follow only the analysed findings.');
+  const next = [];
+  if (counts.p0) next.push(`Fix ${counts.p0} confirmed P0 finding(s) ([P0][CONFIRMED] below).`);
+  if (counts.p0Candidate) next.push(`Confirm or reject ${counts.p0Candidate} P0 candidate(s) ([P0?][LLM-TRIAGE] below) with the e2e-reviewer skill or by hand.`);
+  const other = counts.p1p2 + counts.triage - counts.p0Candidate;
+  const hints = (report.findings ?? []).filter(finding => finding?.reviewHint).length;
+  if (other) next.push(`Review ${other} P1/P2 finding(s) and candidate(s) below when convenient` +
+    (hints ? `, ${hints} of them review hint(s) ([REVIEW-HINT]), not P0 candidates.` : '.'));
+  if (gaps.length || warning) next.push('See what was not analysed: "Unresolved analysis" below, or --format json (execution.diagnostics).');
+  if (!next.length) next.push('Nothing to fix in the analysed code.');
+  lines.push('Next:', ...next.map(item => `  - ${item}`), `Terms: ${GLOSSARY}`, '');
+  return lines;
+}
+
 function location(file, root) {
   if (root !== undefined && (typeof root !== 'string' || !path.isAbsolute(root))) {
     throw new TypeError('display root must be absolute');
@@ -65,6 +103,7 @@ export function formatLegacyReport(report, { root, verbose = false, unresolvedIm
   if (root !== undefined && (typeof root !== 'string' || !path.isAbsolute(root))) throw new TypeError('display root must be absolute');
   const headers = [
     'Node source scan (canonical report view)',
+    ...overview(report, summary.counts, tolerated),
     `Coverage: BOUNDED; discovery: ${report.execution.complete ? 'COMPLETE' : 'INCOMPLETE'}.`,
   ];
   // One count of unresolved analysis, shared by this header, the listed
@@ -72,8 +111,8 @@ export function formatLegacyReport(report, { root, verbose = false, unresolvedIm
   const gaps = report.execution.diagnostics ?? [];
   const gapFiles = new Set(gaps.filter(item => typeof item?.file === 'string').map(item => item.file)).size;
   if (report.schema === 'e2e-skills-node-scan-v1') headers.push(
-    `Semantic review: ${report.review.required ? 'REQUIRED' : 'no retained candidates'}; compatibility contract: DEVELOPMENT.`,
-    `Review obligations: ${report.review.obligations.length}, linked to retained candidates.`,
+    `Semantic review: ${report.review.required ? `REQUIRED for ${report.review.candidates} LLM-triage candidate(s) and ${report.review.analysisTasks?.length ?? 0} source-linked analysis task(s)` : 'no LLM-triage candidates or source-linked analysis tasks'}; compatibility contract: DEVELOPMENT.`,
+    `Review obligations: ${report.review.obligations.length} unresolved location(s) covered by reviewing a retained candidate.`,
     `Unresolved analysis: ${gaps.length} location(s) in ${gapFiles} file(s), not findings; ${report.review.analysisTasks?.length ?? 0} of them are source-linked review tasks; execution status unchanged.`,
   );
   if (Array.isArray(report.outOfScope) && report.outOfScope.length) headers.push(
@@ -136,7 +175,8 @@ export function formatLegacyReport(report, { root, verbose = false, unresolvedIm
   const groups = new Map();
   const files = new Map();
   for (const finding of report.findings) {
-    const key = `${finding.severity}/${finding.disposition}/${finding.patternId}`;
+    // Review hints (demoted P0 candidates) form their own group per pattern.
+    const key = `${finding.severity}/${finding.disposition}/${finding.patternId}${finding.reviewHint ? `/hint/${finding.reviewHint.rule}` : ''}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(finding);
     files.set(finding.file, (files.get(finding.file) || 0) + 1);
@@ -146,10 +186,12 @@ export function formatLegacyReport(report, { root, verbose = false, unresolvedIm
   for (const findings of groups.values()) {
     const first = findings[0];
     const candidate = first.disposition !== 'confirmed';
-    const disposition = first.disposition === 'justified-review' ? 'JUSTIFIED-REVIEW' : candidate ? 'LLM-TRIAGE' : 'CONFIRMED';
-    const header = `[${first.severity}${candidate ? '?' : ''}][${disposition}] ${first.patternId} Static ${candidate ? 'candidate' : 'finding'} (${findings.length} hit${findings.length === 1 ? '' : 's'})`;
+    const hint = Boolean(first.reviewHint);
+    const disposition = first.disposition === 'justified-review' ? 'JUSTIFIED-REVIEW' : hint ? 'REVIEW-HINT' : candidate ? 'LLM-TRIAGE' : 'CONFIRMED';
+    const header = `[${first.severity}${candidate ? '?' : ''}][${disposition}] ${first.patternId} ${hint ? 'Review hint, not a P0 candidate' : `Static ${candidate ? 'candidate' : 'finding'}`} (${findings.length} hit${findings.length === 1 ? '' : 's'})`;
     full.push('', header);
     digest.push('', header);
+    if (hint) full.push(`  Review hint: ${escaped(first.reviewHint.reason)}`);
     // #10c (inexact Playwright name) dominates generated specs. The default
     // view lists each file once with every line; JSON and --verbose keep one
     // entry per hit. Counts and line numbers are unchanged.

@@ -1850,6 +1850,32 @@
       "files": [
         "files/project-allowance-unconditional.spec.ts"
       ]
+    },
+    {
+      "id": 122,
+      "prompt": "Review the Playwright project scripts/evals/skills/e2e-reviewer/files/wait-timeout/action-timeout/ for always-passing tests.",
+      "expected_output": "Should report a confirmed #3 P0 on e2e/account-menu-a11y.spec.ts line 8: playwright.config.ts sets use.actionTimeout to 10_000, so the waitFor has a finite 10 s timeout. When the menu never opens, the TimeoutError is swallowed by .catch(() => undefined) and the axe scan on line 9 runs on a page without the menu, so the test passes without checking the menu it promises to check.",
+      "assertions": [
+        "True positive: reports #3 on e2e/account-menu-a11y.spec.ts line 8 as CONFIRMED (P0) and cites the finite use.actionTimeout of 10_000 in playwright.config.ts as what lets the catch swallow a TimeoutError",
+        "Does not dismiss line 8 on the ground that Playwright's default action timeout is 0, because this config overrides it"
+      ],
+      "files": [
+        "files/wait-timeout/action-timeout/playwright.config.ts",
+        "files/wait-timeout/action-timeout/e2e/account-menu-a11y.spec.ts"
+      ]
+    },
+    {
+      "id": 123,
+      "prompt": "Review the Playwright project scripts/evals/skills/e2e-reviewer/files/wait-timeout/no-timeout/ for always-passing tests.",
+      "expected_output": "Should not report a #3 P0 silent pass on e2e/account-menu-a11y.spec.ts line 8. The waitFor has no timeout option, playwright.config.ts sets no use.actionTimeout and nothing calls setDefaultTimeout, so Playwright Test's default action timeout of 0 applies. If the menu never opens, the wait never resolves and the test fails at its 90 s test timeout, which cannot be caught, so the catch never swallows a TimeoutError. At most it is a diagnostics issue: the test hangs to its timeout instead of failing fast. The expect timeout of 10_000 applies to expect assertions, not to locator.waitFor.",
+      "assertions": [
+        "False-positive guard: does not report line 8 as a CONFIRMED #3 P0 silent pass, because with no finite timeout the missing menu fails the test at the 90 s test timeout",
+        "Gives the line 8 silent-pass claim a FALSE-POSITIVE verdict that cites the missing timeout option and use.actionTimeout (Playwright default 0); it may note line 8 as a diagnostics issue at most, and does not treat expect.timeout as bounding waitFor"
+      ],
+      "files": [
+        "files/wait-timeout/no-timeout/playwright.config.ts",
+        "files/wait-timeout/no-timeout/e2e/account-menu-a11y.spec.ts"
+      ]
     }
   ]
 }

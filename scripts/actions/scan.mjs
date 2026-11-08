@@ -5,7 +5,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-export const PACKAGE = '@voidmatcha/e2e-skills-scanner@3.4.0';
+export const PACKAGE = '@voidmatcha/e2e-skills-scanner@3.5.0';
 const inside = (root, target) => target === root || target.startsWith(root + path.sep);
 const clean = value => String(value).replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '?');
 

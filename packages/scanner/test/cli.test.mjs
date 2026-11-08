@@ -148,7 +148,7 @@ test('public incomplete diagnostics do not interpolate parser tokens or import s
 
 test('static preview retains numeric and attachment candidates without promoting them', () => {
   const {root, file} = fixture();
-  fs.writeFileSync(file, "import {test,expect} from '@playwright/test';\ntest('x',async({page})=>{\nexpect((await page.locator('li').count()) - 1).toBeGreaterThanOrEqual(0);\nawait expect(page.locator('li')).toBeAttached();\n});\n");
+  fs.writeFileSync(file, "import {test,expect} from '@playwright/test';\ntest('x',async({page})=>{\nexpect((await page.locator('li').count()) + 1).toBeGreaterThanOrEqual(0);\nawait expect(page.locator('li')).toBeAttached();\n});\n");
   const result = run(['--experimental-static', root, '--fail-on', 'any']);
   assert.equal(result.status, 2, result.stderr);
   const report = JSON.parse(result.stdout);
@@ -258,7 +258,7 @@ test('bounded static confirmed and candidate policies use the existing accountin
   const {root,file}=fixture();
   for(const [source,policies,expected] of [
     ["import {test} from '@playwright/test';test.only('x',()=>{});",['none','any','p0','p0-candidate'],[0,1,1,1]],
-    ["import {test,expect} from '@playwright/test';test('x',async({page})=>{expect((await page.locator('li').count()) - 1).toBeGreaterThanOrEqual(0);});",['any','p0','p0-candidate'],[0,0,1]],
+    ["import {test,expect} from '@playwright/test';test('x',async({page})=>{expect((await page.locator('li').count()) + 1).toBeGreaterThanOrEqual(0);});",['any','p0','p0-candidate'],[0,0,1]],
   ]) {
     fs.writeFileSync(file,source);
     for(let index=0;index<policies.length;index++) {

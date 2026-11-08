@@ -221,6 +221,108 @@ class PreflightFailClosedTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp.cleanup()
 
+    def _real_import_repo(self, *, missing=False, new_spec=False):
+        repo = self.harness.repo
+        (repo / "tests/support").mkdir(parents=True)
+        (repo / "tests/support/test.ts").write_text(
+            "export { test, expect } from '@playwright/test';\n"
+        )
+        # An archive with export-ignore would incorrectly omit required context.
+        (repo / ".gitattributes").write_text("tests/support export-ignore\n")
+        spec = "tests/imported.spec.ts"
+        before = ("import { test, expect } from './support/test';\n"
+                  "test('heading', async ({ page }) => { "
+                  "expect(page.getByRole('heading')).toBeTruthy(); });\n")
+        if not new_spec:
+            (repo / spec).write_text(before)
+        if missing:
+            (repo / "tests/support/test.ts").unlink()
+        self.harness._git("add", ".")
+        self.harness._git("commit", "-qm", "import baseline")
+        (repo / spec).write_text(before.replace(
+            "expect(page.getByRole('heading')).toBeTruthy()",
+            "await expect(page.getByRole('heading')).toBeVisible()"))
+        launcher = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
+        self.harness._write_executable(
+            self.harness.suite / "skills/e2e-reviewer/scripts/scan.sh",
+            "#!/bin/bash\n"
+            'if [[ -n "${E2E_SMELL_NO_ESLINT_DOWNLOAD+x}" ]]; then exit 89; fi\n'
+            f'exec /bin/bash -p {shlex.quote(str(launcher))} "$@"\n')
+        return spec
+
+    def test_real_scanner_retains_relative_import_context(self) -> None:
+        spec = self._real_import_repo()
+        result = self.harness.run(spec, extra_env={
+            "PREFLIGHT_RUN_SPECS": "0", "PREFLIGHT_SEMANTIC_ONLY": "1"})
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("smell-delta    PASS", result.stdout)
+        self.assertIn("p0 1->0", result.stdout)
+
+    def test_real_missing_import_still_fails_closed(self) -> None:
+        spec = self._real_import_repo(missing=True)
+        result = self.harness.run(spec, extra_env={
+            "PREFLIGHT_RUN_SPECS": "0", "PREFLIGHT_SEMANTIC_ONLY": "1"})
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("scanner infrastructure/output failed", result.stdout)
+        self.assertNotIn("smell-delta    PASS", result.stdout)
+
+    def test_new_spec_keeps_baseline_support_context(self) -> None:
+        spec = self._real_import_repo(new_spec=True)
+        result = self.harness.run(spec, extra_env={
+            "PREFLIGHT_RUN_SPECS": "0", "PREFLIGHT_SEMANTIC_ONLY": "1"})
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("0->0 scanner result", result.stdout)
+
+    def test_unrequested_support_edit_cannot_improve_delta(self) -> None:
+        spec = self._real_import_repo()
+        (self.harness.repo / "tests/support/test.ts").write_text("broken code !\n")
+        result = self.harness.run(spec, extra_env={
+            "PREFLIGHT_RUN_SPECS": "0", "PREFLIGHT_SEMANTIC_ONLY": "1"})
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("smell-delta    PASS", result.stdout)
+        self.assertIn("unintended tracked files modified", result.stdout)
+
+    def test_snapshot_symlink_cannot_be_overwritten(self) -> None:
+        repo = self.harness.repo
+        outside = self.harness.base / "untouched.spec.ts"
+        outside.write_text("do not overwrite\n")
+        (repo / "linked.spec.ts").symlink_to(outside)
+        self.harness._git("add", ".")
+        self.harness._git("commit", "-qm", "symlink baseline")
+        (repo / "linked.spec.ts").unlink()
+        (repo / "linked.spec.ts").write_text("test('new', () => {});\n")
+        result = self.harness.run("linked.spec.ts", extra_env={
+            "PREFLIGHT_RUN_SPECS": "0", "PREFLIGHT_SEMANTIC_ONLY": "1"})
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("failed to prepare complete comparison context", result.stdout)
+        self.assertEqual(outside.read_text(), "do not overwrite\n")
+
+    def test_casefolded_snapshot_symlink_cannot_write_outside(self) -> None:
+        repo = self.harness.repo
+        probe = repo / "CaseProbe"
+        probe.write_text("probe")
+        insensitive = (repo / "caseprobe").exists()
+        probe.unlink()
+        if not insensitive:
+            self.skipTest("case-sensitive filesystem")
+        spec = self.harness.prepare_playwright_repo()
+        outside = self.harness.base / "outside-snapshot"
+        outside.mkdir()
+        for mode, name, content in (
+            ("120000", "A", str(outside)),
+            ("100644", "a/escaped.ts", "must not escape"),
+        ):
+            blob = subprocess.check_output(
+                ["git", "-C", str(repo), "hash-object", "-w", "--stdin"],
+                input=content, text=True).strip()
+            self.harness._git("update-index", "--add", "--cacheinfo", f"{mode},{blob},{name}")
+        self.harness._git("commit", "-qm", "casefolded tree")
+        result = self.harness.run(spec, extra_env={
+            "PREFLIGHT_RUN_SPECS": "0", "PREFLIGHT_SEMANTIC_ONLY": "1"})
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("failed to prepare complete comparison context", result.stdout)
+        self.assertFalse((outside / "escaped.ts").exists())
+
     def test_rejects_unsafe_and_escaping_paths(self) -> None:
         outside = self.harness.base / "outside.spec.ts"
         outside.write_text("outside\n", encoding="utf-8")

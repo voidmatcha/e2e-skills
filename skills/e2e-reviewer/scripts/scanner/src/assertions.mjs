@@ -3,6 +3,7 @@
 // Suppression, semantic adjudication and dedupe belong to callers.
 import { createReceivers, UNPROVEN_MEMBER } from './receivers.mjs';
 import { unwrap, walk, member, literalString, isWritten, objectMutationTarget, ts } from './source.mjs';
+import { demoteToReviewHint } from './review-hints.mjs';
 
 const MODIFIERS = new Set(['not', 'resolves', 'rejects']);
 const BOOLEAN_STATE = new Set(['isVisible', 'isEnabled', 'isChecked', 'isDisabled', 'isEditable', 'isHidden']);
@@ -402,6 +403,31 @@ export function assertions(bytes, filename, { scope } = {}) {
     return null;
   }
 
+  // A value that can be nullish by its own shape: an optional chain, an
+  // index or property read, or a lookup method that returns undefined/null
+  // on a miss. Anything else (a count, a length, a literal, an unknown call)
+  // is not proven nullable, so its fallback keeps the #4a candidate.
+  const NULLABLE_LOOKUPS = new Set(['get', 'find', 'findLast', 'at', 'match', 'exec', 'getAttribute', 'getItem', 'textContent', 'pop', 'shift']);
+  function maybeNullish(node, depth = 0) {
+    node = unwrap(node);
+    if (depth > 8) return false;
+    if (ts.isIdentifier(node)) {
+      const symbol = receivers.checker.getSymbolAtLocation(node);
+      const declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
+      return Boolean(declaration && ts.isVariableDeclaration(declaration) && ts.isIdentifier(declaration.name) &&
+        declaration.initializer && declaration.parent.flags & ts.NodeFlags.Const &&
+        !isWritten(source, receivers.checker, symbol) && maybeNullish(declaration.initializer, depth + 1));
+    }
+    if (ts.isAwaitExpression(node)) return maybeNullish(node.expression, depth + 1);
+    if (ts.isOptionalChain(node) || ts.isElementAccessExpression(node)) return true;
+    if (ts.isCallExpression(node)) {
+      const access = member(node.expression);
+      return Boolean(access && NULLABLE_LOOKUPS.has(access.name));
+    }
+    // A missing property reads undefined; a length or size never does.
+    if (ts.isPropertyAccessExpression(node)) return !['length', 'size'].includes(node.name.text);
+    return false;
+  }
   function searchResult(node, depth = 0) {
     node = unwrap(node);
     if (depth > 8) return false;
@@ -413,11 +439,14 @@ export function assertions(bytes, filename, { scope } = {}) {
         !isWritten(source, receivers.checker, symbol) && searchResult(declaration.initializer, depth + 1));
     }
     const SEARCH = ['indexOf', 'lastIndexOf', 'findIndex', 'findLastIndex', 'search'];
-    // `x ?? -1`: the negative fallback itself fails `>= 0`.
+    // `x ?? -1`: the negative fallback itself fails `>= 0`, but only when
+    // `x` can be nullish. A fallback that cannot be reached (a Locator
+    // count, a length, a literal) leaves the assertion always-pass.
     if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken) {
       const right = unwrap(node.right);
       return ts.isPrefixUnaryExpression(right) && right.operator === ts.SyntaxKind.MinusToken &&
-        ts.isNumericLiteral(unwrap(right.operand)) && Number(unwrap(right.operand).text) > 0;
+        ts.isNumericLiteral(unwrap(right.operand)) && Number(unwrap(right.operand).text) > 0 &&
+        (maybeNullish(node.left) || searchResult(node.left, depth + 1));
     }
     // `await locator.evaluateAll(items => items.findIndex(...))`: the browser
     // callback searches its Element array, which yields -1 on no match. The
@@ -533,6 +562,16 @@ export function assertions(bytes, filename, { scope } = {}) {
     if (!declaration || !ts.isVariableDeclaration(declaration) || !ts.isIdentifier(declaration.name) || !declaration.initializer ||
         !(declaration.parent.flags & ts.NodeFlags.Const) || isWritten(source, receivers.checker, symbol, { properties: true })) return false;
     return boundingBoxCall(declaration.initializer);
+  }
+  // A positional coordinate (`.x`, `.y`, `.top`, `.left`, `.right`,
+  // `.bottom` of any value) or a difference `a - b`: both can be negative,
+  // so `>= 0` is a real check, not invariant math. Review hint, not P0.
+  // Width and height are never negative and stay candidates.
+  const POSITIONS = new Set(['x', 'y', 'top', 'left', 'right', 'bottom']);
+  function signedSubject(node) {
+    node = unwrap(node);
+    if (ts.isPropertyAccessExpression(node)) return POSITIONS.has(node.name.text);
+    return ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.MinusToken;
   }
   // expect.poll(fn).toBeGreaterThanOrEqual(0) passes on its first sample
   // when the polled value cannot be negative, so it never waits.
@@ -668,6 +707,8 @@ export function assertions(bytes, filename, { scope } = {}) {
     const confirmed = call && matcher.name === 'toBeGreaterThanOrEqual' && !modifiers.length && locatorCount(call.arguments[0]);
     record(matcher.name === 'toBeAttached' ? '#4b' : '#4a', unwrap(node.expression).name,
       node.end, confirmed ? 'confirmed' : 'candidate', matcher.name === 'toBeAttached' ? 'P1' : 'P0');
+    if (!confirmed && call && matcher.name === 'toBeGreaterThanOrEqual' && !modifiers.length && signedSubject(call.arguments[0]))
+      demoteToReviewHint(findings.at(-1), 'position-not-invariant');
   }
 
   // An ambient, unmodified Chai expect plus proven Cypress context supplies a

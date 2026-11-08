@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { summarize } from '../src/report.mjs';
-import { formatLegacyReport, writeLegacyReportFile } from '../src/compat-report.mjs';
+import { formatLegacyReport, incompleteWarning, writeLegacyReportFile } from '../src/compat-report.mjs';
 import { spawnSync } from 'node:child_process';
 
 function finding(patternId = '#3', extra = {}) {
@@ -267,4 +267,54 @@ test('allowed incomplete reports keep the unchecked warning in the final text an
   assert.equal(JSON.stringify(canonical), before, 'formatting preserves canonical raw reasons and locations');
   assert.equal(canonical.status, 'INCOMPLETE');
   assert.equal(canonical.execution.complete, false);
+});
+
+test('the text report starts with the status, counts and next steps; the bottom Summary is unchanged', () => {
+  const findings = [finding('#7', { disposition: 'confirmed', origin: 'heuristic' }), finding('#3', { line: 4 })];
+  const complete = formatLegacyReport(report(findings, { full: true }), { root: '/review' }).text.split('\n');
+  assert.equal(complete[0], 'Node source scan (canonical report view)');
+  assert.equal(complete[1], 'Status: COMPLETE; confirmed P0: 1, P0 candidates: 1, unresolved locations: 0.');
+  assert.deepEqual(complete.slice(2, 5), ['Next:', '  - Fix 1 confirmed P0 finding(s) ([P0][CONFIRMED] below).',
+    '  - Confirm or reject 1 P0 candidate(s) ([P0?][LLM-TRIAGE] below) with the e2e-reviewer skill or by hand.']);
+  assert.match(complete[5], /^Terms: .*docs\/scanner-cli\.md#glossary$/);
+  // Top lines never start like the lines that canonical consumers parse.
+  assert.ok(complete.slice(0, 7).every(line => !/^(?:Summary|AST-origin|\[|\s*(?:INCOMPLETE|ERROR|Error|error)\b)/.test(line)));
+  assert.equal(complete.filter(line => line.startsWith('Summary')).length, 1);
+  const clean = formatLegacyReport(report([], { full: true })).text;
+  assert.match(clean, /^Next:\n {2}- Nothing to fix in the analysed code\.$/m);
+});
+
+test('an INCOMPLETE top block says plainly it is not a clean result, with or without --allow-incomplete', () => {
+  const errors = ['analysis incomplete: /review/tests/a.spec.ts: stateReads could not establish its contract'];
+  const diagnostics = [{ code: 'provenance-unsupported', file: '/review/tests/a.spec.ts', line: 3 },
+    { code: 'analysis-unknown', file: '/review/tests/a.spec.ts', line: 9 }, { code: 'analysis-unknown', file: '/review/tests/b.spec.ts', line: 1 }];
+  const build = (findings, allowIncomplete) => {
+    const summary = summarize(findings, { failOn: 'p0', incomplete: errors, allowIncomplete, diagnostics });
+    const input = report(findings, { full: true, errors, failOn: 'p0' });
+    input.execution = { complete: false, exitCode: summary.exitCode, incomplete: errors, diagnostics,
+      ...(allowIncomplete ? { allowIncomplete: { ...summary.allowIncomplete, unanalyzed: { files: 2, locations: 3 } } } : {}) };
+    return input;
+  };
+  const line = 'INCOMPLETE: 3 locations in 2 files were not analysed — this is not a clean result.';
+  for (const allowIncomplete of [false, true]) {
+    const input = build([], allowIncomplete);
+    assert.equal(incompleteWarning(input), line);
+    const top = formatLegacyReport(input, { root: '/review' }).text.split('\n').slice(0, 5);
+    assert.deepEqual(top.slice(1, 4), ['Status: INCOMPLETE; confirmed P0: 0, P0 candidates: 0, unresolved locations: 3.', line,
+      'No findings in the analysed code; 3 locations were not analysed.']);
+    assert.match(top[4], allowIncomplete ? /^Exit status: --allow-incomplete applied; it covers only the analysed code\.$/ : /^Exit status: 2 because the scan is INCOMPLETE/);
+  }
+  const withFindings = formatLegacyReport(build([finding('#3')], true)).text;
+  assert.ok(withFindings.includes(`${line}\n`));
+  assert.doesNotMatch(withFindings, /No findings in the analysed code/);
+  assert.match(withFindings, /^Summary \[INCOMPLETE\]: 1 total hit\(s\)/m);
+  assert.equal(incompleteWarning(report([], { full: true })), null);
+  assert.equal(incompleteWarning(report()), null);
+});
+
+test('semantic review wording agrees with the candidate, task and obligation counts', () => {
+  const required = formatLegacyReport(report([finding('#3')], { full: true })).text;
+  assert.match(required, /^Semantic review: REQUIRED for 1 LLM-triage candidate\(s\) and 0 source-linked analysis task\(s\);/m);
+  assert.match(required, /^Review obligations: 0 unresolved location\(s\) covered by reviewing a retained candidate\.$/m);
+  assert.match(formatLegacyReport(report([], { full: true })).text, /^Semantic review: no LLM-triage candidates or source-linked analysis tasks;/m);
 });
