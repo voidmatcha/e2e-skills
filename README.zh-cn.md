@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=809efdd0fad163dfb7eb8375f246931675107e7f51ee5531f12ed5066c9133d7; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=d77fbe9fdcf00f79d435d1321184e8d79a062048df14b69f32468b304e3351d2; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
@@ -27,7 +27,9 @@
 
 `e2e-skills` 帮助检查测试是否真正验证了名称所描述的行为。请先从[安装并试用](#安装并试用)开始：添加免费备忘录，安装 skill，然后运行 30 秒扫描。
 
-<!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
+<p align="center">
+  <img src="docs/assets/demo.gif" alt="演示：只检查界面的 Playwright 测试在点赞未保存时仍然通过；等待保存请求的测试失败并发现了缺陷。" width="100%" />
+</p>
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">

@@ -26,7 +26,9 @@
 
 `e2e-skills` helps check whether tests prove the behavior they name. Start with [Install and try it](#install-and-try-it): add the free memo, install the skills, then run a 30-second scan.
 
-<!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
+<p align="center">
+  <img src="docs/assets/demo.gif" alt="Demo: a screen-only Playwright test passes while the like is never saved; a test that waits for the save request fails and catches the bug." width="100%" />
+</p>
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
