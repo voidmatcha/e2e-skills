@@ -27,7 +27,7 @@
 `e2e-skills` helps check whether tests prove the behavior they name. Start with [Install and try it](#install-and-try-it): add the free memo, install the skills, then run a 30-second scan.
 
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="Demo: a screen-only Playwright test passes while the like is never saved; a test that waits for the save request fails and catches the bug." width="100%" />
+  <img src="docs/assets/demo.gif" alt="Demo: when the server rejects a like, the heart stays red because the rollback is missing; a happy-path Playwright test still passes, and a test that makes the server reject the like fails and catches the bug." width="100%" />
 </p>
 
 <p align="center">

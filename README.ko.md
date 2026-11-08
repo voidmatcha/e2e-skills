@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=d77fbe9fdcf00f79d435d1321184e8d79a062048df14b69f32468b304e3351d2; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=d0a912e5683fe5e2d064b3608f7ae35eea292518a9b56c6a0ccacc1aa8113e2f; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -29,7 +29,7 @@
 `e2e-skills`는 테스트가 시나리오에 적힌 동작을 제대로 확인하는지 살펴보도록 돕습니다. [설치하고 사용해 보기](#설치하고-사용해-보기)부터 시작해주세요. 무료 메모를 적용하고, skill을 설치한 뒤, 30초 정적 검사를 실행합니다.
 
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="데모: 화면만 확인하는 Playwright 테스트는 좋아요가 저장되지 않아도 통과하고, 저장 요청을 기다리는 테스트는 실패해 버그를 잡습니다." width="100%" />
+  <img src="docs/assets/demo.gif" alt="데모: 서버가 좋아요를 거부해도 롤백이 빠져 하트가 빨갛게 남습니다. 성공 경로만 확인하는 Playwright 테스트는 통과하고, 서버 거부를 일부러 만드는 테스트는 실패해 버그를 잡습니다." width="100%" />
 </p>
 
 <p align="center">

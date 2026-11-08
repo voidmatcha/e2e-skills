@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=d77fbe9fdcf00f79d435d1321184e8d79a062048df14b69f32468b304e3351d2; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=d0a912e5683fe5e2d064b3608f7ae35eea292518a9b56c6a0ccacc1aa8113e2f; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
@@ -29,7 +29,7 @@
 `e2e-skills` は、テストが名前どおりの動作を実際に検証しているかを確認する手助けをします。まず[インストールして試す](#インストールして試す)から始めてください。無料のメモを追加し、skill をインストールして、30 秒のスキャンを実行します。
 
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="デモ: 画面だけを確認する Playwright テストは「いいね」が保存されなくても成功し、保存リクエストを待つテストは失敗してバグを検出します。" width="100%" />
+  <img src="docs/assets/demo.gif" alt="デモ: サーバーが「いいね」を拒否してもロールバックがないためハートが赤いまま残ります。成功経路だけを確認する Playwright テストは成功し、サーバーの拒否を意図的に起こすテストは失敗してバグを検出します。" width="100%" />
 </p>
 
 <p align="center">
