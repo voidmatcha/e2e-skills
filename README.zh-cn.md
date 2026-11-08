@@ -4,49 +4,6 @@
 
 <h1 align="center">E2E Skills</h1>
 
-**对 200 个带有 E2E 测试的热门 React 主题仓库进行源码审查后，发现 17.0%（95% CI 12.4–22.8%）存在功能损坏仍可能通过的测试。** [范围与方法](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)。
-
-这些数字已反映 [timeout 复核更正](CHANGELOG.md#swallowed-wait-re-audit)；链接的 HF 快照仍保留原始数字。
-
-<!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
-
-### 1. 从免费备忘录开始
-
-无需安装 skill，即可将[备忘录正文](docs/test-authoring-memo.md#the-memo)复制到项目的 `AGENTS.md`（Codex）或 `CLAUDE.md`（Claude Code）。请保留现有指令。备忘录免费，但运行模型仍消耗 token。
-
-**healer 保护指引：** 在准备好的 16 个 regression 案例中，使用 136 词 memo 时有 10/16 次修改应用代码，使用 memo v5 时为 0/16 次。Claude 和 Codex 分别测量，结果相同。[实验条件与局限](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)。
-
-也可以在项目目录中用 CLI 写入（需要 Node.js 22+）：
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project . --memo
-```
-
-写入 `CLAUDE.md` 时使用 `--host claude`；添加 `--dry-run` 可预览。此命令只写入备忘录，不安装 skill。测量时的配置要求项目指令文件中包含备忘录。
-
-### 2. 安装 skill，衔接工作流程
-
-用 skill 将这些做法用于测试生成、审查和安全 debugging，并衔接 scanner 检查与执行验证：
-
-```bash
-npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
-```
-
-### 3. 扫描测试
-
-试试 30 秒静态扫描（需要 Node.js 22+，实际耗时取决于仓库）：
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
-```
-
-报告中的 `INCOMPLETE` 表示有些代码未被分析，因此即使退出码为 0 也不是干净的结果（[术语](docs/scanner-cli.md#glossary)）。如果 `npx` 因 `ETARGET` 失败，说明 `.npmrc` 设置了 `min-release-age`：在命令前加上 `npm_config_min_release_age=0`。
-
-- **开源项目：** Claude 源码审查确认了 34/200 个仓库；Claude 和 Codex 在同一位置均确认问题的仓库为 32/200 个。[结果](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)。
-- **审查费用：** 记录中的 Claude `claude-sonnet-5-5`、high effort 运行每个仓库约 $1–2（扩展样本范围 $0.58–1.96）。[费用表](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)。
-
-这些数据仅代表所述条件下的观察。源码判断不是实际运行证明，样本并非随机，审查结果取决于模型和项目。[数据与范围](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106)。
-
 <p align="center">
   <a href="https://github.com/voidmatcha/e2e-skills"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent_Skills-3-1FC07C?style=flat-square&labelColor=black"></a>
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
@@ -62,9 +19,15 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ 
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=9b13f8b7d4c2e03acad41e721f4de4941ba2a048651d486ea48a96bfb86969b5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=7d001785c89da1630d42b4e182b259910057ac92891e3601f8f848b36f7a40e9; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
+
+**通过的测试仍可能漏掉已损坏的功能。** 对 200 个带有 E2E 测试的热门 React 仓库进行源码审查，约每 6 个中有 1 个（34/200）存在功能损坏仍可能通过的测试。[范围与局限](#证据与限制) · [数据](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
+
+`e2e-skills` 帮助检查测试是否真正验证了名称所描述的行为。请先从[安装并试用](#安装并试用)开始：添加免费备忘录，安装 skill，然后运行 30 秒扫描。
+
+<!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
@@ -73,8 +36,6 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ 
   <br />
   <sub><a href="https://www.kimi.ai/resources/software-testing-skills">已收录于 Kimi 官方网站的《AI Software Testing Skills for Smarter QA Automation》。</a></sub>
 </p>
-
-测试通过也可能漏掉产品缺陷。`e2e-skills` 帮助检查测试是否真正验证了名称所描述的行为。
 
 `e2e-reviewer` 用代码扫描器查找候选问题，再阅读测试和周边代码，判断是否确实存在问题。需要时，它还会建议修改断言条件或在与原应用分开的副本中加入缺陷，检查测试是否失败。审查者可以主动提出这些额外验证；执行需要可信的本地环境和命令批准。同一范围内已有的批准继续有效。
 
@@ -192,9 +153,31 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 ## 安装并试用
 
-### 安装
+### 1. 添加免费备忘录
+
+将[备忘录正文](docs/test-authoring-memo.md#the-memo)复制到项目的 `AGENTS.md`（Codex）或 `CLAUDE.md`（Claude Code），并保留现有指令；也可以在项目目录中用 CLI 写入（需要 Node.js 22+）。写入 `CLAUDE.md` 时使用 `--host claude`，添加 `--dry-run` 可预览。此命令只写入备忘录，不安装 skill：
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project . --memo
+```
+
+### 2. 安装 skill
 
 这一条命令会为包括 Claude Code 和 Codex 在内的所有[支持的代理](https://github.com/vercel-labs/skills#supported-agents)全局安装三个技能。CLI 版本已固定。如果只想为一个代理安装，请使用 `npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a <agent>`（例如 `-a claude-code` 或 `-a codex`）。开启一个新的代理会话，然后确认技能列表（例如 Claude Code 中的 `/skills`）里出现了 `e2e-reviewer`、`e2e-debugger` 和 `playwright-test-generator`。
+
+```bash
+npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
+```
+
+### 3. 扫描测试
+
+对典型的测试目录，静态扫描约需 30 秒（需要 Node.js 22+）：
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+```
+
+报告中的 `INCOMPLETE` 表示有些代码未被分析，因此即使退出码为 0 也不是干净的结果（[术语](docs/scanner-cli.md#glossary)）。
 
 ### 开始使用
 
@@ -314,6 +297,14 @@ probe 执行需要可信项目，以及对包括环境变量和 flag 在内的�
 可选：如果希望代理编写测试时也覆盖失败路径，请将[测试编写备忘](docs/test-authoring-memo.md)原样粘贴到项目的 `CLAUDE.md` 或 `AGENTS.md` 中。始终加载的这个文件是备忘的放置位置。在某些宿主上子代理不会继承该文件，因此 generator 技能也会把备忘传给它委派的官方代理；文件中缺少备忘时，它会提示下方的 `guidance` 命令，未经你同意不会写入任何内容。其他技能不会加载它；请先阅读其测量结果和局限。可选的[测试失败策略](docs/test-failure-policy.md)是放入同一文件的另一段片段，要求代理在说不出依据的需求时不要改写失败的测试。也可以不手动粘贴，运行 `e2e-skills guidance --host claude|codex --project PATH --memo --policy`：仅在明确指定时，才会将其中一项或两项原样写入 HTML 注释标记之间。详见[安装说明](docs/installation.md#optional-memo-and-failure-policy)。
 
 ## 证据与限制
+
+出现比例：Claude 源码审查确认了 34/200 个仓库（17.0%，95% CI 12.4–22.8%）；Claude 和 Codex 在同一位置均确认问题的仓库为 32/200 个。这些数字已反映 [timeout 复核更正](CHANGELOG.md#swallowed-wait-re-audit)；链接的 HF 快照仍保留原始数字。[范围与方法](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) · [结果](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)
+
+备忘录与 healer：在准备好的 16 个 regression 案例中，使用 136 词 memo 时有 10/16 次修改应用代码，使用 memo v5 时为 0/16 次。Claude 和 Codex 分别测量，结果相同。测量时的配置要求项目指令文件中包含备忘录。[实验条件与局限](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)
+
+审查费用：记录中的 Claude `claude-sonnet-5-5`、high effort 运行每个仓库约 $1–2（扩展样本范围 $0.58–1.96）。[费用表](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)
+
+这些数据仅代表所述条件下的观察。源码判断不是实际运行证明，样本并非随机，审查结果取决于模型和项目。[数据与范围](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106)
 
 [3.0.0 验证记录](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md)涵盖安装、扫描器行为、安全规则和部分 Playwright/Cypress 运行，并列出保留的证据和结果的适用范围。
 

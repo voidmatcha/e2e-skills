@@ -4,49 +4,6 @@
 
 <h1 align="center">E2E Skills</h1>
 
-**In a source review of 200 popular React-topic repositories with E2E tests, 17.0% (95% CI 12.4–22.8%) contained tests judged able to pass despite broken behavior.** [Scope and method](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md).
-
-The figures include a [timeout re-audit correction](CHANGELOG.md#swallowed-wait-re-audit); the linked HF snapshot retains the original figures.
-
-<!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
-
-### 1. Start with the free memo
-
-No skill installation is needed to copy the [memo block](docs/test-authoring-memo.md#the-memo) into your project’s `AGENTS.md` (Codex) or `CLAUDE.md` (Claude Code). Keep existing instructions. The memo is free; model usage still costs tokens.
-
-**Healer guardrail:** in a prepared 16-regression study, app-code edits fell from 10/16 with a 136-word memo to 0/16 with memo v5, separately on Claude and Codex. [Setup and limits](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md).
-
-Or, from the project directory, insert it with the CLI (Node.js 22+):
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project . --memo
-```
-
-Use `--host claude` for `CLAUDE.md`; add `--dry-run` to preview. The command writes the memo, not skills. The measured setup requires the memo in the project instruction file.
-
-### 2. Install skills to carry the workflow
-
-Use skills to bring these habits into test generation, review and safe debugging, including scanner and execution checks:
-
-```bash
-npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
-```
-
-### 3. Scan your tests
-
-Try a 30-second static scan of your tests (Node.js 22+; duration depends on the repository):
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
-```
-
-`INCOMPLETE` in the report means some code was not analysed, so exit 0 is not a clean result ([terms](docs/scanner-cli.md#glossary)). If `npx` fails with `ETARGET`, your `.npmrc` sets `min-release-age`: prefix the command with `npm_config_min_release_age=0`.
-
-- **Open source:** Claude source review found 34/200 repositories; independent Claude/Codex agreement confirmed the same location in 32/200. [Results](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md).
-- **Review cost:** roughly $1–2 per repository in the recorded Claude `claude-sonnet-5-5`, high-effort runs (expanded set: $0.58–1.96). [Cost table](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md).
-
-These are scoped observations, not general accuracy or causal claims: source judgments are not runtime proof, the sample is not random, and review results depend on model and project. [Data and limits](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106).
-
 <p align="center">
   <a href="https://github.com/voidmatcha/e2e-skills"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent_Skills-3-1FC07C?style=flat-square&labelColor=black"></a>
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
@@ -65,6 +22,12 @@ These are scoped observations, not general accuracy or causal claims: source jud
 
 `e2e-skills` provides three open-source skills for Playwright and Cypress end-to-end (E2E) testing with Claude Code, Codex, and other compatible AI coding agents. Generate Playwright tests, review existing Playwright/Cypress tests and PRs, and fix a failing test without changing product code.
 
+**A passing test can still miss a broken feature.** In a source review of 200 popular React repositories with E2E tests, about 1 in 6 (34/200) had a test that can pass despite broken behavior. [Scope and limits](#evidence-and-limits) · [Data](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
+
+`e2e-skills` helps check whether tests prove the behavior they name. Start with [Install and try it](#install-and-try-it): add the free memo, install the skills, then run a 30-second scan.
+
+<!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
+
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
     <img src="docs/assets/kimi-software-testing-skills.png" alt="Kimi's official website listing e2e-skills in AI Software Testing Skills for Smarter QA Automation" width="100%" />
@@ -72,8 +35,6 @@ These are scoped observations, not general accuracy or causal claims: source jud
   <br />
   <sub><a href="https://www.kimi.ai/resources/software-testing-skills">Featured on Kimi's official website: "AI Software Testing Skills for Smarter QA Automation".</a></sub>
 </p>
-
-A passing test can still miss a broken feature. `e2e-skills` helps check whether tests prove the behavior they name.
 
 `e2e-reviewer` uses a code scanner to find possible problems, then reads the test and surrounding code to decide whether they are real. When needed, it can propose changing an assertion or introducing a bug in a separate app copy to check whether the test fails. The reviewer can offer these additional checks; execution requires a trusted local environment and command approval. Existing approval for the same scope remains valid.
 
@@ -191,9 +152,31 @@ Starting with cases where tests pass despite bugs, the talk covers combining lin
 
 ## Install and try it
 
-### Install
+### 1. Add the free memo
+
+Copy the [memo block](docs/test-authoring-memo.md#the-memo) into your project’s `AGENTS.md` (Codex) or `CLAUDE.md` (Claude Code), keeping existing instructions, or insert it from the project directory (Node.js 22+). Use `--host claude` for `CLAUDE.md` and `--dry-run` to preview; the command writes the memo, not skills:
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project . --memo
+```
+
+### 2. Install the skills
 
 This one command installs the three skills globally for all [supported agents](https://github.com/vercel-labs/skills#supported-agents), including Claude Code and Codex. The CLI version is pinned. To install for one agent only, use `npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a <agent>`, for example `-a claude-code` or `-a codex`. Start a new agent session, then check that `e2e-reviewer`, `e2e-debugger` and `playwright-test-generator` appear in its skill list (for example `/skills` in Claude Code).
+
+```bash
+npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
+```
+
+### 3. Scan your tests
+
+A static scan takes about 30 seconds on a typical test directory (Node.js 22+):
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+```
+
+`INCOMPLETE` in the report means some code was not analysed, so exit 0 is not a clean result ([terms](docs/scanner-cli.md#glossary)).
 
 ### Use it
 
@@ -313,6 +296,14 @@ See the [execution procedure and requirements](skills/e2e-reviewer/references/ru
 Optionally, to have agents also test failure paths when they write tests, paste the [test-authoring memo](docs/test-authoring-memo.md) unchanged into your project's `CLAUDE.md` or `AGENTS.md`. That always-loaded file is its supported place. On some hosts sub-agents do not inherit it, so the generator skill also passes the memo to the official agents it delegates to, and offers the `guidance` command below when the file lacks it, writing nothing without your yes. No other skill loads it; read its measured effect and limits first. The optional [test-failure policy](docs/test-failure-policy.md) is a separate snippet for the same files that asks agents not to rewrite a failing test without a named requirement. Instead of pasting, `e2e-skills guidance --host claude|codex --project PATH --memo --policy` writes either or both unchanged between HTML comment markers, only when asked; see [installation](docs/installation.md#optional-memo-and-failure-policy).
 
 ## Evidence and limits
+
+Prevalence: Claude source review found 34/200 repositories (17.0%, 95% CI 12.4–22.8%); independent Claude/Codex agreement confirmed the same location in 32/200. The figures include a [timeout re-audit correction](CHANGELOG.md#swallowed-wait-re-audit); the linked HF snapshot retains the original figures. [Scope and method](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) · [Results](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)
+
+Memo and healer: in a prepared 16-regression study, app-code edits fell from 10/16 with a 136-word memo to 0/16 with memo v5, separately on Claude and Codex. The measured setup requires the memo in the project instruction file. [Setup and limits](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)
+
+Review cost: roughly $1–2 per repository in the recorded Claude `claude-sonnet-5-5`, high-effort runs (expanded set: $0.58–1.96). [Cost table](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)
+
+These are scoped observations, not general accuracy or causal claims: source judgments are not runtime proof, the sample is not random, and review results depend on model and project. [Data and limits](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106)
 
 The [3.0.0 validation record](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md) covers installation, scanner behavior, safety rules, and selected Playwright/Cypress runs, with retained evidence and result scope.
 

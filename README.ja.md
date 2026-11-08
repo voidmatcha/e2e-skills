@@ -4,49 +4,6 @@
 
 <h1 align="center">E2E Skills</h1>
 
-**E2E テストを持つ人気の React トピックのリポジトリ 200 件をソースレビューした結果、17.0%（95% CI 12.4–22.8%）に、機能が壊れても成功し得るテストが見つかりました。** [範囲と方法](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)。
-
-数値には [timeout の再監査による訂正](CHANGELOG.md#swallowed-wait-re-audit)を反映しています。リンク先の HF スナップショットには訂正前の数値が残っています。
-
-<!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
-
-### 1. 無料のメモから始める
-
-skill をインストールせずに、[メモの本文](docs/test-authoring-memo.md#the-memo)をプロジェクトの `AGENTS.md`（Codex）または `CLAUDE.md`（Claude Code）へコピーできます。既存の指示は残してください。メモは無料ですが、モデルの実行にはトークンを使います。
-
-**healer の保護指針：** 用意した regression 16 件の実験では、アプリコードの変更は 136 語の memo で 10/16 件、memo v5 で 0/16 件でした。Claude と Codex を別々に測定し、両方で同じ結果でした。[実験条件と限界](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)。
-
-プロジェクトのディレクトリから CLI で追加することもできます（Node.js 22+ が必要）：
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project . --memo
-```
-
-`CLAUDE.md` には `--host claude`、プレビューには `--dry-run` を使います。このコマンドは skill をインストールせず、メモだけを書き込みます。測定時の構成では、プロジェクトの指示ファイルにメモが必要です。
-
-### 2. skill でワークフローにつなげる
-
-生成、レビュー、安全な debugging にこれらの指針を取り入れ、scanner と実行による確認につなげるには、skill をインストールしてください：
-
-```bash
-npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
-```
-
-### 3. テストをスキャンする
-
-30 秒の静的スキャンを試す（Node.js 22+ が必要。実際の時間はリポジトリによります）：
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
-```
-
-レポートの `INCOMPLETE` は一部のコードを解析できなかったという意味なので、終了コード 0 でもクリーンな結果ではありません（[用語](docs/scanner-cli.md#glossary)）。`npx` が `ETARGET` で失敗する場合は `.npmrc` に `min-release-age` が設定されています。コマンドの前に `npm_config_min_release_age=0` を付けてください。
-
-- **オープンソース：** Claude のソースレビューでは 34/200 件、Claude と Codex が同じ箇所を確認したリポジトリは 32/200 件でした。[結果](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)。
-- **レビュー費用：** Claude `claude-sonnet-5-5`、high effort の記録では 1 リポジトリ約 $1–2（追加サンプルの範囲：$0.58–1.96）でした。[費用表](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)。
-
-これらは記載した条件での観測です。ソース判定は実行による証明ではなく、無作為標本でもありません。レビュー結果はモデルとプロジェクトに依存します。[データと範囲](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106)。
-
 <p align="center">
   <a href="https://github.com/voidmatcha/e2e-skills"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent_Skills-3-1FC07C?style=flat-square&labelColor=black"></a>
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
@@ -63,9 +20,15 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ 
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=9b13f8b7d4c2e03acad41e721f4de4941ba2a048651d486ea48a96bfb86969b5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=7d001785c89da1630d42b4e182b259910057ac92891e3601f8f848b36f7a40e9; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
+
+**成功するテストが、壊れた機能を見逃すことがあります。** E2E テストを持つ人気の React リポジトリ 200 件をソースレビューした結果、約 6 件に 1 件（34/200）に、機能が壊れても成功し得るテストが見つかりました。[範囲と限界](#根拠と限界) · [データ](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
+
+`e2e-skills` は、テストが名前どおりの動作を実際に検証しているかを確認する手助けをします。まず[インストールして試す](#インストールして試す)から始めてください。無料のメモを追加し、skill をインストールして、30 秒のスキャンを実行します。
+
+<!-- Hero GIF placement: docs/assets/hero.gif (provided separately). -->
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
@@ -74,8 +37,6 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ 
   <br />
   <sub><a href="https://www.kimi.ai/resources/software-testing-skills">Kimi 公式サイトの「AI Software Testing Skills for Smarter QA Automation」で紹介されています。</a></sub>
 </p>
-
-テストが成功しても、製品の不具合を見逃すことがあります。`e2e-skills` は、テストが名前どおりの動作を実際に検証しているかを確認する手助けをします。
 
 `e2e-reviewer` はコードスキャナーで候補を探し、テストと周辺コードを読んで実際の問題か判断します。必要なら、検証条件の変更や元のアプリとは別のコピーへの不具合注入で、テストが失敗するかを確認する方法も提案します。追加検証はレビュー担当から提案できます。実行には信頼できるローカル環境とコマンドの承認が必要です。同じ範囲についてすでに得た承認は引き続き有効です。
 
@@ -193,9 +154,31 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 ## インストールして試す
 
-### インストール
+### 1. 無料のメモを追加する
+
+[メモの本文](docs/test-authoring-memo.md#the-memo)をプロジェクトの `AGENTS.md`（Codex）または `CLAUDE.md`（Claude Code）へコピーします。既存の指示は残してください。プロジェクトのディレクトリから CLI で追加することもできます（Node.js 22+ が必要）。`CLAUDE.md` には `--host claude`、プレビューには `--dry-run` を使います。このコマンドは skill をインストールせず、メモだけを書き込みます：
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project . --memo
+```
+
+### 2. skill をインストールする
 
 このコマンド 1 つで、Claude Code と Codex を含むすべての[対応エージェント](https://github.com/vercel-labs/skills#supported-agents)に 3 つのスキルをグローバルにインストールします。CLI のバージョンは固定されています。1 つのエージェントだけにインストールする場合は `npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a <agent>` を使ってください（例: `-a claude-code`、`-a codex`）。新しいエージェントのセッションを開始し、スキル一覧（Claude Code なら `/skills`）に `e2e-reviewer`、`e2e-debugger`、`playwright-test-generator` が表示されることを確認してください。
+
+```bash
+npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
+```
+
+### 3. テストをスキャンする
+
+一般的なテストディレクトリなら、静的スキャンは約 30 秒で終わります（Node.js 22+ が必要）：
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+```
+
+レポートの `INCOMPLETE` は一部のコードを解析できなかったという意味なので、終了コード 0 でもクリーンな結果ではありません（[用語](docs/scanner-cli.md#glossary)）。
 
 ### 使ってみる
 
@@ -315,6 +298,14 @@ probe の実行には、信頼するプロジェクトと、環境変数・flag 
 任意で、エージェントがテストを書く際に失敗経路もテストさせたい場合は、[テスト作成メモ](docs/test-authoring-memo.md)を変更せずにプロジェクトの `CLAUDE.md` または `AGENTS.md` に貼り付けてください。常に読み込まれるこのファイルがメモの置き場所です。一部のホストではサブエージェントがこのファイルを引き継がないため、generator スキルは委譲先の公式エージェントにもメモを渡します。ファイルにメモがなければ下記の `guidance` コマンドを案内しますが、同意なしには何も書き込みません。ほかのスキルはこのメモを読み込みません。先に測定結果と限界を確認してください。任意の[テスト失敗ポリシー](docs/test-failure-policy.md)は同じファイルに入れる別のスニペットで、根拠となる要件を示さずに失敗したテストを書き換えないようエージェントに求めます。 貼り付ける代わりに `e2e-skills guidance --host claude|codex --project PATH --memo --policy` を実行すると、指定した場合にのみ、どちらか一方または両方を変更せずに HTML コメントのマーカーの間へ書き込みます。詳しくは[インストール手順](docs/installation.md#optional-memo-and-failure-policy)を参照してください。
 
 ## 根拠と限界
+
+発生率：Claude のソースレビューでは 34/200 件のリポジトリ（17.0%、95% CI 12.4–22.8%）が該当し、Claude と Codex が同じ箇所を確認したリポジトリは 32/200 件でした。数値には [timeout の再監査による訂正](CHANGELOG.md#swallowed-wait-re-audit)を反映しています。リンク先の HF スナップショットには訂正前の数値が残っています。[範囲と方法](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) · [結果](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)
+
+メモと healer：用意した regression 16 件の実験では、アプリコードの変更は 136 語の memo で 10/16 件、memo v5 で 0/16 件でした。Claude と Codex を別々に測定し、両方で同じ結果でした。測定時の構成では、プロジェクトの指示ファイルにメモが必要です。[実験条件と限界](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)
+
+レビュー費用：Claude `claude-sonnet-5-5`、high effort の記録では 1 リポジトリ約 $1–2（追加サンプルの範囲：$0.58–1.96）でした。[費用表](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)
+
+これらは記載した条件での観測です。ソース判定は実行による証明ではなく、無作為標本でもありません。レビュー結果はモデルとプロジェクトに依存します。[データと範囲](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106)
 
 [3.0.0 の検証記録](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md)は、インストール、スキャナーの動作、安全ルール、一部の Playwright/Cypress 実行を対象とし、保存した根拠と各結果の適用範囲を示しています。
 
