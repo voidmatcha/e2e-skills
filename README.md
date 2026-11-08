@@ -22,7 +22,7 @@
 
 `e2e-skills` provides three open-source skills for Playwright and Cypress end-to-end (E2E) testing with Claude Code, Codex, and other compatible AI coding agents. Generate Playwright tests, review existing Playwright/Cypress tests and PRs, and fix a failing test without changing product code.
 
-**A passing test can still miss a broken feature.** In a source review of 200 popular React repositories with E2E tests, about 1 in 6 (34/200) had a test that can pass despite broken behavior. [Scope and limits](#evidence-and-limits) · [Data](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
+**Your E2E test is green. Is the feature?** In 34 of 200 popular React repositories, we found a test that can stay green while the feature it names is broken. [Scope and limits](#evidence-and-limits) · [Data](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
 
 `e2e-skills` helps check whether tests prove the behavior they name. Start with [Install and try it](#install-and-try-it): add the free memo, install the skills, then run a 30-second scan.
 
