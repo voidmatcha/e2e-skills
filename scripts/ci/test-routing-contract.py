@@ -162,7 +162,30 @@ def assert_skill_roots_are_runtime_resolved() -> None:
         assert "~/.claude/skills/e2e-reviewer/" not in text
 
 
+def assert_write_evidence_discovery() -> None:
+    def validate(text: str) -> None:
+        for required in ("Write-evidence question (mandatory #22 discovery)",
+                         "What proves this write beyond the optimistic UI?",
+                         "awaited matching request/response", "asserted mocked request",
+                         "server-backed reload/re-fetch", "failure-path assertion",
+                         "Skip explicitly UI-only/client-only contracts", "NEEDS-CONTEXT",
+                         "not as a confirmed finding or count"):
+            assert required in text, f"missing write-evidence guard: {required}"
+    for relative in ("semantic-review.md", "patterns/22.md"):
+        text = _read(ROOT / "skills/e2e-reviewer/references" / relative)
+        validate(text)
+        # RED: the old promise-only procedure lacks the discovery question.
+        old = text.replace("Write-evidence question (mandatory #22 discovery)", "Old procedure")
+        try:
+            validate(old)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("old promise-only procedure accepted")
+
+
 CHECKS = (
+    assert_write_evidence_discovery,
     assert_reviewer_is_inline_only,
     assert_checks_reject_known_bad_wording,
     assert_skill_roots_are_runtime_resolved,

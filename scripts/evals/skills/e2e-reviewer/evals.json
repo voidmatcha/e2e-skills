@@ -1876,6 +1876,19 @@
         "files/wait-timeout/no-timeout/playwright.config.ts",
         "files/wait-timeout/no-timeout/e2e/account-menu-a11y.spec.ts"
       ]
+    },
+    {
+      "id": 124,
+      "prompt": "Review files/write-evidence.spec.ts. Supplied handler evidence: clicking Like sets local liked=true before POST /api/like; status derives only from liked. No separate acceptance contract is supplied. Do not execute the fixture.",
+      "expected_output": "Ask the write-evidence question for the ambiguous UI-only proof; do not invent a confirmed backend promise. Clear the matching request guard.",
+      "files": [
+        "files/write-evidence.spec.ts"
+      ],
+      "assertions": [
+        "True positive: write-evidence.spec.ts:6 must produce the semantic-review question What proves this write beyond the optimistic UI? as NEEDS-CONTEXT in Limitations/exclusions; line 7 proves only client-visible state. Do not silently clear #22 because the title omits persistence.",
+        "False-positive guard: write-evidence.spec.ts:13 must not be flagged for missing call proof or receive the missing-call question: lines 12 and 14 register and await the matching POST. Request evidence does not claim persistence.",
+        "Do not raise P0 or a confirmed #22 without the promised-backend contract; skip explicitly UI-only contracts and accept matching response, asserted mock, server-backed reload/API outcome, or write-linked failure evidence for this discovery question."
+      ]
     }
   ]
 }
