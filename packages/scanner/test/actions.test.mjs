@@ -49,3 +49,16 @@ test('shared Cypress mutation proof invalidates action chains without changing u
   }
   assert.equal(run("function f(cy){cy.get=custom;}\ncy.get('button').click({force:true});",'example.cy.ts').findings.length,1);
 });
+
+// Long formatting must not erase an AST-proven action option.
+test('force options beyond eight lines retain exact provenance and P1 severity',()=>{
+  const gap='\n'.repeat(10);
+  const result=run(header+`await page.locator('button').click({${gap}force:true});\n});`);
+  assert.deepEqual(result.findings.map(x=>[x.patternId,x.severity,x.line]),[['#5b','P1',13]]);
+  assert.deepEqual(result.diagnostics,[]);
+  for (const body of [
+    `await page.locator('button').click({${gap}force:false});`,
+    `await page.locator('input').fill({${gap}force:true});`,
+    `const custom={click(){}};custom.click({${gap}force:true});`,
+  ]) assert.deepEqual(run(header+body+'\n});').findings,[],body);
+});

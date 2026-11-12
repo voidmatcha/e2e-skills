@@ -56,10 +56,6 @@ export function actions(bytes, filename, {scope} = {}) {
       diagnostics.push({message:'dynamic force option is outside the literal-true slice'});return;
     }
     const start=entry.name.getStart(source), position=source.getLineAndCharacterOfPosition(start);
-    const actionLine=source.getLineAndCharacterOfPosition(node.expression.name.getStart(source)).line;
-    if (position.line-actionLine>8) {
-      diagnostics.push({message:'force option exceeds legacy eight-line lookback'});return;
-    }
     // Legacy reports a location per physical force-property line.
     if (!findings.some(finding=>finding.line===position.line+1)) findings.push({patternId:'#5b',severity:'P1',
       disposition:'confirmed',origin:'ast',file:filename,line:position.line+1,column:position.character+1,start,end:entry.end});

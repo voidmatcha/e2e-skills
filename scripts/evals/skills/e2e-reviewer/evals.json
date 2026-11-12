@@ -1902,6 +1902,19 @@
         "False-positive guard: do not report write-evidence.spec.ts:13 because its matching request is awaited at line 14. Keep it out of summary counts.",
         "Put P0/P1/P2 summary counts first, preserve every evidence-header field, level-2 catalog finding heading, Attribution and Verification; include the canonical replacement row if emitting Code. Do not duplicate counts at the end."
       ]
+    },
+    {
+      "id": 126,
+      "prompt": "Review files/long-force.spec.ts for actionability bypasses. Do not execute the fixture.",
+      "expected_output": "Report #5b P1 even when the literal force option is more than eight lines from the action. Do not change P0 counts.",
+      "files": [
+        "files/long-force.spec.ts"
+      ],
+      "assertions": [
+        "True positive: long-force.spec.ts:15 is #5b P1; the AST proves force:true belongs to the click on line 4 regardless of line distance.",
+        "False-positive guard: long-force.spec.ts:21 is force:false and must not be reported; it preserves actionability.",
+        "Wrong argument positions and custom receivers must remain excluded; JUSTIFIED suppression policy is unchanged."
+      ]
     }
   ]
 }
