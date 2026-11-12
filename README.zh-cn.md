@@ -19,17 +19,13 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=c9402a6070f5dbaefd790f8dfa8663bfdd55f9de5aaef65a91c81e34d956f48b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=ef256bc3cbf88e0f20e1f874f1f4befd29098acef609e8342c476cc7220d8145; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
 **E2E 测试通过了，功能真的正常吗？** 在 200 个热门 React 仓库中，有 34 个存在这样的测试：它所命名的功能已经损坏，测试却仍可能通过。[范围与局限](#证据与限制) · [数据](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
 
 `e2e-skills` 帮助检查测试是否真正验证了名称所描述的行为。请先从[安装并试用](#安装并试用)开始：添加免费备忘录，安装 skill，然后运行 30 秒扫描。
-
-<p align="center">
-  <img src="docs/assets/demo.gif" alt="演示：服务器拒绝点赞后，由于缺少回滚，爱心仍保持红色；只检查成功路径的 Playwright 测试仍然通过，而有意让服务器拒绝的测试失败并发现了缺陷。" width="100%" />
-</p>
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
@@ -53,6 +49,12 @@
 P0/P1/P2 表示审查的严重程度：P0 是功能损坏仍通过的问题，P1 影响可靠性或诊断，P2 涉及维护改进。
 
 **测试生成：** 安装后，告诉 agent 要测试哪个本地项目。它会检查所需配置，并说明还需要哪些准备。
+
+<p align="center">
+  <img src="docs/assets/demo.gif" alt="演示：一次重构删掉了 POST /api/like 调用。由于界面显示 Liked，仅检查 UI 的 Playwright 测试仍然通过；而检查请求的测试因为 POST 从未发出而失败。录制自 examples/optimistic-like-demo 中的可运行示例。" width="100%" />
+  <br />
+  <sub>观看<a href="docs/assets/demo.mp4">完整画质视频（MP4）</a>，或<a href="examples/optimistic-like-demo/README.md">亲自运行</a>。</sub>
+</p>
 
 <a id="merged-upstream-fixes"></a>
 

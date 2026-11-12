@@ -20,17 +20,13 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=c9402a6070f5dbaefd790f8dfa8663bfdd55f9de5aaef65a91c81e34d956f48b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=ef256bc3cbf88e0f20e1f874f1f4befd29098acef609e8342c476cc7220d8145; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
 **E2E テストは成功しています。では、機能は正しく動いていますか？** 人気の React リポジトリ 200 件のうち 34 件で、名前に書かれた機能が壊れていても成功し得るテストが見つかりました。[範囲と限界](#根拠と限界) · [データ](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
 
 `e2e-skills` は、テストが名前どおりの動作を実際に検証しているかを確認する手助けをします。まず[インストールして試す](#インストールして試す)から始めてください。無料のメモを追加し、skill をインストールして、30 秒のスキャンを実行します。
-
-<p align="center">
-  <img src="docs/assets/demo.gif" alt="デモ: サーバーが「いいね」を拒否してもロールバックがないためハートが赤いまま残ります。成功経路だけを確認する Playwright テストは成功し、サーバーの拒否を意図的に起こすテストは失敗してバグを検出します。" width="100%" />
-</p>
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
@@ -54,6 +50,12 @@
 P0/P1/P2 はレビューの重要度です。P0 は機能が壊れても成功する問題、P1 は信頼性や診断の問題、P2 は保守性の改善です。
 
 **テスト生成:** インストール後、テストするローカルプロジェクトを agent に伝えてください。必要な設定を確認し、不足する準備があれば案内します。
+
+<p align="center">
+  <img src="docs/assets/demo.gif" alt="デモ: リファクタリングで POST /api/like の呼び出しが消えます。画面には Liked と表示されるため UI だけを確認する Playwright テストは成功したままですが、リクエストを確認するテストは POST が送信されないため失敗します。examples/optimistic-like-demo の実行可能な例から録画しました。" width="100%" />
+  <br />
+  <sub><a href="docs/assets/demo.mp4">フル画質の動画 (MP4)</a> を見るか、<a href="examples/optimistic-like-demo/README.md">自分で実行してみてください</a>。</sub>
+</p>
 
 <a id="merged-upstream-fixes"></a>
 

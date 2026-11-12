@@ -27,10 +27,6 @@
 `e2e-skills` helps check whether tests prove the behavior they name. Start with [Install and try it](#install-and-try-it): add the free memo, install the skills, then run a 30-second scan.
 
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="Demo: when the server rejects a like, the heart stays red because the rollback is missing; a happy-path Playwright test still passes, and a test that makes the server reject the like fails and catches the bug." width="100%" />
-</p>
-
-<p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
     <img src="docs/assets/kimi-software-testing-skills.png" alt="Kimi's official website listing e2e-skills in AI Software Testing Skills for Smarter QA Automation" width="100%" />
   </a>
@@ -52,6 +48,12 @@
 Review results use P0/P1/P2 for severity: P0 means a test can pass despite a broken feature, P1 concerns reliability or diagnosis, and P2 concerns maintenance.
 
 **Test generation:** After installation, tell the agent which local project to test. It checks the required setup and guides you through anything missing.
+
+<p align="center">
+  <img src="docs/assets/demo.gif" alt="Demo: a refactor drops the POST /api/like call. The UI-only Playwright test still passes because the screen says Liked; the request-aware test fails because the POST never left. Recorded from the runnable example in examples/optimistic-like-demo." width="100%" />
+  <br />
+  <sub>Watch the <a href="docs/assets/demo.mp4">full-quality video (MP4)</a> or <a href="examples/optimistic-like-demo/README.md">run it yourself</a>.</sub>
+</p>
 
 <a id="merged-upstream-fixes"></a>
 

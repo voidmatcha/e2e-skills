@@ -20,17 +20,13 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=c9402a6070f5dbaefd790f8dfa8663bfdd55f9de5aaef65a91c81e34d956f48b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=ef256bc3cbf88e0f20e1f874f1f4befd29098acef609e8342c476cc7220d8145; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
 **E2E 테스트는 통과합니다. 기능도 제대로 동작할까요?** 인기 React 저장소 200곳 중 34곳에서, 이름에 적힌 기능이 깨져도 통과할 수 있는 테스트를 찾았습니다. [범위와 한계](#근거와-한계) · [데이터](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
 
 `e2e-skills`는 테스트가 시나리오에 적힌 동작을 제대로 확인하는지 살펴보도록 돕습니다. [설치하고 사용해 보기](#설치하고-사용해-보기)부터 시작해주세요. 무료 메모를 적용하고, skill을 설치한 뒤, 30초 정적 검사를 실행합니다.
-
-<p align="center">
-  <img src="docs/assets/demo.gif" alt="데모: 서버가 좋아요를 거부해도 롤백이 빠져 하트가 빨갛게 남습니다. 성공 경로만 확인하는 Playwright 테스트는 통과하고, 서버 거부를 일부러 만드는 테스트는 실패해 버그를 잡습니다." width="100%" />
-</p>
 
 <p align="center">
   <a href="https://www.kimi.ai/ko/resources/software-testing-skills">
@@ -54,6 +50,12 @@
 리뷰 결과는 P0/P1/P2로 문제 등급을 구분합니다. P0는 기능이 제대로 동작하지 않아도 테스트가 통과하는 문제, P1은 안정성이나 원인 파악을 어렵게 하는 문제, P2는 유지보수 개선 사항을 뜻합니다.
 
 **테스트 생성:** 설치를 마쳤다면 agent에게 어느 로컬 프로젝트의 테스트를 만들지 알려주세요. 설정이 누락되어 있다면 agent를 통해 설정할 수 있습니다.
+
+<p align="center">
+  <img src="docs/assets/demo.gif" alt="데모: 리팩터링으로 POST /api/like 호출이 빠집니다. 화면에 Liked가 표시되므로 UI만 확인하는 Playwright 테스트는 그대로 통과하고, 요청을 확인하는 테스트는 POST가 전송되지 않아 실패합니다. examples/optimistic-like-demo의 실행 가능한 예제로 녹화했습니다." width="100%" />
+  <br />
+  <sub><a href="docs/assets/demo.mp4">원본 화질 영상(MP4)</a>을 보거나 <a href="examples/optimistic-like-demo/README.md">직접 실행해 보세요</a>.</sub>
+</p>
 
 <a id="merged-upstream-fixes"></a>
 
