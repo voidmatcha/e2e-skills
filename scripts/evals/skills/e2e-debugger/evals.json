@@ -177,6 +177,81 @@
         "FALSE-POSITIVE GUARD: unrelated failures or the spec exit code do not make checkout FLAKY; a skipped or hook-blocked target is missing evidence and UNCLEAR"
       ],
       "files": []
+    },
+    {
+      "id": 11,
+      "title": "Wrong expected literal pinned by seed data is fixed without asking",
+      "prompt": "In scripts/evals/skills/e2e-debugger/files/events-app/ (baseURL http://127.0.0.1:3000, approved test command `npx --no-install playwright test`), tests/summary.spec.ts 'summary shows the seeded totals' fails. This test is failing, fix it. The three reruns with `--repeat-each=3 --retries=0` all fail at line 5: expected '3 events · 5 of 36 seats taken · 1 full', received '3 events · 5 of 38 seats taken · 1 full'. No recent commit touched src/. The official healer is not installed.",
+      "expected_output": "Not flaky. src/seed.ts seeds capacities 3, 10 and 25 (sum 38), src/summary.ts:5 sums them, and the spec's other test at line 12 already expects 'of 38 seats'. So 36 is wrong test data: it changes only the literal on tests/summary.spec.ts:5 to 38 with the same toHaveText exact match, without stopping to ask, rescans with no new P0, reruns three times with all passing, and reports TEST-DEFECT-FIXED.",
+      "assertions": [
+        "True positive: edits tests/summary.spec.ts:5 to expect '3 events · 5 of 38 seats taken · 1 full' without first asking the user for confirmation",
+        "True positive: cites src/seed.ts capacities (3, 10, 25), src/summary.ts:5 and tests/summary.spec.ts:12 as the evidence that 38 is correct",
+        "Reruns three times with --retries=0, all passing, and rescans the spec with no new P0 before reporting TEST-DEFECT-FIXED",
+        "FALSE-POSITIVE GUARD: keeps the exact toHaveText matcher on line 5; does not switch to toContainText, a regex, or drop the seat count",
+        "FALSE-POSITIVE GUARD: changes no file under src/; the seed data is not edited to make 36 true"
+      ],
+      "files": [
+        "files/events-app/playwright.config.ts",
+        "files/events-app/tests/summary.spec.ts",
+        "files/events-app/src/seed.ts",
+        "files/events-app/src/summary.ts",
+        "files/events-app/src/api.ts"
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Per-assertion timeout shorter than the app's fixed delay is removed",
+      "prompt": "In scripts/evals/skills/e2e-debugger/files/events-app/ (baseURL http://127.0.0.1:3000, approved test command `npx --no-install playwright test`), tests/summary.spec.ts 'removing an attendee updates the summary' fails. This test is failing, fix it. The three reruns with `--repeat-each=3 --retries=0` all fail at line 11: toHaveText('Removed Ben from Book Club.') timed out after 100ms, received 'Saving…'. The official healer is not installed.",
+      "expected_output": "Not flaky: all three fail the same way. src/api.ts:6-8 delays every save by 300-600 ms, so the `{ timeout: 100 }` override on tests/summary.spec.ts:11 can never be met. It removes only that override so the assertion uses the config's 5000 ms expect timeout, without asking, keeps the expected text, reruns three times with all passing, and reports TEST-DEFECT-FIXED.",
+      "assertions": [
+        "True positive: removes `{ timeout: 100 }` from tests/summary.spec.ts:11 without first asking the user, citing the 300-600 ms delay in src/api.ts",
+        "Keeps the expected text 'Removed Ben from Book Club.' on line 11 and the summary assertion on line 12 unchanged",
+        "FALSE-POSITIVE GUARD: does not set any timeout above the config's expect timeout (playwright.config.ts:5), add retries, test.slow() or waitForTimeout, or edit playwright.config.ts",
+        "FALSE-POSITIVE GUARD: does not shorten the delay in src/api.ts or change any file under src/"
+      ],
+      "files": [
+        "files/events-app/playwright.config.ts",
+        "files/events-app/tests/summary.spec.ts",
+        "files/events-app/src/seed.ts",
+        "files/events-app/src/summary.ts",
+        "files/events-app/src/api.ts"
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Consistent failure caused by the app stays report-only",
+      "prompt": "In scripts/evals/skills/e2e-debugger/files/events-app/ (baseURL http://127.0.0.1:3000, approved test command `npx --no-install playwright test`), tests/summary.spec.ts 'summary shows the seeded totals' fails. This test is failing, fix it. Line 5 has been changed to expect '3 events · 5 of 38 seats taken · 1 full'. The three reruns with `--repeat-each=3 --retries=0` all fail at line 5 the same way: received '3 events · 5 of 13 seats taken · 1 full'. The last commit 'Speed up summary' changed src/summary.ts:5 to sum capacity only for events with attendees.",
+      "expected_output": "Not flaky. The test matches the seed data and the spec's other test; the recent app change is what drops the 25-seat event from the total. It reports APP-REGRESSION with the src/summary.ts:5 diff and the three run outcomes as evidence and changes no file.",
+      "assertions": [
+        "True positive: reports APP-REGRESSION (suspected) and cites the 'Speed up summary' change at src/summary.ts:5 as evidence",
+        "FALSE-POSITIVE GUARD: does not edit src/summary.ts or any file under src/, even though the failure repeats on every run and the app fix looks obvious",
+        "FALSE-POSITIVE GUARD: does not change the expected '38' on tests/summary.spec.ts:5 to 13 or loosen the matcher"
+      ],
+      "files": [
+        "files/events-app/playwright.config.ts",
+        "files/events-app/tests/summary.spec.ts",
+        "files/events-app/src/seed.ts",
+        "files/events-app/src/summary.ts",
+        "files/events-app/src/api.ts"
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Mixed reruns stay FLAKY even when a test fix looks obvious",
+      "prompt": "In scripts/evals/skills/e2e-debugger/files/events-app/ (baseURL http://127.0.0.1:3000, approved test command `npx --no-install playwright test`), tests/summary.spec.ts 'removing an attendee from game night is announced' fails in CI. This test is failing, fix it. The three reruns with `--repeat-each=3 --retries=0` give: run 1 passed, run 2 failed at line 18 (toHaveText timed out after 450ms, received 'Saving…'), run 3 passed.",
+      "expected_output": "Mixed results, so it is FLAKY: the `{ timeout: 450 }` override on tests/summary.spec.ts:18 races the 300-600 ms save delay in src/api.ts. It reports each run's outcome and the line 18 error, may propose removing the override as an unapplied suggestion, and changes no file.",
+      "assertions": [
+        "True positive: classifies the failure as FLAKY and reports the three outcomes and the tests/summary.spec.ts:18 error",
+        "FALSE-POSITIVE GUARD: does not remove or change the `{ timeout: 450 }` on tests/summary.spec.ts:18 or edit any other file; the override removal allowed for three consistent failures (eval 12) is only proposed here",
+        "FALSE-POSITIVE GUARD: does not report TEST-DEFECT-FIXED or APP-REGRESSION from mixed results"
+      ],
+      "files": [
+        "files/events-app/playwright.config.ts",
+        "files/events-app/tests/summary.spec.ts",
+        "files/events-app/src/seed.ts",
+        "files/events-app/src/summary.ts",
+        "files/events-app/src/api.ts"
+      ]
     }
   ]
 }
