@@ -1889,6 +1889,19 @@
         "False-positive guard: write-evidence.spec.ts:13 must not be flagged for missing call proof or receive the missing-call question: lines 12 and 14 register and await the matching POST. Request evidence does not claim persistence.",
         "Do not raise P0 or a confirmed #22 without the promised-backend contract; skip explicitly UI-only contracts and accept matching response, asserted mock, server-backed reload/API outcome, or write-linked failure evidence for this discovery question."
       ]
+    },
+    {
+      "id": 125,
+      "prompt": "Complete a static semantic review of files/write-evidence.spec.ts. For this eval only, the supplied acceptance contract requires the first test to send POST /api/like. Source confirms status is set before the request. Do not execute fixtures.",
+      "expected_output": "Summary counts first; one concise #22 P1 finding with confidence and all existing attribution/verification fields.",
+      "files": [
+        "files/write-evidence.spec.ts"
+      ],
+      "assertions": [
+        "True positive: report #22 P1 at write-evidence.spec.ts:6, stating that line 7 proves optimistic UI but misses the promised call, with the smallest request-evidence fix and evidence-based confidence.",
+        "False-positive guard: do not report write-evidence.spec.ts:13 because its matching request is awaited at line 14. Keep it out of summary counts.",
+        "Put P0/P1/P2 summary counts first, preserve every evidence-header field, level-2 catalog finding heading, Attribution and Verification; include the canonical replacement row if emitting Code. Do not duplicate counts at the end."
+      ]
     }
   ]
 }

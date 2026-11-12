@@ -184,7 +184,26 @@ def assert_write_evidence_discovery() -> None:
             raise AssertionError("old promise-only procedure accepted")
 
 
+def assert_concise_reporting() -> None:
+    text = _read(ROOT / "skills/e2e-reviewer/references/reporting.md")
+    required = ("start with the Review Summary counts table", "[path:line]",
+                "**Issue:** Proves", "misses [contract-backed outcome]",
+                "**Confidence:**", "single smallest change", "**Attribution (diff mode):**",
+                "**Verification:**", "**§4.1 row:**", "Every field is mandatory")
+    def validate(value: str) -> None:
+        for token in required:
+            assert token in value, f"missing report contract: {token}"
+    validate(text)
+    try:
+        validate(text.replace("**Confidence:**", "**Unspecified:**"))
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("report without confidence accepted")
+
+
 CHECKS = (
+    assert_concise_reporting,
     assert_write_evidence_discovery,
     assert_reviewer_is_inline_only,
     assert_checks_reject_known_bad_wording,

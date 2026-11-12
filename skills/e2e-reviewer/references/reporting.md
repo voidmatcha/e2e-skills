@@ -57,7 +57,7 @@ After completing Phase 1 + 2 + 2.5, identify scenarios the test suite does NOT c
 
 ## Output Format
 
-Start every review with this evidence header:
+For a complete semantic review, start with the Review Summary counts table below, then this evidence header, then findings grouped by severity. Targeted results start with this evidence header and retain their existing counting restrictions:
 
 ```markdown
 ## Review Scope and Evidence
@@ -99,9 +99,11 @@ Present findings grouped by severity:
 ## [P0/P1/P2] [filename] — #[pattern ID] [issue type]
 
 ### `[test name or POM method]`
-- **Issue:** [description]
+- **Location:** [path:line]
+- **Issue:** Proves [observed behavior]; misses [contract-backed outcome].
+- **Confidence:** [high | medium; one short evidence-based reason]
 - **Attribution (diff mode):** [introduced | worsened | pre-existing | N/A in full mode]
-- **Fix:** [name change / assertion addition / merge / deletion]
+- **Fix:** [single smallest change that closes this finding]
 - **Verification:** [smallest applicable V1–V6 proof from `references/verification-rules.md`, or `N/A`; state `recommended` unless an actual command/result proves it ran]
 - **§4.1 row:** [REQUIRED whenever **Code:** is present — quote the AVOID → USE row for this pattern verbatim from `references/fix-replacements.md` or `references/applying-fixes.md` §4.1 (or its conditional `references/rtl-jest-dom-fixes.md` row for RTL #4f), or write `no row (judgement call)` if the table has none]
 - **Code:**
@@ -113,13 +115,15 @@ Present findings grouped by severity:
 Every finding heading names its pattern ID from the Quick Reference, such as `## [P0] tests/login.spec.ts — #5a Conditional assertion bypass`; a heading with only a prose title cannot be matched to the catalog by readers or tools. When one block reports several patterns, list every ID, such as `#9 #10a`.
 Every finding heading is a level-2 heading starting at the beginning of its line with `## [`, exactly as the template shows; never nest it under another heading such as `## Findings` or use `### [P`. Test-case subheadings inside a finding remain `###`.
 
+Keep each finding short: one sentence each for Issue, Confidence and Fix; retain Attribution and Verification. Include Code only when needed to make the fix unambiguous; when included, retain the mandatory §4.1 row. Confidence never substitutes for confirmation: unresolved candidates remain outside findings and counts.
+
 Every diff finding must include the explicit `Attribution (diff mode)` field; attribution only in a heading is insufficient.
 
 Cite every location as a full `path:line` relative to the repository root, such as `apps/web/playwright/login.e2e.ts:42`. Do not cite absolute paths, which expose the reviewer's local directories when a review is shared, or shortened suffixes such as `tasks/login.ts:42`, which can match more than one file.
 
 The **§4.1 row** field is a slot, not a reminder: it cannot be filled without opening `references/fix-replacements.md` or `references/applying-fixes.md` (or its conditional `references/rtl-jest-dom-fixes.md` row for RTL #4f), which is the point. A fix emitted with that field blank or paraphrased was written without the canonical replacement table and must be redone against it.
 
-**After all findings, append a summary table and top priorities:**
+**Put this summary table first in a complete semantic review; put Top Priorities after the findings. Do not repeat the counts at the end:**
 
 ```markdown
 ## Review Summary
@@ -138,7 +142,7 @@ The **§4.1 row** field is a slot, not a reminder: it cannot be filled without o
 3. **Add assertions** to 4 tests with zero verification (redirect, export, toggle, notification)
 ```
 
-The "Top N Priorities" section should list the 3-5 highest-impact fixes in concrete, actionable terms. This helps developers know where to start without scanning all P0 findings.
+The "Top N Priorities" section should list up to 3 highest-impact fixes in concrete, actionable terms. This helps developers know where to start without scanning all P0 findings.
 
 ### Output discipline
 
