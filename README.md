@@ -136,6 +136,8 @@ Because this run reports P0 findings, `e2e-skills scan` exits 1.
 
 **Executable example:** [React optimistic-write proof](examples/react-optimistic-write/README.md) shows why optimistic UI needs request and persistence proof, not just visible state.
 
+**Talk demo:** [Optimistic Like demo](examples/optimistic-like-demo/README.md) is a runnable app with two faults where a passing UI-only test does not prove the write.
+
 </details>
 
 ## Talk: Can You Trust E2E Tests That Pass?

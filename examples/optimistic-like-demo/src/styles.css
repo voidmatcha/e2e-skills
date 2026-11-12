@@ -1,0 +1,30 @@
+:root { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #262626; background: #fafafa; font-size: 20px; }
+body { margin: 0; }
+main { width: min(100% - 40px, 430px); margin: 0 auto; padding: 40px 0; }
+h1 { font-size: 0.8rem; font-weight: 500; color: #8e8e8e; margin: 0 0 14px; text-align: center; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.post { background: #fff; border: 1px solid #dbdbdb; border-radius: 10px; overflow: hidden; }
+.post-head { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 1rem; background: linear-gradient(135deg, #f58529, #dd2a7b 55%, #8134af); box-shadow: 0 0 0 2px #fff, 0 0 0 4px #e1306c55; }
+.username { font-weight: 600; font-size: 0.95rem; }
+.more { margin-left: auto; font-weight: 700; letter-spacing: 1px; color: #262626; }
+
+.photo { aspect-ratio: 1 / 1; width: 100%; background: linear-gradient(180deg, #ff9a62 0%, #ff6a88 45%, #6f5bd6 100%); }
+.photo svg { display: block; width: 100%; height: 100%; }
+
+.actions { display: flex; align-items: center; gap: 4px; padding: 8px 10px 4px; }
+.action, .like { display: inline-grid; place-items: center; width: 44px; height: 44px; }
+.save { margin-left: auto; }
+.icon { width: 28px; height: 28px; fill: none; stroke: #262626; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+button.like { padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+button.like:disabled { opacity: .4; }
+button.like[aria-pressed="true"] .heart { fill: #ed4956; stroke: #ed4956; animation: pop .45s cubic-bezier(.2,1.6,.4,1); }
+@keyframes pop { 0% { transform: scale(.6); } 60% { transform: scale(1.28); } 100% { transform: scale(1); } }
+
+.likes { margin: 0; padding: 0 14px; font-weight: 600; font-size: 0.95rem; }
+.caption { margin: 6px 0 0; padding: 0 14px; font-size: 0.95rem; line-height: 1.35; }
+.caption .username { margin-right: 6px; }
+.time { margin: 6px 0 0; padding: 0 14px; font-size: 0.72rem; color: #8e8e8e; text-transform: uppercase; letter-spacing: 0.02em; }
+[role="status"] { margin: 10px 0 0; padding: 10px 14px 12px; border-top: 1px solid #efefef; font-size: 0.85rem; font-weight: 600; color: #262626; }
+
+.error { margin: 0; padding: 0 14px 12px; font-size: 0.8rem; color: #c23947; }
