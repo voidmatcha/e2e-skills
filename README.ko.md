@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=ef256bc3cbf88e0f20e1f874f1f4befd29098acef609e8342c476cc7220d8145; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=0162e7c98847543d1d0133af333d698ba04a72e20fd6ab0b4b88c9d6f36ab870; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -110,7 +110,7 @@ test('shows the welcome message', async ({ page }) => {
 함께 제공되는 scanner는 별도 설정 없이, 실제 결과를 확인하지 않고도 통과하는 테스트 코드를 찾아냅니다. 아래는 텍스트 보고서입니다(`--format text`를 빼면 같은 결과를 JSON으로 출력합니다).
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills scan tests/ --format text
 Node source scan (canonical report view)
 Status: COMPLETE; confirmed P0: 2, P0 candidates: 0, unresolved locations: 0.
 Next:
@@ -165,7 +165,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 [메모 본문](docs/test-authoring-memo.md#the-memo)을 프로젝트의 `AGENTS.md`(Codex)나 `CLAUDE.md`(Claude Code)에 복사하되 기존 지침은 유지해주세요. 프로젝트 디렉터리에서 CLI로 넣을 수도 있습니다(Node.js 22+ 필요). `CLAUDE.md`에 넣으려면 `--host claude`를, 미리 보려면 `--dry-run`을 쓰세요. 이 명령은 skill 설치 없이 메모만 넣습니다:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project . --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills guidance --host codex --project . --memo
 ```
 
 ### 2. skill 설치하기
@@ -183,7 +183,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 일반적인 테스트 디렉터리라면 정적 검사에 약 30초가 걸립니다(Node.js 22+ 필요):
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
 ```
 
 보고서의 `INCOMPLETE`는 일부 코드를 분석하지 못했다는 뜻이므로, 종료 코드 0이어도 깨끗한 결과가 아닙니다([용어](docs/scanner-cli.md#glossary)).
@@ -227,8 +227,8 @@ npx --no-install playwright init-agents --loop=codex    # Codex
 agent가 실패 경로도 테스트하도록 하려면 [테스트 작성 메모](docs/test-authoring-memo.md)를 agent가 불러오는 instruction 파일에 추가할 수 있습니다. Claude Code는 E2E 테스트 디렉터리를, Codex는 저장소 루트를 지정하고, Codex를 E2E 테스트 디렉터리에서 시작한다면 그 디렉터리를 지정해주세요. 먼저 `--dry-run`을 붙여 미리 확인할 수 있습니다.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --host codex --project path/to/repository --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills guidance --host codex --project path/to/repository --memo
 ```
 
 개발 파일럿에서 가장 큰 차이를 만든 것은 메모 파일이었습니다. 메모 파일이 없을 때 skill이 잡은 실패 경로 fault는 Claude 54개 중 42개, Codex 54개 중 27개로, 루트 instruction 파일에 메모가 있을 때(53/54, 45/54)보다 적었습니다.
@@ -238,12 +238,12 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills guidance --h
 scanner는 skill을 설치하지 않아도 실행되므로 로컬이나 CI에서 바로 쓸 수 있습니다.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills scan path/to/tests --format text
 ```
 
 실제 저장소에서는 scan이 `INCOMPLETE`, 종료 코드 2로 끝나는 경우가 많습니다. 일부 코드를 분석하지 못했다는 뜻이지, 테스트가 실패했다는 뜻은 아닙니다. agent에게 같은 테스트에 `e2e-reviewer` skill을 실행해달라고 요청하세요. CI에서는 `--allow-incomplete`를 붙이면 종료 코드가 분석된 finding만 따릅니다. 보고서 읽는 법: `P0`(`[P0][CONFIRMED]`)는 아무것도 확인하지 않고도 통과할 수 있는 테스트로 기계적으로 확인된 것입니다. `LLM-TRIAGE`는 `e2e-reviewer` skill이 확인하거나 기각할 미확인 후보이고, `P0 candidate`(`[P0?]`)는 확인되면 P0가 되는 후보입니다. `provenance-unsupported`는 `page` 같은 값이 어디서 왔는지 scanner가 증명하지 못해 그 코드를 검사하지 않았다는 뜻입니다. 보고서의 다른 용어는 [용어집](docs/scanner-cli.md#glossary)에 정의되어 있습니다.
 
-`npx`가 `ETARGET`("No matching version found ... with a date before")으로 실패하면 `.npmrc`에 `min-release-age`가 설정되어 있는 것입니다. 이 설정은 지정한 일수보다 최근에 나온 릴리스를 숨깁니다. `.npmrc`는 고치지 말고 이 고정 버전 명령 하나에만 해제하세요: `npm_config_min_release_age=0 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan path/to/tests --format text`
+`npx`가 `ETARGET`("No matching version found ... with a date before")으로 실패하면 `.npmrc`에 `min-release-age`가 설정되어 있는 것입니다. 이 설정은 지정한 일수보다 최근에 나온 릴리스를 숨깁니다. `.npmrc`는 고치지 말고 이 고정 버전 명령 하나에만 해제하세요: `npm_config_min_release_age=0 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills scan path/to/tests --format text`
 
 ### 다른 설치 방법과 문제 해결
 
@@ -264,7 +264,7 @@ codex plugin add e2e-skills@voidmatcha
 skill이 보이지 않거나 생성이 계속 준비되지 않으면 읽기 전용 진단을 실행해주세요. 설치된 skill 복사본(오래된 중복 복사본과 제거된 debugger skill의 남은 복사본 포함), 공식 agent와 MCP 설정, 다음 단계를 보고하며 아무것도 바꾸지 않습니다.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills doctor --host claude --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills doctor --host claude --project /path/to/playwright-project
 ```
 
 Codex에서는 `--host codex`를 사용해주세요. 사전 요구 사항, 프로젝트 설정까지 준비하는 installer, 수동 설정은 [설치 가이드](docs/installation.md)를 참고해주세요.
@@ -395,7 +395,7 @@ Playwright/Cypress `test smell` 24개를 정리한 목록이며, 각 항목의 I
 AI agent에 요청하지 않고 코드 scanner만 직접 실행할 수 있습니다. 검토할 문제 후보를 찾는 tool이며, 테스트를 실행하거나 테스트가 의도한 동작을 검증하는지 판단하지는 않습니다.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills scan path/to/tests --format text
 ```
 
 Node.js 22 이상이 필요하며 TypeScript 파서는 함께 제공됩니다. npx는 캐시에 없는 패키지와 의존성을 내려받습니다. scanner 자체는 tool을 내려받거나 프로젝트 설정 코드를 불러오지 않으며 테스트도 실행하지 않습니다. 구조화된 결과는 `--format json`으로 확인하고, 전체 보고서는 `--report-file <new-file>`로 저장하세요. 기존 파일은 덮어쓰지 않습니다.

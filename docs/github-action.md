@@ -45,7 +45,7 @@ Outputs `report` and `json-report` are absolute file paths on the runner, availa
 
 ## Execution boundary
 
-The Action invokes `npx --yes --ignore-scripts --package=@voidmatcha/e2e-skills-scanner@3.5.0` from a fresh directory outside the checkout. The Action pins the 3.5.0 release package. Publish that package before making this Action version available; the Action does not build or run scanner sources from the checkout.
+The Action invokes `npx --yes --ignore-scripts --package=@voidmatcha/e2e-skills-scanner@3.5.1` from a fresh directory outside the checkout. The Action pins the 3.5.1 release package. Publish that package before making this Action version available; the Action does not build or run scanner sources from the checkout.
 
 The scanner receives a clean environment, empty user/global npm configuration and a fresh npm cache. Package retrieval uses `https://registry.npmjs.org`; the Action does not contact model services or call GitHub APIs. npm lifecycle scripts are disabled. The checkout's `.npmrc`, local binaries, ESLint configuration and test configuration are not executed. Configuration files may be read statically. The Action never passes the scanner's `--project-eslint` or `--trust-project` execution flags. This is not an OS network sandbox; ordinary runner and npm trust still apply.
 

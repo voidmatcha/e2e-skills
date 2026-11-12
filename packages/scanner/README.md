@@ -10,7 +10,7 @@
 ## Quick start
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.0 e2e-skills scan path/to/tests --format text --fail-on p0 --allow-incomplete
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.5.1 e2e-skills scan path/to/tests --format text --fail-on p0 --allow-incomplete
 ```
 
 `INCOMPLETE` means some code was not analysed: exit 0 with `INCOMPLETE` is not a clean result. The top of the report says how many locations were skipped and lists them under "Unresolved analysis"; `--format json` lists all of them under `execution.diagnostics`. Terms are explained in the [glossary](https://github.com/voidmatcha/e2e-skills/blob/main/docs/scanner-cli.md#glossary).

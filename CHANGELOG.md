@@ -1,11 +1,17 @@
 # Changelog
 
-## [Unreleased]
+## [3.5.1] - 2026-11-13
 
 ### Changed
 
-- `e2e-debugger` repairs clear test defects without asking. On Claude the 3.5.0 build (`b03a250f`) missed the test-defect guard rail (14 vs 16 and 5 vs 8 correct fixes against the memo arm). In the missed cells it stopped to ask before correcting a wrong expected literal or removing a too-short timeout override. Section 4 now lists the defects to fix without asking: a typo or stale locator; wrong test data, including an expected literal that both the app's seed data and the spec's other tests contradict (exact value, same matcher); a broken helper; an expected value matching a requirement the user named; and a per-assertion timeout override shorter than the app's own fixed delay (removed, never raised past the config default). Anything else is UNCLEAR.
-- Two rejected variants set the limits. S2 (`908568eb`) also fixed races and missed the flaky criterion, so mixed reruns are FLAKY and never reach section 4, even when a fix looks obvious. S3 (`47ed8a82`) applied "fails the same way every run" to app code and missed the app-edit criterion. Now a failure that repeats on every run never permits a product edit, and the test-defect class limits edits to the named test files at classification time. `failure-rules.md` is unchanged. Evals 11–14 cover both fixes and both guards. This build has not been measured yet.
+- `e2e-debugger`: on Claude, fixes clear test defects without asking first. Measurement (Claude only, 64 cells): app-code edits 0/16 vs 2/16 and 0/8 vs 0/8 against the comparison, test-defect fixes 16/16 and 8/8, no weakened assertions, flaky handling 11/12 vs 7/12. Cost: the pre-registered cost criterion was not met (1.34x the comparison, limit 1.30x, comparison measured on an older Claude Code build); a post-hoc same-host calibration gave 1.27x (bootstrap 95% interval 1.19 to 1.35). Codex was not re-measured for this change.
+- `e2e-reviewer`: asks what proves a write when a test asserts only optimistic UI (pattern #22 unchanged in ID and severity; ambiguous promises are recorded as NEEDS-CONTEXT). Checked on a like-button demo in 3 Claude runs: raised on the UI-only test 3/3, not raised on request-aware tests. Findings use a concise format.
+- Scanner: detects `force: true` options spread across multiple lines.
+- README: demo video replaced with the POST-removal demo and moved below the skills table.
+
+### Added
+
+- Examples: runnable React optimistic Like demo with two faults (`examples/optimistic-like-demo`).
 
 ## [3.5.0] - 2026-11-08
 
