@@ -169,7 +169,9 @@ def assert_write_evidence_discovery() -> None:
                          "awaited matching request/response", "asserted mocked request",
                          "server-backed reload/re-fetch", "failure-path assertion",
                          "Skip explicitly UI-only/client-only contracts", "NEEDS-CONTEXT",
-                         "not as a confirmed finding or count"):
+                         "not as a confirmed finding or count", "removed-call check",
+                         "deleted from the code path (not made to fail)",
+                         "same test or its hooks/fixtures"):
             assert required in text, f"missing write-evidence guard: {required}"
     for relative in ("semantic-review.md", "patterns/22.md"):
         text = _read(ROOT / "skills/e2e-reviewer/references" / relative)

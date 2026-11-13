@@ -1915,6 +1915,19 @@
         "False-positive guard: long-force.spec.ts:21 is force:false and must not be reported; it preserves actionability.",
         "Wrong argument positions and custom receivers must remain excluded; JUSTIFIED suppression policy is unchanged."
       ]
+    },
+    {
+      "id": 127,
+      "prompt": "Review files/write-removed-call.spec.ts. Supplied handler evidence: onSave runs `await saveProfile(form)` (PUT /api/profile) and then sets status to 'Profile saved' without reading the response; a rejected save sets an error instead. No separate acceptance contract is supplied. Do not execute the fixture.",
+      "expected_output": "Apply the removed-call check: the first test's status assertion would still pass if saveProfile() were deleted from onSave, so it is not write evidence; record NEEDS-CONTEXT. Clear the second test, which awaits the matching response and reloads to check server state.",
+      "files": [
+        "files/write-removed-call.spec.ts"
+      ],
+      "assertions": [
+        "True positive: write-removed-call.spec.ts:6 must be recorded as NEEDS-CONTEXT in Limitations/exclusions with the write-evidence question, stating that line 7 would still pass if the saveProfile() call were deleted from the handler (nothing left to await), so the post-await status is not write evidence. Do not treat 'set only after the awaited save resolves' as proof of the write.",
+        "False-positive guard: write-removed-call.spec.ts:14 must not be flagged for missing call or persistence proof and must not receive the write-evidence question: line 13 registers and line 15 awaits the matching PUT response, and lines 16-17 reload and assert the stored name.",
+        "Do not raise P0 or a confirmed #22 for line 6: the title does not promise persistence, so the gap stays NEEDS-CONTEXT and out of summary counts."
+      ]
     }
   ]
 }
