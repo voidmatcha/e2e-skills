@@ -22,8 +22,8 @@ npm run test:e2e
 |---|---|
 | `tests/like-shows-liked.spec.mjs` | UI only: heart, count, status text. Intentionally weak. |
 | `tests/like-sends-post.spec.mjs` | Waits for the `POST /api/like` request, then checks the UI. |
-| `tests/screen-only.spec.mjs` | Success path: waits for a 200 response, then checks the UI. |
-| `tests/waits-for-post.spec.mjs` | Rejection path: a 500 response must roll back `aria-pressed` and the count and show an error. |
+| `tests/like-response.spec.mjs` | Success path: waits for a 200 response, then checks the UI. |
+| `tests/like-rejected.spec.mjs` | Rejection path: a 500 response must roll back `aria-pressed` and the count and show an error. |
 
 ## Faults
 

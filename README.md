@@ -330,7 +330,7 @@ The entire frozen historical benchmark snapshot, including protocols, inputs, su
 
 The catalog contains 24 stable Playwright/Cypress test smells. The most common false-green shapes include Locator truthiness, missing assertions, swallowed errors, focused tests, missing authentication, and optimistic UI checks without network proof. See the [full taxonomy and rationale](docs/e2e-test-smells.md).
 
-Some patterns need the application in scope, not just the tests. `#22` optimistic UI is the clearest case: whether a click issues a mutation cannot be decided from a spec, so on a repository that holds tests alone the review reports nothing for it rather than guessing. That is deliberate false-positive control, and it is why the executable example ships with a component.
+Some patterns need the application in scope, not just the tests. `#22` optimistic UI is the clearest case: whether a click issues a mutation cannot be decided from a spec, so on a repository that holds tests alone the review reports nothing for it rather than guessing. Even with the component in scope, `#22` is raised only when a test or acceptance contract promises the write; on the clean like-button demo the reviewer recorded at most NEEDS-CONTEXT (0/3 findings). That is deliberate false-positive control.
 
 <details>
 <summary>All 24 patterns by severity</summary>

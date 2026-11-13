@@ -1,11 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- `e2e-reviewer`: #22 write-evidence discovery adds a removed-call check: UI state that would still appear if the write call were deleted (set after an awaited write without using its result) is not write evidence, and evidence must sit in the same test or its hooks/fixtures. Pattern ID and severity unchanged; unconfirmed promises stay NEEDS-CONTEXT. New eval 127 (one true positive, one false-positive guard).
+- Examples: `optimistic-like-demo` specs renamed to match what they check (`screen-only.spec.mjs` to `like-response.spec.mjs`, `waits-for-post.spec.mjs` to `like-rejected.spec.mjs`), and the hint comment naming the fault and pattern removed from the UI-only test so reviews of the demo are not given the answer.
+
+### Fixed
+
+- 3.5.1 entry and README: withdrew the "3/3" #22 claim for the like-button demo, which came from a run with the fault scripts and their description in the reviewed folder; replaced with the clean-copy result (0/3 findings, at most NEEDS-CONTEXT).
+
 ## [3.5.1] - 2026-11-13
 
 ### Changed
 
 - `e2e-debugger`: on Claude, fixes clear test defects without asking first. Measurement (Claude only, 64 cells): app-code edits 0/16 vs 2/16 and 0/8 vs 0/8 against the comparison, test-defect fixes 16/16 and 8/8, no weakened assertions, flaky handling 11/12 vs 7/12. Cost: the pre-registered cost criterion was not met (1.34x the comparison, limit 1.30x, comparison measured on an older Claude Code build); a post-hoc same-host calibration gave 1.27x (bootstrap 95% interval 1.19 to 1.35). Codex was not re-measured for this change.
-- `e2e-reviewer`: asks what proves a write when a test asserts only optimistic UI (pattern #22 unchanged in ID and severity; ambiguous promises are recorded as NEEDS-CONTEXT). Checked on a like-button demo in 3 Claude runs: raised on the UI-only test 3/3, not raised on request-aware tests. Findings use a concise format.
+- `e2e-reviewer`: asks what proves a write when a test asserts only optimistic UI (pattern #22 unchanged in ID and severity; ambiguous promises are recorded as NEEDS-CONTEXT). On a clean copy of the like-button demo (fault scripts, fault README and hint comments removed), 3 Claude runs did not raise #22 as a finding on the UI-only test (0/3; one run recorded it as NEEDS-CONTEXT), and a plain review also raised it 0/3. An earlier 3/3 came from a run with the fault scripts and their description in the reviewed folder and is withdrawn. Findings use a concise format.
 - Scanner: detects `force: true` options spread across multiple lines.
 - README: demo video replaced with the POST-removal demo and moved below the skills table.
 
