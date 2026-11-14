@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Examples: `optimistic-like-demo` uses the vertical post card shown in the talk, with an original illustration instead of third-party media. README demo video and GIF re-recorded from this example (real runs: with the POST removed, the UI-only test passes and the request test fails).
+
 ## [3.5.2] - 2026-11-14
 
 ### Changed

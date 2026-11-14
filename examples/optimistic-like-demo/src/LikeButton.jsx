@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getLike, postLike } from "./api.js";
 
 const USER = "mina.trails";
+const PLACE = "Dolomites";
+const CAPTION = "First light on the ridge.";
 const BASE_LIKES = 128;
 
 // Original line icons for the action row (not copied from any product).
@@ -57,35 +59,51 @@ export function LikeButton() {
 
   const likes = BASE_LIKES + (liked ? 1 : 0);
   return (
-    <article className="post">
-      <header className="post-head">
-        <span className="avatar" aria-hidden="true">M</span>
-        <span className="username">{USER}</span>
-        <span className="more" aria-hidden="true">···</span>
-      </header>
+    <div className="feed">
+      <article className="reel">
+        {/* Original vertical illustration, so the demo ships no third-party media. */}
+        <div className="reel-media" role="img" aria-label="Sunrise over a mountain ridge">
+          <svg viewBox="0 0 90 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#2E2A5C" />
+                <stop offset="0.55" stopColor="#C8628A" />
+                <stop offset="1" stopColor="#F6B27A" />
+              </linearGradient>
+            </defs>
+            <rect width="90" height="160" fill="url(#sky)" />
+            <circle cx="28" cy="58" r="11" fill="#FFE08A" />
+            <path d="M0 104 L16 82 L28 94 L44 70 L60 92 L74 80 L90 96 L90 160 L0 160 Z" fill="#4A3F78" />
+            <path d="M0 122 L14 106 L30 118 L46 100 L62 120 L78 108 L90 118 L90 160 L0 160 Z" fill="#2F2A55" />
+            <path d="M0 140 L20 128 L38 138 L56 126 L74 140 L90 132 L90 160 L0 160 Z" fill="#1E1B3A" />
+          </svg>
+        </div>
+        <div className="reel-shade" aria-hidden="true" />
 
-      <div className="photo" role="img" aria-label="Sunrise over a mountain ridge">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <circle cx="68" cy="34" r="13" fill="#FFE08A" />
-          <path d="M0 78 L22 48 L36 64 L52 40 L70 62 L84 52 L100 70 L100 100 L0 100 Z" fill="#3D3A6B" />
-          <path d="M0 88 L18 70 L34 82 L50 66 L66 84 L82 72 L100 86 L100 100 L0 100 Z" fill="#26243F" />
-        </svg>
-      </div>
+        <div className="rail">
+          <div className="rail-item">
+            <button type="button" className="like" aria-label="Like article" aria-pressed={liked} disabled={!ready || saving} onClick={likeArticle}>
+              <HeartIcon />
+            </button>
+            <p className="likes">{likes} likes</p>
+          </div>
+          <div className="rail-item" aria-hidden="true"><span className="action"><CommentIcon /></span><span className="rail-label">Comment</span></div>
+          <div className="rail-item" aria-hidden="true"><span className="action"><ShareIcon /></span><span className="rail-label">Share</span></div>
+          <div className="rail-item" aria-hidden="true"><span className="action"><SaveIcon /></span></div>
+        </div>
 
-      <div className="actions">
-        <button type="button" className="like" aria-label="Like article" aria-pressed={liked} disabled={!ready || saving} onClick={likeArticle}>
-          <HeartIcon />
-        </button>
-        <span className="action" aria-hidden="true"><CommentIcon /></span>
-        <span className="action" aria-hidden="true"><ShareIcon /></span>
-        <span className="action save" aria-hidden="true"><SaveIcon /></span>
-      </div>
+        <div className="meta">
+          <div className="author">
+            <span className="avatar" aria-hidden="true">M</span>
+            <span className="username">{USER}</span>
+            <span className="place">· {PLACE}</span>
+          </div>
+          <p className="caption">{CAPTION}</p>
+        </div>
+      </article>
 
-      <p className="likes">{likes} likes</p>
-      <p className="caption"><span className="username">{USER}</span> first light on the ridge.</p>
-      <p className="time">2 hours ago</p>
       <p role="status">{saving ? "Saving..." : liked ? "Liked!" : "Not liked yet."}</p>
       {error && <p className="error" role="alert">{error}</p>}
-    </article>
+    </div>
   );
 }

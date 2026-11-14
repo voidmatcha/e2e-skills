@@ -6,7 +6,7 @@ import "./styles.css";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <main>
-      <h1>Demo feed</h1>
+      <p className="demo-label">Demo app, not a real product</p>
       <LikeButton />
     </main>
   </StrictMode>,
