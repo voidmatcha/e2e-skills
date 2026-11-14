@@ -1,15 +1,19 @@
 # Changelog
 
-## [Unreleased]
+## [3.5.2] - 2026-11-14
 
 ### Changed
 
-- `e2e-reviewer`: #22 write-evidence discovery adds a removed-call check: UI state that would still appear if the write call were deleted (set after an awaited write without using its result) is not write evidence, and evidence must sit in the same test or its hooks/fixtures. Pattern ID and severity unchanged; unconfirmed promises stay NEEDS-CONTEXT. New eval 127 (one true positive, one false-positive guard).
+- `e2e-reviewer`: #22 write-evidence discovery adds a removed-call check: UI state that would still appear if the write call were deleted (set after an awaited write without using its result) is not write evidence, and evidence must sit in the same test or its hooks/fixtures. Pattern ID and severity unchanged; unconfirmed promises stay NEEDS-CONTEXT. New eval 127 (one true positive, one false-positive guard). Measured with Codex (gpt-6-astra, static review, 2 runs per cell) on four small apps written for this check, where deleting the write call leaves only the UI-only test passing and every UI-only test title promises the write: #22 raised as a finding 6/8 vs 4/8 with 3.5.1 (the gain is the comment app; the follow app, titled "keeps", stays NEEDS-CONTEXT in both), 0 false #22 findings on the request-checking and rejection tests. A Codex review without skills also pointed out the UI-only weakness 8/8, as a timing concern rather than a missing-call finding, so on these apps the change adds the #22 classification and the removed-call argument, not detection. One development-set case per app; not a held-out benchmark.
 - Examples: `optimistic-like-demo` specs renamed to match what they check (`screen-only.spec.mjs` to `like-response.spec.mjs`, `waits-for-post.spec.mjs` to `like-rejected.spec.mjs`), and the hint comment naming the fault and pattern removed from the UI-only test so reviews of the demo are not given the answer.
 
 ### Fixed
 
 - 3.5.1 entry and README: withdrew the "3/3" #22 claim for the like-button demo, which came from a run with the fault scripts and their description in the reviewed folder; replaced with the clean-copy result (0/3 findings, at most NEEDS-CONTEXT).
+
+### Notes
+
+- The scanner npm package stays at 3.5.1: nothing it ships changed, so README and docs keep the `@voidmatcha/e2e-skills-scanner@3.5.1` pins.
 
 ## [3.5.1] - 2026-11-13
 
