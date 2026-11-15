@@ -164,20 +164,33 @@ export function isWritten(source, checker, symbol, { properties = false, propert
       else if (ts.isSpreadAssignment(entry)) target(entry.expression);
     }
   }
-  walk(source, node => {
-    if (ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
-        node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) target(node.left);
-    if ((ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
-        [ts.SyntaxKind.PlusPlusToken, ts.SyntaxKind.MinusMinusToken].includes(node.operator)) target(node.operand);
-    if ((ts.isForInStatement(node) || ts.isForOfStatement(node)) && !ts.isVariableDeclarationList(node.initializer)) target(node.initializer);
-    if (properties && ts.isDeleteExpression(node)) target(node.expression);
-    if (properties) {
-      const mutated = objectMutationTarget(node);
-      if (mutated) target(mutated, true);
-    }
-  });
+  for (const [node, property] of writeSites(source, Boolean(properties))) target(node, property);
   results.set(key, found);
   return found;
+}
+
+// Which nodes isWritten inspects depends only on syntax and `properties`, so
+// one walk per immutable source lists them, in walk order, for every symbol.
+const writeSiteLists = new WeakMap();
+function writeSites(source, properties) {
+  let bySource = writeSiteLists.get(source);
+  if (!bySource) writeSiteLists.set(source, bySource = new Map());
+  if (bySource.has(properties)) return bySource.get(properties);
+  const sites = [];
+  walk(source, node => {
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+        node.operatorToken.kind <= ts.SyntaxKind.LastAssignment) sites.push([node.left, false]);
+    if ((ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) &&
+        [ts.SyntaxKind.PlusPlusToken, ts.SyntaxKind.MinusMinusToken].includes(node.operator)) sites.push([node.operand, false]);
+    if ((ts.isForInStatement(node) || ts.isForOfStatement(node)) && !ts.isVariableDeclarationList(node.initializer)) sites.push([node.initializer, false]);
+    if (properties && ts.isDeleteExpression(node)) sites.push([node.expression, false]);
+    if (properties) {
+      const mutated = objectMutationTarget(node);
+      if (mutated) sites.push([mutated, true]);
+    }
+  });
+  bySource.set(properties, sites);
+  return sites;
 }
 
 // Every write to `symbol` or a property alias of it is a plain

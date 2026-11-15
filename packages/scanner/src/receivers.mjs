@@ -1087,6 +1087,23 @@ export function createReceivers(bytes, filename, { scope } = {}) {
   // A binding whose own writes read it again (`s = s.trim()`) can only be
   // proved data by itself; answer false on re-entry instead of recursing.
   const activeBindings = new Set();
+  // Binary assignments and unary expressions on a plain identifier, in walk
+  // order with their symbols; collected once per file instead of per binding.
+  let identifierSites = null;
+  function identifierWrites() {
+    if (identifierSites) return identifierSites;
+    identifierSites = [];
+    walk(source, item => {
+      if (ts.isBinaryExpression(item) && item.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
+          item.operatorToken.kind <= ts.SyntaxKind.LastAssignment && ts.isIdentifier(unwrap(item.left))) {
+        identifierSites.push({ assignment: true, node: item, symbol: checker.getSymbolAtLocation(unwrap(item.left)) });
+      }
+      if ((ts.isPrefixUnaryExpression(item) || ts.isPostfixUnaryExpression(item)) && ts.isIdentifier(unwrap(item.operand))) {
+        identifierSites.push({ unary: true, node: item, symbol: checker.getSymbolAtLocation(unwrap(item.operand)) });
+      }
+    });
+    return identifierSites;
+  }
   function dataBinding(node) {
     const symbol = checker.getSymbolAtLocation(node), declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
     if (!declaration) return ['undefined', 'NaN', 'Infinity'].includes(node.text) && !symbol?.declarations?.length;
@@ -1107,14 +1124,11 @@ export function createReceivers(bytes, filename, { scope } = {}) {
       if (!(list.flags & ts.NodeFlags.Const)) {
         // Every write to a mutable binding must be a plain assignment of data.
         let writes = true;
-        walk(source, item => {
-          if (ts.isBinaryExpression(item) && item.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
-              item.operatorToken.kind <= ts.SyntaxKind.LastAssignment && ts.isIdentifier(unwrap(item.left)) &&
-              checker.getSymbolAtLocation(unwrap(item.left)) === symbol &&
-              (item.operatorToken.kind !== ts.SyntaxKind.EqualsToken || !dataValue(item.right))) writes = false;
-          if ((ts.isPrefixUnaryExpression(item) || ts.isPostfixUnaryExpression(item)) && ts.isIdentifier(unwrap(item.operand)) &&
-              checker.getSymbolAtLocation(unwrap(item.operand)) === symbol) writes = false;
-        });
+        for (const item of identifierWrites()) {
+          if (item.assignment && item.symbol === symbol &&
+              (item.node.operatorToken.kind !== ts.SyntaxKind.EqualsToken || !dataValue(item.node.right))) writes = false;
+          if (item.unary && item.symbol === symbol) writes = false;
+        }
         if (!writes || ts.isForOfStatement(list.parent)) return false;
       } else if (isWritten(source, checker, symbol)) return false;
       return dataValue(initial) && readOnlyBinding(symbol, declaration.name);

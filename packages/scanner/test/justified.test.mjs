@@ -71,3 +71,15 @@ test('unsupported lexical context preserves findings and reports diagnostics', (
   const outside = applyJustified(Buffer.from('work();'), file, [{ file, line: 2, severity: 'P1', patternId: '#1' }]);
   assert.equal(outside.diagnostics[0].code, 'invalid-finding-context');
 });
+
+test('coverage computed once per source is returned as fresh copies', () => {
+  const bytes = Buffer.from('// JUSTIFIED: delayed by design\npage.waitForTimeout(1);\n');
+  const first = justifiedCoverage(bytes, file);
+  first.coverage[0].line = 99;
+  first.coverage.push({ line: 7 });
+  first.diagnostics.push({ code: 'x' });
+  const second = justifiedCoverage(bytes, file);
+  assert.deepEqual(second.coverage.map(item => item.line), [2]);
+  assert.deepEqual(second.diagnostics, []);
+  assert.deepEqual(justifiedCoverage(bytes, '/source/other.spec.ts').coverage.map(item => item.line), [2]);
+});

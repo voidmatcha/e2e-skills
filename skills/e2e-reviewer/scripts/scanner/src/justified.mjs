@@ -2,7 +2,21 @@
 // Bounded lexical JUSTIFIED policy, ported from scan.sh _justified_lines_in_file.
 import { sourceModel, ts, validateSourceBytes, walk } from './source.mjs';
 
+// Every detector result of a file is filtered against the same coverage, so
+// compute it once per source buffer and name; callers get fresh copies.
+const coverageCache = new WeakMap();
 export function justifiedCoverage(bytes, filename) {
+  let byName = Buffer.isBuffer(bytes) ? coverageCache.get(bytes) : null;
+  if (Buffer.isBuffer(bytes) && !byName) coverageCache.set(bytes, byName = new Map());
+  let result = byName?.get(filename);
+  if (!result) {
+    result = computeJustifiedCoverage(bytes, filename);
+    byName?.set(filename, result);
+  }
+  return { coverage: result.coverage.map(entry => ({ ...entry })), diagnostics: result.diagnostics.map(item => ({ ...item })) };
+}
+
+function computeJustifiedCoverage(bytes, filename) {
   const text = validateSourceBytes(bytes);
   let lexicalText = text;
   if (/\.[jt]sx$/i.test(filename)) {
