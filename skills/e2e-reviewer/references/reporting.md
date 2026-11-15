@@ -57,7 +57,7 @@ After completing Phase 1 + 2 + 2.5, identify scenarios the test suite does NOT c
 
 ## Output Format
 
-For a complete semantic review, start with the Review Summary counts table below, then this evidence header, then findings grouped by severity. Targeted results start with this evidence header and retain their existing counting restrictions:
+For a complete semantic review, start with the Review Summary counts table below, then `Questions to answer before merging` when any item is NEEDS-CONTEXT, then this evidence header, then findings grouped by severity. Targeted results start with this evidence header and retain their existing counting restrictions:
 
 ```markdown
 ## Review Scope and Evidence
@@ -92,6 +92,8 @@ When `review.analysisTasks` is present, include its task IDs, source-backed disp
 For an executed portable probe, include its mode, frozen plan/digest, exact native selector, normal/changed/restored results, linked failure or observer artifacts, phase app provenance, approved commands/environment, original-input checks, and retained workspace paths in `Runtime evidence`. V2 `ASSERTION_SENSITIVE` proves assertion sensitivity only; it is not V3 `DETECTED`. Leave unmeasured V1–V6 rules explicitly unverified. Missing prepared runner or evidence means `recommended/unexecuted` or `CANNOT_VERIFY`, not a fabricated result.
 
 For V3, include the sourced behavior promise and `DETECTED` / `SURVIVED` / `CANNOT_VERIFY`. Missing promise, approval or evidence means `recommended/unexecuted` or `CANNOT_VERIFY`; do not manufacture a runtime result. `SURVIVED` alone never creates a catalog finding or changes severity. A valid `DETECTED` result proves only the exercised fault. Keep inconclusive runs and non-catalog observations in the evidence header rather than inventing a finding.
+
+**Questions to answer before merging:** every NEEDS-CONTEXT verdict, from any phase, appears here once, as `- path:line — #ID: <the one question the missing context must answer>`. Keep the supporting reasoning where it already lives (Static evidence or Limitations); this list only surfaces the question so it is not missed. Confirmed findings, FALSE-POSITIVE and SKIPPED-DORMANT verdicts never appear here, and a question is never counted as a finding. Omit the section when there is no NEEDS-CONTEXT item.
 
 Present findings grouped by severity:
 
@@ -148,7 +150,7 @@ The "Top N Priorities" section should list up to 3 highest-impact fixes in concr
 
 These constrain what the review says, not what it detects. They never change a pattern's ID, severity, or framework scope, and none of them is satisfied by reporting less than the catalog requires.
 
-- **Clean result:** report that no catalog findings were confirmed, and carry the evidence header's scope and limitation fields unchanged. Emit no findings rows, no `Coverage Gaps` list, and no selector, payload, coverage, style, or general-improvement advice — Phase 3 requires every gap to cite a confirmed Phase 1/2 finding, so a clean result has nothing to cite.
+- **Clean result:** report that no catalog findings were confirmed, and carry the evidence header's scope and limitation fields unchanged; still list NEEDS-CONTEXT items under `Questions to answer before merging`. Emit no findings rows, no `Coverage Gaps` list, and no selector, payload, coverage, style, or general-improvement advice — Phase 3 requires every gap to cite a confirmed Phase 1/2 finding, so a clean result has nothing to cite.
 - **Positive result:** report only confirmed catalog findings. Keep limitations in the `Limitations/exclusions` header field, never inside a finding or the summary. Do not relabel speculative advice as a non-blocking observation, nit, or optional improvement to get it past this rule: if it is not a confirmed catalog finding, it does not ship.
 - **One fix per finding:** give the single minimal evidence-backed fix. Add a second only when the pattern contract genuinely requires coordinated changes across files, and then say which change forces the other.
 - **Concrete patch consistency:** Before recommending code, trace the unchanged test input through the actual source predicate and proposed fixture to the expected output. Check every proposed positive sample satisfies all retained guards and every negative sample is excluded for the intended reason; preserve case sensitivity, normalization, types and exact selector text. For example, with unchanged input `note` and predicate `title.includes(query)`, `Note draft` is not a matching positive fixture; `note draft` is. Do not change the input or predicate merely to make the sample pass, or infer a new requirement from the current implementation. If the necessary source or requirement is missing, state the gap and omit an unsupported concrete patch. This source consistency check is not runtime proof and does not require execution or broaden a scanner-only request.
