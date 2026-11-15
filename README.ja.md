@@ -20,11 +20,11 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=070f96e96ffacd598d16a1edebf76fdf3b9f658d64416f9dee30be07366357bd; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=ad31f13fd7421297182d6ca26828099c0ea9bf2bfab72fb87d384876a3ed6e08; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
-**E2E テストは成功しています。では、機能は正しく動いていますか？** 人気の React リポジトリ 200 件のうち 34 件で、名前に書かれた機能が壊れていても成功し得るテストが見つかりました。[範囲と限界](#根拠と限界) · [データ](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
+**E2E テストは成功しています。では、機能は正しく動いていますか？** 人気の React リポジトリ 200 件のうち 34 件で、名前に書かれた機能が壊れていても成功し得るテストが見つかりました。[範囲と限界](#根拠と限界) · [データ](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) リンク先の HF スナップショットには訂正前の数値が残っています。[訂正内容](CHANGELOG.md#swallowed-wait-re-audit)を参照してください。
 
 `e2e-skills` は、テストが名前どおりの動作を実際に検証しているかを確認する手助けをします。まず[インストールして試す](#インストールして試す)から始めてください。無料のメモを追加し、skill をインストールして、30 秒のスキャンを実行します。
 
@@ -309,7 +309,7 @@ probe の実行には、信頼するプロジェクトと、環境変数・flag 
 
 発生率：Claude のソースレビューでは 34/200 件のリポジトリ（17.0%、95% CI 12.4–22.8%）が該当し、Claude と Codex が同じ箇所を確認したリポジトリは 32/200 件でした。数値には [timeout の再監査による訂正](CHANGELOG.md#swallowed-wait-re-audit)を反映しています。リンク先の HF スナップショットには訂正前の数値が残っています。[範囲と方法](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) · [結果](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)
 
-メモと healer：用意した regression 16 件の実験では、アプリコードの変更は 136 語の memo で 10/16 件、memo v5 で 0/16 件でした。Claude と Codex を別々に測定し、両方で同じ結果でした。測定時の構成では、プロジェクトの指示ファイルにメモが必要です。[実験条件と限界](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)
+メモと healer：用意した regression 16 件の実験では、アプリコードの変更は 136 語の memo で 10/16 件、memo v5 で 0/16 件でした。Claude と Codex を別々に測定し、両方で同じ結果でした。測定時の構成では、プロジェクトの指示ファイルにメモが必要です。[実験条件と限界](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md) 開発用データでの結果であり、ホールドアウト評価ではありません。[別の開発段階の追試](docs/test-authoring-memo.md#failure-handling)では、メモなしで各モデル 16/16 件、メモありで Claude 0/16 件、Codex 1/16 件でした。これらは別々の実験結果です。
 
 レビュー費用：Claude `claude-sonnet-5-5`、high effort の記録では 1 リポジトリ約 $1–2（追加サンプルの範囲：$0.58–1.96）でした。[費用表](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)
 
@@ -388,7 +388,7 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 
 ## 失敗デバッグ
 
-**3.5 で置き換え。** `playwright-debugger` と `cypress-debugger` は、薄い `e2e-debugger` 1 つに置き換えられました。実際の失敗ケース各 24 件で Claude を 2 回測定したところ、以前のデバッガーは通常のエージェントより正確ではなく（20/24 対 22/24、3.4.0 では 22/24 対 23/24）、コストは約 1.6–1.7 倍、実行時間は約 1.8 倍でした。失敗中のテストは普段の言葉（"This test is failing, fix it."）で依頼すると、[`e2e-debugger`](skills/e2e-debugger/SKILL.md) がその依頼に [test-authoring memo](docs/test-authoring-memo.md#failure-handling) の失敗時の項目を適用するため、instruction ファイルの設定は不要です。テストを retry なしで 3 回再実行し、結果が混在すれば FLAKY と報告して止まります。そうでなければアプリとテストのどちらが誤っているかを判断し、アプリの regression が疑われる場合は製品コードもテストも変えずに報告し、テストの欠陥が証明された場合だけテストを弱めずに修正して、変更した spec をスキャンし 3 回連続の成功を確認します。同じルールをプロンプトに貼り付けて公式 Playwright healer に修正を任せることもあります。根拠: [用意した healer 実験](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)で、Claude Sonnet 5.5 と Codex GPT-6 Sol はそれぞれ、136 語の memo では regression 16 件中 10 件でアプリコードを変更し、memo v5（301 語）では 0 件でした。両条件ともルートの instruction ファイルに memo を置き、各ケースを 1 回ずつ実行しました。この結果だけでは文言と長さの効果を切り分けられません。skill は instruction ファイルなしで失敗時の対処指針を届けますが、この届け方はまだ測定していません。assertion を弱めて成功させたテストには `e2e-reviewer` を使ってください。以前のインストールで残ったデバッガーのコピーについて、インストーラーと `e2e-skills doctor` は警告するだけで削除しません。使わない場合はご自身で削除してください。
+**3.5 で置き換え。** `playwright-debugger` と `cypress-debugger` は、薄い `e2e-debugger` 1 つに置き換えられました。実際の失敗ケース各 24 件で Claude を 2 回測定したところ、以前のデバッガーは通常のエージェントより正確ではなく（20/24 対 22/24、3.4.0 では 22/24 対 23/24）、コストは約 1.6–1.7 倍、実行時間は約 1.8 倍でした。失敗中のテストは普段の言葉（"This test is failing, fix it."）で依頼すると、[`e2e-debugger`](skills/e2e-debugger/SKILL.md) がその依頼に [test-authoring memo](docs/test-authoring-memo.md#failure-handling) の失敗時の項目を適用するため、instruction ファイルの設定は不要です。テストを retry なしで 3 回再実行し、結果が混在すれば FLAKY と報告して止まります。そうでなければアプリとテストのどちらが誤っているかを判断し、アプリの regression が疑われる場合は製品コードもテストも変えずに報告し、テストの欠陥が証明された場合だけテストを弱めずに修正して、変更した spec をスキャンし 3 回連続の成功を確認します。同じルールをプロンプトに貼り付けて公式 Playwright healer に修正を任せることもあります。根拠: [用意した healer 実験](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)で、Claude Sonnet 5.5 と Codex GPT-6 Sol はそれぞれ、136 語の memo では regression 16 件中 10 件でアプリコードを変更し、memo v5（301 語）では 0 件でした。 開発用データでの結果であり、ホールドアウト評価ではありません。[別の開発段階の追試](docs/test-authoring-memo.md#failure-handling)では、メモなしで各モデル 16/16 件、メモありで Claude 0/16 件、Codex 1/16 件でした。これらは別々の実験結果です。両条件ともルートの instruction ファイルに memo を置き、各ケースを 1 回ずつ実行しました。この結果だけでは文言と長さの効果を切り分けられません。skill は instruction ファイルなしで失敗時の対処指針を届けますが、この届け方はまだ測定していません。assertion を弱めて成功させたテストには `e2e-reviewer` を使ってください。以前のインストールで残ったデバッガーのコピーについて、インストーラーと `e2e-skills doctor` は警告するだけで削除しません。使わない場合はご自身で削除してください。
 
 ## スタンドアロンスキャナー
 

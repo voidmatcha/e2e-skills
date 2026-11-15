@@ -19,11 +19,11 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=070f96e96ffacd598d16a1edebf76fdf3b9f658d64416f9dee30be07366357bd; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=ad31f13fd7421297182d6ca26828099c0ea9bf2bfab72fb87d384876a3ed6e08; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
-**E2E 测试通过了，功能真的正常吗？** 在 200 个热门 React 仓库中，有 34 个存在这样的测试：它所命名的功能已经损坏，测试却仍可能通过。[范围与局限](#证据与限制) · [数据](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
+**E2E 测试通过了，功能真的正常吗？** 在 200 个热门 React 仓库中，有 34 个存在这样的测试：它所命名的功能已经损坏，测试却仍可能通过。[范围与局限](#证据与限制) · [数据](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) 链接的 HF 快照仍保留更正前的数字；请参阅[更正记录](CHANGELOG.md#swallowed-wait-re-audit)。
 
 `e2e-skills` 帮助检查测试是否真正验证了名称所描述的行为。请先从[安装并试用](#安装并试用)开始：添加免费备忘录，安装 skill，然后运行 30 秒扫描。
 
@@ -308,7 +308,7 @@ probe 执行需要可信项目，以及对包括环境变量和 flag 在内的�
 
 出现比例：Claude 源码审查确认了 34/200 个仓库（17.0%，95% CI 12.4–22.8%）；Claude 和 Codex 在同一位置均确认问题的仓库为 32/200 个。这些数字已反映 [timeout 复核更正](CHANGELOG.md#swallowed-wait-re-audit)；链接的 HF 快照仍保留原始数字。[范围与方法](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) · [结果](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)
 
-备忘录与 healer：在准备好的 16 个 regression 案例中，使用 136 词 memo 时有 10/16 次修改应用代码，使用 memo v5 时为 0/16 次。Claude 和 Codex 分别测量，结果相同。测量时的配置要求项目指令文件中包含备忘录。[实验条件与局限](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)
+备忘录与 healer：在准备好的 16 个 regression 案例中，使用 136 词 memo 时有 10/16 次修改应用代码，使用 memo v5 时为 0/16 次。Claude 和 Codex 分别测量，结果相同。测量时的配置要求项目指令文件中包含备忘录。[实验条件与局限](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md) 这些是开发数据上的结果，不是留出集评估。[另一项开发阶段的复现实验](docs/test-authoring-memo.md#failure-handling)报告：不加备忘录时，两个模型各为 16/16；加入后，Claude 为 0/16，Codex 为 1/16。这些是不同实验的结果。
 
 审查费用：记录中的 Claude `claude-sonnet-5-5`、high effort 运行每个仓库约 $1–2（扩展样本范围 $0.58–1.96）。[费用表](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)
 
@@ -387,7 +387,7 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 
 ## 失败调试
 
-**3.5 起替换。** 一个精简的 `e2e-debugger` 取代了 `playwright-debugger` 和 `cypress-debugger`。在两次 Claude 测量中（各 24 个真实失败案例），旧的调试器并不比普通代理更准确（20/24 对 22/24；在 3.4.0 上 22/24 对 23/24），成本约为 1.6–1.7 倍，运行时间约为 1.8 倍。测试失败时，用日常语言提出请求（"This test is failing, fix it."），[`e2e-debugger`](skills/e2e-debugger/SKILL.md) 会在该请求中应用 [test-authoring memo](docs/test-authoring-memo.md#failure-handling) 的失败处理条目，因此无需设置 instruction 文件。它在关闭重试的情况下重跑测试三次，结果有成有败时报告 FLAKY 并停止；否则判断是应用还是测试有误：疑似应用回归时不改产品代码也不改测试，只报告；只有在证明是测试缺陷时才在不削弱测试的前提下修复，然后扫描改动的 spec 并要求连续三次通过。它也可能把修复交给官方 Playwright healer，并把同样的规则粘贴进提示。依据：在[准备好的 healer 实验](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)中，Claude Sonnet 5.5 和 Codex GPT-6 Sol 各自在使用 136 词 memo 时修改了 16 个 regression 案例中 10 个的应用代码，使用 memo v5（301 词）时为 0 个。两组都把 memo 放在根目录的 instruction 文件中，每个案例运行一次。这一结果无法区分措辞与篇幅的影响。该 skill 不依赖 instruction 文件来传递失败处理指引，这种传递方式尚未测量。对于通过削弱断言而变绿的测试，请使用 `e2e-reviewer`。对于旧安装遗留的调试器副本，安装器和 `e2e-skills doctor` 只发出警告，不会删除；如果不再使用，请自行删除。
+**3.5 起替换。** 一个精简的 `e2e-debugger` 取代了 `playwright-debugger` 和 `cypress-debugger`。在两次 Claude 测量中（各 24 个真实失败案例），旧的调试器并不比普通代理更准确（20/24 对 22/24；在 3.4.0 上 22/24 对 23/24），成本约为 1.6–1.7 倍，运行时间约为 1.8 倍。测试失败时，用日常语言提出请求（"This test is failing, fix it."），[`e2e-debugger`](skills/e2e-debugger/SKILL.md) 会在该请求中应用 [test-authoring memo](docs/test-authoring-memo.md#failure-handling) 的失败处理条目，因此无需设置 instruction 文件。它在关闭重试的情况下重跑测试三次，结果有成有败时报告 FLAKY 并停止；否则判断是应用还是测试有误：疑似应用回归时不改产品代码也不改测试，只报告；只有在证明是测试缺陷时才在不削弱测试的前提下修复，然后扫描改动的 spec 并要求连续三次通过。它也可能把修复交给官方 Playwright healer，并把同样的规则粘贴进提示。依据：在[准备好的 healer 实验](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)中，Claude Sonnet 5.5 和 Codex GPT-6 Sol 各自在使用 136 词 memo 时修改了 16 个 regression 案例中 10 个的应用代码，使用 memo v5（301 词）时为 0 个。 这些是开发数据上的结果，不是留出集评估。[另一项开发阶段的复现实验](docs/test-authoring-memo.md#failure-handling)报告：不加备忘录时，两个模型各为 16/16；加入后，Claude 为 0/16，Codex 为 1/16。这些是不同实验的结果。两组都把 memo 放在根目录的 instruction 文件中，每个案例运行一次。这一结果无法区分措辞与篇幅的影响。该 skill 不依赖 instruction 文件来传递失败处理指引，这种传递方式尚未测量。对于通过削弱断言而变绿的测试，请使用 `e2e-reviewer`。对于旧安装遗留的调试器副本，安装器和 `e2e-skills doctor` 只发出警告，不会删除；如果不再使用，请自行删除。
 
 ## 独立扫描器
 
