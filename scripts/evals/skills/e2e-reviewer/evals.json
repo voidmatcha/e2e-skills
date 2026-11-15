@@ -1928,6 +1928,18 @@
         "False-positive guard: write-removed-call.spec.ts:14 must not be flagged for missing call or persistence proof and must not receive the write-evidence question: line 13 registers and line 15 awaits the matching PUT response, and lines 16-17 reload and assert the stored name.",
         "Do not raise P0 or a confirmed #22 for line 6: the title does not promise persistence, so the gap stays NEEDS-CONTEXT and out of summary counts."
       ]
+    },
+    {
+      "id": 128,
+      "prompt": "Review files/questions-section.spec.ts as a complete semantic review. Supplied handler evidence: onSave runs `await saveProfile(form)` (PUT /api/profile) and then sets status to 'Profile saved' without reading the response. No separate acceptance contract is supplied. Do not execute the fixture.",
+      "expected_output": "Confirm the #4f always-truthy Locator at line 13 as a P0 finding. Record line 6 as NEEDS-CONTEXT with the removed-call write-evidence question, and list that question under `Questions to answer before merging` after the Review Summary and before the evidence header.",
+      "files": [
+        "files/questions-section.spec.ts"
+      ],
+      "assertions": [
+        "True positive: questions-section.spec.ts:6 must appear under a `Questions to answer before merging` section placed after the Review Summary and before `Review Scope and Evidence`, as one line naming the path:line, #22 and the write-evidence question (what proves the save beyond the status text, which would still appear if saveProfile() were deleted).",
+        "False-positive guard: the confirmed #4f P0 at questions-section.spec.ts:13 (`expect(locator).toBeTruthy()` is always true) must be reported as a finding and must not be repeated in `Questions to answer before merging`; the question for line 6 is not counted in the Review Summary totals."
+      ]
     }
   ]
 }

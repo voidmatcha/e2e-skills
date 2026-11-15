@@ -6,6 +6,7 @@
 
 ### Changed
 
+- `e2e-reviewer`: every NEEDS-CONTEXT verdict is also listed once under `Questions to answer before merging`, right after the Review Summary, as `path:line — #ID: question`; the reasoning stays in Static evidence or Limitations, and questions are never counted as findings. On a clean copy of the like-button demo (Claude, 3 runs) the removed-call #22 question stayed 3/3 and moved from the evidence header to that section in 3/3 (0/3 before); no P0 findings, reports 11% shorter. New eval 128. One small demo, not a held-out benchmark.
 - Examples: `optimistic-like-demo` uses the vertical post card shown in the talk, playing an 8-second CC0 waterfall clip from Wikimedia Commons (credited in the example README) instead of third-party media. README demo video and GIF re-recorded from this example (real runs: with the POST removed, the UI-only test passes and the request test fails). The README now plays the video inline (GitHub-hosted copy of `docs/assets/demo.mp4`), with the MP4 and GIF kept as downloads.
 
 ### Fixed
