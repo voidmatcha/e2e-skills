@@ -58,7 +58,8 @@ test('--allow-incomplete exits by the policy on analyzed findings and reports wh
 
 test('--allow-incomplete never tolerates inventory failures or other scan modes', t => {
   const root = project(t, { 'tests/a.spec.ts': unresolved + '});\n' });
-  fs.symlinkSync(path.join(root, 'tests', 'a.spec.ts'), path.join(root, 'tests', 'link.spec.ts'));
+  // A dangling link: an in-root link to a scanned file would only be an alias.
+  fs.symlinkSync(path.join(root, 'tests', 'missing.spec.ts'), path.join(root, 'tests', 'link.spec.ts'));
   const broken = scan(root, '--format', 'json', '--allow-incomplete');
   assert.equal(broken.status, 2);
   assert.equal(broken.report.execution.allowIncomplete.applied, false);
@@ -69,9 +70,12 @@ test('--allow-incomplete never tolerates inventory failures or other scan modes'
 
 test('a symbolic link is listed as not analysed while the regular files beside it are scanned', t => {
   const root = project(t, { 'tests/a.spec.ts': "import { test, expect } from '@playwright/test';\n" +
-    "test('t', async ({ page }) => {\n  expect(page.getByRole('main')).toBeTruthy();\n});\n", 'shared/rules/a.md': 'x\n' });
+    "test('t', async ({ page }) => {\n  expect(page.getByRole('main')).toBeTruthy();\n});\n" });
+  // Outside the scan root, so not an alias of scanned code.
+  const shared = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'scanner-ci-shared-')));
+  t.after(() => fs.rmSync(shared, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, '.claude'));
-  fs.symlinkSync(path.join(root, 'shared', 'rules'), path.join(root, '.claude', 'rules'));
+  fs.symlinkSync(shared, path.join(root, '.claude', 'rules'));
   const result = scan(root, '--format', 'json', '--allow-incomplete');
   assert.equal(result.status, 2);
   assert.equal(result.report.execution.allowIncomplete.applied, false);

@@ -4832,12 +4832,15 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
             encoding="utf-8",
         )
 
-        aborted = run_public_scan(app)
-        # The link is listed as not analysed; the regular files beside it,
-        # including the loose spec, are still scanned.
-        assert_inventory_rejected(scan_canonical(app), {("unsupported-entry", "src")}, findings={"smoke.spec.ts:3"})
-        # Human output directs users to JSON; exact src identity is verified above.
-        assert_preflight_abort_is_actionable(aborted, entry_count=1)
+        # src links to shared/src, which this scan inventories itself: the
+        # link is a second name for scanned code, listed as linked, never
+        # followed, and the run is complete (exit 1 for the loose P0).
+        linked = scan_canonical(app)
+        assert linked["execution"]["complete"] is True, linked
+        assert linked["execution"]["exitCode"] == 1, linked
+        assert [(Path(item["file"]).name, Path(item["target"]).relative_to(app.resolve()).as_posix(), item["kind"])
+                for item in linked["aliased"]] == [("src", "shared/src", "directory")], linked
+        assert {f"{Path(item['file']).name}:{item['line']}" for item in linked["findings"]} == {"smoke.spec.ts:3"}, linked
 
         # The largest link-free directory scans completely, but on its own it
         # misses the loose P0 and still ends in a clean Summary. This is why

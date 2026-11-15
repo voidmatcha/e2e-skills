@@ -115,6 +115,8 @@ export function formatLegacyReport(report, { root, verbose = false, unresolvedIm
     `Review obligations: ${report.review.obligations.length} unresolved location(s) covered by reviewing a retained candidate.`,
     `Unresolved analysis: ${gaps.length} location(s) in ${gapFiles} file(s), not findings; ${report.review.analysisTasks?.length ?? 0} of them are source-linked review tasks; execution status unchanged.`,
   );
+  if (Array.isArray(report.aliased) && report.aliased.length) headers.push(
+    `Linked: ${report.aliased.length} symbolic link(s) inside the scan root point to an already scanned path; not followed, not counted as incomplete.`);
   if (Array.isArray(report.outOfScope) && report.outOfScope.length) headers.push(
     `Out of scope: ${report.outOfScope.length} file(s) use a test runner outside the supported frameworks (docs/framework-scope.md); they were not analysed and are not counted as incomplete.`);
   if (Array.isArray(report.trustedModules) && report.trustedModules.length) headers.push(

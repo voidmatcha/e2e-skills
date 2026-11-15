@@ -364,6 +364,7 @@ if (process.argv.slice(2).includes('--check-report')) {
           .map(({ path, sha256 }) => ({ path, sha256 })) } : null,
       ...(trustedModules.size ? { trustedModules: [...trustedModules].map(([specifier, file]) => ({ specifier, path: file })) } : {}),
       ...(outOfScope.length ? { outOfScope } : {}),
+      ...(baseline.aliased?.length ? { aliased: baseline.aliased.map(({ path: file, target, kind }) => ({ file, target, kind })) } : {}),
       files: baseline.candidates.length, findings: deduplicated.findings.map(publicFinding),
       duplicates: deduplicated.duplicates.map(({ finding, retained, reason, ruleClass }) => ({
         finding: publicFinding(finding), retained: publicFinding(retained), reason, ruleClass })),

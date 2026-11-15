@@ -65,6 +65,7 @@ export function render(report, settings) {
   const lines = [`Scanner: ${PACKAGE}`, `Confirmed P0: ${confirmed}`, `Review candidates: ${candidates}`,
     `Execution complete: ${report.execution.complete}`, `Exit code: ${report.execution.exitCode}`,
     'Static checks only. Candidates need review; a passing scan does not prove fault detection.'];
+  if (Array.isArray(report.aliased) && report.aliased.length) lines.push(`Linked: ${report.aliased.length} symbolic link(s) to already scanned paths; not followed.`);
   if (!report.execution.complete) lines.push('INCOMPLETE: some code was not analysed.', ...report.execution.incomplete);
   for (const hit of report.findings) {
     const location = path.relative(settings.root, hit.file) || path.basename(hit.file);

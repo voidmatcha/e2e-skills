@@ -72,10 +72,12 @@ function specialCanHideSource(file, stat) {
   }
   return SOURCE_ROOTS.has(path.basename(file));
 }
-function walk(root, errors, context, unanalyzed) {
+function walk(root, errors, context, unanalyzed, aliased) {
   const directFixture = INTENTIONAL_FIXTURES.test(root.canonical);
   const selfExclude = context.selfRepositoryScope && !directFixture;
   const files = [];
+  const directories = new Set();
+  const links = [];
   function visit(file) {
     if (excludedTree(file) || (selfExclude && INTENTIONAL_FIXTURES.test(file))) return;
     const stat = fs.lstatSync(file, { bigint: true });
@@ -90,6 +92,7 @@ function walk(root, errors, context, unanalyzed) {
       if (fs.realpathSync(file) !== file || !same(stat, fs.lstatSync(file, { bigint: true }))) {
         throw new Error(`directory identity changed before traversal: ${file}`);
       }
+      directories.add(file);
       const names = fs.readdirSync(file, { encoding: 'buffer' });
       for (const bytes of names) {
         const name = bytes.toString('utf8');
@@ -102,16 +105,33 @@ function walk(root, errors, context, unanalyzed) {
     } else if (stat.isFile()) {
       if (root.kind === 'file' || (isCode(path.basename(file)) && !file.split(path.sep).some(part => ['.yarn', '.pnp.cjs', '.pnp.loader.mjs'].includes(part) || /\.min\.(js|ts)$/.test(part)) && !['.pnp.cjs', '.pnp.loader.mjs'].includes(path.basename(file)))) files.push(file);
     } else if (specialCanHideSource(file, stat)) {
-      // Listed as not analysed; the regular files beside it are still scanned
-      // and the run stays incomplete.
-      unanalyzed.push(error('unsupported-entry', file, stat.isSymbolicLink() ? 'symbolic link' : stat.isFIFO() ? 'FIFO' : 'non-regular entry'));
+      // A link is decided after the walk; anything else is listed as not
+      // analysed, the regular files beside it are still scanned and the run
+      // stays incomplete.
+      if (stat.isSymbolicLink() && root.kind === 'directory') links.push(file);
+      else unanalyzed.push(error('unsupported-entry', file, stat.isSymbolicLink() ? 'symbolic link' : stat.isFIFO() ? 'FIFO' : 'non-regular entry'));
     }
   }
   visit(root.canonical);
+  // A link whose real path is a directory or candidate file this walk itself
+  // inventoried is a second name for code already scanned: list it as aliased.
+  // Links outside the root, dangling, into excluded trees or to anything not
+  // inventoried stay unsupported. The link is never followed for reading.
+  const inventoried = new Set(files);
+  for (const link of links) {
+    let target = null;
+    try { target = fs.realpathSync(link); } catch (cause) {
+      if (!['ENOENT', 'ENOTDIR', 'ELOOP', 'EACCES'].includes(cause.code)) throw cause;
+    }
+    if (target !== null && (directories.has(target) || inventoried.has(target))) {
+      aliased.push({ path: link, target, kind: directories.has(target) ? 'directory' : 'file' });
+    } else unanalyzed.push(error('unsupported-entry', link, 'symbolic link'));
+  }
+  aliased.sort((a, b) => byteSort(a.path, b.path));
   return files.sort(byteSort);
 }
 export function inventory(requested) {
-  const report = { schema: 'node-candidate-inventory-v1', complete: false, root: null, projectContext: null, candidates: [], errors: [], unanalyzed: [] };
+  const report = { schema: 'node-candidate-inventory-v1', complete: false, root: null, projectContext: null, candidates: [], errors: [], unanalyzed: [], aliased: [] };
   try {
     const root = inspectRoot(path.resolve(requested));
     report.root = root;
@@ -121,7 +141,7 @@ export function inventory(requested) {
     if (!context.complete) {
       report.errors.push(error('project-context-unavailable', root.canonical, 'project marker discovery could not be validated')); return report;
     }
-    const files = walk(root, report.errors, context, report.unanalyzed);
+    const files = walk(root, report.errors, context, report.unanalyzed, report.aliased);
     guardRoot(root);
     if (report.errors.length) return report;
     for (const file of files) {
@@ -147,7 +167,8 @@ function validBaseline(expected) {
       !['directory', 'file'].includes(root.kind) || !Array.isArray(root.identity) ||
       root.identity.length !== 3 || !root.identity.every(value => typeof value === 'string' && /^\d+$/.test(value)) ||
       !Array.isArray(expected.candidates) || !Array.isArray(expected.errors) || expected.errors.length !== 0 ||
-      (expected.unanalyzed !== undefined && !Array.isArray(expected.unanalyzed))) return false;
+      (expected.unanalyzed !== undefined && !Array.isArray(expected.unanalyzed)) ||
+      (expected.aliased !== undefined && !Array.isArray(expected.aliased))) return false;
   const seen = new Set();
   for (const item of expected.candidates) {
     if (!item || typeof item.path !== 'string' || !path.isAbsolute(item.path) || seen.has(item.path) ||
@@ -179,6 +200,10 @@ export function revalidate(expected) {
   const entries = list => JSON.stringify(list.map(item => [item.path, item.detail]));
   if (entries(current.unanalyzed) !== entries(expected.unanalyzed ?? [])) {
     current.errors.push(error('unanalyzed-drift', current.root.canonical, 'unsupported entries changed'));
+  }
+  const links = list => JSON.stringify(list.map(item => [item.path, item.target, item.kind]));
+  if (links(current.aliased) !== links(expected.aliased ?? [])) {
+    current.errors.push(error('aliased-drift', current.root.canonical, 'linked entries changed'));
   }
   for (const [file, identity] of previous) if (actual.has(file) &&
       [...FIELDS, 'sha256'].some(key => identity[key] !== actual.get(file)[key])) {

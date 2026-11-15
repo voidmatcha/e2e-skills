@@ -30,16 +30,16 @@
       "sha256": "19ccd30551805517ca93d37bb52115897e754a4055306d7fe6a55f0a863eab3a"
     },
     "src/cli.mjs": {
-      "bytes": 26545,
-      "sha256": "15be6e6fa5716c8a55467216f2e2e2c66963e771ac67903092fd661736520b04"
+      "bytes": 26683,
+      "sha256": "01b75e58ac69a13756e8733444cf7dbc4af2c669c1a50818f2afa2de9f3c3d97"
     },
     "src/collections.mjs": {
       "bytes": 4159,
       "sha256": "06fcfba9b554648c6773c2b476f5af6b80a18730ee06038f2467ad78a9850a0f"
     },
     "src/compat-report.mjs": {
-      "bytes": 18061,
-      "sha256": "1262c10af05d6dcf29f94577df3e475da40f75dbce0f9c55ae59cd65b942ed23"
+      "bytes": 18291,
+      "sha256": "222ee913e8df90e1484ce61fb756cad6fc50363da78bd395c9f328ef22fa03da"
     },
     "src/conditional-assertions.mjs": {
       "bytes": 85292,
@@ -74,8 +74,8 @@
       "sha256": "41c8191bb7934889510c8bd5d6ff76af472f3fa5f9ee2257d0bc48d9b8c4b45f"
     },
     "src/diagnostics.mjs": {
-      "bytes": 8719,
-      "sha256": "f88eccfc28b14d04573c23c1ddfe3a305d370aa25fc65a56d77147d14c0471a9"
+      "bytes": 8736,
+      "sha256": "e5a8661908792594e5b13b5e432a3658377da1c6d5386a2bd18438db34741b78"
     },
     "src/dom-queries.mjs": {
       "bytes": 6576,
@@ -94,8 +94,8 @@
       "sha256": "b1b52323a5c4d0340e2e5b7b31bf5ca3ef28c293d18cda45ef779a7591ee4ac3"
     },
     "src/inventory.mjs": {
-      "bytes": 11603,
-      "sha256": "4089d9b84ee735c30c9a99cf86e7ad994a963119742d15fbbfd697303fc07e1d"
+      "bytes": 13081,
+      "sha256": "55c75b959b3161eb38791d07c4b88686f38fb4c003604712849d770e7e593d32"
     },
     "src/justified.mjs": {
       "bytes": 7095,
@@ -805,10 +805,10 @@
     },
     {
       "output": "src/cli.mjs",
-      "output_sha256": "15be6e6fa5716c8a55467216f2e2e2c66963e771ac67903092fd661736520b04",
+      "output_sha256": "01b75e58ac69a13756e8733444cf7dbc4af2c669c1a50818f2afa2de9f3c3d97",
       "rewrite": null,
       "source": "src/cli.mjs",
-      "source_sha256": "15be6e6fa5716c8a55467216f2e2e2c66963e771ac67903092fd661736520b04"
+      "source_sha256": "01b75e58ac69a13756e8733444cf7dbc4af2c669c1a50818f2afa2de9f3c3d97"
     },
     {
       "output": "src/collections.mjs",
@@ -819,10 +819,10 @@
     },
     {
       "output": "src/compat-report.mjs",
-      "output_sha256": "1262c10af05d6dcf29f94577df3e475da40f75dbce0f9c55ae59cd65b942ed23",
+      "output_sha256": "222ee913e8df90e1484ce61fb756cad6fc50363da78bd395c9f328ef22fa03da",
       "rewrite": null,
       "source": "src/compat-report.mjs",
-      "source_sha256": "1262c10af05d6dcf29f94577df3e475da40f75dbce0f9c55ae59cd65b942ed23"
+      "source_sha256": "222ee913e8df90e1484ce61fb756cad6fc50363da78bd395c9f328ef22fa03da"
     },
     {
       "output": "src/conditional-assertions.mjs",
@@ -882,10 +882,10 @@
     },
     {
       "output": "src/diagnostics.mjs",
-      "output_sha256": "f88eccfc28b14d04573c23c1ddfe3a305d370aa25fc65a56d77147d14c0471a9",
+      "output_sha256": "e5a8661908792594e5b13b5e432a3658377da1c6d5386a2bd18438db34741b78",
       "rewrite": null,
       "source": "src/diagnostics.mjs",
-      "source_sha256": "f88eccfc28b14d04573c23c1ddfe3a305d370aa25fc65a56d77147d14c0471a9"
+      "source_sha256": "e5a8661908792594e5b13b5e432a3658377da1c6d5386a2bd18438db34741b78"
     },
     {
       "output": "src/dom-queries.mjs",
@@ -917,10 +917,10 @@
     },
     {
       "output": "src/inventory.mjs",
-      "output_sha256": "4089d9b84ee735c30c9a99cf86e7ad994a963119742d15fbbfd697303fc07e1d",
+      "output_sha256": "55c75b959b3161eb38791d07c4b88686f38fb4c003604712849d770e7e593d32",
       "rewrite": null,
       "source": "src/inventory.mjs",
-      "source_sha256": "4089d9b84ee735c30c9a99cf86e7ad994a963119742d15fbbfd697303fc07e1d"
+      "source_sha256": "55c75b959b3161eb38791d07c4b88686f38fb4c003604712849d770e7e593d32"
     },
     {
       "output": "src/justified.mjs",
