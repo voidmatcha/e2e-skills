@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { getLike, postLike } from "./api.js";
 
 const USER = "mina.trails";
-const PLACE = "Dolomites";
-const CAPTION = "First light on the ridge.";
+const PLACE = "Huascarán, Peru";
+const CAPTION = "Morning sound at the falls.";
 const BASE_LIKES = 128;
 
 // Original line icons for the action row (not copied from any product).
@@ -61,23 +61,9 @@ export function LikeButton() {
   return (
     <div className="feed">
       <article className="reel">
-        {/* Original vertical illustration, so the demo ships no third-party media. */}
-        <div className="reel-media" role="img" aria-label="Sunrise over a mountain ridge">
-          <svg viewBox="0 0 90 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <defs>
-              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor="#2E2A5C" />
-                <stop offset="0.55" stopColor="#C8628A" />
-                <stop offset="1" stopColor="#F6B27A" />
-              </linearGradient>
-            </defs>
-            <rect width="90" height="160" fill="url(#sky)" />
-            <circle cx="28" cy="58" r="11" fill="#FFE08A" />
-            <path d="M0 104 L16 82 L28 94 L44 70 L60 92 L74 80 L90 96 L90 160 L0 160 Z" fill="#4A3F78" />
-            <path d="M0 122 L14 106 L30 118 L46 100 L62 120 L78 108 L90 118 L90 160 L0 160 Z" fill="#2F2A55" />
-            <path d="M0 140 L20 128 L38 138 L56 126 L74 140 L90 132 L90 160 L0 160 Z" fill="#1E1B3A" />
-          </svg>
-        </div>
+        {/* CC0 clip from Wikimedia Commons; credit in this example's README. */}
+        <video className="reel-media" src="/media/waterfall.mp4" poster="/media/waterfall-poster.jpg"
+          autoPlay muted loop playsInline aria-label="Waterfall in a forest" />
         <div className="reel-shade" aria-hidden="true" />
 
         <div className="rail">

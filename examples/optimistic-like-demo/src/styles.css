@@ -6,8 +6,7 @@ main { width: min(100% - 40px, 424px); margin: 0 auto; padding: 24px 0; }
 /* Vertical 9:16 post card. */
 .reel { position: relative; width: 100%; aspect-ratio: 9 / 16; margin: 0 auto; border-radius: 20px; overflow: hidden; background: #20232A;
   box-shadow: 0 1px 2px rgba(28,32,36,.08), 0 12px 32px rgba(28,32,36,.14); }
-.reel-media { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.reel-media svg { width: 100%; height: 100%; display: block; }
+.reel-media { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
 /* Legibility over the image: dark bottom gradient for the caption, a soft right-edge band for the rail. */
 .reel-shade { position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(to top, rgba(10,12,16,.74) 0%, rgba(10,12,16,.40) 18%, rgba(10,12,16,0) 42%),

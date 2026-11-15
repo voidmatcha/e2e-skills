@@ -45,3 +45,7 @@ Each script edits only `src/LikeButton.jsx`, is idempotent, and refuses to run i
 ```
 
 This restores both faults and is safe to run in any state. `./break-post.sh restore` and `./break.sh restore` undo one fault each.
+
+## Media
+
+`public/media/waterfall.mp4` and `waterfall-poster.jpg` are an 8-second excerpt, scaled to 540x960 without sound, of [Waterfall in Huascarán National Park - Peru](https://commons.wikimedia.org/wiki/File:Waterfall_in_Huascar%C3%A1n_National_Park_-_Peru.webm) by CorraleH, published on Wikimedia Commons under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). The user name, place and caption in the app are made up.
