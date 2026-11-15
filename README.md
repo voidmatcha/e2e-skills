@@ -49,10 +49,10 @@ Review results use P0/P1/P2 for severity: P0 means a test can pass despite a bro
 
 **Test generation:** After installation, tell the agent which local project to test. It checks the required setup and guides you through anything missing.
 
+https://github.com/user-attachments/assets/4457b99a-f6f4-4023-94d3-cbf3a48387d6
+
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="Demo: a refactor drops the POST /api/like call. The UI-only Playwright test still passes because the screen says Liked; the request-aware test fails because the POST never left. Recorded from the runnable example in examples/optimistic-like-demo." width="100%" />
-  <br />
-  <sub>Watch the <a href="docs/assets/demo.mp4">full-quality video (MP4)</a> or <a href="examples/optimistic-like-demo/README.md">run it yourself</a>.</sub>
+  <sub>A refactor drops the POST /api/like call. The UI-only Playwright test still passes because the screen says Liked; the request-aware test fails because the POST never left. Recorded from the runnable example in examples/optimistic-like-demo.<br />Download the <a href="docs/assets/demo.mp4">MP4</a> or <a href="docs/assets/demo.gif">GIF</a>, or <a href="examples/optimistic-like-demo/README.md">run it yourself</a>.</sub>
 </p>
 
 <a id="merged-upstream-fixes"></a>

@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=ad31f13fd7421297182d6ca26828099c0ea9bf2bfab72fb87d384876a3ed6e08; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=4901a6338829c92779c50a0ca42ceed15d7989c415492c5112e59e3438a95395; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -51,10 +51,10 @@
 
 **테스트 생성:** 설치를 마쳤다면 agent에게 어느 로컬 프로젝트의 테스트를 만들지 알려주세요. 설정이 누락되어 있다면 agent를 통해 설정할 수 있습니다.
 
+https://github.com/user-attachments/assets/4457b99a-f6f4-4023-94d3-cbf3a48387d6
+
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="데모: 리팩터링으로 POST /api/like 호출이 빠집니다. 화면에 Liked가 표시되므로 UI만 확인하는 Playwright 테스트는 그대로 통과하고, 요청을 확인하는 테스트는 POST가 전송되지 않아 실패합니다. examples/optimistic-like-demo의 실행 가능한 예제로 녹화했습니다." width="100%" />
-  <br />
-  <sub><a href="docs/assets/demo.mp4">원본 화질 영상(MP4)</a>을 보거나 <a href="examples/optimistic-like-demo/README.md">직접 실행해 보세요</a>.</sub>
+  <sub>리팩터링으로 POST /api/like 호출이 빠집니다. 화면에 Liked가 표시되므로 UI만 확인하는 Playwright 테스트는 그대로 통과하고, 요청을 확인하는 테스트는 POST가 전송되지 않아 실패합니다. examples/optimistic-like-demo의 실행 가능한 예제로 녹화했습니다.<br /><a href="docs/assets/demo.mp4">MP4</a>나 <a href="docs/assets/demo.gif">GIF</a>로 받거나 <a href="examples/optimistic-like-demo/README.md">직접 실행해 보세요</a>.</sub>
 </p>
 
 <a id="merged-upstream-fixes"></a>

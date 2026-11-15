@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Examples: `optimistic-like-demo` uses the vertical post card shown in the talk, playing an 8-second CC0 waterfall clip from Wikimedia Commons (credited in the example README) instead of third-party media. README demo video and GIF re-recorded from this example (real runs: with the POST removed, the UI-only test passes and the request test fails).
+- Examples: `optimistic-like-demo` uses the vertical post card shown in the talk, playing an 8-second CC0 waterfall clip from Wikimedia Commons (credited in the example README) instead of third-party media. README demo video and GIF re-recorded from this example (real runs: with the POST removed, the UI-only test passes and the request test fails). The README now plays the video inline (GitHub-hosted copy of `docs/assets/demo.mp4`), with the MP4 and GIF kept as downloads.
 
 ### Fixed
 

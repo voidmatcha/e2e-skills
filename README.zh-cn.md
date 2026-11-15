@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=ad31f13fd7421297182d6ca26828099c0ea9bf2bfab72fb87d384876a3ed6e08; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=4901a6338829c92779c50a0ca42ceed15d7989c415492c5112e59e3438a95395; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
@@ -50,10 +50,10 @@ P0/P1/P2 表示审查的严重程度：P0 是功能损坏仍通过的问题，P1
 
 **测试生成：** 安装后，告诉 agent 要测试哪个本地项目。它会检查所需配置，并说明还需要哪些准备。
 
+https://github.com/user-attachments/assets/4457b99a-f6f4-4023-94d3-cbf3a48387d6
+
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="演示：一次重构删掉了 POST /api/like 调用。由于界面显示 Liked，仅检查 UI 的 Playwright 测试仍然通过；而检查请求的测试因为 POST 从未发出而失败。录制自 examples/optimistic-like-demo 中的可运行示例。" width="100%" />
-  <br />
-  <sub>观看<a href="docs/assets/demo.mp4">完整画质视频（MP4）</a>，或<a href="examples/optimistic-like-demo/README.md">亲自运行</a>。</sub>
+  <sub>一次重构删掉了 POST /api/like 调用。由于界面显示 Liked，仅检查 UI 的 Playwright 测试仍然通过；而检查请求的测试因为 POST 从未发出而失败。录制自 examples/optimistic-like-demo 中的可运行示例。<br />下载 <a href="docs/assets/demo.mp4">MP4</a> 或 <a href="docs/assets/demo.gif">GIF</a>，或<a href="examples/optimistic-like-demo/README.md">亲自运行</a>。</sub>
 </p>
 
 <a id="merged-upstream-fixes"></a>

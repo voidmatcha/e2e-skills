@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=ad31f13fd7421297182d6ca26828099c0ea9bf2bfab72fb87d384876a3ed6e08; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=4901a6338829c92779c50a0ca42ceed15d7989c415492c5112e59e3438a95395; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
@@ -51,10 +51,10 @@ P0/P1/P2 はレビューの重要度です。P0 は機能が壊れても成功�
 
 **テスト生成:** インストール後、テストするローカルプロジェクトを agent に伝えてください。必要な設定を確認し、不足する準備があれば案内します。
 
+https://github.com/user-attachments/assets/4457b99a-f6f4-4023-94d3-cbf3a48387d6
+
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="デモ: リファクタリングで POST /api/like の呼び出しが消えます。画面には Liked と表示されるため UI だけを確認する Playwright テストは成功したままですが、リクエストを確認するテストは POST が送信されないため失敗します。examples/optimistic-like-demo の実行可能な例から録画しました。" width="100%" />
-  <br />
-  <sub><a href="docs/assets/demo.mp4">フル画質の動画 (MP4)</a> を見るか、<a href="examples/optimistic-like-demo/README.md">自分で実行してみてください</a>。</sub>
+  <sub>リファクタリングで POST /api/like の呼び出しが消えます。画面には Liked と表示されるため UI だけを確認する Playwright テストは成功したままですが、リクエストを確認するテストは POST が送信されないため失敗します。examples/optimistic-like-demo の実行可能な例から録画しました。<br /><a href="docs/assets/demo.mp4">MP4</a> または <a href="docs/assets/demo.gif">GIF</a> をダウンロードするか、<a href="examples/optimistic-like-demo/README.md">自分で実行してみてください</a>。</sub>
 </p>
 
 <a id="merged-upstream-fixes"></a>
