@@ -387,10 +387,15 @@ def run_public_scan(
                           check=False, timeout=timeout or SCANNER_HANG_TIMEOUT_SECONDS)
 
 
-def assert_inventory_rejected(report: dict, expected: set[tuple[str, str]]) -> None:
+def assert_inventory_rejected(
+    report: dict, expected: set[tuple[str, str]], *, findings: set[str] = frozenset()
+) -> None:
+    """Rejected entries keep the run INCOMPLETE (exit 2). An unsupported entry
+    no longer hides its regular siblings, so `findings` names the expected
+    `file:line` of findings from those siblings (none by default)."""
     assert report["execution"]["complete"] is False, report
     assert report["execution"]["exitCode"] == 2, report
-    assert report["findings"] == [], report
+    assert {f"{Path(item['file']).name}:{item['line']}" for item in report["findings"]} == set(findings), report
     diagnostics = report["execution"]["diagnostics"]
     assert all(item["detector"] == "inventory" for item in diagnostics), diagnostics
     assert {(item["code"], Path(item["file"]).name) for item in diagnostics} == expected, diagnostics
@@ -4828,7 +4833,9 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
         )
 
         aborted = run_public_scan(app)
-        assert_inventory_rejected(scan_canonical(app), {("unsupported-entry", "src")})
+        # The link is listed as not analysed; the regular files beside it,
+        # including the loose spec, are still scanned.
+        assert_inventory_rejected(scan_canonical(app), {("unsupported-entry", "src")}, findings={"smoke.spec.ts:3"})
         # Human output directs users to JSON; exact src identity is verified above.
         assert_preflight_abort_is_actionable(aborted, entry_count=1)
 

@@ -67,6 +67,19 @@ test('--allow-incomplete never tolerates inventory failures or other scan modes'
   assert.match(bounded.stderr, /--allow-incomplete requires --scan/);
 });
 
+test('a symbolic link is listed as not analysed while the regular files beside it are scanned', t => {
+  const root = project(t, { 'tests/a.spec.ts': "import { test, expect } from '@playwright/test';\n" +
+    "test('t', async ({ page }) => {\n  expect(page.getByRole('main')).toBeTruthy();\n});\n", 'shared/rules/a.md': 'x\n' });
+  fs.mkdirSync(path.join(root, '.claude'));
+  fs.symlinkSync(path.join(root, 'shared', 'rules'), path.join(root, '.claude', 'rules'));
+  const result = scan(root, '--format', 'json', '--allow-incomplete');
+  assert.equal(result.status, 2);
+  assert.equal(result.report.execution.allowIncomplete.applied, false);
+  assert.equal(result.report.counts.p0, 1);
+  assert.deepEqual(result.report.execution.diagnostics.filter(item => item.code === 'unsupported-entry').map(item => item.file),
+    [path.join(root, '.claude', 'rules')]);
+});
+
 const library = {
   'lib/src/index.ts': "export { test, expect } from './fixture';\n",
   'lib/src/fixture.ts': "import { test as base } from '@playwright/test';\nexport { expect } from './expect';\n" +

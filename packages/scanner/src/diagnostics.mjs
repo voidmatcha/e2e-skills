@@ -130,7 +130,7 @@ export function analysisReviewTasks(diagnostics, sources) {
 
 const INVENTORY_CODES = new Set(['unsupported-filename-encoding', 'unsupported-entry', 'project-context-unavailable',
   'unsupported-filename', 'fingerprint-unavailable', 'project-context-drift', 'inventory-unavailable',
-  'invalid-baseline', 'root-drift', 'removed', 'added', 'identity-drift']);
+  'invalid-baseline', 'root-drift', 'removed', 'added', 'identity-drift', 'unanalyzed-drift']);
 export function inventoryDiagnostic(error, detector) {
   return { code: INVENTORY_CODES.has(error.code) ? error.code : 'inventory-unknown', detector, file: error.path };
 }

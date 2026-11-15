@@ -30,8 +30,8 @@
       "sha256": "19ccd30551805517ca93d37bb52115897e754a4055306d7fe6a55f0a863eab3a"
     },
     "src/cli.mjs": {
-      "bytes": 26508,
-      "sha256": "f5beee1a17ac0f406a55e712686ef18d7ee42262fd3f4838442345a7b2ae95ca"
+      "bytes": 26545,
+      "sha256": "15be6e6fa5716c8a55467216f2e2e2c66963e771ac67903092fd661736520b04"
     },
     "src/collections.mjs": {
       "bytes": 4159,
@@ -74,8 +74,8 @@
       "sha256": "41c8191bb7934889510c8bd5d6ff76af472f3fa5f9ee2257d0bc48d9b8c4b45f"
     },
     "src/diagnostics.mjs": {
-      "bytes": 8699,
-      "sha256": "7b5e1562ba1113b7dfb7a1bd54caeb2b45446069ef857b827fde9374713a3e1a"
+      "bytes": 8719,
+      "sha256": "f88eccfc28b14d04573c23c1ddfe3a305d370aa25fc65a56d77147d14c0471a9"
     },
     "src/dom-queries.mjs": {
       "bytes": 6576,
@@ -94,8 +94,8 @@
       "sha256": "b1b52323a5c4d0340e2e5b7b31bf5ca3ef28c293d18cda45ef779a7591ee4ac3"
     },
     "src/inventory.mjs": {
-      "bytes": 11077,
-      "sha256": "768a788ea259f17c18f01a7bd0418447b2f18309003b8a6e26a0273dd137d0b9"
+      "bytes": 11603,
+      "sha256": "4089d9b84ee735c30c9a99cf86e7ad994a963119742d15fbbfd697303fc07e1d"
     },
     "src/justified.mjs": {
       "bytes": 7095,
@@ -805,10 +805,10 @@
     },
     {
       "output": "src/cli.mjs",
-      "output_sha256": "f5beee1a17ac0f406a55e712686ef18d7ee42262fd3f4838442345a7b2ae95ca",
+      "output_sha256": "15be6e6fa5716c8a55467216f2e2e2c66963e771ac67903092fd661736520b04",
       "rewrite": null,
       "source": "src/cli.mjs",
-      "source_sha256": "f5beee1a17ac0f406a55e712686ef18d7ee42262fd3f4838442345a7b2ae95ca"
+      "source_sha256": "15be6e6fa5716c8a55467216f2e2e2c66963e771ac67903092fd661736520b04"
     },
     {
       "output": "src/collections.mjs",
@@ -882,10 +882,10 @@
     },
     {
       "output": "src/diagnostics.mjs",
-      "output_sha256": "7b5e1562ba1113b7dfb7a1bd54caeb2b45446069ef857b827fde9374713a3e1a",
+      "output_sha256": "f88eccfc28b14d04573c23c1ddfe3a305d370aa25fc65a56d77147d14c0471a9",
       "rewrite": null,
       "source": "src/diagnostics.mjs",
-      "source_sha256": "7b5e1562ba1113b7dfb7a1bd54caeb2b45446069ef857b827fde9374713a3e1a"
+      "source_sha256": "f88eccfc28b14d04573c23c1ddfe3a305d370aa25fc65a56d77147d14c0471a9"
     },
     {
       "output": "src/dom-queries.mjs",
@@ -917,10 +917,10 @@
     },
     {
       "output": "src/inventory.mjs",
-      "output_sha256": "768a788ea259f17c18f01a7bd0418447b2f18309003b8a6e26a0273dd137d0b9",
+      "output_sha256": "4089d9b84ee735c30c9a99cf86e7ad994a963119742d15fbbfd697303fc07e1d",
       "rewrite": null,
       "source": "src/inventory.mjs",
-      "source_sha256": "768a788ea259f17c18f01a7bd0418447b2f18309003b8a6e26a0273dd137d0b9"
+      "source_sha256": "4089d9b84ee735c30c9a99cf86e7ad994a963119742d15fbbfd697303fc07e1d"
     },
     {
       "output": "src/justified.mjs",

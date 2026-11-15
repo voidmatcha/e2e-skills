@@ -199,7 +199,7 @@ if (process.argv.slice(2).includes('--check-report')) {
     const outOfScope = [];
     let eslintResult = { requested: args.projectEslintEnabled, executed: false };
     const incomplete = bounded ? [] : ['development preview: full scanner rules, provenance and suppression parity are not implemented'];
-    for (const error of baseline.errors) {
+    for (const error of [...baseline.errors, ...(baseline.unanalyzed ?? [])]) {
       incomplete.push(`${error.code}: ${error.path}: ${error.detail}`);
       if (bounded) diagnostics.push(inventoryDiagnostic(error, 'inventory'));
     }

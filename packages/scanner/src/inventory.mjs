@@ -72,7 +72,7 @@ function specialCanHideSource(file, stat) {
   }
   return SOURCE_ROOTS.has(path.basename(file));
 }
-function walk(root, errors, context) {
+function walk(root, errors, context, unanalyzed) {
   const directFixture = INTENTIONAL_FIXTURES.test(root.canonical);
   const selfExclude = context.selfRepositoryScope && !directFixture;
   const files = [];
@@ -102,14 +102,16 @@ function walk(root, errors, context) {
     } else if (stat.isFile()) {
       if (root.kind === 'file' || (isCode(path.basename(file)) && !file.split(path.sep).some(part => ['.yarn', '.pnp.cjs', '.pnp.loader.mjs'].includes(part) || /\.min\.(js|ts)$/.test(part)) && !['.pnp.cjs', '.pnp.loader.mjs'].includes(path.basename(file)))) files.push(file);
     } else if (specialCanHideSource(file, stat)) {
-      errors.push(error('unsupported-entry', file, stat.isSymbolicLink() ? 'symbolic link' : stat.isFIFO() ? 'FIFO' : 'non-regular entry'));
+      // Listed as not analysed; the regular files beside it are still scanned
+      // and the run stays incomplete.
+      unanalyzed.push(error('unsupported-entry', file, stat.isSymbolicLink() ? 'symbolic link' : stat.isFIFO() ? 'FIFO' : 'non-regular entry'));
     }
   }
   visit(root.canonical);
   return files.sort(byteSort);
 }
 export function inventory(requested) {
-  const report = { schema: 'node-candidate-inventory-v1', complete: false, root: null, projectContext: null, candidates: [], errors: [] };
+  const report = { schema: 'node-candidate-inventory-v1', complete: false, root: null, projectContext: null, candidates: [], errors: [], unanalyzed: [] };
   try {
     const root = inspectRoot(path.resolve(requested));
     report.root = root;
@@ -119,7 +121,7 @@ export function inventory(requested) {
     if (!context.complete) {
       report.errors.push(error('project-context-unavailable', root.canonical, 'project marker discovery could not be validated')); return report;
     }
-    const files = walk(root, report.errors, context);
+    const files = walk(root, report.errors, context, report.unanalyzed);
     guardRoot(root);
     if (report.errors.length) return report;
     for (const file of files) {
@@ -144,7 +146,8 @@ function validBaseline(expected) {
       typeof root.canonical !== 'string' || !path.isAbsolute(root.canonical) ||
       !['directory', 'file'].includes(root.kind) || !Array.isArray(root.identity) ||
       root.identity.length !== 3 || !root.identity.every(value => typeof value === 'string' && /^\d+$/.test(value)) ||
-      !Array.isArray(expected.candidates) || !Array.isArray(expected.errors) || expected.errors.length !== 0) return false;
+      !Array.isArray(expected.candidates) || !Array.isArray(expected.errors) || expected.errors.length !== 0 ||
+      (expected.unanalyzed !== undefined && !Array.isArray(expected.unanalyzed))) return false;
   const seen = new Set();
   for (const item of expected.candidates) {
     if (!item || typeof item.path !== 'string' || !path.isAbsolute(item.path) || seen.has(item.path) ||
@@ -173,6 +176,10 @@ export function revalidate(expected) {
   const actual = new Map(current.candidates.map(item => [item.path, item.identity]));
   for (const file of previous.keys()) if (!actual.has(file)) current.errors.push(error('removed', file, 'removed from candidate set'));
   for (const file of actual.keys()) if (!previous.has(file)) current.errors.push(error('added', file, 'added to candidate set'));
+  const entries = list => JSON.stringify(list.map(item => [item.path, item.detail]));
+  if (entries(current.unanalyzed) !== entries(expected.unanalyzed ?? [])) {
+    current.errors.push(error('unanalyzed-drift', current.root.canonical, 'unsupported entries changed'));
+  }
   for (const [file, identity] of previous) if (actual.has(file) &&
       [...FIELDS, 'sha256'].some(key => identity[key] !== actual.get(file)[key])) {
     current.errors.push(error('identity-drift', file, 'regular-file identity/content drift'));
