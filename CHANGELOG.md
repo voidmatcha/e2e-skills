@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [3.5.3] - 2026-11-15
+
 ### Changed
 
 - Examples: `optimistic-like-demo` uses the vertical post card shown in the talk, playing an 8-second CC0 waterfall clip from Wikimedia Commons (credited in the example README) instead of third-party media. README demo video and GIF re-recorded from this example (real runs: with the POST removed, the UI-only test passes and the request test fails). The README now plays the video inline (GitHub-hosted copy of `docs/assets/demo.mp4`), with the MP4 and GIF kept as downloads.
@@ -11,6 +13,10 @@
 - Scanner: a symbolic link under the scan root (for example `.claude/skills` or `.cursor/rules`) no longer stops the whole scan. It is listed as not analysed and the run stays INCOMPLETE (exit 2), but the regular files beside it are now scanned; before, one link left 0 files analysed, as in the Cal.com and Storybook repositories.
 - Scanner: a `let` binding reassigned from itself several times (`path = path.slice(0, i)` after each check) no longer makes analysis exponential. The data-value check now answers "not data" when it re-enters the same binding, which the depth cap already returned, so results are unchanged; one 12 KB source file in Bruno no longer stalls the scan (the whole repository took over 17 hours before, 304 s after). Same findings, counts and status as before on Bruno, Cal.com, Storybook and Strapi test folders.
 - 3.5.0 entry and README (all translations): marked the #5a and #3 filter rescans, the slim known-TP run and the react-grab 5/5 as development data, not held-out; the README memo/healer 0/16 now names the separate development replication (Claude 0/16, Codex 1/16); the README opening notes that the linked HF snapshot holds the pre-correction figures.
+
+### Notes
+
+- The scanner npm package moves to 3.5.3 with the two scanner fixes above; README, docs and the GitHub Action pin `@voidmatcha/e2e-skills-scanner@3.5.3`.
 
 ## [3.5.2] - 2026-11-14
 
