@@ -130,8 +130,8 @@
       "sha256": "d92237a0b5ab1824e344c53134cfa2d10f8addca3b53396f99a93ef62deb7a96"
     },
     "src/receivers.mjs": {
-      "bytes": 93555,
-      "sha256": "342b2abaa69a0d6f79d759bdddd1d8d051ad7ea4e4946f1b1da700f4d0eee075"
+      "bytes": 93965,
+      "sha256": "4c1c71b8ee26aa13cb3379595594f2e034e85adb77cce6f9071b9be43e0da83f"
     },
     "src/report.mjs": {
       "bytes": 2831,
@@ -980,10 +980,10 @@
     },
     {
       "output": "src/receivers.mjs",
-      "output_sha256": "342b2abaa69a0d6f79d759bdddd1d8d051ad7ea4e4946f1b1da700f4d0eee075",
+      "output_sha256": "4c1c71b8ee26aa13cb3379595594f2e034e85adb77cce6f9071b9be43e0da83f",
       "rewrite": null,
       "source": "src/receivers.mjs",
-      "source_sha256": "342b2abaa69a0d6f79d759bdddd1d8d051ad7ea4e4946f1b1da700f4d0eee075"
+      "source_sha256": "4c1c71b8ee26aa13cb3379595594f2e034e85adb77cce6f9071b9be43e0da83f"
     },
     {
       "output": "src/report.mjs",

@@ -1084,9 +1084,17 @@ export function createReceivers(bytes, filename, { scope } = {}) {
     readOnly.set(symbol, safe);
     return safe;
   }
+  // A binding whose own writes read it again (`s = s.trim()`) can only be
+  // proved data by itself; answer false on re-entry instead of recursing.
+  const activeBindings = new Set();
   function dataBinding(node) {
     const symbol = checker.getSymbolAtLocation(node), declaration = symbol?.declarations?.length === 1 ? symbol.declarations[0] : null;
     if (!declaration) return ['undefined', 'NaN', 'Infinity'].includes(node.text) && !symbol?.declarations?.length;
+    if (activeBindings.has(symbol)) return false;
+    activeBindings.add(symbol);
+    try { return boundData(symbol, declaration); } finally { activeBindings.delete(symbol); }
+  }
+  function boundData(symbol, declaration) {
     if (isWritten(source, checker, symbol, { properties: true, propertyOnly: true })) return false;
     let initial;
     if (ts.isVariableDeclaration(declaration) && ts.isIdentifier(declaration.name)) {

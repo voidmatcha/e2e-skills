@@ -8,6 +8,7 @@
 
 ### Fixed
 
+- Scanner: a `let` binding reassigned from itself several times (`path = path.slice(0, i)` after each check) no longer makes analysis exponential. The data-value check now answers "not data" when it re-enters the same binding, which the depth cap already returned, so results are unchanged; one 12 KB source file in Bruno no longer stalls the scan (the whole repository took over 17 hours before, 304 s after). Same findings, counts and status as before on Bruno, Cal.com, Storybook and Strapi test folders.
 - 3.5.0 entry and README (all translations): marked the #5a and #3 filter rescans, the slim known-TP run and the react-grab 5/5 as development data, not held-out; the README memo/healer 0/16 now names the separate development replication (Claude 0/16, Codex 1/16); the README opening notes that the linked HF snapshot holds the pre-correction figures.
 
 ## [3.5.2] - 2026-11-14
