@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- README (all translations): the GitHub Action note now links the Marketplace listing instead of saying the `v3` tag does not exist yet; the 3.0.0 validation record and October 20 checks moved into the benchmark details; release-history wording dropped from the opening line and the debugger section (the correction note stays under Evidence and limits).
+
 ## [3.5.3] - 2026-11-15
 
 ### Changed

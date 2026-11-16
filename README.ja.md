@@ -20,11 +20,11 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=0bf45cb0a80b9b116436990cd3b19dcd07da450a80184ea6704a53465caf4209; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f89c1c7f913204ad17582b7d4a4080f1b532ac1ed5b8e382a50305167a02b983; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
-**E2E テストは成功しています。では、機能は正しく動いていますか？** 人気の React リポジトリ 200 件のうち 34 件で、名前に書かれた機能が壊れていても成功し得るテストが見つかりました。[範囲と限界](#根拠と限界) · [データ](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) リンク先の HF スナップショットには訂正前の数値が残っています。[訂正内容](CHANGELOG.md#swallowed-wait-re-audit)を参照してください。
+**E2E テストは成功しています。では、機能は正しく動いていますか？** 人気の React リポジトリ 200 件のうち 34 件で、名前に書かれた機能が壊れていても成功し得るテストが見つかりました。[範囲と限界](#根拠と限界) · [データ](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
 
 `e2e-skills` は、テストが名前どおりの動作を実際に検証しているかを確認する手助けをします。まず[インストールして試す](#インストールして試す)から始めてください。無料のメモを追加し、skill をインストールして、30 秒のスキャンを実行します。
 
@@ -315,12 +315,12 @@ probe の実行には、信頼するプロジェクトと、環境変数・flag 
 
 これらは記載した条件での観測です。ソース判定は実行による証明ではなく、無作為標本でもありません。レビュー結果はモデルとプロジェクトに依存します。[データと範囲](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106)
 
+<details>
+<summary>ベンチマークの測定範囲とモデル別の結果</summary>
+
 [3.0.0 の検証記録](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md)は、インストール、スキャナーの動作、安全ルール、一部の Playwright/Cypress 実行を対象とし、保存した根拠と各結果の適用範囲を示しています。
 
 [10月20日の検証](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#october-20-successor)では、隔離環境へのインストール、Claude Code と Codex での公式 agent/MCP によるテストの生成と実行、および選定した Cypress の assertion mutation とアプリへの不具合注入を確認しました。generator の元の測定とその後の再実行は引き続き分けて報告しています。
-
-<details>
-<summary>ベンチマークの測定範囲とモデル別の結果</summary>
 
 reviewer の結果はモデルによって異なります。同じ固定 snapshot と 36 件の公開開発事例を各 arm で 5 回反復した測定で、`gpt-6-sol` は [v22](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v22/README.md)、`gpt-6.1-sol` は [v24](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v24/README.md) に合格し、`gpt-6-luna` は [v23](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v23/README.md) で不合格でした。各実行とも 540 回の呼び出しを完了しました。ツールを無効にして与えた指示を評価した結果であり、スキャナーの効果や未見のプロジェクトでの精度を示すものではありません。スコアは各レポートで指定した snapshot にのみ適用されます。モデル別のスコア、プロトコル、否定的な結果、主張の範囲は[ベンチマーク状況](benchmarks/STATUS.md)、動作の変更履歴は [CHANGELOG.md](CHANGELOG.md)を参照してください。
 
@@ -388,7 +388,7 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 
 ## 失敗デバッグ
 
-**3.5 で置き換え。** `playwright-debugger` と `cypress-debugger` は、薄い `e2e-debugger` 1 つに置き換えられました。実際の失敗ケース各 24 件で Claude を 2 回測定したところ、以前のデバッガーは通常のエージェントより正確ではなく（20/24 対 22/24、3.4.0 では 22/24 対 23/24）、コストは約 1.6–1.7 倍、実行時間は約 1.8 倍でした。失敗中のテストは普段の言葉（"This test is failing, fix it."）で依頼すると、[`e2e-debugger`](skills/e2e-debugger/SKILL.md) がその依頼に [test-authoring memo](docs/test-authoring-memo.md#failure-handling) の失敗時の項目を適用するため、instruction ファイルの設定は不要です。テストを retry なしで 3 回再実行し、結果が混在すれば FLAKY と報告して止まります。そうでなければアプリとテストのどちらが誤っているかを判断し、アプリの regression が疑われる場合は製品コードもテストも変えずに報告し、テストの欠陥が証明された場合だけテストを弱めずに修正して、変更した spec をスキャンし 3 回連続の成功を確認します。同じルールをプロンプトに貼り付けて公式 Playwright healer に修正を任せることもあります。根拠: [用意した healer 実験](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)で、Claude Sonnet 5.5 と Codex GPT-6 Sol はそれぞれ、136 語の memo では regression 16 件中 10 件でアプリコードを変更し、memo v5（301 語）では 0 件でした。 開発用データでの結果であり、ホールドアウト評価ではありません。[別の開発段階の追試](docs/test-authoring-memo.md#failure-handling)では、メモなしで各モデル 16/16 件、メモありで Claude 0/16 件、Codex 1/16 件でした。これらは別々の実験結果です。両条件ともルートの instruction ファイルに memo を置き、各ケースを 1 回ずつ実行しました。この結果だけでは文言と長さの効果を切り分けられません。skill は instruction ファイルなしで失敗時の対処指針を届けますが、この届け方はまだ測定していません。assertion を弱めて成功させたテストには `e2e-reviewer` を使ってください。以前のインストールで残ったデバッガーのコピーについて、インストーラーと `e2e-skills doctor` は警告するだけで削除しません。使わない場合はご自身で削除してください。
+`playwright-debugger` と `cypress-debugger` は、薄い `e2e-debugger` 1 つに置き換えられました。実際の失敗ケース各 24 件で Claude を 2 回測定したところ、以前のデバッガーは通常のエージェントより正確ではなく（20/24 対 22/24、22/24 対 23/24）、コストは約 1.6–1.7 倍、実行時間は約 1.8 倍でした。失敗中のテストは普段の言葉（"This test is failing, fix it."）で依頼すると、[`e2e-debugger`](skills/e2e-debugger/SKILL.md) がその依頼に [test-authoring memo](docs/test-authoring-memo.md#failure-handling) の失敗時の項目を適用するため、instruction ファイルの設定は不要です。テストを retry なしで 3 回再実行し、結果が混在すれば FLAKY と報告して止まります。そうでなければアプリとテストのどちらが誤っているかを判断し、アプリの regression が疑われる場合は製品コードもテストも変えずに報告し、テストの欠陥が証明された場合だけテストを弱めずに修正して、変更した spec をスキャンし 3 回連続の成功を確認します。同じルールをプロンプトに貼り付けて公式 Playwright healer に修正を任せることもあります。根拠: [用意した healer 実験](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)で、Claude Sonnet 5.5 と Codex GPT-6 Sol はそれぞれ、136 語の memo では regression 16 件中 10 件でアプリコードを変更し、memo v5（301 語）では 0 件でした。 開発用データでの結果であり、ホールドアウト評価ではありません。[別の開発段階の追試](docs/test-authoring-memo.md#failure-handling)では、メモなしで各モデル 16/16 件、メモありで Claude 0/16 件、Codex 1/16 件でした。これらは別々の実験結果です。両条件ともルートの instruction ファイルに memo を置き、各ケースを 1 回ずつ実行しました。この結果だけでは文言と長さの効果を切り分けられません。skill は instruction ファイルなしで失敗時の対処指針を届けますが、この届け方はまだ測定していません。assertion を弱めて成功させたテストには `e2e-reviewer` を使ってください。以前のインストールで残ったデバッガーのコピーについて、インストーラーと `e2e-skills doctor` は警告するだけで削除しません。使わない場合はご自身で削除してください。
 
 ## スタンドアロンスキャナー
 
@@ -481,7 +481,7 @@ jobs:
           format: text
 ```
 
-この例を実行するには、`v3` タグがこの Action を含むリリースを指す必要があります。このローカル変更ではタグを作成しません。
+この Action は GitHub Marketplace にも [E2E Skills static scan](https://github.com/marketplace/actions/e2e-skills-static-scan) として公開しています。
 
 ## 詳細ドキュメント
 

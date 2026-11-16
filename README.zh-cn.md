@@ -19,11 +19,11 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=0bf45cb0a80b9b116436990cd3b19dcd07da450a80184ea6704a53465caf4209; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f89c1c7f913204ad17582b7d4a4080f1b532ac1ed5b8e382a50305167a02b983; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
-**E2E 测试通过了，功能真的正常吗？** 在 200 个热门 React 仓库中，有 34 个存在这样的测试：它所命名的功能已经损坏，测试却仍可能通过。[范围与局限](#证据与限制) · [数据](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) 链接的 HF 快照仍保留更正前的数字；请参阅[更正记录](CHANGELOG.md#swallowed-wait-re-audit)。
+**E2E 测试通过了，功能真的正常吗？** 在 200 个热门 React 仓库中，有 34 个存在这样的测试：它所命名的功能已经损坏，测试却仍可能通过。[范围与局限](#证据与限制) · [数据](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
 
 `e2e-skills` 帮助检查测试是否真正验证了名称所描述的行为。请先从[安装并试用](#安装并试用)开始：添加免费备忘录，安装 skill，然后运行 30 秒扫描。
 
@@ -314,12 +314,12 @@ probe 执行需要可信项目，以及对包括环境变量和 flag 在内的�
 
 这些数据仅代表所述条件下的观察。源码判断不是实际运行证明，样本并非随机，审查结果取决于模型和项目。[数据与范围](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106)
 
+<details>
+<summary>基准测量范围与模型结果</summary>
+
 [3.0.0 验证记录](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md)涵盖安装、扫描器行为、安全规则和部分 Playwright/Cypress 运行，并列出保留的证据和结果的适用范围。
 
 [10 月 20 日的验证](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#october-20-successor)检查了隔离环境中的安装、Claude Code 和 Codex 通过官方 agent/MCP 生成并运行测试的流程，以及选定的 Cypress 断言 mutation 和应用故障注入。generator 的原始测量与后续重跑结果继续分别报告。
-
-<details>
-<summary>基准测量范围与模型结果</summary>
 
 reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开开发案例上，每个 arm 重复五次，`gpt-6-sol` 通过了 [v22](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v22/README.md)，`gpt-6.1-sol` 通过了 [v24](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v24/README.md)，而 `gpt-6-luna` 未通过 [v23](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v23/README.md)。每次运行均完成了全部 540 次调用。这些禁用工具的测量评估了提供的指令，不能说明扫描器的效果或在未见项目上的准确率。分数仅适用于各报告指定的 snapshot。模型分数、协议、负面发现和主张边界见[基准状态](benchmarks/STATUS.md)，行为变更见 [CHANGELOG.md](CHANGELOG.md)。
 
@@ -387,7 +387,7 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 
 ## 失败调试
 
-**3.5 起替换。** 一个精简的 `e2e-debugger` 取代了 `playwright-debugger` 和 `cypress-debugger`。在两次 Claude 测量中（各 24 个真实失败案例），旧的调试器并不比普通代理更准确（20/24 对 22/24；在 3.4.0 上 22/24 对 23/24），成本约为 1.6–1.7 倍，运行时间约为 1.8 倍。测试失败时，用日常语言提出请求（"This test is failing, fix it."），[`e2e-debugger`](skills/e2e-debugger/SKILL.md) 会在该请求中应用 [test-authoring memo](docs/test-authoring-memo.md#failure-handling) 的失败处理条目，因此无需设置 instruction 文件。它在关闭重试的情况下重跑测试三次，结果有成有败时报告 FLAKY 并停止；否则判断是应用还是测试有误：疑似应用回归时不改产品代码也不改测试，只报告；只有在证明是测试缺陷时才在不削弱测试的前提下修复，然后扫描改动的 spec 并要求连续三次通过。它也可能把修复交给官方 Playwright healer，并把同样的规则粘贴进提示。依据：在[准备好的 healer 实验](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)中，Claude Sonnet 5.5 和 Codex GPT-6 Sol 各自在使用 136 词 memo 时修改了 16 个 regression 案例中 10 个的应用代码，使用 memo v5（301 词）时为 0 个。 这些是开发数据上的结果，不是留出集评估。[另一项开发阶段的复现实验](docs/test-authoring-memo.md#failure-handling)报告：不加备忘录时，两个模型各为 16/16；加入后，Claude 为 0/16，Codex 为 1/16。这些是不同实验的结果。两组都把 memo 放在根目录的 instruction 文件中，每个案例运行一次。这一结果无法区分措辞与篇幅的影响。该 skill 不依赖 instruction 文件来传递失败处理指引，这种传递方式尚未测量。对于通过削弱断言而变绿的测试，请使用 `e2e-reviewer`。对于旧安装遗留的调试器副本，安装器和 `e2e-skills doctor` 只发出警告，不会删除；如果不再使用，请自行删除。
+一个精简的 `e2e-debugger` 取代了 `playwright-debugger` 和 `cypress-debugger`。在两次 Claude 测量中（各 24 个真实失败案例），旧的调试器并不比普通代理更准确（20/24 对 22/24；22/24 对 23/24），成本约为 1.6–1.7 倍，运行时间约为 1.8 倍。测试失败时，用日常语言提出请求（"This test is failing, fix it."），[`e2e-debugger`](skills/e2e-debugger/SKILL.md) 会在该请求中应用 [test-authoring memo](docs/test-authoring-memo.md#failure-handling) 的失败处理条目，因此无需设置 instruction 文件。它在关闭重试的情况下重跑测试三次，结果有成有败时报告 FLAKY 并停止；否则判断是应用还是测试有误：疑似应用回归时不改产品代码也不改测试，只报告；只有在证明是测试缺陷时才在不削弱测试的前提下修复，然后扫描改动的 spec 并要求连续三次通过。它也可能把修复交给官方 Playwright healer，并把同样的规则粘贴进提示。依据：在[准备好的 healer 实验](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)中，Claude Sonnet 5.5 和 Codex GPT-6 Sol 各自在使用 136 词 memo 时修改了 16 个 regression 案例中 10 个的应用代码，使用 memo v5（301 词）时为 0 个。 这些是开发数据上的结果，不是留出集评估。[另一项开发阶段的复现实验](docs/test-authoring-memo.md#failure-handling)报告：不加备忘录时，两个模型各为 16/16；加入后，Claude 为 0/16，Codex 为 1/16。这些是不同实验的结果。两组都把 memo 放在根目录的 instruction 文件中，每个案例运行一次。这一结果无法区分措辞与篇幅的影响。该 skill 不依赖 instruction 文件来传递失败处理指引，这种传递方式尚未测量。对于通过削弱断言而变绿的测试，请使用 `e2e-reviewer`。对于旧安装遗留的调试器副本，安装器和 `e2e-skills doctor` 只发出警告，不会删除；如果不再使用，请自行删除。
 
 ## 独立扫描器
 
@@ -480,7 +480,7 @@ jobs:
           format: text
 ```
 
-运行此示例前，`v3` 标签必须指向包含此 Action 的版本。本次本地修改不创建标签。
+此 Action 也已在 GitHub Marketplace 上架：[E2E Skills static scan](https://github.com/marketplace/actions/e2e-skills-static-scan)。
 
 ## 详细文档
 
