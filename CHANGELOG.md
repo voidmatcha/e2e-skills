@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [3.6.0] - 2026-11-18
+
+### Added
+
+- `e2e-reviewer`: batched V2/V3 probes. When a review leaves several material uncertainties, the closing offer lists them as one capped batch instead of one probe. Every plan is previewed, one approval covers exactly the listed probes, the first probe gates the rest (a setup failure stops the batch), probes run one at a time from fresh snapshots until a count or time cap, and the report is one table with each probe's own verdict. Each probe stays one test and one change; the executor is unchanged. A V3 question without a sourced promise stays out of the batch and is listed with the source it needs. New reviewer eval 129 and probe guard assertions cover the offer and its limits. Checked live on two projects before release: on Apache Zeppelin's notebook-repos specs the reviewer offered a capped batch (which led to the sourced-promise rule above), and on the optimistic Like demo an approved two-probe batch previewed both plans, ran them in order and returned `DETECTED` for each in one table.
+
+### Unchanged
+
+- The scanner npm package stays at `@voidmatcha/e2e-skills-scanner@3.5.3`; its code did not change, so README, docs and the GitHub Action keep that pin.
+
 ### Changed
 
 - README (all translations): the talk section is now “Talks”, with the AWSKRUG Frontend Meetup talk and the React Day Berlin 2026 talk (“Green Isn’t Proof”) side by side, each with its own title, event, summary and slides link.

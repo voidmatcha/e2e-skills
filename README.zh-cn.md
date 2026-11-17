@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=43d9444ff7d27765464a3fdfb8075fd24526f8d629b401fe5852eecc80dd17f0; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=bb345ee2814d554b225efab1175454eac0ba48c9810a59148265fdd534e76b62; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
@@ -304,6 +304,8 @@ probe 执行需要可信项目，以及对包括环境变量和 flag 在内的�
 - **应用缺陷注入：** 在应用副本中加入一个特定缺陷，检查未经修改的原测试能否发现它。
 
 例如：“检查保存功能出错时，这个测试能否发现。”reviewer 会查看本地项目并提出检查方案。执行需要可信且准备好的本地环境，以及你对命令的批准。结果仅适用于选定的断言或缺陷，不代表能发现所有缺陷。
+
+如果审查后仍有多个待确认的问题，reviewer 会把它们作为一批提出。你对列出的 probe 只需批准一次：第一个 probe 先确认执行环境正常工作，其余的逐个运行，直到达到数量或时间上限。结果汇总为一张表，每个 probe 各自给出判定。
 
 详情请参阅[执行步骤和准备条件](skills/e2e-reviewer/references/runtime-probes.md)及[两个 OSS 工作流程验证案例](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)。
 

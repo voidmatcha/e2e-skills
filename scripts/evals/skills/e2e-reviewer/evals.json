@@ -1940,6 +1940,20 @@
         "True positive: questions-section.spec.ts:6 must appear under a `Questions to answer before merging` section placed after the Review Summary and before `Review Scope and Evidence`, as one line naming the path:line, #22 and the write-evidence question (what proves the save beyond the status text, which would still appear if saveProfile() were deleted).",
         "False-positive guard: the confirmed #4f P0 at questions-section.spec.ts:13 (`expect(locator).toBeTruthy()` is always true) must be reported as a finding and must not be repeated in `Questions to answer before merging`; the question for line 6 is not counted in the Review Summary totals."
       ]
+    },
+    {
+      "id": 129,
+      "prompt": "Finish an ordinary static review of scripts/evals/skills/e2e-reviewer/files/optimistic-write-contract.spec.ts. A separately supplied acceptance contract promises two behaviors: clicking Save profile sends PATCH /api/profile, and the saved display name is still shown after a reload. The user has not requested or approved runtime execution. Do not execute the eval fixture.",
+      "expected_output": "Complete the static review first. Several material uncertainties remain, so end with one question offering them as one capped batch rather than one probe: a V3 PATCH-omission fault for the test at line 3, whose only assertion is the status text, and a V3 persistence fault for the test at line 25. Name each test, mode and change, state the probe-count and time caps, say the first probe gates the rest and that one approval covers exactly the listed probes, and state that nothing has been executed.",
+      "files": [
+        "files/optimistic-write-contract.spec.ts"
+      ],
+      "assertions": [
+        "True positive: the closing follow-up is one question offering a capped batch of at least two separate V3 probes, naming the line 3 test with a PATCH-omission fault and the line 25 test with a persistence fault, each with its own change and verdict, plus a probe-count or time cap and the rule that the first probe gates the rest",
+        "False-positive guard: optimistic-write-contract.spec.ts:9 promises immediate feedback only; it must not be padded into the batch as a PATCH or persistence probe target",
+        "False-positive guard: the batch is an unexecuted offer; do not report a runtime verdict, a filled batch result table or an overall test-suite adequacy score, and do not merge both faults into one run",
+        "False-positive guard: a V3 question whose behavior promise has no source (for example a persistence claim without the app or contract in scope) must not be listed as a batch probe; name the missing source instead"
+      ]
     }
   ]
 }

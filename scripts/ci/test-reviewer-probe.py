@@ -422,7 +422,8 @@ class PreparationGuidance(unittest.TestCase):
     def test_ordinary_review_offers_a_bounded_followup(self):
         skill = (RUNNER.parent.parent / 'SKILL.md').read_text()
         self.assertIn('After completing the static review', skill)
-        self.assertIn('offer at most one source-backed mutation or app-fault probe', skill)
+        self.assertIn('offer source-backed mutation or app-fault probes for material uncertainties', skill)
+        self.assertIn('With one candidate, offer one probe; with several, offer them as one bounded batch', skill)
         self.assertIn('Do not block the completed review on a reply', skill)
         self.assertIn('already requested and authorized: proceed without asking again', skill)
         self.assertIn('Static-only requests or no meaningful candidate: omit the offer', skill)
@@ -435,5 +436,20 @@ class PreparationGuidance(unittest.TestCase):
         self.assertIn('Offer both only when both questions matter', self.guidance)
         self.assertIn('separate probes with separate verdicts', self.guidance)
         self.assertIn('do not run both automatically for every review', self.guidance)
+
+    def test_batch_is_gated_capped_and_reported_per_probe(self):
+        self.assertIn('Each probe is one test and one change.', self.guidance)
+        self.assertIn('never merges changes into one run', self.guidance)
+        self.assertIn('A test title alone, a clean test, or a static-only request yields no candidate', self.guidance)
+        self.assertIn('probe-count cap (default 10) and a wall-clock cap before approval', self.guidance)
+        self.assertIn('One approval covers exactly that list.', self.guidance)
+        self.assertIn('A setup failure there stops the batch', self.guidance)
+        self.assertIn('never in parallel against a shared app or database', self.guidance)
+        self.assertIn('one row per planned probe', self.guidance)
+        self.assertIn('never summed into a test-suite adequacy score', self.guidance)
+        self.assertIn('A V3 question whose promise source is missing stays out of the batch', self.guidance)
+        skill = (RUNNER.parent.parent / 'SKILL.md').read_text()
+        self.assertIn('say the first probe gates the rest', skill)
+        self.assertIn('A V3 candidate without a sourced promise stays out of the batch.', skill)
 
 if __name__=='__main__':unittest.main()

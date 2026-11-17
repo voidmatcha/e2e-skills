@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=43d9444ff7d27765464a3fdfb8075fd24526f8d629b401fe5852eecc80dd17f0; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=bb345ee2814d554b225efab1175454eac0ba48c9810a59148265fdd534e76b62; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -305,6 +305,8 @@ probe 실행에는 프로젝트를 신뢰하고 환경 변수와 플래그를 �
 - **fault injection:** 프로젝트 복사본에 특정 버그를 넣고, 기존 테스트를 바꾸지 않은 채 그 버그를 잡는지 확인합니다.
 
 예를 들어 “저장 기능에 버그를 넣고 이 테스트가 실패하는지 확인해줘”라고 요청하세요. reviewer가 로컬 프로젝트를 살펴보고 검사 방법을 제안합니다. 실행에는 신뢰할 수 있는 로컬 환경과 실행 준비, 명령 승인이 필요합니다. 결과는 확인한 테스트 조건이나 넣은 버그에만 해당하며, 모든 버그를 잡는다는 뜻은 아닙니다.
+
+리뷰 후 확인할 질문이 여러 개 남으면, reviewer는 이를 한 묶음으로 제안합니다. 나열된 probe를 한 번 승인하면 첫 probe로 실행 환경이 제대로 동작하는지 확인한 뒤, 나머지를 개수나 시간 상한에 닿을 때까지 하나씩 실행합니다. 결과는 probe마다 따로 판정한 표 하나로 받습니다.
 
 자세한 내용은 [실행 절차와 준비 조건](skills/e2e-reviewer/references/runtime-probes.md), [OSS 사례 두 개의 작업 절차 검증](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)을 참고해주세요.
 

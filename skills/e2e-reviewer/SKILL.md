@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright,cypress
   testing-types: e2e
   languages: typescript,javascript
-  version: "3.5.3"
+  version: "3.6.0"
 ---
 
 # E2E Test Scenario Quality Review
@@ -62,7 +62,7 @@ Before a Phase 2 finding is reported, verify it survives its real context — re
 
 ### Optional portable V2/V3 probes
 
-After completing the static review, offer at most one source-backed mutation or app-fault probe for a material uncertainty, naming the test and V2 (assertion sensitivity) or V3 (app-defect detection). Explain the additional token and execution-time cost and bounded benefit; ask once at the end. Do not block the completed review on a reply. Runtime proof already requested and authorized: proceed without asking again. Static-only requests or no meaningful candidate: omit the offer. An offer is not evidence; do not promise higher overall accuracy or invent costs.
+After completing the static review, offer source-backed mutation or app-fault probes for material uncertainties, naming each test and V2 (assertion sensitivity) or V3 (app-defect detection). With one candidate, offer one probe; with several, offer them as one bounded batch, listed with a probe-count and time cap, and say the first probe gates the rest (`references/runtime-probes.md` § Run a batch). A V3 candidate without a sourced promise stays out of the batch. Explain the additional token and execution-time cost and bounded benefit; ask once at the end. Do not block the completed review on a reply. Runtime proof already requested and authorized: proceed without asking again. Static-only requests or no meaningful candidate: omit the offer. An offer is not evidence; do not promise higher overall accuracy or invent costs.
 
 For requested runtime proof, read `references/runtime-probes.md` and follow it. Preview the source-backed plan with `node <skill-base>/scripts/run-probe.mjs`, then execute only within recorded checkout trust and exact command/environment approval; reuse existing approval. Anchor each fault to a sourced behavior promise; never infer a product requirement from its test title alone. `SURVIVED` alone never creates a catalog finding or changes severity. V2 `ASSERTION_SENSITIVE` is not V3 behavior proof.
 

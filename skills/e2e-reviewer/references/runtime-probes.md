@@ -68,8 +68,43 @@ Select the requested question. V2 needs no V3 observer or backend service when t
 selected test itself does not require one; quote the selected assertion as V2's
 source anchor. V3 needs a separately sourced behavior promise and actual phase-app
 observation as below. Do not substitute V2 for requested V3 evidence or add V2
-automatically when only V3 was requested. Start with one test and one change;
-expand only when the user requested broader coverage and the first result is valid.
+automatically when only V3 was requested. Each probe is one test and one change.
+Several probes run as a batch (below); the first one gates the rest.
+
+## Run a batch
+
+When the review leaves several material uncertainties, offer them together
+instead of one at a time. A batch is a list of independent single probes, each
+with its own source-backed plan, preview digest and verdict; it never merges
+changes into one run or widens a probe beyond one test and one change.
+
+- **Candidates:** include only uncertainties the review reported, each with a
+  sourced promise (V3) or quoted assertion (V2). A test title alone, a clean
+  test, or a static-only request yields no candidate; do not pad the list. A V3
+  question whose promise source is missing stays out of the batch: list it
+  after the offer with the source it needs, not as a probe expected to end in
+  `CANNOT_VERIFY`.
+- **Caps:** state a probe-count cap (default 10) and a wall-clock cap before
+  approval. Estimate time from the baseline run: about three test runs per V3
+  probe and two per V2 probe. Rank by severity, then by how much the answer
+  would change the review; list what falls outside the caps as not run.
+- **One approval:** preview every plan first, then show one execution packet
+  that lists each probe's test, mode, change and preview digest, plus the shared
+  commands, environment and startup/reset/shutdown. One approval covers exactly
+  that list. A plan whose inputs change after preview needs a new preview and is
+  outside the approval.
+- **Gate:** run the highest-ranked probe first. Run the rest only if its
+  baseline passed and it reached `DETECTED`, `SURVIVED` or
+  `ASSERTION_SENSITIVE`. A setup failure there stops the batch; report it
+  instead of running the remaining probes against a broken setup.
+- **Sequence:** run probes one at a time with one worker, each from a fresh
+  snapshot and a fresh output directory, never in parallel against a shared app
+  or database. Stop when a cap is reached, when two consecutive probes end in
+  `CANNOT_VERIFY` or `ERROR` from setup, or when the user interrupts.
+- **Report:** give one table, one row per planned probe: test, mode, change,
+  verdict (`not run` with the reason for skipped rows) and evidence path. Each
+  row keeps its own verdict; a batch result is never summed into a
+  test-suite adequacy score.
 
 ## Prepare a plan
 
