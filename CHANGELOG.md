@@ -4,6 +4,7 @@
 
 ### Changed
 
+- README (all translations): the talk section is now “Talks”, with the AWSKRUG Frontend Meetup talk and the React Day Berlin 2026 talk (“Green Isn’t Proof”) side by side, each with its own title, event, summary and slides link.
 - README (all translations): the GitHub Action note now links the Marketplace listing instead of saying the `v3` tag does not exist yet; the 3.0.0 validation record and October 20 checks moved into the benchmark details; release-history wording dropped from the opening line and the debugger section (the correction note stays under Evidence and limits).
 
 ## [3.5.3] - 2026-11-15

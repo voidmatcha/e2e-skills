@@ -142,19 +142,24 @@ Because this run reports P0 findings, `e2e-skills scan` exits 1.
 
 </details>
 
-## Talk: Can You Trust E2E Tests That Pass?
+## Talks
 
-Starting with cases where tests pass despite bugs, the talk covers combining lint with LLM review, verification through assertion mutation and app-fault injection, benchmark results, and open-source contributions.
-
-<p align="center">
-<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">
-  <img src="docs/assets/talk-cover-en.png" alt="Talk: Can You Trust E2E Tests That Pass?" width="640" />
-</a>
-</p>
-
-<p align="center">
-  <a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">Read the slides (English)</a>
-</p>
+<table align="center">
+<tr>
+<td align="center" valign="top" width="50%">
+<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en"><img src="docs/assets/talk-cover-en.png" alt="Can You Trust E2E Tests That Pass?" width="400" /></a>
+<p><b>Can You Trust E2E Tests That Pass?</b><br />AWSKRUG Frontend Meetup</p>
+<p align="left">Starting with cases where tests pass despite bugs: combining lint with LLM review, verification through assertion mutation and app-fault injection, benchmark results, and open-source contributions.</p>
+<p><a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">Read the slides (English)</a></p>
+</td>
+<td align="center" valign="top" width="50%">
+<a href="https://voidmatcha.art/talks/react-day-berlin-2026-en"><img src="https://voidmatcha.art/assets/green-isnt-proof-v260-thumb.jpg" alt="Green Isn’t Proof: Verifying AI-Generated React E2E Tests" width="400" /></a>
+<p><b>Green Isn’t Proof: Verifying AI-Generated React E2E Tests</b><br />React Day Berlin 2026</p>
+<p align="left">Why a green run does not prove a test protects the behavior it names: merged open-source fixes, a runnable optimistic UI demo, and a three-step review method for human- and AI-written tests.</p>
+<p><a href="https://voidmatcha.art/talks/react-day-berlin-2026-en">Read the slides (English)</a></p>
+</td>
+</tr>
+</table>
 
 ## Install and try it
 

@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=f89c1c7f913204ad17582b7d4a4080f1b532ac1ed5b8e382a50305167a02b983; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=43d9444ff7d27765464a3fdfb8075fd24526f8d629b401fe5852eecc80dd17f0; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
@@ -144,19 +144,24 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 </details>
 
-## 発表資料: 成功する E2E テストを信頼できますか？
+## 発表資料
 
-バグがあってもテストが成功する事例から、lint と LLM レビューを組み合わせた過程、mutation とアプリへの欠陥注入による検証方法、ベンチマーク結果、オープンソースへの貢献成果までまとめています。
-
-<p align="center">
-<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">
-  <img src="docs/assets/talk-cover-en.png" alt="発表資料: 成功する E2E テストを信頼できますか？" width="640" />
-</a>
-</p>
-
-<p align="center">
-  <a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">発表資料を見る（英語）</a>
-</p>
+<table align="center">
+<tr>
+<td align="center" valign="top" width="50%">
+<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en"><img src="docs/assets/talk-cover-en.png" alt="成功する E2E テストを信頼できますか？" width="400" /></a>
+<p><b>成功する E2E テストを信頼できますか？</b><br />AWSKRUG Frontend Meetup</p>
+<p align="left">バグがあってもテストが成功する事例から、lint と LLM レビューを組み合わせた過程、mutation とアプリへの欠陥注入による検証方法、ベンチマーク結果、オープンソースへの貢献成果までまとめています。</p>
+<p><a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">発表資料を見る（英語）</a></p>
+</td>
+<td align="center" valign="top" width="50%">
+<a href="https://voidmatcha.art/talks/react-day-berlin-2026-en"><img src="https://voidmatcha.art/assets/green-isnt-proof-v260-thumb.jpg" alt="Green Isn’t Proof: Verifying AI-Generated React E2E Tests" width="400" /></a>
+<p><b>Green Isn’t Proof: Verifying AI-Generated React E2E Tests</b><br />React Day Berlin 2026</p>
+<p align="left">テストが成功しても、その名前が示す動作を守っている証拠にはならない理由を、マージされたオープンソースの修正事例、実行できる楽観的 UI のデモ、人と AI が書いたテストの両方に使える 3 ステップのレビュー方法で説明します。</p>
+<p><a href="https://voidmatcha.art/talks/react-day-berlin-2026-en">発表資料を見る（英語）</a></p>
+</td>
+</tr>
+</table>
 
 ## インストールして試す
 

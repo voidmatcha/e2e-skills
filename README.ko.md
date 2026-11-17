@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=f89c1c7f913204ad17582b7d4a4080f1b532ac1ed5b8e382a50305167a02b983; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=43d9444ff7d27765464a3fdfb8075fd24526f8d629b401fe5852eecc80dd17f0; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -144,19 +144,24 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 </details>
 
-## 발표자료: 통과하는 E2E 테스트를 믿어도 될까요?
+## 발표자료
 
-버그가 있어도 테스트가 통과하는 사례에서 출발해, lint와 LLM 리뷰를 결합한 과정, mutation과 fault injection을 통한 검증 방법, 벤치마크 결과와 오픈소스 기여 성과를 정리해두었습니다.
-
-<p align="center">
-<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-ko">
-  <img src="docs/assets/talk-cover-ko.png" alt="발표자료: 통과하는 E2E 테스트를 믿어도 될까요?" width="640" />
-</a>
-</p>
-
-<p align="center">
-  <a href="https://voidmatcha.art/talks/awskrug-e2e-2026-ko">발표자료 보기</a>
-</p>
+<table align="center">
+<tr>
+<td align="center" valign="top" width="50%">
+<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-ko"><img src="docs/assets/talk-cover-ko.png" alt="통과하는 E2E 테스트를 믿어도 될까요?" width="400" /></a>
+<p><b>통과하는 E2E 테스트를 믿어도 될까요?</b><br />AWSKRUG Frontend Meetup</p>
+<p align="left">버그가 있어도 테스트가 통과하는 사례에서 출발해, lint와 LLM 리뷰를 결합한 과정, mutation과 fault injection을 통한 검증 방법, 벤치마크 결과와 오픈소스 기여 성과를 정리했습니다.</p>
+<p><a href="https://voidmatcha.art/talks/awskrug-e2e-2026-ko">발표자료 보기</a></p>
+</td>
+<td align="center" valign="top" width="50%">
+<a href="https://voidmatcha.art/talks/react-day-berlin-2026-en"><img src="https://voidmatcha.art/assets/green-isnt-proof-v260-thumb.jpg" alt="Green Isn’t Proof: Verifying AI-Generated React E2E Tests" width="400" /></a>
+<p><b>Green Isn’t Proof: Verifying AI-Generated React E2E Tests</b><br />React Day Berlin 2026</p>
+<p align="left">초록색 통과가 테스트가 이름 붙인 동작을 지킨다는 증거가 아닌 이유를, merge된 오픈소스 수정 사례, 실행 가능한 낙관적 UI 데모, 사람과 AI가 쓴 테스트 모두에 쓰는 세 단계 리뷰 방법으로 설명합니다.</p>
+<p><a href="https://voidmatcha.art/talks/react-day-berlin-2026-en">발표자료 보기 (영어)</a></p>
+</td>
+</tr>
+</table>
 
 ## 설치하고 사용해 보기
 

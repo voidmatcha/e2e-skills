@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=f89c1c7f913204ad17582b7d4a4080f1b532ac1ed5b8e382a50305167a02b983; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=43d9444ff7d27765464a3fdfb8075fd24526f8d629b401fe5852eecc80dd17f0; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
@@ -143,19 +143,24 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 </details>
 
-## 演示文稿：通过的 E2E 测试值得信任吗？
+## 演示文稿
 
-从存在 bug 但测试仍然通过的案例出发，整理了结合 lint 与 LLM 审查的过程、通过 mutation 和应用缺陷注入进行验证的方法、基准测试结果，以及开源贡献成果。
-
-<p align="center">
-<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">
-  <img src="docs/assets/talk-cover-en.png" alt="演示文稿：通过的 E2E 测试值得信任吗？" width="640" />
-</a>
-</p>
-
-<p align="center">
-  <a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">查看演示文稿（英文）</a>
-</p>
+<table align="center">
+<tr>
+<td align="center" valign="top" width="50%">
+<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en"><img src="docs/assets/talk-cover-en.png" alt="通过的 E2E 测试值得信任吗？" width="400" /></a>
+<p><b>通过的 E2E 测试值得信任吗？</b><br />AWSKRUG Frontend Meetup</p>
+<p align="left">从存在 bug 但测试仍然通过的案例出发，整理了结合 lint 与 LLM 审查的过程、通过 mutation 和应用缺陷注入进行验证的方法、基准测试结果，以及开源贡献成果。</p>
+<p><a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">查看演示文稿（英文）</a></p>
+</td>
+<td align="center" valign="top" width="50%">
+<a href="https://voidmatcha.art/talks/react-day-berlin-2026-en"><img src="https://voidmatcha.art/assets/green-isnt-proof-v260-thumb.jpg" alt="Green Isn’t Proof: Verifying AI-Generated React E2E Tests" width="400" /></a>
+<p><b>Green Isn’t Proof: Verifying AI-Generated React E2E Tests</b><br />React Day Berlin 2026</p>
+<p align="left">说明为什么测试通过并不能证明它保护了名称所描述的行为：已合并的开源修复案例、可运行的乐观 UI 演示，以及适用于人工和 AI 编写测试的三步审查方法。</p>
+<p><a href="https://voidmatcha.art/talks/react-day-berlin-2026-en">查看演示文稿（英文）</a></p>
+</td>
+</tr>
+</table>
 
 ## 安装并试用
 
