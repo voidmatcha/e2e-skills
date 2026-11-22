@@ -121,6 +121,8 @@ Keep each finding short: one sentence each for Issue, Confidence and Fix; retain
 
 Every diff finding must include the explicit `Attribution (diff mode)` field; attribution only in a heading is insufficient.
 
+When one finding block covers several confirmed occurrences of the same pattern, list each confirmed occurrence in **Location** as its own `path:line` (`spec.ts:106`, `spec.ts:264`, `spec.ts:340`); after ten, add `and N more`. Never replace the occurrence lines with a count or only the first occurrence, because readers and fix tools act on the cited lines.
+
 Cite every location as a full `path:line` relative to the repository root, such as `apps/web/playwright/login.e2e.ts:42`. Do not cite absolute paths, which expose the reviewer's local directories when a review is shared, or shortened suffixes such as `tasks/login.ts:42`, which can match more than one file.
 
 The **§4.1 row** field is a slot, not a reminder: it cannot be filled without opening `references/fix-replacements.md` or `references/applying-fixes.md` (or its conditional `references/rtl-jest-dom-fixes.md` row for RTL #4f), which is the point. A fix emitted with that field blank or paraphrased was written without the canonical replacement table and must be redone against it.
