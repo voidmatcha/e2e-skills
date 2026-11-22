@@ -44,7 +44,7 @@ test('shows the welcome message', async ({ page }) => {
 The deterministic scanner reports the load-bearing line:
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills scan tests/
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/
 [P0][CONFIRMED] #4f Static finding (1 hit)
   "login.spec.ts":5: #4f
 

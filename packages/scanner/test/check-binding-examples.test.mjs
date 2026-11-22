@@ -38,9 +38,10 @@ for (const operator of ['assertion', 'post']) {
       REPLACE_WITH_RELATIVE_TEST_WRAPPER: 'test-wrapper.mjs',
       REPLACE_WITH_TEST_WRAPPER_SHA256: hash(files['test-wrapper.mjs']),
       REPLACE_WITH_FRESH_RELATIVE_NATIVE_REPORT_PATH: 'native-report.json',
-      REPLACE_WITH_LINKED_ASSERTION_FAILURE_TEXT: 'toHaveText',
-      REPLACE_WITH_NATIVE_FAILURE_LOCATION: 'status.spec.mjs:3',
+      REPLACE_WITH_ASSERTION_SOURCE_QUOTE: "await expect(page.getByTestId('status')).toHaveText('Ready');",
+      REPLACE_WITH_EXPECTED_VALUE: 'Ready',
       REPLACE_WITH_RELATIVE_TEST_PATH: 'status.spec.mjs',
+      REPLACE_WITH_RELATIVE_APP_SOURCE: 'client.js',
       REPLACE_WITH_RELATIVE_OBSERVER_WRAPPER: 'observer.mjs',
       REPLACE_WITH_OBSERVER_WRAPPER_SHA256: hash(files['observer.mjs']),
     };
@@ -79,7 +80,7 @@ for (const operator of ['assertion', 'post']) {
       [p => { p.promise.quote = 'not in the source'; }, /promise quote absent/],
       [p => { p.test.source.sha256 = '0'.repeat(64); }, /test source hash mismatch/],
       [p => { p.report.format = 'invented-report'; }, /unsupported report format/],
-      [p => { delete p.expected_failure.location; }, /missing manifest keys/],
+      [p => { delete p.expected_failure.locator; }, /missing manifest keys/],
     ];
     if (operator === 'post') invalid.push([p => { p.observer.source.sha256 = '0'.repeat(64); }, /observer source hash mismatch/]);
     for (const [mutate, reason] of invalid) {

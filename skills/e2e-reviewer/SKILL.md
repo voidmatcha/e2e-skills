@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright,cypress
   testing-types: e2e
   languages: typescript,javascript
-  version: "3.6.0"
+  version: "3.7.0"
 ---
 
 # E2E Test Scenario Quality Review
@@ -60,11 +60,9 @@ Before resolving any candidate, read `references/semantic-review.md` (in a tool 
 
 Before a Phase 2 finding is reported, verify it survives its real context — refute first. **Verify every finding inline** in this session, reading that pattern's `<skill-base>/references/patterns/<id>.md` contract and the cited source before deciding. There is no dedicated verifier subagent; do not delegate verification, even when the user names one. Decide each finding as CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT with evidence; drop refuted findings. When the evidence conflicts, reconcile against source evidence and correct the verdict when refuted. Missing or unresolved source justifies NEEDS-CONTEXT only when that source could change the verdict. `count() >= 0` is always true, and an `if` that gates the only assertion on the element's own count/visibility bypasses for any receiver type, so confirm those. Judge each #5a gate by its own condition: a project or environment allowance never dismisses a gate on the observed value (`if (keyAfter) expect(keyAfter)...`) that holds the only post-action assertion. Keep unresolved cases explicitly NEEDS-CONTEXT; never emit them as CONFIRMED.
 
-### Optional portable V2/V3 probes
+### Experimental portable V2/V3 probes (explicit opt-in only)
 
-After completing the static review, offer source-backed mutation or app-fault probes for material uncertainties, naming each test and V2 (assertion sensitivity) or V3 (app-defect detection). With one candidate, offer one probe; with several, offer them as one bounded batch, listed with a probe-count and time cap, and say the first probe gates the rest (`references/runtime-probes.md` § Run a batch). A V3 candidate without a sourced promise stays out of the batch. Explain the additional token and execution-time cost and bounded benefit; ask once at the end. Do not block the completed review on a reply. Runtime proof already requested and authorized: proceed without asking again. Static-only requests or no meaningful candidate: omit the offer. An offer is not evidence; do not promise higher overall accuracy or invent costs.
-
-For requested runtime proof, read `references/runtime-probes.md` and follow it. Preview the source-backed plan with `node <skill-base>/scripts/run-probe.mjs`, then execute only within recorded checkout trust and exact command/environment approval; reuse existing approval. Anchor each fault to a sourced behavior promise; never infer a product requirement from its test title alone. `SURVIVED` alone never creates a catalog finding or changes severity. V2 `ASSERTION_SENSITIVE` is not V3 behavior proof.
+Static review remains the default. Run no runtime probe, preview, or target project command during an ordinary review. When the user explicitly requests a probe, read `references/runtime-probes.md` and `references/verification-rules.md`, select one source-backed V2 assertion-sensitivity or V3 behavior-fault plan, and fill structured `expected_failure` with the selected spec, exact test title, assertion locator, failure kind, and expected/actual value shape before preview. A free-text failure prediction cannot establish detection. Preview the source-backed plan with `node <skill-base>/scripts/run-probe.mjs`; execute only within recorded checkout trust and exact command/environment approval; reuse existing approval when it covers the same scope. Anchor each fault to a sourced behavior promise; never infer a product requirement from its test title alone. A generic request to review E2E tests is not runtime opt-in. `SURVIVED` alone never creates a catalog finding or changes severity. V2 `ASSERTION_SENSITIVE` is not V3 behavior proof. If the user explicitly requests a bounded strengthening loop after V3 survival, use the same fault and approved test-patch path in the reference; keep the original checkout unchanged.
 
 ## Phases 2.5 and 3: Systemic Issues and Coverage Gaps
 

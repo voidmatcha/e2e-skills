@@ -175,7 +175,12 @@ export function bindPost(candidate, binding) {
   for (const key of ['test_selector','test_paths','promise','test','observer','report','expected_failure']) need(binding[key],'explicit binding required: '+key);
   need(Array.isArray(binding.test_paths) && binding.test_paths.length > 0 && !binding.test_paths.includes(rel),'POST source must not be a test path');
   binding.test_paths.forEach(relative);
+  // The awaited operator's discovered range omits the statement terminator.
+  // V3 reachability instrumentation needs the complete statement when present.
+  const terminator = sourceBytes(filename).toString('utf8')[candidate.range.utf16_end] === ';' ? ';' : '';
   return {version:1,source:root,mode:'behavior-fault',test_selector:binding.test_selector,test_paths:binding.test_paths,promise:binding.promise,
-    edits:[{path:rel,sha256:candidate.source_sha256,before:candidate.before,after:candidate.after,kind:'source'}],
-    test:binding.test,observer:binding.observer,report:binding.report,expected_failure:binding.expected_failure,dependency_dirs:binding.dependency_dirs||[]};
+    edits:[{path:rel,sha256:candidate.source_sha256,before:candidate.before+terminator,
+      after:candidate.after+(candidate.after.endsWith(';') ? '' : terminator),kind:'source'}],
+    test:binding.test,observer:binding.observer,report:binding.report,expected_failure:binding.expected_failure,
+    ...(binding.reachability ? {reachability:binding.reachability} : {}),dependency_dirs:binding.dependency_dirs||[]};
 }

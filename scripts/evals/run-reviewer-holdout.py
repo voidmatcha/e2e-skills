@@ -236,6 +236,14 @@ SCANNER_RUNTIME_FILES = frozenset({
     "scripts/scanner/vendor/typescript/LICENSE.txt",
     "scripts/scanner/vendor/typescript/ThirdPartyNoticeText.txt",
 })
+# Exact closure of the portable probe; unknown helpers remain unsupported.
+PROBE_RUNTIME_FILES = frozenset({
+    "scripts/run-probe.mjs",
+    "scripts/probe-lifecycle.mjs",
+    "scripts/probe-anchor.mjs",
+    "scripts/probe-cypress.mjs",
+    "scripts/probe-cypress-node.mjs",
+})
 PROMPT_SKILL_PROFILES = {
     "full": (
         "SKILL.md",
@@ -3490,7 +3498,7 @@ def skill_files(skill_dir: Path) -> list[Path]:
                     and path.suffix == ".mjs"
                 )
             else:
-                allowed = path.suffix in suffixes or relative.as_posix() == "scripts/run-probe.mjs"
+                allowed = path.suffix in suffixes or relative.as_posix() in PROBE_RUNTIME_FILES
             if not allowed:
                 raise ValueError(
                     f"{path}: unsupported file type in canonical skill surface"

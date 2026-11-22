@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [3.7.0] - local candidate
+
+- Keep all three skills and static reviewer behavior. The reviewer adds an explicit, opt-in EXPERIMENTAL runtime proof path for Playwright/Cypress tests. It previews a source-backed V2 assertion mutation or V3 app fault, requires exact execution approval, and reports a bounded verdict for one selected test and fault.
+- The portable probe executor now binds structured `expected_failure` to the selected spec, title, assertion location or matcher, failure kind, and expected/actual values. Unrelated failures and legacy vague text do not count as detection. Executor lifecycle and native report checks are bundled with the installed reviewer and npm package.
+- Gate401 did not establish superiority: roughly 0–1 of 6 fresh React repositories reached a runtime verdict, with about 2.2× tokens in the experimental arm. Runtime proof remains opt in; no auto proof is added to ordinary reviews.
+
 ## [3.6.0] - 2026-11-18
 
 ### Added

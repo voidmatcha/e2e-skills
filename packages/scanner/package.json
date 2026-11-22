@@ -1,6 +1,6 @@
 {
   "name": "@voidmatcha/e2e-skills-scanner",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "type": "module",
   "license": "Apache-2.0",
   "engines": {
@@ -20,6 +20,10 @@
     "src/",
     "guidance/",
     "scripts/run-probe.mjs",
+    "scripts/probe-lifecycle.mjs",
+    "scripts/probe-anchor.mjs",
+    "scripts/probe-cypress.mjs",
+    "scripts/probe-cypress-node.mjs",
     "examples/",
     "LICENSE",
     "NOTICE",

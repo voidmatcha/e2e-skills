@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=578a870d14815843245f8e44d55a9eb7d2f1f38e1bb15dcf6be0123f7d632dc4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=751810671e3ff01f61e5de3c3cbc3b2c60df3e22512f94cf97ecaa6a3bf80b2d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
@@ -109,7 +109,7 @@ test('shows the welcome message', async ({ page }) => {
 内置扫描器无需项目配置即可捕获这些 false-green 断言。下面是文本报告（不加 `--format text` 时，扫描器以 JSON 输出相同结果）：
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills scan tests/ --format text
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text
 Node source scan (canonical report view)
 Status: COMPLETE; confirmed P0: 2, P0 candidates: 0, unresolved locations: 0.
 Next:
@@ -169,7 +169,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 将[备忘录正文](docs/test-authoring-memo.md#the-memo)复制到项目的 `AGENTS.md`（Codex）或 `CLAUDE.md`（Claude Code），并保留现有指令；也可以在项目目录中用 CLI 写入（需要 Node.js 22+）。写入 `CLAUDE.md` 时使用 `--host claude`，添加 `--dry-run` 可预览。此命令只写入备忘录，不安装 skill：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills guidance --host codex --project . --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project . --memo
 ```
 
 ### 2. 安装 skill
@@ -187,7 +187,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 对典型的测试目录，静态扫描约需 30 秒（需要 Node.js 22+）：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
 ```
 
 报告中的 `INCOMPLETE` 表示有些代码未被分析，因此即使退出码为 0 也不是干净的结果（[术语](docs/scanner-cli.md#glossary)）。
@@ -231,8 +231,8 @@ npx --no-install playwright init-agents --loop=codex    # Codex
 如果希望代理同时测试失败路径，可以把[测试编写备忘](docs/test-authoring-memo.md)添加到代理加载的指令文件中。Claude Code 使用 E2E 测试目录；Codex 使用仓库根目录，如果在 E2E 测试目录中启动 Codex，则使用该目录。可以先加上 `--dry-run` 预览：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills guidance --host codex --project path/to/repository --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project path/to/repository --memo
 ```
 
 在我们的开发试验中，影响最大的是备忘文件：没有它时，技能发现的失败路径 fault 更少（Claude 54 个中 42 个，Codex 54 个中 27 个），备忘位于根目录指令文件时分别为 53/54 和 45/54。
@@ -242,12 +242,12 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills guidance --h
 扫描器无需安装技能即可运行，因此可以直接在本地或 CI 中使用：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
 ```
 
 在真实仓库中，扫描经常以 `INCOMPLETE` 和退出码 2 结束：这表示有些代码无法分析，并不表示测试失败。请让代理对同一批测试运行 `e2e-reviewer` 技能；在 CI 中加上 `--allow-incomplete`，退出码就只取决于已分析的 finding。阅读报告：`P0`（`[P0][CONFIRMED]`）是经机械确认、不检查任何内容也能通过的测试；`LLM-TRIAGE` 标记尚未确认的候选，由 `e2e-reviewer` 技能确认或否定；`P0 candidate`（`[P0?]`）是一经确认即为 P0 的候选。`provenance-unsupported` 表示扫描器无法证明 `page` 等值的来源，因此没有检查那段代码。报告中的其他术语见[术语表](docs/scanner-cli.md#glossary)。
 
-如果 `npx` 因 `ETARGET`（"No matching version found ... with a date before"）失败，说明 `.npmrc` 设置了 `min-release-age`，它会隐藏发布不足该天数的版本。不要修改 `.npmrc`，只对这一条固定版本的命令解除限制：`npm_config_min_release_age=0 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills scan path/to/tests --format text`
+如果 `npx` 因 `ETARGET`（"No matching version found ... with a date before"）失败，说明 `.npmrc` 设置了 `min-release-age`，它会隐藏发布不足该天数的版本。不要修改 `.npmrc`，只对这一条固定版本的命令解除限制：`npm_config_min_release_age=0 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text`
 
 ### 其他安装方式与故障排查
 
@@ -268,7 +268,7 @@ codex plugin add e2e-skills@voidmatcha
 如果技能没有出现，或生成一直未就绪，请运行只读诊断。它会报告已安装的技能副本（包括过期的重复副本，以及已移除的 debugger 技能遗留的副本）、官方代理和 MCP 配置以及后续步骤，不做任何更改：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills doctor --host claude --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills doctor --host claude --project /path/to/playwright-project
 ```
 
 Codex 请使用 `--host codex`。前提条件、可同时完成项目设置的安装器以及手动设置，请参阅[安装指南](docs/installation.md)。
@@ -396,12 +396,16 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 
 一个精简的 `e2e-debugger` 取代了 `playwright-debugger` 和 `cypress-debugger`。在两次 Claude 测量中（各 24 个真实失败案例），旧的调试器并不比普通代理更准确（20/24 对 22/24；22/24 对 23/24），成本约为 1.6–1.7 倍，运行时间约为 1.8 倍。测试失败时，用日常语言提出请求（"This test is failing, fix it."），[`e2e-debugger`](skills/e2e-debugger/SKILL.md) 会在该请求中应用 [test-authoring memo](docs/test-authoring-memo.md#failure-handling) 的失败处理条目，因此无需设置 instruction 文件。它在关闭重试的情况下重跑测试三次，结果有成有败时报告 FLAKY 并停止；否则判断是应用还是测试有误：疑似应用回归时不改产品代码也不改测试，只报告；只有在证明是测试缺陷时才在不削弱测试的前提下修复，然后扫描改动的 spec 并要求连续三次通过。它也可能把修复交给官方 Playwright healer，并把同样的规则粘贴进提示。依据：在[准备好的 healer 实验](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)中，Claude Sonnet 5.5 和 Codex GPT-6 Sol 各自在使用 136 词 memo 时修改了 16 个 regression 案例中 10 个的应用代码，使用 memo v5（301 词）时为 0 个。 这些是开发数据上的结果，不是留出集评估。[另一项开发阶段的复现实验](docs/test-authoring-memo.md#failure-handling)报告：不加备忘录时，两个模型各为 16/16；加入后，Claude 为 0/16，Codex 为 1/16。这些是不同实验的结果。两组都把 memo 放在根目录的 instruction 文件中，每个案例运行一次。这一结果无法区分措辞与篇幅的影响。该 skill 不依赖 instruction 文件来传递失败处理指引，这种传递方式尚未测量。对于通过削弱断言而变绿的测试，请使用 `e2e-reviewer`。对于旧安装遗留的调试器副本，安装器和 `e2e-skills doctor` 只发出警告，不会删除；如果不再使用，请自行删除。
 
+## 实验性运行时验证（仅在明确请求时）
+
+`e2e-reviewer` 默认执行静态审查。只有明确要求验证一个已通过的 Playwright 或 Cypress 测试能否发现有依据的缺陷时，才会在隔离副本中尝试 V2 断言变异或 V3 应用故障。该实验性执行器要求结构化的预期失败、正常基线通过，以及 V3 的独立观察结果。执行目标项目代码之前，还需要确认信任该仓库并批准准确的命令。结论仅适用于选定的测试与故障，不能证明整套测试的覆盖范围。在 gate401 中，6 个新的 React 仓库只有约 0 至 1 个得到运行时结论，也没有证据表明它优于静态审查。普通审查不会自动运行此功能。
+
 ## 独立扫描器
 
 无需请求 AI agent，即可直接运行代码扫描器。它查找待审查的候选问题，不会执行测试，也不会判断测试是否证明了预期行为。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
 ```
 
 需要 Node.js 22 或更新版本；TypeScript parser 已随附。npx 会下载尚未缓存的 package 及其依赖。scanner 本身不会下载 tool、加载可执行的项目配置或运行测试。使用 `--format json` 获取结构化输出，或用 `--report-file <new-file>` 保存完整报告；不会覆盖已有文件。

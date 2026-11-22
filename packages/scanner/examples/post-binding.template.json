@@ -24,13 +24,28 @@
     "path": "REPLACE_WITH_FRESH_RELATIVE_NATIVE_REPORT_PATH"
   },
   "expected_failure": {
-    "contains": "REPLACE_WITH_LINKED_ASSERTION_FAILURE_TEXT",
-    "location": "REPLACE_WITH_NATIVE_FAILURE_LOCATION"
+    "spec": "REPLACE_WITH_RELATIVE_TEST_PATH",
+    "title": "REPLACE_WITH_EXACT_NATIVE_TEST_TITLE",
+    "locator": {
+      "assertion": {
+        "path": "REPLACE_WITH_RELATIVE_TEST_PATH",
+        "quote": "REPLACE_WITH_ASSERTION_SOURCE_QUOTE"
+      }
+    },
+    "kind": "assertion",
+    "values": {
+      "expected": { "type": "string", "value": "REPLACE_WITH_EXPECTED_VALUE" },
+      "actual": { "type": "string", "relation": "different" }
+    }
   },
   "dependency_dirs": [],
   "test_paths": [
     "REPLACE_WITH_RELATIVE_TEST_PATH"
   ],
+  "reachability": {
+    "kind": "browser-binding",
+    "edit_path": "REPLACE_WITH_RELATIVE_APP_SOURCE"
+  },
   "observer": {
     "argv": [
       "REPLACE_WITH_ABSOLUTE_RUNTIME",

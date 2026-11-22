@@ -9,14 +9,14 @@ Requires Node.js 22+. The scan, check and unified CLIs do not require Python. Pr
 ## Run with npx
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills-scan --scan /absolute/project/tests --format text
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills-scan --scan /absolute/project/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
 ```
 
 Or install locally:
 
 ```bash
-npm install --save-dev @voidmatcha/e2e-skills-scanner@3.6.0
+npm install --save-dev @voidmatcha/e2e-skills-scanner@3.7.0
 npx e2e-skills-scan --scan ./tests --format json
 npx e2e-skills-check --help
 ```
@@ -32,12 +32,12 @@ The reviewer skill includes its own scanner, so reviewing an existing project do
 The unified CLI provides `e2e-skills install`, `doctor`, `guidance`, `scan` and `check`:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills install --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills doctor --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills guidance --host codex --project /absolute/playwright-project --memo --policy --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills scan /absolute/playwright-project/tests --format json
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.6.0 e2e-skills check --help
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills install --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills doctor --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project /absolute/playwright-project --memo --policy --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan /absolute/playwright-project/tests --format json
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills check --help
 ```
 
 Command and option parsing for `install`, `doctor` and `guidance` uses the pinned MIT-licensed [Commander.js](https://github.com/tj/commander.js) package. Scanner and check arguments are passed through to their existing CLIs.

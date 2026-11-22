@@ -46,7 +46,8 @@ class ReviewerRuntimeSurfaceTest(unittest.TestCase):
         for relative in self.runner.SCANNER_RUNTIME_FILES:
             self.write(relative, ("runtime fixture: " + relative + "\n").encode())
         self.write("scripts/scanner/src/cli.mjs", b"export const mode = 'offline';\n")
-        self.write("scripts/run-probe.mjs", b"export const mode = 'probe';\n")
+        for relative in self.runner.PROBE_RUNTIME_FILES:
+            self.write(relative, ("// probe fixture: " + relative + "\n").encode())
 
     def write(self, relative, content=b"fixture\n"):
         path = self.skill / relative
@@ -83,14 +84,19 @@ class ReviewerRuntimeSurfaceTest(unittest.TestCase):
                 path.write_bytes(original)
                 self.assertEqual(before, self.runner.skill_digest(self.skill))
 
-    def test_node_probe_is_copied_and_digest_pinned(self):
+    def test_each_probe_runtime_file_is_copied_and_digest_pinned(self):
         before = self.runner.skill_digest(self.skill)
         staged = self.root / "node-probe-staged"
         self.runner.copy_skill_surface(self.skill, staged)
-        probe = self.skill / "scripts/run-probe.mjs"
-        self.assertEqual(probe.read_bytes(), (staged / "scripts/run-probe.mjs").read_bytes())
-        probe.write_bytes(probe.read_bytes() + b"// drift\n")
-        self.assertNotEqual(before, self.runner.skill_digest(self.skill))
+        for relative in sorted(self.runner.PROBE_RUNTIME_FILES):
+            with self.subTest(path=relative):
+                probe = self.skill / relative
+                original = probe.read_bytes()
+                self.assertEqual(original, (staged / relative).read_bytes())
+                probe.write_bytes(original + b"// drift\n")
+                self.assertNotEqual(before, self.runner.skill_digest(self.skill))
+                probe.write_bytes(original)
+                self.assertEqual(before, self.runner.skill_digest(self.skill))
 
     def test_staged_parser_and_license_drift_are_rejected(self):
         workspace = self.root / "workspace"

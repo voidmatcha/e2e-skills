@@ -31,8 +31,9 @@ operator's exact edit; neither template asks you to invent edit text.
 | `test.argv`, `.source.path`, `.source.sha256` | Explicit command and relative included wrapper, SHA-256 of the whole wrapper. An argv element must equal its relative path or `{project}/` plus that path. |
 | `test.timeout_seconds` | Integer 1–300; template explicitly uses 120. |
 | `report.format`, `.path` | `playwright-json` or `cypress-json`, and a fresh relative output path absent from the project snapshot. This is the native framework report, not a probe summary. |
-| `expected_failure.contains`, `.location` | Nonempty assertion failure text and location matching the selected failure. Both must appear in the fault report's error text for detection. |
+| `expected_failure` | Selected spec and exact title; one source-backed assertion quote or native location; failure kind; expected value and actual value relation. The fault report must link the same test, assertion, kind and values before detection is credited. |
 | `test_paths` (POST) | Nonempty relative paths to included selected test files. |
+| `reachability` (POST) | Browser-binding proof for the edited application source; the observer must attach reachability before navigation and show the faulted code was reached. |
 | `observer` (POST) | Independently reviewed command, timeout and pinned source wrapper, with the same command contract as `test`. |
 | `dependency_dirs` | Optional; leave `[]` if unnecessary. Each entry is `{ "path": "node_modules", "target": "/absolute/prepared/dependencies/node_modules" }`; target must exist outside the source and path must end in `node_modules`. |
 
