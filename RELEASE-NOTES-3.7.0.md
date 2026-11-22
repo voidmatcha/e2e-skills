@@ -6,7 +6,12 @@ This non-breaking candidate retains `playwright-test-generator`, `e2e-reviewer`,
 
 An explicit request can use the portable V2 assertion-mutation or V3 behavior-fault executor on a disposable project copy. The executor requires a sourced behavior promise, structured `expected_failure` (spec, exact title, intended assertion locator or matcher, failure kind, expected and actual value shapes), a passing healthy baseline, and a separate observer for V3. It binds the preview, plan, source and executor bytes before exact-command approval and refuses unrelated or vague failures as detection. A bounded test-strengthening loop is available only when separately requested and approved after V3 survival. The original checkout stays unchanged.
 
-The proof covers only the selected test and injected fault. Gate401 reached a runtime verdict in about 0–1 of 6 fresh React repositories and used about 2.2 times the tokens of the comparison arm; it did not establish a release-gate advantage. Treat this path as EXPERIMENTAL and opt in explicitly. No runtime probe is automatic in ordinary reviews.
+The proof covers only the selected test and injected fault. Pre-release evaluation did not show an advantage over static review:
+
+- A paired comparison of static review with and without the runtime proof was inconclusive (8 vs 9 confirmed findings).
+- On 6 fresh React repositories, the proof arm ran the executor in 0 of 6 pre-registered cells (1 of 6 after a repaired rerun, which ended `CANNOT_VERIFY`) and used about 2.2 times the tokens, so that comparison is invalid rather than negative.
+- Plain review requests on 16 specs from 8 public projects executed the proof 0 times.
+- With an explicit opt-in on 2 specs, the executor ran on both and completed one `SURVIVED` proof; the other ended `CANNOT_VERIFY`. Treat this path as EXPERIMENTAL and opt in explicitly. No runtime probe is automatic in ordinary reviews.
 
 ## Local release checklist
 
