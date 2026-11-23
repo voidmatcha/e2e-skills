@@ -11,7 +11,7 @@
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
   <a href="#merged-upstream-fixes"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-15-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://github.com/vercel-labs/skills#supported-agents"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
-  <a href="https://skills.sh/voidmatcha/e2e-skills"><img alt="Installs on skills.sh" src="https://img.shields.io/badge/skills.sh_installs-700%2B-1FC07C?style=flat-square&labelColor=black"></a>
+  <a href="https://www.skills.sh/voidmatcha/e2e-skills"><img alt="Installs on skills.sh" src="https://img.shields.io/badge/skills.sh_installs-900%2B-1FC07C?style=flat-square&labelColor=black"></a>
   <a href="https://www.kimi.ai/resources/software-testing-skills"><img alt="Listed in Kimi testing skills" src="https://img.shields.io/badge/%F0%9F%8E%89_listed_in-Kimi_testing_skills-8B5CF6?style=flat-square&labelColor=black"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=bbee1ffb2cf1e2805115723f817ea4928bedfd1029746102041f6be69bb6df11; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=e172016040ba3b273865175e3368bdcf2046774857e2eac328c70db4eb7b6e09; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -134,11 +134,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 이 실행은 P0 문제를 보고하므로 `e2e-skills scan`는 exit 1로 종료됩니다.
 
-`eslint-plugin-playwright`도 `no-unnecessary-assertions` 규칙으로 이런 문제를 찾습니다. 커밋 시점의 lint가 잡을 수 있는 문제는 이 규칙에 맡기고, 나머지는 scanner로 보완하세요.
-
 **실행 예제:** [React optimistic-write 검증](examples/react-optimistic-write/README.md)에서는 화면이 바뀌었다고 해서 서버에 요청이 전송되고 데이터가 저장됐다고 볼 수 없는 이유를 보여줍니다.
-
-**발표 데모:** [Optimistic Like 데모](examples/optimistic-like-demo/README.md)는 결함 두 가지를 넣어 볼 수 있는 실행 가능한 앱으로, UI만 확인하는 테스트가 통과해도 쓰기 요청이 증명되지 않음을 보여줍니다.
 
 </details>
 
@@ -149,13 +145,11 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 <td align="center" valign="top" width="50%">
 <a href="https://voidmatcha.art/talks/awskrug-e2e-2026-ko"><img src="docs/assets/talk-cover-ko.png" alt="통과하는 E2E 테스트를 믿어도 될까요?" width="400" /></a>
 <p><b>통과하는 E2E 테스트를 믿어도 될까요?</b><br />AWSKRUG Frontend Meetup</p>
-<p align="left">버그가 있어도 테스트가 통과하는 사례에서 출발해, lint와 LLM 리뷰를 결합한 과정, mutation과 fault injection을 통한 검증 방법, 벤치마크 결과와 오픈소스 기여 성과를 정리했습니다.</p>
 <p><a href="https://voidmatcha.art/talks/awskrug-e2e-2026-ko">발표자료 보기</a></p>
 </td>
 <td align="center" valign="top" width="50%">
-<a href="https://voidmatcha.art/talks/react-day-berlin-2026-en"><img src="https://voidmatcha.art/assets/green-isnt-proof-v260-thumb.jpg" alt="Green Isn’t Proof: Verifying AI-Generated React E2E Tests" width="400" /></a>
-<p><b>Green Isn’t Proof: Verifying AI-Generated React E2E Tests</b><br />React Day Berlin 2026</p>
-<p align="left">초록색 통과가 테스트가 이름 붙인 동작을 지킨다는 증거가 아닌 이유를, merge된 오픈소스 수정 사례, 실행 가능한 낙관적 UI 데모, 사람과 AI가 쓴 테스트 모두에 쓰는 세 단계 리뷰 방법으로 설명합니다.</p>
+<a href="https://voidmatcha.art/talks/react-day-berlin-2026-en"><img src="https://voidmatcha.art/assets/green-isnt-proof-v260-thumb.jpg" alt="Green Isn’t Proof" width="400" /></a>
+<p><b>Green Isn’t Proof</b><br />React Day Berlin 2026</p>
 <p><a href="https://voidmatcha.art/talks/react-day-berlin-2026-en">발표자료 보기 (영어)</a></p>
 </td>
 </tr>
@@ -189,7 +183,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
 ```
 
-보고서의 `INCOMPLETE`는 일부 코드를 분석하지 못했다는 뜻이므로, 종료 코드 0이어도 깨끗한 결과가 아닙니다([용어](docs/scanner-cli.md#glossary)).
+종료 코드 0을 깨끗한 결과로 받아들이기 전에 [scanner 결과와 CI 옵션](#독립-실행-scanner)을 확인해주세요.
 
 ### 사용하기
 
@@ -222,16 +216,6 @@ npx --no-install playwright init-agents --loop=codex    # Codex
 `--no-install`은 프로젝트에 이미 설치된 Playwright를 사용합니다. 이 명령은 agent 정의, MCP 설정과 seed 파일을 쓸 수 있으므로 [설치 가이드](docs/installation.md#manual-generator-setup)에서 변경 사항을 확인해주세요. 그런 다음 agent를 다시 시작하고 프로젝트의 `playwright-test` MCP server를 승인해주세요. Codex에서는 신뢰한 프로젝트의 `.codex/config.toml`에 세션 전체에서 쓸 항목도 필요합니다([설정](docs/installation.md#codex)). 세션에 `generator_write_test` tool이 보이면 생성을 시작할 수 있습니다.
 
 instruction 파일 위치, optional 메모와 측정 결과의 한계는 [테스트 작성 메모](docs/test-authoring-memo.md)와 [설치 안내](docs/installation.md#optional-memo-and-failure-policy)를 참고해주세요.
-
-### 설치 없이 CI에서 스캔하기
-
-scanner는 skill을 설치하지 않아도 실행되므로 로컬이나 CI에서 바로 쓸 수 있습니다.
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
-```
-
-`INCOMPLETE`는 일부 코드를 분석하지 못했다는 뜻이며, 테스트가 실패했다는 뜻은 아닙니다. 종료 코드, 보고서 용어, CI 옵션과 설치 문제 해결은 [scanner 가이드](docs/scanner-cli.md)를 참고해주세요. 판단이 남은 후보는 `e2e-reviewer`에 리뷰를 요청하세요.
 
 ### 다른 설치 방법과 문제 해결
 
@@ -266,13 +250,7 @@ Codex에서는 `--host codex`를 사용해주세요. 사전 요구 사항, 프�
 
 함께 제공되는 shell script는 일반적인 macOS/Linux 환경을 지원하며, `/bin/bash`와 launcher에 지정된 시스템 실행 파일 경로를 사용합니다. Windows에서는 호환되는 WSL 배포판을 사용하고 프로젝트도 WSL 파일 시스템에 두세요. 네이티브 Windows는 지원하지 않습니다. NixOS, 그리고 Nix, pyenv, Conda, nvm으로만 설치한 tool은 모두 자동으로 찾을 수 있는 것은 아닙니다. 신뢰할 수 있는 tool이 없으면 중단합니다. `PATH`에서 다른 실행 파일을 찾아 우회하지 마세요. skill 리소스는 추측한 홈 디렉터리가 아니라, plugin 캐시와 사용자 지정 설치를 포함해 host가 실제로 제공한 skill 위치에서 찾으세요.
 
-generator는 공식 Playwright agent를 사용한 뒤 reviewer scanner와 새 테스트를 실행합니다. 아무것도 설치하지 않고 agent와 MCP 설정을 바꾸지 않습니다. 설정이 없으면 필요한 설정과 읽기 전용 `e2e-skills doctor`를 안내합니다.
-
-생성에는 로컬 개발에서 흔히 쓰는 loopback 주소(`localhost`, `127.0.0.1`, `::1`)를 사용합니다. 승인된 개발 서버와 기존 테스트용 backend 또는 mock을 재사용합니다. 브라우저 작업 전에는 시나리오에서 사용하는 서비스만 확인합니다. 쓰기 작업에는 격리된 테스트 데이터와 정리 또는 초기화 방법이 필요합니다. 읽기 전용 시나리오에는 초기화가 필요하지 않습니다. 새 mock 서버나 배포 환경을 만들 필요도 없습니다. 사용하지 않는 API나 데이터베이스는 N/A로 표시하며, 공유 데이터나 운영 데이터에는 접근하지 않습니다. 실제로 탐색하거나 요청을 보내는 주소는 승인된 origin과 scheme, hostname, 유효 포트가 같아야 합니다. 별도로 승인된 loopback API 주소에도 요청을 보낼 수 있습니다. 승인되지 않은 주소나 확인할 수 없는 주소로의 접근은 BLOCKED로 보고합니다. 주소를 확인해도 브라우저가 다른 origin에 접근하는 것까지 차단하지는 않습니다.
-
-[generator 계약](skills/playwright-test-generator/SKILL.md)에 수정 규칙과 실행 안전 조건이 정의되어 있습니다. 프로젝트 버그이거나 실패 원인이 불확실한 경우, 수정 후에도 실패가 남은 경우에는 BLOCKED로 보고합니다.
-
-probe 실행에는 프로젝트를 신뢰하고 환경 변수와 플래그를 포함한 정확한 명령을 승인해야 합니다. 보고서에는 스킵한 검사를 표시합니다. mutation과 fault injection probe는 필요할 때 추가로 실행하며, 실행하지 않은 결과를 측정된 것처럼 보고하지 않습니다.
+생성에는 승인된 loopback origin이 필요하며, 쓰기 작업에는 격리된 테스트 데이터가 필요합니다. [generator 안전 규칙](skills/playwright-test-generator/SKILL.md)과 [실행 허용 범위](SECURITY.md)를 참고해주세요.
 
 버전 이력은 [CHANGELOG.md](CHANGELOG.md)에 정리되어 있습니다.
 
@@ -280,15 +258,13 @@ probe 실행에는 프로젝트를 신뢰하고 환경 변수와 플래그를 �
 
 ## 생성한 테스트가 버그를 잡는지 확인하기
 
-공식 Playwright agent가 테스트를 생성하면, `e2e-reviewer`가 설치된 경우 generator skill이 scanner로 검사하고 P0/P1 항목을 최대 세 차례 수정합니다. 문제가 남거나 검사를 끝내지 못하면 중단합니다. 통과하면 승인된 프로젝트 테스트 명령으로, 승인된 프로젝트나 하나뿐임을 확인한 프로젝트에서 새 spec만 실행하고 테스트 실행 결과의 passed/failed/skipped 수를 보고합니다. 승인된 테스트 명령이 없으면 테스트를 실행하지 않았다고 보고합니다. reviewer가 없거나 검사 또는 실행을 스킵하면 미완료로 보고합니다. 테스트가 의도한 동작을 확인하는지까지 리뷰하려면 `e2e-reviewer`에 별도로 요청하세요.
-
-generator는 reviewer scanner와 승인된 새 spec을 실행합니다. scanner 결과만으로 동작을 얼마나 검증하는지 입증할 수는 없습니다. 테스트가 의도한 동작을 확인하는지 리뷰하려면 `e2e-reviewer`에 요청하세요. 특정 동작을 실행으로 입증해야 한다고 명시적으로 요청하려면 [실험적 런타임 검증](#실험적-런타임-검증명시적-요청-시에만)을 참고해주세요. 실패 경로 테스트 작성은 optional [메모](docs/test-authoring-memo.md)와 [실패 정책](docs/test-failure-policy.md)을 참고해주세요.
+공식 Playwright agent가 테스트를 생성하면 skill이 검사하고 승인된 명령으로 새 spec만 실행합니다. 스킵하거나 완료하지 못한 검사는 보고합니다. 검사만으로 동작을 얼마나 검증하는지 입증할 수는 없습니다. 테스트가 의도한 동작을 확인하는지 리뷰하려면 `e2e-reviewer`에 요청하고, 특정 동작의 [런타임 검증](#실험적-런타임-검증명시적-요청-시에만)은 명시적으로 요청하세요. [생성 검사와 수정 한도](skills/playwright-test-generator/references/execution-and-report.md), optional [실패 정책](docs/test-failure-policy.md)을 참고해주세요.
 
 ## 근거와 한계
 
 발생 비율: Claude 코드 검토에서 34/200개 저장소(17.0%, 95% CI 12.4–22.8%)를 확인했고, Claude와 Codex가 같은 위치의 문제를 함께 확인한 저장소는 32/200개였습니다. 수치는 [timeout 재검토 결과](CHANGELOG.md#swallowed-wait-re-audit)를 반영했습니다. 링크한 HF 스냅샷에는 정정 전 수치가 남아 있습니다. [범위와 방법](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) · [결과](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)
 
-메모와 healer: 준비된 regression 16건에서 프로젝트 코드 수정이 136단어 memo를 썼을 때 10/16건, memo v5를 썼을 때 0/16건이었습니다. Claude와 Codex에서 각각 같은 결과가 나왔습니다. 측정 때처럼 사용하려면 프로젝트 지침 파일에 메모가 있어야 합니다. [실험 조건과 한계](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md) 개발용 데이터에서 얻은 결과이며, 개발에 쓰지 않고 따로 남겨 둔 데이터로 평가한 결과는 아닙니다. [별도의 개발 단계 반복 실험](docs/test-authoring-memo.md#failure-handling)에서는 메모가 없을 때 두 모델 각각 16/16건, 메모가 있을 때 Claude 0/16건, Codex 1/16건이었습니다. 서로 다른 실험 결과입니다.
+메모와 healer: 준비된 regression 16건에서 프로젝트 코드 수정이 136단어 memo를 썼을 때 10/16건, memo v5를 썼을 때 0/16건이었습니다. Claude와 Codex에서 각각 같은 결과가 나왔습니다. 측정 때처럼 사용하려면 프로젝트 지침 파일에 메모가 있어야 합니다. [실험 조건과 한계](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md) 개발용 데이터에서 얻은 결과이며, 개발에 쓰지 않고 따로 남겨 둔 데이터로 평가한 결과는 아닙니다. [실패 처리 메모의 별도 개발 단계 반복 실험](docs/test-authoring-memo.md#failure-handling)도 참고해주세요.
 
 리뷰 비용: Claude `claude-sonnet-5-5`, high effort 실행에서 저장소당 약 $1–2였습니다(추가 표본 범위 $0.58–1.96). [비용표](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)
 
@@ -299,11 +275,9 @@ generator는 reviewer scanner와 승인된 새 spec을 실행합니다. scanner 
 
 [3.0.0 검증 기록](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md)에는 설치, scanner 동작, 실행 안전 규칙, 일부 Playwright/Cypress 실행 결과와 보존한 근거, 적용 범위가 정리되어 있습니다.
 
-[10월 20일 검증](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#october-20-successor)에서는 격리된 환경의 설치, Claude Code와 Codex에서 공식 agent/MCP로 테스트를 생성하고 실행하는 경로, 선정한 Cypress assertion mutation과 fault injection을 확인했습니다. generator의 최초 측정 결과와 이후 다시 실행한 결과는 구분해서 보고합니다.
-
 reviewer의 개발 단계 결과는 모델마다 다르며, scanner의 효과나 처음 보는 프로젝트의 정확도를 입증하지 않습니다. 모델별 결과와 한계는 [벤치마크 현황](benchmarks/STATUS.md)을 참고해주세요.
 
-프로토콜, 입력 자료, 요약, 원본 실행 artifact를 포함한 과거 벤치마크의 전체 보관본은 [근거 manifest](benchmarks/external-evidence.json)에 고정되어 있으며 [Hugging Face 데이터셋](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)에서 받을 수 있습니다. 이전 점수를 검토하기 전 `scripts/dev/fetch-benchmark-evidence.sh --dry-run`으로 복원 계획을 확인하세요.
+프로토콜, 입력 자료, 요약, 원본 실행 artifact를 포함한 과거 벤치마크의 전체 보관본은 [근거 manifest](benchmarks/external-evidence.json)에 고정되어 있으며 [Hugging Face 데이터셋](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)에서 받을 수 있습니다.
 
 </details>
 
@@ -311,7 +285,7 @@ reviewer의 개발 단계 결과는 모델마다 다르며, scanner의 효과나
 
 Playwright/Cypress `test smell` 24개를 정리한 목록이며, 각 항목의 ID는 바꾸지 않습니다. 버그가 있어도 테스트가 통과할 수 있는 경우로는 Locator의 true/false 판정, assertion 누락, 오류 무시, focused test, 인증 누락, 네트워크 요청이 실제로 전송됐는지 확인하지 않는 `optimistic UI` 검증이 있습니다. [전체 분류와 근거](docs/e2e-test-smells.md)를 참고해주세요.
 
-일부 패턴은 테스트뿐 아니라 프로젝트 코드도 있어야 판단할 수 있습니다. `#22` optimistic UI를 리뷰하려면 쓰기를 약속하는 테스트나 acceptance 기준과 관련 프로젝트 코드가 필요합니다. spec만 보고 요청이 빠졌다고 추론하지 않습니다. [패턴 설명](docs/e2e-test-smells.md)을 참고해주세요.
+일부 패턴은 테스트뿐 아니라 프로젝트 코드도 있어야 판단할 수 있습니다. `#22` optimistic UI를 리뷰하려면 쓰기를 약속하는 테스트나 acceptance 기준과 관련 프로젝트 코드가 필요합니다. spec만 보고 요청이 빠졌다고 추론하지 않습니다.
 
 <details>
 <summary>문제 등급별 패턴 24개 전체</summary>
@@ -373,30 +347,6 @@ Playwright/Cypress `test smell` 24개를 정리한 목록이며, 각 항목의 I
 
 `e2e-reviewer`는 정적 리뷰로 시작합니다. 명시적으로 요청하지 않으면 런타임 검증을 제안하거나 실행하지 않습니다. 예를 들어 통과하는 특정 테스트가 저장 기능의 버그를 잡는지 요청할 수 있습니다. 이 실험적 절차는 버릴 수 있는 복사본에서 assertion mutation이나 근거가 있는 프로젝트 fault를 준비할 수 있습니다. 여러 probe도 명시적인 요청이 있어야 한 묶음으로 제안합니다. 대상 코드를 실행하려면 체크아웃을 신뢰하고 정확한 명령을 승인해야 합니다. 결과는 선택한 테스트와 fault에만 적용되며, 전체 테스트 모음에 적용되지 않습니다. 실제 프로젝트에서 어디까지 실행할 수 있는지와 정적 리뷰 대비 효과는 아직 입증하지 못했습니다. [런타임 절차](skills/e2e-reviewer/references/runtime-probes.md)와 [Release 안내](RELEASE-NOTES-3.7.0.md#experimental-reviewer-runtime-proof)를 참고해주세요.
 
-## 독립 실행 scanner
-
-AI agent 없이 검사하려면 [위의 설치 없이 실행하는 명령](#설치-없이-ci에서-스캔하기)을 사용하세요. 후보를 보고하며, 테스트를 실행하거나 의도한 동작을 검증하는지 판단하지는 않습니다. reviewer에도 같은 scanner가 포함되어 있습니다. TypeScript 파서는 함께 제공됩니다. 실행 조건, 보고서 형식과 옵션은 [scanner 가이드](docs/scanner-cli.md)를 참고해주세요.
-
-기본 설정에서 함께 제공되는 scanner는 도구를 다운로드하거나 프로젝트 설정을 불러오지 않습니다. JSON 보고서는 `--format json`, 비공개 텍스트 보고서는 `--report-file <new-file>`을 사용하세요. 남은 후보는 Phase 2에서 리뷰해야 하며, `P0=0`만으로 검사가 끝나지 않습니다. `INCOMPLETE`의 기본 종료 코드는 2입니다. `--fail-on p0-candidate`와 선택적 `--project-eslint --trust-project` 조합은 [scanner 가이드](docs/scanner-cli.md)를 참고해주세요.
-
-<details>
-<summary>scanner 고급 옵션과 파일 읽기 범위</summary>
-
-프로젝트 ESLint를 실행하려면 체크아웃에 대한 명시적 신뢰와 명령 승인이 필요합니다. [프로젝트 ESLint](docs/scanner-cli.md#optional-local-project-eslint)를 참고해주세요.
-
-> **읽기 범위.**
-> <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
-> 번들 검사는 요청한 경로 안의 소스 파일에서 문제 후보를 찾아 결과로 보여줍니다. framework 출처 확인은 포함 프로젝트의 다른 위치에 있는 relative fixture/support import도 읽을 수 있습니다.
-> <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->
-
-<!-- README-CONTRACT:SCANNER-EXTENSIONS:START -->
-번들 검사는 `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` 소스를 읽습니다.
-<!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
-
-`--fail-on`, `--allow-incomplete`, `--trust-module`, 종료 코드와 검사 범위의 한계는 [scanner 가이드](docs/scanner-cli.md)를, 실행 허용 범위는 [SECURITY.md](SECURITY.md)를 참고해주세요.
-
-</details>
-
 ## ESLint plugin과의 차이
 
 `eslint-plugin-playwright`와 `eslint-plugin-cypress`는 테스트 코드의 흔한 실수를 찾는 tool입니다. `e2e-skills` scanner도 두 plugin을 optional 검사 계층으로 활용합니다.
@@ -431,6 +381,32 @@ assertion mutation과 앱 fault probe는 저장소를 신뢰하고 환경 변수
 ### 이것이 Playwright 또는 Cypress 테스트 실행을 대체하나요?
 
 아니요. 이 skill은 테스트 품질을 리뷰하고, Playwright 테스트를 작성하고, 승인된 테스트 명령으로 실패하는 테스트를 고칩니다. 테스트 실행기는 아닙니다.
+
+<a id="scan-in-ci-without-installing"></a>
+<a id="설치-없이-ci에서-스캔하기"></a>
+
+## 독립 실행 scanner
+
+skill을 설치하지 않고 로컬이나 CI에서 scanner를 실행할 수 있습니다(Node.js 22+ 필요).
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
+```
+
+reviewer에도 같은 scanner가 포함되어 있습니다. 후보를 보고하며, 테스트를 실행하거나 의도한 동작을 검증하는지 판단하지는 않습니다. TypeScript 파서는 함께 제공됩니다. 기본 설정에서 번들 scanner는 tool을 내려받거나 프로젝트 설정을 불러오지 않습니다.
+
+`INCOMPLETE`는 일부 코드를 분석하지 못했다는 뜻이며, 테스트가 실패했다는 뜻은 아닙니다. 기본 종료 코드는 2입니다. `--allow-incomplete`를 사용해도 종료 코드 0이 깨끗한 결과를 입증하지는 않습니다. 남은 후보는 Phase 2에서 리뷰해야 하며, `P0=0`만으로 검사가 끝나지 않습니다. JSON 보고서는 `--format json`, 비공개 텍스트 보고서는 `--report-file <new-file>`을 사용하세요.
+
+`--project-eslint --trust-project`로 프로젝트 ESLint를 실행하려면 체크아웃에 대한 명시적 신뢰와 정확한 명령에 대한 승인이 필요합니다. `--fail-on p0-candidate`, `--allow-incomplete`, `--trust-module`, 종료 코드, 검사 범위의 한계와 설치 문제 해결은 [scanner 가이드](docs/scanner-cli.md)를, 실행 허용 범위는 [SECURITY.md](SECURITY.md)를 참고해주세요.
+
+> **읽기 범위.**
+> <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
+> 번들 검사는 요청한 경로 안의 소스 파일에서 문제 후보를 찾아 결과로 보여줍니다. framework 출처 확인은 포함 프로젝트의 다른 위치에 있는 relative fixture/support import도 읽을 수 있습니다.
+> <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->
+
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:START -->
+번들 검사는 `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` 소스를 읽습니다.
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
 ## GitHub Actions에 정적 검사 추가하기
 
@@ -472,11 +448,9 @@ jobs:
 - [오픈소스 사례 연구](docs/case-studies.md)
 - [과거 벤치마크 전체 보관본(Hugging Face 데이터셋)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [외부 연구 근거 원장](docs/llm-generated-e2e-test-evidence.md)
-- [과거 AI reviewer 벤치마크](docs/ai-reviewer-benchmark.md)
 - [지원 framework 범위](docs/framework-scope.md)
 - [로컬 E2E 규칙 브리지와 권장 lint](docs/installation.md#optional-project-lint)
 - [로드맵](docs/roadmap.md)
-- [Archived reviewer evidence plan](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/a8279e972f2ae5b7628ac9ec8ccfc4cdac380a1d/releases/v3.3.1/docs-archive-20261028/README.md)
 
 </details>
 

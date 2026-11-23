@@ -11,7 +11,7 @@
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
   <a href="#merged-upstream-fixes"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-15-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://github.com/vercel-labs/skills#supported-agents"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
-  <a href="https://skills.sh/voidmatcha/e2e-skills"><img alt="Installs on skills.sh" src="https://img.shields.io/badge/skills.sh_installs-700%2B-1FC07C?style=flat-square&labelColor=black"></a>
+  <a href="https://www.skills.sh/voidmatcha/e2e-skills"><img alt="Installs on skills.sh" src="https://img.shields.io/badge/skills.sh_installs-900%2B-1FC07C?style=flat-square&labelColor=black"></a>
   <a href="https://www.kimi.ai/resources/software-testing-skills"><img alt="Listed in Kimi testing skills" src="https://img.shields.io/badge/%F0%9F%8E%89_listed_in-Kimi_testing_skills-8B5CF6?style=flat-square&labelColor=black"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
@@ -132,11 +132,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 
 Because this run reports P0 findings, `e2e-skills scan` exits 1.
 
-`eslint-plugin-playwright` also flags this shape via `no-unnecessary-assertions`; enable it so commit-time lint owns what it can and the scanner fills the gaps.
-
 **Executable example:** [React optimistic-write proof](examples/react-optimistic-write/README.md) shows why optimistic UI needs request and persistence proof, not just visible state.
-
-**Talk demo:** [Optimistic Like demo](examples/optimistic-like-demo/README.md) is a runnable app with two faults where a passing UI-only test does not prove the write.
 
 </details>
 
@@ -147,13 +143,11 @@ Because this run reports P0 findings, `e2e-skills scan` exits 1.
 <td align="center" valign="top" width="50%">
 <a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en"><img src="docs/assets/talk-cover-en.png" alt="Can You Trust E2E Tests That Pass?" width="400" /></a>
 <p><b>Can You Trust E2E Tests That Pass?</b><br />AWSKRUG Frontend Meetup</p>
-<p align="left">Starting with cases where tests pass despite bugs: combining lint with LLM review, verification through assertion mutation and app-fault injection, benchmark results, and open-source contributions.</p>
 <p><a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">Read the slides (English)</a></p>
 </td>
 <td align="center" valign="top" width="50%">
-<a href="https://voidmatcha.art/talks/react-day-berlin-2026-en"><img src="https://voidmatcha.art/assets/green-isnt-proof-v260-thumb.jpg" alt="Green Isn’t Proof: Verifying AI-Generated React E2E Tests" width="400" /></a>
-<p><b>Green Isn’t Proof: Verifying AI-Generated React E2E Tests</b><br />React Day Berlin 2026</p>
-<p align="left">Why a green run does not prove a test protects the behavior it names: merged open-source fixes, a runnable optimistic UI demo, and a three-step review method for human- and AI-written tests.</p>
+<a href="https://voidmatcha.art/talks/react-day-berlin-2026-en"><img src="https://voidmatcha.art/assets/green-isnt-proof-v260-thumb.jpg" alt="Green Isn’t Proof" width="400" /></a>
+<p><b>Green Isn’t Proof</b><br />React Day Berlin 2026</p>
 <p><a href="https://voidmatcha.art/talks/react-day-berlin-2026-en">Read the slides (English)</a></p>
 </td>
 </tr>
@@ -187,7 +181,7 @@ A static scan takes about 30 seconds on a typical test directory (Node.js 22+):
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
 ```
 
-`INCOMPLETE` in the report means some code was not analysed, so exit 0 is not a clean result ([terms](docs/scanner-cli.md#glossary)).
+See [scanner results and CI options](#standalone-scanner) before treating exit 0 as a clean result.
 
 ### Use it
 
@@ -220,16 +214,6 @@ npx --no-install playwright init-agents --loop=codex    # Codex
 `--no-install` uses the Playwright already installed in the project. The command can write agent definitions, MCP configuration and seed files; review its effects in the [installation guide](docs/installation.md#manual-generator-setup). Then restart the agent and approve the project's `playwright-test` MCP server. Codex also needs a session-wide entry in the trusted project's `.codex/config.toml` ([setup](docs/installation.md#codex)). Generation is ready once the session shows the `generator_write_test` tool.
 
 For instruction-file placement, the optional memo, and its measured limits, see [test-authoring memo](docs/test-authoring-memo.md) and [installation](docs/installation.md#optional-memo-and-failure-policy).
-
-### Scan in CI without installing
-
-The scanner runs without installing the skills, so you can use it locally or in CI:
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
-```
-
-`INCOMPLETE` means some code was not analysed; it does not mean your tests failed. See the [scanner guide](docs/scanner-cli.md) for exit codes, report terms, CI options and installation troubleshooting. Ask `e2e-reviewer` to review unresolved candidates.
 
 ### Alternatives and troubleshooting
 
@@ -264,13 +248,7 @@ Use the skills alongside a real application and its E2E suite. Review and failin
 
 The bundled shell scripts target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and projects inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
-The generator uses the official Playwright agents, then runs the reviewer scanner and the new tests. It installs nothing and changes no agent or MCP configuration. Missing configuration is reported with setup guidance and the read-only `e2e-skills doctor`.
-
-Generation uses the loopback addresses common in local development (`localhost`, `127.0.0.1`, or `::1`). Reuse your approved development server and its existing test backend or mocks. Before browser work, confirm only the services the scenario uses. Writes require isolated test data and cleanup or reset; read-only scenarios need no reset. A new mock server or deployment is not required. Unused API or database services are N/A; shared or production data remain ineligible. Executable navigation and request destinations must resolve to approved origins, matching scheme, hostname and effective port; separately approved loopback API destinations are allowed. Other or unresolved destinations are BLOCKED. These checks do not provide browser-wide origin containment.
-
-The [generator contract](skills/playwright-test-generator/SKILL.md) defines its repair and safety rules. Product defects, uncertain causes, and remaining failures stay BLOCKED.
-
-Probe execution requires a trusted project and approval of the exact command, including environment variables and flags. Reports identify skipped checks; mutation and app-fault probes are optional follow-ups, never reported as measured without execution.
+Generation requires approved loopback origins and isolated test data for writes; see the [generator safety rules](skills/playwright-test-generator/SKILL.md) and [trust boundaries](SECURITY.md).
 
 Version history is documented in [CHANGELOG.md](CHANGELOG.md).
 
@@ -278,15 +256,13 @@ Version history is documented in [CHANGELOG.md](CHANGELOG.md).
 
 ## Check whether generated tests catch bugs
 
-The official Playwright agents handle generation. The generator skill then runs the `e2e-reviewer` scanner when installed and fixes P0/P1 findings in at most three passes. It stops if issues remain or scanning is incomplete; otherwise, it runs new specs only with the approved project test command, for approved projects or the confirmed sole project, and reports native passed/failed/skipped counts. Without an approved test command it reports the tests as not run. Missing or skipped checks are reported as incomplete. Request `e2e-reviewer` separately for a semantic review of the generated tests.
-
-The generator runs the reviewer scanner and approved new specs; a scanner result alone does not establish behavior coverage. Ask `e2e-reviewer` for semantic review. If you explicitly need runtime evidence for one behavior, see [Experimental runtime proof](#experimental-runtime-proof-opt-in). For failure-path test authoring, see the optional [memo](docs/test-authoring-memo.md) and [failure policy](docs/test-failure-policy.md).
+After the official Playwright agents generate tests, the skill scans them and runs only the new specs with your approved command; skipped or incomplete checks are reported. A scan alone does not establish behavior coverage: request `e2e-reviewer` for semantic review or explicitly opt into [runtime proof](#experimental-runtime-proof-opt-in) for one behavior. See the [generation gates and repair limits](skills/playwright-test-generator/references/execution-and-report.md) and optional [failure policy](docs/test-failure-policy.md).
 
 ## Evidence and limits
 
 Prevalence: Claude source review found 34/200 repositories (17.0%, 95% CI 12.4–22.8%); independent Claude/Codex agreement confirmed the same location in 32/200. The figures include a [timeout re-audit correction](CHANGELOG.md#swallowed-wait-re-audit); the linked HF snapshot retains the original figures. [Scope and method](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md) · [Results](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/CODEX-EXPANDED-REPORT.md)
 
-Memo and healer: in a prepared 16-regression study, app-code edits fell from 10/16 with a 136-word memo to 0/16 with memo v5, separately on Claude and Codex. The measured setup requires the memo in the project instruction file. [Setup and limits](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md) Development data, not held-out. A [separate development replication](docs/test-authoring-memo.md#failure-handling) reported 16/16 without the note on each model, versus 0/16 (Claude) and 1/16 (Codex) with it; these are separate study results.
+Memo and healer: in a prepared 16-regression study, app-code edits fell from 10/16 with a 136-word memo to 0/16 with memo v5, separately on Claude and Codex. The measured setup requires the memo in the project instruction file. [Setup and limits](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md) Development data, not held-out. See also a [separate development replication of the failure-handling note](docs/test-authoring-memo.md#failure-handling).
 
 Review cost: roughly $1–2 per repository in the recorded Claude `claude-sonnet-5-5`, high-effort runs (expanded set: $0.58–1.96). [Cost table](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/reviewer-cost-table.md)
 
@@ -297,11 +273,9 @@ These are scoped observations, not general accuracy or causal claims: source jud
 
 The [3.0.0 validation record](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md) covers installation, scanner behavior, safety rules, and selected Playwright/Cypress runs, with retained evidence and result scope.
 
-The [October 20 checks](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#october-20-successor) exercise isolated installation, official-agent/MCP test generation and execution in Claude Code and Codex, and selected Cypress assertion-mutation and app-fault probes. The original generator cohort and later replay remain separately reported.
-
 Reviewer development results differ by model and do not establish scanner benefit or accuracy on unseen projects. See [benchmark status](benchmarks/STATUS.md) for the model-specific results and limits.
 
-The entire frozen historical benchmark snapshot, including protocols, inputs, summaries and raw run artifacts, is pinned in [the evidence manifest](benchmarks/external-evidence.json) and available from the [Hugging Face dataset](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks). Use `scripts/dev/fetch-benchmark-evidence.sh --dry-run` to inspect the restore plan before auditing a past score.
+The entire frozen historical benchmark snapshot, including protocols, inputs, summaries and raw run artifacts, is pinned in [the evidence manifest](benchmarks/external-evidence.json) and available from the [Hugging Face dataset](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks).
 
 </details>
 
@@ -309,7 +283,7 @@ The entire frozen historical benchmark snapshot, including protocols, inputs, su
 
 The catalog contains 24 stable Playwright/Cypress test smells. The most common false-green shapes include Locator truthiness, missing assertions, swallowed errors, focused tests, missing authentication, and optimistic UI checks without network proof. See the [full taxonomy and rationale](docs/e2e-test-smells.md).
 
-Some patterns need application code, not just tests. For `#22` optimistic UI, a review needs a test or acceptance contract that promises the write and relevant application code; it does not infer a missing request from the spec alone. See the [pattern reference](docs/e2e-test-smells.md).
+Some patterns need application code, not just tests. For `#22` optimistic UI, a review needs a test or acceptance contract that promises the write and relevant application code; it does not infer a missing request from the spec alone.
 
 <details>
 <summary>All 24 patterns by severity</summary>
@@ -371,30 +345,6 @@ Ask in plain language ("This test is failing, fix it.") to use [`e2e-debugger`](
 
 `e2e-reviewer` starts with static review. It never offers or runs runtime proof unless you explicitly ask. For example, ask whether a selected green test catches a broken save operation. The experimental workflow can prepare an assertion mutation or a sourced app fault in disposable copies; multiple probes are offered as a batch only after an explicit request. Running target code requires a trusted checkout and approval of the exact commands. A result applies only to the selected test and fault, not the whole suite. Real-project reach and benefit over static review remain unproven. See the [runtime procedure](skills/e2e-reviewer/references/runtime-probes.md) and [release notes](RELEASE-NOTES-3.7.0.md#experimental-reviewer-runtime-proof).
 
-## Standalone scanner
-
-Run the [no-install command above](#scan-in-ci-without-installing) to scan without an AI agent. It reports candidates, does not execute tests, and cannot decide whether they prove the intended behavior. The reviewer includes the same scanner. The TypeScript parser is bundled. See the [scanner guide](docs/scanner-cli.md) for runtime requirements, report formats and options.
-
-The bundled scanner does not download tools or load project configuration by default. Use `--format json` for JSON or `--report-file <new-file>` for a private text report. Retained candidates still need review in Phase 2; `P0=0` does not clear them. `INCOMPLETE` normally means exit 2. For `--fail-on p0-candidate` and the opt-in `--project-eslint --trust-project` pair, see the [scanner guide](docs/scanner-cli.md).
-
-<details>
-<summary>Advanced scanner options and file access</summary>
-
-Executing project ESLint requires explicit checkout trust and command approval; see [project ESLint](docs/scanner-cli.md#optional-local-project-eslint).
-
-> **Read boundary.**
-> <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
-> Bundled checks report source beneath the requested path. Framework provenance resolution may also read relative fixture/support imports elsewhere in the containing project.
-> <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->
-
-<!-- README-CONTRACT:SCANNER-EXTENSIONS:START -->
-Bundled checks read `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs` sources.
-<!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
-
-See the [scanner guide](docs/scanner-cli.md) for `--fail-on`, `--allow-incomplete`, `--trust-module`, exit codes and coverage limits, and [SECURITY.md](SECURITY.md) for trust boundaries.
-
-</details>
-
 ## How this differs from ESLint plugins
 
 `eslint-plugin-playwright` and `eslint-plugin-cypress` catch common test-code mistakes. The `e2e-skills` scanner also uses these plugins as an optional checking layer.
@@ -429,6 +379,31 @@ Assertion-mutation and app-fault probes execute target-controlled code only afte
 ### Does this replace Playwright or Cypress test execution?
 
 No. This bundle reviews test quality, generates Playwright coverage and fixes a failing test with your approved test command; it is not a test runner.
+
+<a id="scan-in-ci-without-installing"></a>
+
+## Standalone scanner
+
+Run the scanner locally or in CI without installing the skills (Node.js 22+):
+
+```bash
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
+```
+
+The reviewer includes the same scanner. It reports candidates, does not execute tests, and cannot decide whether they prove the intended behavior. The TypeScript parser is bundled; the bundled scanner does not download tools or load project configuration by default.
+
+`INCOMPLETE` means some code was not analysed, not that tests failed, and normally means exit 2. With `--allow-incomplete`, exit 0 still does not establish a clean result. Retained candidates still need review in Phase 2; `P0=0` does not clear them. Use `--format json` for JSON or `--report-file <new-file>` for a private text report.
+
+Executing project ESLint with `--project-eslint --trust-project` requires explicit checkout trust and approval of the exact command. See the [scanner guide](docs/scanner-cli.md) for `--fail-on p0-candidate`, `--allow-incomplete`, `--trust-module`, exit codes, coverage limits and installation troubleshooting, and [SECURITY.md](SECURITY.md) for trust boundaries.
+
+> **Read boundary.**
+> <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
+> Bundled checks report source beneath the requested path. Framework provenance resolution may also read relative fixture/support imports elsewhere in the containing project.
+> <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->
+
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:START -->
+Bundled checks read `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs` sources.
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
 ## Add a static scan to GitHub Actions
 
@@ -470,11 +445,9 @@ The action is also listed on the GitHub Marketplace as [E2E Skills static scan](
 - [Open-source case studies](docs/case-studies.md)
 - [Frozen historical benchmark snapshot (Hugging Face dataset)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)
-- [Historical AI reviewer pilot](docs/ai-reviewer-benchmark.md)
 - [Framework scope](docs/framework-scope.md)
 - [Local E2E rule bridge and recommended lint](docs/installation.md#optional-project-lint)
 - [Roadmap](docs/roadmap.md)
-- [Archived reviewer evidence plan](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/a8279e972f2ae5b7628ac9ec8ccfc4cdac380a1d/releases/v3.3.1/docs-archive-20261028/README.md)
 
 </details>
 
