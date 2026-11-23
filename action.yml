@@ -19,7 +19,7 @@
       "default": "all"
     },
     "compare-base": {
-      "description": "Compare against a local PR base commit; selected policy applies only to new findings.",
+      "description": "Compare files against a local PR base; fail on new findings in comparable files and all findings in non-comparable files.",
       "required": false,
       "default": "false"
     },

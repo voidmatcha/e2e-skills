@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { annotations, changedFiles, inputs, invocation, main, newFindings, PACKAGE, SUMMARY_LIMIT } from '../actions/scan.mjs';
+import { annotations, changedFiles, compareFiles, inputs, invocation, main, newFindings, PACKAGE, SUMMARY_LIMIT } from '../actions/scan.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -87,7 +87,7 @@ function gitFixture(t) {
   const event = (baseCommit = baseSha, headCommit = headSha) => fs.writeFileSync(eventPath,
     JSON.stringify({ pull_request: { base: { sha: baseCommit }, head: { sha: headCommit } } }));
   event();
-  return { ...fixtureData, baseSha, headSha, eventPath, event,
+  return { ...fixtureData, git, baseSha, headSha, eventPath, event,
     prEnv: { ...env, GITHUB_EVENT_NAME: 'pull_request', GITHUB_EVENT_PATH: eventPath } };
 }
 
@@ -226,7 +226,7 @@ test('compare-base scans local base blobs and marks only new findings', t => {
   const { workspace, prEnv, baseSha, event } = gitFixture(t);
   const scan = (_command, argv) => {
     const target = argv[argv.indexOf('--scan') + 1];
-    const isBase = target.includes('/base/');
+    const isBase = /\/base(?:\/|$)/.test(target);
     const file = path.join(target, isBase ? 'changed.spec.ts' : 'changed.spec.ts');
     const finding = { severity: 'P0', disposition: 'candidate', patternId: '#5a', file, line: 1 };
     const report = { schema: 'e2e-skills-node-scan-v1', execution: { complete: true, incomplete: [], exitCode: 0 },
@@ -250,6 +250,146 @@ test('compare-base scans local base blobs and marks only new findings', t => {
   event('0'.repeat(40));
   assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true' }, scan), 2);
   event(baseSha);
+});
+
+// Full wrapper fixtures keep real Git histories; only scanner output is injected.
+function partialFixture(t) {
+  const data = gitFixture(t);
+  for (const name of ['clean', 'head-gap', 'base-gap']) fs.writeFileSync(path.join(data.workspace, `${name}.spec.ts`), 'old\n');
+  data.git('add', '.'); data.git('commit', '-m', 'partial base');
+  const baseSha = data.git('rev-parse', 'HEAD');
+  for (const name of ['clean', 'head-gap', 'base-gap']) fs.appendFileSync(path.join(data.workspace, `${name}.spec.ts`), 'new\n');
+  data.git('add', '.'); data.git('commit', '-m', 'partial head');
+  data.event(baseSha, data.git('rev-parse', 'HEAD'));
+  data.prEnv.SCAN_COMPARE_BASE = 'true'; data.prEnv.SCAN_FAIL_SCOPE = 'changed';
+  return data;
+}
+
+function partialScan(options = {}) {
+  return (_command, argv) => {
+    const target = argv[argv.indexOf('--scan') + 1], isBase = /\/base(?:\/|$)/.test(target);
+    const single = target.endsWith('.spec.ts');
+    const root = single ? path.dirname(target) : target;
+    const gap = path.join(root, isBase ? 'base-gap.spec.ts' : 'head-gap.spec.ts');
+    let diagnostics = [{ file: gap, detector: 'assertions', code: 'analysis-unknown' }];
+    let incomplete = [`analysis incomplete: ${gap}: assertions could not establish its contract`];
+    if (options.imports) {
+      diagnostics = [{ file: path.join(root, 'helper.ts'), detector: 'importSnapshot', code: 'import-missing' }];
+      incomplete = ['relative import snapshot incomplete', 'relative import snapshot validation incomplete'];
+    }
+    if (options.global) { diagnostics = [options.global(root)]; incomplete = ['global incomplete']; }
+    const complete = single && !options.probeIncomplete;
+    if (complete) { diagnostics = []; incomplete = []; }
+    const findings = single ? [] : ['clean', 'head-gap', 'base-gap'].flatMap(name => [1, ...(isBase ? [] : [2])].map(line => ({
+      file: path.join(root, `${name}.spec.ts`), line, patternId: '#7', severity: 'P0', disposition: options.candidate ? 'candidate' : 'confirmed' })));
+    if (options.noNew) for (let i = findings.length - 1; i >= 0; i--) if (findings[i].line === 2) findings.splice(i, 1);
+    const status = options.executionError && (isBase || single) ? 2 : 0;
+    return { status, stdout: JSON.stringify({ schema: 'e2e-skills-node-scan-v1', files: single ? 1 : 4, findings,
+      execution: { complete, incomplete, diagnostics, exitCode: status } }), stderr: '' };
+  };
+}
+
+function capturedMain(env, scan) {
+  const lines = [], original = console.log;
+  console.log = line => lines.push(line);
+  try { return { exit: main(env, scan), lines }; } finally { console.log = original; }
+}
+
+test('partial comparison isolates head/base diagnostics, fails new and fallback hits, labels annotations', t => {
+  const { prEnv } = partialFixture(t);
+  const result = capturedMain(prEnv, partialScan());
+  assert.equal(result.exit, 1);
+  const summary = fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8');
+  assert.match(summary, /New findings: 1 in 1 comparable changed files; 2 changed files not comparable/);
+  assert.match(summary, /all findings in non-comparable files/);
+  assert.match(summary, /Execution complete: false/);
+  assert.match(summary, /\[new in this PR\] \[in changed file\] P0 confirmed #7 clean.spec.ts:2/);
+  assert.doesNotMatch(summary, /\[new in this PR\].*(?:head-gap|base-gap)/);
+  const annotations = result.lines.filter(line => line.startsWith('::'));
+  assert.equal(annotations.length, 5);
+  assert.equal(annotations.filter(line => line.includes('[new in this PR]')).length, 1);
+  assert.equal(annotations.filter(line => line.includes('[not comparable%3A incomplete analysis]')).length, 4);
+  assert.ok(!annotations.some(line => line.includes('file=clean.spec.ts,line=1,')));
+  assert.equal(capturedMain(prEnv, partialScan({ noNew: true })).exit, 1, 'old P0 in non-comparable files fails');
+  assert.equal(capturedMain(prEnv, partialScan({ candidate: true, noNew: true })).exit, 0);
+  assert.equal(capturedMain({ ...prEnv, SCAN_FAIL_ON: 'p0-candidate' }, partialScan({ candidate: true, noNew: true })).exit, 1);
+  assert.equal(capturedMain({ ...prEnv, SCAN_FAIL_ON: 'none' }, partialScan()).exit, 0);
+});
+
+test('global uncertainty blocks every file; report-only remains report-only, execution failures stay exit 2', t => {
+  const { prEnv } = partialFixture(t);
+  for (const global of [
+    root => ({ file: path.join(root, 'clean.spec.ts'), detector: 'inventory', code: 'inventory-unavailable' }),
+    root => ({ file: path.join(root, 'clean.spec.ts'), detector: 'revalidate', code: 'identity-drift' }),
+    root => ({ file: path.join(root, 'clean.spec.ts'), detector: 'projectEslint', code: 'analysis-unknown' }),
+    () => ({ detector: 'importSnapshot', code: 'import-snapshot-drift' }),
+    () => ({ detector: 'assertions', code: 'analysis-unknown' }),
+  ]) {
+    const result = capturedMain(prEnv, partialScan({ global }));
+    assert.equal(result.exit, 2);
+    assert.ok(result.lines.filter(line => line.startsWith('::')).every(line => line.includes('[not comparable%3A incomplete analysis]')));
+    assert.equal(capturedMain({ ...prEnv, SCAN_FAIL_ON: 'none' }, partialScan({ global })).exit, 0);
+  }
+  assert.match(fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8'), /New findings: 0 in 0 comparable changed files; 3 changed files not comparable/);
+  assert.equal(capturedMain({ ...prEnv, SCAN_FAIL_ON: 'none' }, partialScan({ executionError: true })).exit, 2);
+});
+
+test('import uncertainty requires complete transitive single-file checks and retains failed probes', t => {
+  const { prEnv } = partialFixture(t);
+  assert.equal(capturedMain(prEnv, partialScan({ imports: true })).exit, 1);
+  assert.match(fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8'), /New findings: 3 in 3 comparable changed files; 0 changed files not comparable/);
+  assert.match(fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8'), /6 dependency check scan\(s\)/);
+  assert.equal(capturedMain(prEnv, partialScan({ imports: true, probeIncomplete: true })).exit, 2);
+  assert.equal(capturedMain({ ...prEnv, SCAN_FAIL_ON: 'none' }, partialScan({ imports: true, executionError: true })).exit, 2);
+});
+
+test('renamed base counterparts carry diagnostics and findings cannot cancel across different files', t => {
+  const { workspace, prEnv, git, event, headSha } = gitFixture(t);
+  git('mv', 'untouched.spec.ts', 'renamed.spec.ts');
+  fs.writeFileSync(path.join(workspace, 'added.spec.ts'), 'same\nextra\n');
+  git('add', '.'); git('commit', '-m', 'rename and duplicate');
+  event(headSha, git('rev-parse', 'HEAD'));
+  const changed = changedFiles(inputs(prEnv), prEnv);
+  assert.equal(changed.counterparts.get('renamed.spec.ts'), 'untouched.spec.ts');
+  assert.equal(changed.counterparts.get('added.spec.ts'), null);
+  const scan = gap => (_command, argv) => {
+    const root = argv[argv.indexOf('--scan') + 1], isBase = /\/base(?:\/|$)/.test(root);
+    const file = path.join(root, isBase ? 'untouched.spec.ts' : 'renamed.spec.ts');
+    const diagnostic = { file, detector: 'assertions', code: 'analysis-unknown' };
+    const blocked = gap && isBase;
+    const finding = name => ({ file: path.join(root, name), severity: 'P0', disposition: 'confirmed', patternId: '#7', line: 1 });
+    return { status: 0, stdout: JSON.stringify({ schema: 'e2e-skills-node-scan-v1',
+      execution: { complete: !blocked, exitCode: 0, diagnostics: blocked ? [diagnostic] : [],
+        incomplete: blocked ? [`analysis incomplete: ${file}: assertions could not establish its contract`] : [] },
+      findings: isBase ? [finding('untouched.spec.ts')] : [finding('renamed.spec.ts'), finding('added.spec.ts')] }) };
+  };
+  const env = { ...prEnv, SCAN_COMPARE_BASE: 'true', SCAN_FAIL_SCOPE: 'changed' };
+  const result = capturedMain(env, scan(false));
+  assert.equal(result.exit, 1);
+  assert.equal(result.lines.filter(line => line.startsWith('::')).length, 1);
+  assert.ok(result.lines.some(line => line.includes('file=added.spec.ts') && line.includes('[new in this PR]')));
+  const blocked = capturedMain(env, scan(true));
+  assert.equal(blocked.exit, 1);
+  assert.ok(blocked.lines.some(line => line.includes('file=renamed.spec.ts') && line.includes('[not comparable%3A incomplete analysis]')));
+});
+
+test('comparison counts exclude unscanned paths and preserve canonical files with aliases', t => {
+  const { workspace, base, env } = fixture(t), settings = inputs(env);
+  const oldRoot = path.join(fs.realpathSync(base), 'old'); fs.mkdirSync(oldRoot);
+  const files = ['good.spec.ts', 'data.json', 'odd.mtsx', '.yarn/generated.js', 'folder.min.js/nested.ts', 'scripts/ci/fixtures/intended.ts'];
+  for (const root of [workspace, oldRoot]) for (const file of files) {
+    fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
+    fs.writeFileSync(path.join(root, file), 'same\n');
+  }
+  fs.symlinkSync(path.join(workspace, 'good.spec.ts'), path.join(workspace, 'alias.spec.ts'));
+  const report = { findings: [], project: { selfRepositoryScope: true },
+    execution: { complete: true, incomplete: [], diagnostics: [], exitCode: 0 },
+    aliased: [{ file: path.join(workspace, 'alias.spec.ts'), target: path.join(workspace, 'good.spec.ts'), kind: 'file' }] };
+  const result = compareFiles(report, { ...report, aliased: [] }, settings, { root: oldRoot, target: oldRoot },
+    { paths: new Set(files) }, () => { throw new Error('No dependency probe needed'); });
+  assert.equal(result.comparableChanged, 1);
+  assert.equal(result.notComparableChanged, 5);
+  assert.deepEqual([...result.comparable], ['good.spec.ts']);
 });
 
 test('npx invocation isolates npm, disables lifecycle scripts and passes path as one argument', t => {

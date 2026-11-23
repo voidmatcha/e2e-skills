@@ -101,11 +101,20 @@ export function changedFiles(settings, env, execute = spawnSync) {
   if (git(settings.root, ['cat-file', '-e', `${head}^{commit}`], execute).status !== 0) {
     return { available: false, reason: 'Head commit unavailable locally; full report shown. Fetch full history (fetch-depth: 0).' };
   }
-  const diff = git(settings.root, ['diff', '--no-ext-diff', '--no-textconv', '--no-renames',
-    '--name-only', '-z', base, head, '--'], execute);
+  const diff = git(settings.root, ['diff', '--no-ext-diff', '--no-textconv', '--find-renames',
+    '--name-status', '-z', base, head, '--'], execute);
   if (diff.status !== 0 || !Buffer.isBuffer(diff.stdout)) throw new Error('Cannot compare pull_request commits locally');
-  const paths = new Set(diff.stdout.toString('utf8').split('\0').filter(Boolean));
-  return { available: true, paths, base, head };
+  const entries = diff.stdout.toString('utf8').split('\0');
+  const paths = new Set(), counterparts = new Map();
+  for (let i = 0; i < entries.length - 1;) {
+    const status = entries[i++], before = entries[i++];
+    if (!/^(?:[AMDTUXB]|R[0-9]+)$/.test(status) || !before) throw new Error('Invalid Git diff status');
+    const after = status.startsWith('R') ? entries[i++] : before;
+    if (!after) throw new Error('Invalid Git rename');
+    paths.add(after);
+    counterparts.set(after, status === 'A' ? null : before);
+  }
+  return { available: true, paths, counterparts, base, head };
 }
 
 // Git blobs are copied as data. This never checks out a worktree, follows a
@@ -186,6 +195,81 @@ export function newFindings(head, base, headRoot, baseRoot) {
   });
 }
 
+// Only located analysis uncertainty can be scoped. Unknown reasons and failed
+// inventory, source integrity, scope or requested ESLint invalidate every file.
+function comparisonHealth(report, root) {
+  const diagnostics = report.execution.diagnostics ?? [];
+  const blocked = new Set(), global = [];
+  let imports = false;
+  if (!Array.isArray(diagnostics)) return { blocked, imports, global: ['Invalid diagnostics'] };
+  for (const item of diagnostics) {
+    const file = typeof item?.file === 'string' && path.isAbsolute(item.file) ? relativeFinding(root, item) : null;
+    if (!file || typeof item.detector !== 'string' || typeof item.code !== 'string' ||
+        ['inventory', 'revalidate', 'readCandidate', 'analysis', 'scope', 'projectEslint'].includes(item.detector) ||
+        /(?:drift|snapshot-invalid|snapshot-limit|candidate-unavailable)/.test(item.code)) {
+      global.push('Unlocated, execution or source-integrity diagnostic');
+    } else {
+      blocked.add(file);
+      if (item.detector === 'importSnapshot') imports = true;
+    }
+  }
+  for (const reason of report.execution.incomplete) {
+    const located = diagnostics.some(item => typeof item?.file === 'string' && typeof item?.detector === 'string' &&
+      typeof reason === 'string' && reason.startsWith(`analysis incomplete: ${item.file}: ${item.detector} could not establish its contract`));
+    if (!located && !(imports && ['relative import snapshot incomplete',
+      'relative import snapshot validation incomplete'].includes(reason))) global.push('Unscoped incomplete reason');
+  }
+  if ((!report.execution.complete && !diagnostics.length) ||
+      (report.execution.complete && (diagnostics.length || report.execution.incomplete.length))) global.push('Inconsistent or missing diagnostic accounting');
+  if (report.projectEslint?.requested && report.projectEslint.complete !== true) global.push('Requested ESLint not complete');
+  return { blocked, imports, global: [...new Set(global)] };
+}
+
+// The JSON has no dependency graph. A complete single-file scan (including its
+// transitive import snapshot) is required when another file has import errors.
+export function compareFiles(head, base, settings, baseTree, changed, probe) {
+  const headHealth = comparisonHealth(head, settings.root), baseHealth = comparisonHealth(base, baseTree.root);
+  const reasons = new Map(), comparable = new Set(), newHits = [];
+  const headPath = hit => relativeFinding(settings.root, hit);
+  const basePath = hit => relativeFinding(baseTree.root, hit);
+  const files = new Set([...changed.paths, ...head.findings.map(headPath)]);
+  const global = [...headHealth.global.map(reason => `Head: ${reason}`), ...baseHealth.global.map(reason => `Base: ${reason}`)];
+  const intentionalFixture = /(?:^|\/)evals\/files(?:\/|$)|(?:^|\/)scripts\/evals\/skills\/(?:e2e-reviewer|playwright-test-generator)\/files(?:\/|$)|(?:^|\/)scripts\/ci\/fixtures(?:\/|$)/;
+  const usable = (root, target, file, report) => {
+    const absolute = path.join(root, file);
+    if (!inside(target, absolute) || !/\.(?:ts|js|tsx|jsx|mts|mjs|cts|cjs)$/.test(file) ||
+        file.split('/').some(part => ['node_modules', '.git', 'playwright-report', 'test-results', 'dist', 'build', '.next', 'out', 'coverage', '.yarn', '.pnp.cjs', '.pnp.loader.mjs'].includes(part) || /\.min\.(?:js|ts)$/.test(part)) ||
+        /(?:^|\/)cypress\/reports(?:\/|$)|\.min\.(?:js|ts)$/.test(file) ||
+        (report.project?.selfRepositoryScope && !intentionalFixture.test(target) && intentionalFixture.test(absolute)) ||
+        file === 'skills/e2e-reviewer/scripts/scanner/vendor/typescript/typescript.cjs' ||
+        report.outOfScope?.some(item => relativeFinding(root, item) === file)) return false;
+    try { return fs.lstatSync(absolute).isFile() && fs.realpathSync(absolute) === absolute; } catch { return false; }
+  };
+  for (const file of files) {
+    const counterpart = changed.counterparts?.has(file) ? changed.counterparts.get(file) : file;
+    let reason = global.length ? 'Global scan uncertainty' :
+      headHealth.blocked.has(file) || (counterpart !== null && baseHealth.blocked.has(counterpart)) ? 'Unresolved file diagnostic' :
+      !usable(settings.root, settings.target, file, head) ||
+      (counterpart !== null && !usable(baseTree.root, baseTree.target, counterpart, base)) ? 'Source absent, excluded or outside scan target' : null;
+    if (!reason && headHealth.imports && !probe(settings, file)) reason = 'Head dependency analysis incomplete';
+    if (!reason && counterpart !== null && baseHealth.imports && !probe({ ...settings, ...baseTree }, counterpart)) reason = 'Base dependency analysis incomplete';
+    if (reason) { reasons.set(file, reason); continue; }
+    comparable.add(file);
+    newHits.push(...newFindings({ findings: head.findings.filter(hit => headPath(hit) === file) },
+      { findings: counterpart === null ? [] : base.findings.filter(hit => basePath(hit) === counterpart) }, settings.root, baseTree.root));
+  }
+  const fallbackHits = head.findings.filter(hit => reasons.has(headPath(hit)));
+  return { newHits, fallbackHits, comparable, reasons, global, baseComplete: base.execution.complete,
+    comparableChanged: [...changed.paths].filter(file => comparable.has(file)).length,
+    notComparableChanged: [...changed.paths].filter(file => !comparable.has(file)).length };
+}
+
+function comparisonLabel(hit, root, comparison) {
+  if (!comparison) return '';
+  if (comparison.reasons.has(relativeFinding(root, hit))) return '[not comparable: incomplete analysis] ';
+  return comparison.newHits.includes(hit) ? '[new in this PR] ' : '';
+}
+
 const policyFails = (hits, policy) => policy !== 'none' && hits.some(hit =>
   hit.severity === 'P0' && (hit.disposition === 'confirmed' || policy === 'p0-candidate'));
 
@@ -193,7 +277,7 @@ export const ANNOTATION_LIMIT = 10;
 const commandEscape = value => String(value).replace(/%/g, '%25').replace(/\r/g, '%0D')
   .replace(/\n/g, '%0A').replace(/:/g, '%3A').replace(/,/g, '%2C');
 
-export function annotations(hits, root, changed, limit = ANNOTATION_LIMIT) {
+export function annotations(hits, root, changed, limit = ANNOTATION_LIMIT, comparison = null) {
   if (!changed?.available) return { lines: [], errorsOmitted: 0, warningsOmitted: 0 };
   const selected = hits.filter(hit => hit.severity === 'P0' && changed.paths.has(relativeFinding(root, hit)));
   const errors = selected.filter(hit => hit.disposition === 'confirmed');
@@ -204,8 +288,9 @@ export function annotations(hits, root, changed, limit = ANNOTATION_LIMIT) {
   for (const [type, group] of [['error', errors], ['warning', warnings]]) {
     for (const hit of group.slice(0, limit)) {
       const file = relativeFinding(root, hit);
-      const title = `${hit.severity} ${hit.disposition} ${hit.patternId}`;
-      const message = typeof hit.message === 'string' ? hit.message : title;
+      const label = comparisonLabel(hit, root, comparison);
+      const title = `${label}${hit.severity} ${hit.disposition} ${hit.patternId}`;
+      const message = typeof hit.message === 'string' ? label + hit.message : title;
       lines.push(`::${type} file=${commandEscape(file)},line=${hit.line},title=${commandEscape(title)}::${commandEscape(message)}`);
     }
   }
@@ -223,7 +308,7 @@ export function render(report, settings, changed = null, limit = Infinity, compa
   const inChanged = changed?.available ? report.findings.filter(hit => changed.paths.has(locationOf(hit))) : [];
   const changedLines = changed?.available
     ? [`Findings in changed files: ${inChanged.length} (P0 candidates: ${inChanged.filter(hit => hit.severity === 'P0' && hit.disposition !== 'confirmed').length})`,
-      `Changed files: ${changed.paths.size}. ${comparison ? 'New markers use the completed base comparison.' : 'These findings are in changed files; they are not proven introduced by this PR.'}`]
+      `Changed files: ${changed.paths.size}. ${comparison ? 'New markers use per-file base comparison.' : 'These findings are in changed files; they are not proven introduced by this PR.'}`]
     : changed ? [changed.reason] : [];
   const inventory = Number.isSafeInteger(report.files) && report.files >= 0 ? report.files : 'unavailable';
   const diagnosticFiles = report.execution?.allowIncomplete?.unanalyzed?.files;
@@ -233,8 +318,15 @@ export function render(report, settings, changed = null, limit = Infinity, compa
     `Execution complete: ${report.execution.complete}`, `Scanner exit code: ${report.execution.exitCode}`,
     `Action exit code: ${actionExit}`,
     'Static checks only. Candidates need review; a passing scan does not prove fault detection.'];
-  if (comparison) lines.unshift(`Base comparison: ${comparison.newHits.length} new finding(s); extra wall time ${comparison.seconds.toFixed(2)}s. Matching uses pattern, severity, disposition and whitespace-normalized source snippet; line shifts and moves retain matches.`);
-  lines.push(`Failure policy: ${settings.policy} on ${settings.compareBase ? 'new findings' : 'all findings'}${settings.failScope === 'changed' ? ' in PR-changed files' : ''}.`);
+  if (comparison) {
+    lines.unshift(`New findings: ${comparison.newHits.filter(hit => changed.paths.has(locationOf(hit))).length} in ${comparison.comparableChanged} comparable changed files; ${comparison.notComparableChanged} changed files not comparable`,
+      `Base comparison: ${comparison.newHits.length} new finding(s); extra wall time ${comparison.seconds.toFixed(2)}s; ${comparison.probes} dependency check scan(s).`,
+      `Base execution complete: ${comparison.baseComplete}`,
+      ...comparison.global,
+      ...[...comparison.reasons].slice(0, limit).map(([file, reason]) => `Not comparable: ${file}: ${reason}`));
+    lines.push('Comparison fallback: all findings in non-comparable files are subject to the chosen failure policy and scope. No comparable changed file with a non-none policy produces exit 2 (unless no files changed).');
+  }
+  lines.push(`Failure policy: ${settings.policy} on ${settings.compareBase ? 'new findings in comparable files plus all findings in non-comparable files' : 'all findings'}${settings.failScope === 'changed' ? ' in PR-changed files' : ''}.`);
   if (Array.isArray(report.aliased) && report.aliased.length) lines.push(`Linked: ${report.aliased.length} symbolic link(s) to already scanned paths; not followed.`);
   const more = (shown, total, what) => total > shown ? [`... ${total - shown} more ${what}; see the report output.`] : [];
   if (!report.execution.complete) {
@@ -247,7 +339,7 @@ export function render(report, settings, changed = null, limit = Infinity, compa
   const ordered = Number.isFinite(limit) ? [...report.findings].sort((a, b) => rank(a) - rank(b)) : report.findings;
   for (const hit of ordered.slice(0, limit)) {
     const location = locationOf(hit);
-    lines.push(`${comparison?.newHits.includes(hit) ? '[new in this PR] ' : ''}${changed?.available && changed.paths.has(location) ? '[in changed file] ' : ''}${hit.severity} ${hit.disposition} ${hit.patternId} ${location}:${hit.line}`);
+    lines.push(`${comparisonLabel(hit, settings.root, comparison)}${changed?.available && changed.paths.has(location) ? '[in changed file] ' : ''}${hit.severity} ${hit.disposition} ${hit.patternId} ${location}:${hit.line}`);
   }
   lines.push(...more(Math.min(limit, ordered.length), ordered.length, 'finding(s)'));
   return lines.map(clean).join('\n') + '\n';
@@ -282,7 +374,7 @@ export function main(env = process.env, execute = spawnSync) {
     validateFindingPaths(report, settings.root);
     let comparison = null;
     if (settings.compareBase) {
-      if (!report.execution.complete) throw new Error('Head scan is incomplete; base comparison cannot establish new findings');
+      if (result.status === 2) throw new Error('Head scanner exited 2; comparison unavailable');
       const started = performance.now();
       const baseRoot = path.join(directory, 'base');
       try {
@@ -297,16 +389,32 @@ export function main(env = process.env, execute = spawnSync) {
         if (baseResult.status === 1) throw new Error('Base scanner failed a finding policy despite fail-on none');
         validateFindingPaths(baseReport, baseTree.root);
         fs.writeFileSync(path.join(directory, 'base-scan.json'), JSON.stringify(baseReport, null, 2) + '\n');
-        if (!baseReport.execution.complete) throw new Error('Base scan is incomplete; comparison cannot establish new findings');
-        comparison = { newHits: newFindings(report, baseReport, settings.root, baseTree.root),
-          seconds: (performance.now() - started) / 1000 };
+        if (baseResult.status === 2) throw new Error('Base scanner exited 2; comparison unavailable');
+        let probes = 0;
+        const probe = (tree, file) => {
+          const probeCall = invocation({ ...tree, target: path.join(tree.root, file), policy: 'none', failScope: 'all', compareBase: false }, directory);
+          const result = execute(probeCall.command, probeCall.argv, probeCall.options);
+          if (result.error) throw new Error('Dependency check scanner process failed');
+          let evidence;
+          try { evidence = JSON.parse(result.stdout); } catch { throw new Error('Dependency check scanner returned no JSON report'); }
+          validateReport(evidence, result.status);
+          validateFindingPaths(evidence, tree.root);
+          fs.writeFileSync(path.join(directory, `dependency-check-${++probes}.json`), JSON.stringify(evidence, null, 2) + '\n');
+          if (result.status !== 0) throw new Error('Dependency check scanner failed despite fail-on none');
+          const health = comparisonHealth(evidence, tree.root);
+          return evidence.execution.complete && !health.global.length && !health.blocked.size &&
+            evidence.files === 1 && !evidence.outOfScope?.length;
+        };
+        comparison = { ...compareFiles(report, baseReport, settings, baseTree, changed, probe),
+          probes, seconds: (performance.now() - started) / 1000 };
       } finally {
         if (fs.existsSync(baseRoot)) fs.rmSync(baseRoot, { recursive: true });
       }
     }
-    let selected = comparison ? comparison.newHits : report.findings;
+    let selected = comparison ? [...comparison.newHits, ...comparison.fallbackHits] : report.findings;
     if (settings.failScope === 'changed') selected = selected.filter(hit => changed.paths.has(relativeFinding(settings.root, hit)));
-    const exitCode = result.status === 2 ? 2 :
+    const comparisonUnavailable = comparison && changed.paths.size > 0 && !comparison.comparableChanged && settings.policy !== 'none';
+    const exitCode = result.status === 2 || comparisonUnavailable ? 2 :
       settings.compareBase || settings.failScope === 'changed' ? (policyFails(selected, settings.policy) ? 1 : 0) : result.status;
     const jsonFile = path.join(directory, 'scan.json');
     fs.writeFileSync(jsonFile, JSON.stringify(report, null, 2) + '\n');
@@ -323,8 +431,8 @@ export function main(env = process.env, execute = spawnSync) {
       fs.appendFileSync(env.GITHUB_STEP_SUMMARY, '## E2E Skills static scan\n\n' +
         clipped.split('\n').map(line => '    ' + line).join('\n') + '\n');
     }
-    const annotationHits = comparison ? comparison.newHits : report.findings;
-    const emitted = annotations(annotationHits, settings.root, changed);
+    const annotationHits = comparison ? [...comparison.newHits, ...comparison.fallbackHits] : report.findings;
+    const emitted = annotations(annotationHits, settings.root, changed, ANNOTATION_LIMIT, comparison);
     for (const line of emitted.lines) console.log(line);
     if (emitted.errorsOmitted || emitted.warningsOmitted) {
       const note = `Annotations omitted: ${emitted.errorsOmitted} confirmed P0 error(s), ${emitted.warningsOmitted} P0 candidate warning(s); see the report output.`;
