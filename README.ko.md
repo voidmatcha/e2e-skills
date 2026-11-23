@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=009961c6b008a7bb51a1e216275927d8eec02ef5d2bfc9bac4baf2b737a75fe4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=bbee1ffb2cf1e2805115723f817ea4928bedfd1029746102041f6be69bb6df11; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -36,9 +36,7 @@
   <sub><a href="https://www.kimi.ai/ko/resources/software-testing-skills">Kimi 공식 사이트의 "더 스마트한 QA 자동화를 위한 AI 소프트웨어 테스트 skill"에 소개되었습니다.</a></sub>
 </p>
 
-`e2e-reviewer`는 코드 scanner로 의심되는 부분을 찾고, 테스트와 연관된 코드를 읽어 실제 문제인지 판단합니다. 테스트가 실패하는지 확인할 수 있도록 assertion mutation이나 원본과 분리한 프로젝트 복사본의 fault injection도 제안합니다. 실행에는 신뢰할 수 있는 로컬 환경과 명령 승인이 필요합니다. 이미 승인한 범위에서는 다시 승인받지 않습니다.
-
-`e2e-reviewer`가 찾은 문제를 고친 [upstream PR 15건이 merge되었습니다](#merged-upstream-fixes).
+`e2e-reviewer`는 코드 scanner로 의심되는 부분을 찾고, 테스트와 연관된 코드를 읽어 실제 문제인지 판단합니다. [실험적 런타임 probe](#실험적-런타임-검증명시적-요청-시에만)는 명시적으로 요청할 때만 사용할 수 있습니다.
 
 | 필요 | skill | 결과 |
 | --- | --- | --- |
@@ -221,22 +219,9 @@ npx --no-install playwright init-agents --loop=claude   # Claude Code
 npx --no-install playwright init-agents --loop=codex    # Codex
 ```
 
-`--no-install`은 프로젝트에 이미 설치된 Playwright를 사용하고 다른 버전을 내려받지 않습니다. Playwright 1.62에서 이 명령은 `playwright.config.*`를 불러온 뒤 다음 파일을 씁니다.
+`--no-install`은 프로젝트에 이미 설치된 Playwright를 사용합니다. 이 명령은 agent 정의, MCP 설정과 seed 파일을 쓸 수 있으므로 [설치 가이드](docs/installation.md#manual-generator-setup)에서 변경 사항을 확인해주세요. 그런 다음 agent를 다시 시작하고 프로젝트의 `playwright-test` MCP server를 승인해주세요. Codex에서는 신뢰한 프로젝트의 `.codex/config.toml`에 세션 전체에서 쓸 항목도 필요합니다([설정](docs/installation.md#codex)). 세션에 `generator_write_test` tool이 보이면 생성을 시작할 수 있습니다.
 
-- `--loop=claude`: `.claude/agents/playwright-test-planner.md`, `playwright-test-generator.md`, `playwright-test-healer.md`, 그리고 `playwright-test` server(`npx playwright run-test-mcp-server`)를 선언하는 `.mcp.json`. 기존 `.mcp.json`은 병합되지 않고 교체되므로 먼저 백업해주세요.
-- `--loop=codex`: `.codex/agents/playwright_test_planner.toml`, `playwright_test_generator.toml`, `playwright_test_healer.toml`. 각 agent 파일 안에 `playwright-test` server를 선언하며, `.codex/config.toml`은 쓰지 않습니다.
-- 공통: `specs/` 디렉터리가 없으면 `specs/README.md`를, 프로젝트에 seed 테스트가 없으면 테스트 디렉터리에 `seed.spec.ts`를 만듭니다.
-
-그다음 프로젝트에서 agent를 다시 시작합니다. Claude Code에서는 프로젝트의 `playwright-test` MCP server를 승인해주세요. Codex에서는 generator가 세션 전체에서 쓰는 server를 필요로 하므로, [설치 가이드](docs/installation.md#codex)에 나온 대로 신뢰한 프로젝트의 `.codex/config.toml`에도 `playwright-test`를 선언해주세요. 세션에 `generator_write_test` 도구가 보이면 생성을 시작할 수 있습니다.
-
-agent가 실패 경로도 테스트하도록 하려면 [테스트 작성 메모](docs/test-authoring-memo.md)를 agent가 불러오는 instruction 파일에 추가할 수 있습니다. Claude Code는 E2E 테스트 디렉터리를, Codex는 저장소 루트를 지정하고, Codex를 E2E 테스트 디렉터리에서 시작한다면 그 디렉터리를 지정해주세요. 먼저 `--dry-run`을 붙여 미리 확인할 수 있습니다.
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project path/to/repository --memo
-```
-
-개발 파일럿에서 가장 큰 차이를 만든 것은 메모 파일이었습니다. 메모 파일이 없을 때 skill이 잡은 실패 경로 fault는 Claude 54개 중 42개, Codex 54개 중 27개로, 루트 instruction 파일에 메모가 있을 때(53/54, 45/54)보다 적었습니다.
+instruction 파일 위치, optional 메모와 측정 결과의 한계는 [테스트 작성 메모](docs/test-authoring-memo.md)와 [설치 안내](docs/installation.md#optional-memo-and-failure-policy)를 참고해주세요.
 
 ### 설치 없이 CI에서 스캔하기
 
@@ -246,9 +231,7 @@ scanner는 skill을 설치하지 않아도 실행되므로 로컬이나 CI에서
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
 ```
 
-실제 저장소에서는 scan이 `INCOMPLETE`, 종료 코드 2로 끝나는 경우가 많습니다. 일부 코드를 분석하지 못했다는 뜻이지, 테스트가 실패했다는 뜻은 아닙니다. agent에게 같은 테스트에 `e2e-reviewer` skill을 실행해달라고 요청하세요. CI에서는 `--allow-incomplete`를 붙이면 종료 코드가 분석된 finding만 따릅니다. 보고서 읽는 법: `P0`(`[P0][CONFIRMED]`)는 아무것도 확인하지 않고도 통과할 수 있는 테스트로 기계적으로 확인된 것입니다. `LLM-TRIAGE`는 `e2e-reviewer` skill이 확인하거나 기각할 미확인 후보이고, `P0 candidate`(`[P0?]`)는 확인되면 P0가 되는 후보입니다. `provenance-unsupported`는 `page` 같은 값이 어디서 왔는지 scanner가 증명하지 못해 그 코드를 검사하지 않았다는 뜻입니다. 보고서의 다른 용어는 [용어집](docs/scanner-cli.md#glossary)에 정의되어 있습니다.
-
-`npx`가 `ETARGET`("No matching version found ... with a date before")으로 실패하면 `.npmrc`에 `min-release-age`가 설정되어 있는 것입니다. 이 설정은 지정한 일수보다 최근에 나온 릴리스를 숨깁니다. `.npmrc`는 고치지 말고 이 고정 버전 명령 하나에만 해제하세요: `npm_config_min_release_age=0 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text`
+`INCOMPLETE`는 일부 코드를 분석하지 못했다는 뜻이며, 테스트가 실패했다는 뜻은 아닙니다. 종료 코드, 보고서 용어, CI 옵션과 설치 문제 해결은 [scanner 가이드](docs/scanner-cli.md)를 참고해주세요. 판단이 남은 후보는 `e2e-reviewer`에 리뷰를 요청하세요.
 
 ### 다른 설치 방법과 문제 해결
 
@@ -266,7 +249,7 @@ codex plugin add e2e-skills@voidmatcha
 
 첫 번째는 Claude Code용, 두 번째는 Codex용입니다. 테스트 생성에는 여전히 위의 프로젝트 설정이 필요합니다.
 
-skill이 보이지 않거나 생성이 계속 준비되지 않으면 읽기 전용 진단을 실행해주세요. 설치된 skill 복사본(오래된 중복 복사본과 제거된 debugger skill의 남은 복사본 포함), 공식 agent와 MCP 설정, 다음 단계를 보고하며 아무것도 바꾸지 않습니다.
+skill이 보이지 않거나 생성이 계속 준비되지 않으면 설치된 skill, 공식 agent와 MCP 설정을 확인하는 읽기 전용 진단을 실행해주세요.
 
 ```bash
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills doctor --host claude --project /path/to/playwright-project
@@ -283,15 +266,15 @@ Codex에서는 `--host codex`를 사용해주세요. 사전 요구 사항, 프�
 
 함께 제공되는 shell script는 일반적인 macOS/Linux 환경을 지원하며, `/bin/bash`와 launcher에 지정된 시스템 실행 파일 경로를 사용합니다. Windows에서는 호환되는 WSL 배포판을 사용하고 프로젝트도 WSL 파일 시스템에 두세요. 네이티브 Windows는 지원하지 않습니다. NixOS, 그리고 Nix, pyenv, Conda, nvm으로만 설치한 tool은 모두 자동으로 찾을 수 있는 것은 아닙니다. 신뢰할 수 있는 tool이 없으면 중단합니다. `PATH`에서 다른 실행 파일을 찾아 우회하지 마세요. skill 리소스는 추측한 홈 디렉터리가 아니라, plugin 캐시와 사용자 지정 설치를 포함해 host가 실제로 제공한 skill 위치에서 찾으세요.
 
-generator는 `thin-rules.md`, 테스트 작성 메모와 작업 범위 및 실행 조건을 공식 planner와 generator에 전달한 뒤, reviewer scanner와 새 테스트를 실행합니다. 아무것도 설치하지 않고 agent와 MCP 설정을 바꾸지 않으며, CLI 대체 경로나 healer를 사용하지 않습니다. 설정이 없으면 필요한 설정과 읽기 전용 `e2e-skills doctor`를 안내합니다. doctor는 monorepo에서 Playwright config가 속한 패키지, 설치되지 않은 `e2e-reviewer`, 선택 사항인 lint도 알려줍니다.
+generator는 공식 Playwright agent를 사용한 뒤 reviewer scanner와 새 테스트를 실행합니다. 아무것도 설치하지 않고 agent와 MCP 설정을 바꾸지 않습니다. 설정이 없으면 필요한 설정과 읽기 전용 `e2e-skills doctor`를 안내합니다.
 
 생성에는 로컬 개발에서 흔히 쓰는 loopback 주소(`localhost`, `127.0.0.1`, `::1`)를 사용합니다. 승인된 개발 서버와 기존 테스트용 backend 또는 mock을 재사용합니다. 브라우저 작업 전에는 시나리오에서 사용하는 서비스만 확인합니다. 쓰기 작업에는 격리된 테스트 데이터와 정리 또는 초기화 방법이 필요합니다. 읽기 전용 시나리오에는 초기화가 필요하지 않습니다. 새 mock 서버나 배포 환경을 만들 필요도 없습니다. 사용하지 않는 API나 데이터베이스는 N/A로 표시하며, 공유 데이터나 운영 데이터에는 접근하지 않습니다. 실제로 탐색하거나 요청을 보내는 주소는 승인된 origin과 scheme, hostname, 유효 포트가 같아야 합니다. 별도로 승인된 loopback API 주소에도 요청을 보낼 수 있습니다. 승인되지 않은 주소나 확인할 수 없는 주소로의 접근은 BLOCKED로 보고합니다. 주소를 확인해도 브라우저가 다른 origin에 접근하는 것까지 차단하지는 않습니다.
 
-테스트를 생성하는 과정에서 생긴 오류로 확인된 경우에만 부모 agent가 최대 두 번 수정할 수 있습니다. 요구된 결과와 기댓값을 유지하고, 쓰기 작업을 반복하기 전에 테스트 데이터를 안전하게 정리하거나 초기화하며, 같은 승인된 실행 방식으로 origin 확인과 scanner 검사를 반복합니다. 프로젝트 버그이거나 실패 원인이 불확실한 경우, 수정 후에도 실패가 남은 경우에는 BLOCKED로 보고합니다. 전체 절차는 [generator 계약](skills/playwright-test-generator/SKILL.md)을 참고해주세요.
+[generator 계약](skills/playwright-test-generator/SKILL.md)에 수정 규칙과 실행 안전 조건이 정의되어 있습니다. 프로젝트 버그이거나 실패 원인이 불확실한 경우, 수정 후에도 실패가 남은 경우에는 BLOCKED로 보고합니다.
 
 probe 실행에는 프로젝트를 신뢰하고 환경 변수와 플래그를 포함한 정확한 명령을 승인해야 합니다. 보고서에는 스킵한 검사를 표시합니다. mutation과 fault injection probe는 필요할 때 추가로 실행하며, 실행하지 않은 결과를 측정된 것처럼 보고하지 않습니다.
 
-버전 이력과 이전 generator 절차는 [CHANGELOG.md](CHANGELOG.md)에 정리되어 있습니다.
+버전 이력은 [CHANGELOG.md](CHANGELOG.md)에 정리되어 있습니다.
 
 </details>
 
@@ -299,18 +282,7 @@ probe 실행에는 프로젝트를 신뢰하고 환경 변수와 플래그를 �
 
 공식 Playwright agent가 테스트를 생성하면, `e2e-reviewer`가 설치된 경우 generator skill이 scanner로 검사하고 P0/P1 항목을 최대 세 차례 수정합니다. 문제가 남거나 검사를 끝내지 못하면 중단합니다. 통과하면 승인된 프로젝트 테스트 명령으로, 승인된 프로젝트나 하나뿐임을 확인한 프로젝트에서 새 spec만 실행하고 테스트 실행 결과의 passed/failed/skipped 수를 보고합니다. 승인된 테스트 명령이 없으면 테스트를 실행하지 않았다고 보고합니다. reviewer가 없거나 검사 또는 실행을 스킵하면 미완료로 보고합니다. 테스트가 의도한 동작을 확인하는지까지 리뷰하려면 `e2e-reviewer`에 별도로 요청하세요.
 
-먼저 일반적인 `e2e-reviewer` 리뷰로 테스트가 의도한 동작을 확인하는지 살펴보세요. 코드 리뷰만으로 판단하기 어려운 부분이 남으면 해당 assertion이나 동작에 probe를 추가해 실행으로 확인할 수 있습니다. mutation과 fault injection probe는 추가 토큰과 실행 시간이 드는 선택 사항이며, 매 리뷰마다 자동으로 실행하지는 않습니다.
-
-- **assertion mutation:** 테스트 복사본에서 검증 조건을 반대로 바꿔 실제로 실패하는지 확인합니다. 프로젝트에 실제 버그가 생겼을 때도 테스트가 이를 잡는지는 별도로 확인해야 합니다.
-- **fault injection:** 프로젝트 복사본에 특정 버그를 넣고, 기존 테스트를 바꾸지 않은 채 그 버그를 잡는지 확인합니다.
-
-예를 들어 “저장 기능에 버그를 넣고 이 테스트가 실패하는지 확인해줘”라고 요청하세요. reviewer가 로컬 프로젝트를 살펴보고 검사 방법을 제안합니다. 실행에는 신뢰할 수 있는 로컬 환경과 실행 준비, 명령 승인이 필요합니다. 결과는 확인한 테스트 조건이나 넣은 버그에만 해당하며, 모든 버그를 잡는다는 뜻은 아닙니다.
-
-리뷰 후 확인할 질문이 여러 개 남으면, reviewer는 이를 한 묶음으로 제안합니다. 나열된 probe를 한 번 승인하면 첫 probe로 실행 환경이 제대로 동작하는지 확인한 뒤, 나머지를 개수나 시간 상한에 닿을 때까지 하나씩 실행합니다. 결과는 probe마다 따로 판정한 표 하나로 받습니다.
-
-자세한 내용은 [실행 절차와 준비 조건](skills/e2e-reviewer/references/runtime-probes.md), [OSS 사례 두 개의 작업 절차 검증](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)을 참고해주세요.
-
-선택 사항으로, agent가 테스트를 작성할 때 실패 경로도 테스트하게 하려면 [테스트 작성 메모](docs/test-authoring-memo.md)를 고치지 않은 그대로 프로젝트의 `CLAUDE.md` 또는 `AGENTS.md`에 붙여 넣어주세요. 항상 불러오는 이 파일이 메모를 두는 곳입니다. 일부 host에서는 sub-agent가 이 파일을 물려받지 않으므로, generator skill은 위임하는 공식 agent에도 메모를 전달합니다. 파일에 메모가 없으면 아래 `guidance` 명령을 안내하되, 동의하기 전에는 아무것도 쓰지 않습니다. 다른 skill은 이 메모를 불러오지 않습니다. 먼저 측정 결과와 한계를 확인해주세요. 선택 사항인 [테스트 실패 정책](docs/test-failure-policy.md)은 같은 파일에 넣는 별도 snippet으로, 근거가 되는 요구 사항을 밝히지 않고는 실패한 테스트를 고쳐 쓰지 않도록 agent에 요청합니다. 붙여 넣는 대신 `e2e-skills guidance --host claude|codex --project PATH --memo --policy`를 실행하면, 요청한 것만 고치지 않은 그대로 HTML 주석 마커 사이에 기록합니다. 자세한 내용은 [설치 안내](docs/installation.md#optional-memo-and-failure-policy)를 참고해주세요.
+generator는 reviewer scanner와 승인된 새 spec을 실행합니다. scanner 결과만으로 동작을 얼마나 검증하는지 입증할 수는 없습니다. 테스트가 의도한 동작을 확인하는지 리뷰하려면 `e2e-reviewer`에 요청하세요. 특정 동작을 실행으로 입증해야 한다고 명시적으로 요청하려면 [실험적 런타임 검증](#실험적-런타임-검증명시적-요청-시에만)을 참고해주세요. 실패 경로 테스트 작성은 optional [메모](docs/test-authoring-memo.md)와 [실패 정책](docs/test-failure-policy.md)을 참고해주세요.
 
 ## 근거와 한계
 
@@ -329,7 +301,7 @@ probe 실행에는 프로젝트를 신뢰하고 환경 변수와 플래그를 �
 
 [10월 20일 검증](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#october-20-successor)에서는 격리된 환경의 설치, Claude Code와 Codex에서 공식 agent/MCP로 테스트를 생성하고 실행하는 경로, 선정한 Cypress assertion mutation과 fault injection을 확인했습니다. generator의 최초 측정 결과와 이후 다시 실행한 결과는 구분해서 보고합니다.
 
-reviewer 결과는 모델에 따라 달랐습니다. 동일한 skill 버전과 공개 개발 사례 36개를 각 arm에서 다섯 번씩 반복한 측정에서 `gpt-6-sol`은 [v22](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v22/README.md)를, `gpt-6.1-sol`은 [v24](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v24/README.md)를 통과했고, `gpt-6-luna`는 [v23](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v23/README.md)에서 실패했습니다. 각 실행 모두 540회를 완료했습니다. tool을 끈 상태에서 주어진 지침을 평가한 결과이므로 scanner의 효과나 처음 보는 프로젝트의 정확도를 보여 주지는 않습니다. 점수는 보고서에 명시된 버전의 평가 결과입니다. 모델별 점수, 프로토콜, 기대에 못 미친 결과와 이 결과로 설명할 수 있는 범위는 [벤치마크 현황](benchmarks/STATUS.md)을, 동작 변경 이력은 [CHANGELOG.md](CHANGELOG.md)를 참고해주세요.
+reviewer의 개발 단계 결과는 모델마다 다르며, scanner의 효과나 처음 보는 프로젝트의 정확도를 입증하지 않습니다. 모델별 결과와 한계는 [벤치마크 현황](benchmarks/STATUS.md)을 참고해주세요.
 
 프로토콜, 입력 자료, 요약, 원본 실행 artifact를 포함한 과거 벤치마크의 전체 보관본은 [근거 manifest](benchmarks/external-evidence.json)에 고정되어 있으며 [Hugging Face 데이터셋](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)에서 받을 수 있습니다. 이전 점수를 검토하기 전 `scripts/dev/fetch-benchmark-evidence.sh --dry-run`으로 복원 계획을 확인하세요.
 
@@ -339,7 +311,7 @@ reviewer 결과는 모델에 따라 달랐습니다. 동일한 skill 버전과 �
 
 Playwright/Cypress `test smell` 24개를 정리한 목록이며, 각 항목의 ID는 바꾸지 않습니다. 버그가 있어도 테스트가 통과할 수 있는 경우로는 Locator의 true/false 판정, assertion 누락, 오류 무시, focused test, 인증 누락, 네트워크 요청이 실제로 전송됐는지 확인하지 않는 `optimistic UI` 검증이 있습니다. [전체 분류와 근거](docs/e2e-test-smells.md)를 참고해주세요.
 
-일부 패턴은 테스트뿐 아니라 프로젝트까지 리뷰해야 판단할 수 있습니다. `#22`의 `optimistic UI`가 대표적인 예입니다. 클릭으로 쓰기 요청이 실제 전송되는지는 spec만 보고 판단할 수 없습니다. 따라서 테스트만 있는 저장소에서는 추측으로 문제를 보고하지 않습니다. 컴포넌트 코드가 리뷰 범위에 있어도 테스트나 acceptance 기준이 쓰기 요청을 약속할 때만 `#22`를 보고합니다. 힌트를 제거한 like 버튼 데모에서도 reviewer는 많아야 NEEDS-CONTEXT로 기록했습니다(문제로 보고한 경우 0/3). 오탐을 줄이기 위한 제한입니다.
+일부 패턴은 테스트뿐 아니라 프로젝트 코드도 있어야 판단할 수 있습니다. `#22` optimistic UI를 리뷰하려면 쓰기를 약속하는 테스트나 acceptance 기준과 관련 프로젝트 코드가 필요합니다. spec만 보고 요청이 빠졌다고 추론하지 않습니다. [패턴 설명](docs/e2e-test-smells.md)을 참고해주세요.
 
 <details>
 <summary>문제 등급별 패턴 24개 전체</summary>
@@ -395,30 +367,22 @@ Playwright/Cypress `test smell` 24개를 정리한 목록이며, 각 항목의 I
 
 ## 실패 debugging
 
-`playwright-debugger`와 `cypress-debugger`를 얇은 `e2e-debugger` 하나로 바꿨습니다. 실제 실패 사례 24건씩으로 Claude를 두 번 측정했을 때 기존 debugger는 일반 agent보다 정확하지 않았고(20/24 대 22/24, 22/24 대 23/24), 비용은 약 1.6–1.7배, 실행 시간은 약 1.8배였습니다. 실패하는 테스트는 평소 말투로("This test is failing, fix it.") 요청하면 [`e2e-debugger`](skills/e2e-debugger/SKILL.md)가 그 요청에 [test-authoring memo](docs/test-authoring-memo.md#failure-handling)의 실패 처리 항목을 적용하므로 instruction 파일을 설정할 필요가 없습니다. 테스트를 retry 없이 세 번 다시 실행해 결과가 섞이면 FLAKY로 보고하고 멈춥니다. 그렇지 않으면 앱과 테스트 중 무엇이 틀렸는지 판단해, 앱 regression이 의심되면 제품 코드도 테스트도 바꾸지 않고 보고하고, 테스트 결함이 입증된 경우에만 테스트를 약하게 만들지 않고 고친 뒤 바뀐 spec을 scan하고 세 번 연속 통과를 확인합니다. 같은 규칙을 prompt에 붙여 공식 Playwright healer에 수정을 맡길 수도 있습니다. 근거: [준비된 healer 실험](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)에서 Claude Sonnet 5.5와 Codex GPT-6 Sol은 각각 136단어 memo를 썼을 때 regression 16건 중 10건에서 프로젝트 코드를 수정했고, memo v5(301단어)를 썼을 때는 수정 건수가 0건이었습니다. 개발용 데이터에서 얻은 결과이며, 개발에 쓰지 않고 따로 남겨 둔 데이터로 평가한 결과는 아닙니다. [별도의 개발 단계 반복 실험](docs/test-authoring-memo.md#failure-handling)에서는 메모가 없을 때 두 모델 각각 16/16건, 메모가 있을 때 Claude 0/16건, Codex 1/16건이었습니다. 서로 다른 실험 결과입니다. 두 조건 모두 루트 instruction 파일에 memo를 넣고 사례마다 한 번씩 실행했습니다. 이 결과만으로는 문구와 분량 중 무엇이 영향을 줬는지 구분할 수 없습니다. skill은 instruction 파일 없이 실패 처리 지침을 전달하며, 이 전달 방식은 아직 측정하지 않았습니다. assertion을 약하게 만들어 통과시킨 테스트는 `e2e-reviewer`로 확인하세요. 이전 설치에서 남은 debugger 복사본은 installer와 `e2e-skills doctor`가 경고만 하고 삭제하지 않습니다. 더 이상 쓰지 않으면 직접 삭제해주세요.
+평소 말투로("This test is failing, fix it.") 요청하면 [`e2e-debugger`](skills/e2e-debugger/SKILL.md)를 사용할 수 있습니다. 선택한 테스트를 retry 없이 세 번 다시 실행해 결과가 섞이면 FLAKY로 보고합니다. 프로젝트 regression이 의심되면 제품 코드를 바꾸지 않고 보고하며, 테스트 defect이 입증된 경우에만 assertion을 약하게 만들지 않고 고칩니다. 바뀐 spec은 scanner 검사와 세 번의 재실행을 통과해야 합니다. 규칙과 근거는 [실패 처리 메모](docs/test-authoring-memo.md#failure-handling)를 참고해주세요. assertion을 약하게 만들어 통과시킨 테스트는 `e2e-reviewer`로 확인하세요.
 
 ## 실험적 런타임 검증(명시적 요청 시에만)
 
-`e2e-reviewer`는 기본적으로 정적 리뷰를 합니다. 통과하는 Playwright 또는 Cypress 테스트가 근거가 있는 결함을 실제로 잡는지 명시적으로 요청하면, 분리된 복사본에서 V2 단언문 변경 또는 V3 앱 결함을 시험할 수 있습니다. 이 실험적 실행 도구는 구조화된 예상 실패, 정상 상태의 통과, V3의 독립 관찰 결과를 요구합니다. 대상 프로젝트 코드를 실행하기 전에는 저장소에 대한 신뢰와 정확한 명령에 대한 승인이 필요합니다. 결과는 선택한 테스트와 결함 한 건에만 적용되며 전체 테스트 모음의 커버리지를 입증하지 않습니다. gate401에서는 새 React 저장소 6곳 중 약 0~1곳에서만 런타임 판정에 도달했고, 정적 리뷰보다 우수하다는 출시 근거는 확보하지 못했습니다. 일반 리뷰에서 자동으로 실행되지 않습니다.
+`e2e-reviewer`는 정적 리뷰로 시작합니다. 명시적으로 요청하지 않으면 런타임 검증을 제안하거나 실행하지 않습니다. 예를 들어 통과하는 특정 테스트가 저장 기능의 버그를 잡는지 요청할 수 있습니다. 이 실험적 절차는 버릴 수 있는 복사본에서 assertion mutation이나 근거가 있는 프로젝트 fault를 준비할 수 있습니다. 여러 probe도 명시적인 요청이 있어야 한 묶음으로 제안합니다. 대상 코드를 실행하려면 체크아웃을 신뢰하고 정확한 명령을 승인해야 합니다. 결과는 선택한 테스트와 fault에만 적용되며, 전체 테스트 모음에 적용되지 않습니다. 실제 프로젝트에서 어디까지 실행할 수 있는지와 정적 리뷰 대비 효과는 아직 입증하지 못했습니다. [런타임 절차](skills/e2e-reviewer/references/runtime-probes.md)와 [Release 안내](RELEASE-NOTES-3.7.0.md#experimental-reviewer-runtime-proof)를 참고해주세요.
 
 ## 독립 실행 scanner
 
-AI agent에 요청하지 않고 코드 scanner만 직접 실행할 수 있습니다. 검토할 문제 후보를 찾는 tool이며, 테스트를 실행하거나 테스트가 의도한 동작을 검증하는지 판단하지는 않습니다.
+AI agent 없이 검사하려면 [위의 설치 없이 실행하는 명령](#설치-없이-ci에서-스캔하기)을 사용하세요. 후보를 보고하며, 테스트를 실행하거나 의도한 동작을 검증하는지 판단하지는 않습니다. reviewer에도 같은 scanner가 포함되어 있습니다. TypeScript 파서는 함께 제공됩니다. 실행 조건, 보고서 형식과 옵션은 [scanner 가이드](docs/scanner-cli.md)를 참고해주세요.
 
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
-```
-
-Node.js 22 이상이 필요하며 TypeScript 파서는 함께 제공됩니다. npx는 캐시에 없는 패키지와 의존성을 내려받습니다. scanner 자체는 tool을 내려받거나 프로젝트 설정 코드를 불러오지 않으며 테스트도 실행하지 않습니다. 구조화된 결과는 `--format json`으로 확인하고, 전체 보고서는 `--report-file <new-file>`로 저장하세요. 기존 파일은 덮어쓰지 않습니다.
-
-reviewer에는 같은 Node scanner가 포함되어 있어 별도 npm 설치 없이 실행합니다. 오프라인 launcher와 실행 조건은 [scanner 가이드](docs/scanner-cli.md#installed-scanner)를 참고해주세요.
-
-scan만으로 assertion mutation이나 fault injection을 실행하지는 않습니다. 이 검사를 실행하려면 신뢰하고 준비를 마친 프로젝트가 필요합니다. 자세한 내용은 [CLI와 probe 가이드](docs/scanner-cli.md)를 참고해주세요.
+기본 설정에서 함께 제공되는 scanner는 도구를 다운로드하거나 프로젝트 설정을 불러오지 않습니다. JSON 보고서는 `--format json`, 비공개 텍스트 보고서는 `--report-file <new-file>`을 사용하세요. 남은 후보는 Phase 2에서 리뷰해야 하며, `P0=0`만으로 검사가 끝나지 않습니다. `INCOMPLETE`의 기본 종료 코드는 2입니다. `--fail-on p0-candidate`와 선택적 `--project-eslint --trust-project` 조합은 [scanner 가이드](docs/scanner-cli.md)를 참고해주세요.
 
 <details>
 <summary>scanner 고급 옵션과 파일 읽기 범위</summary>
 
-설치된 프로젝트 ESLint와 해당 설정을 사용하려면 체크아웃을 신뢰하고 정확한 실행 명령을 승인한 뒤 `--project-eslint --trust-project`를 추가하세요. 프로젝트가 제어하는 코드를 host 권한으로 실행하며, sandbox나 의존성 설치는 제공하지 않습니다. 번들 검사는 이 옵션 없이 실행됩니다.
+프로젝트 ESLint를 실행하려면 체크아웃에 대한 명시적 신뢰와 명령 승인이 필요합니다. [프로젝트 ESLint](docs/scanner-cli.md#optional-local-project-eslint)를 참고해주세요.
 
 > **읽기 범위.**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
@@ -429,7 +393,7 @@ scan만으로 assertion mutation이나 fault injection을 실행하지는 않습
 번들 검사는 `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` 소스를 읽습니다.
 <!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
-기본 `p0` 정책은 기계적으로 확인된 P0가 있으면 종료 코드 1을 반환합니다. P0 후보도 실행을 중단할 기준에 포함하려면 `--fail-on p0-candidate`를 사용하세요. `any`는 확인된 모든 문제를 기준으로 삼고, `none`은 문제 수와 관계없이 결과만 보여줍니다. 종료 코드 0은 선택한 기준에 걸리지 않았다는 뜻일 뿐, 테스트가 올바르다는 뜻은 아닙니다. 이 기준은 기계적으로 확인된 문제가 있을 때만 실패합니다. 여기에는 이제 테스트의 유일한 assertion을 `if`로 감싼 좁은 #5a 형태 하나와, `expect(x || true)` 참 검사 및 Locator `count()`를 `>= 0`이나 `> -1`과 비교하는 좁은 #4a 형태 두 개가 포함됩니다. 그 밖의 P0 문제 대부분은 여전히 후보로 나타나며, `e2e-reviewer`의 LLM 리뷰 단계를 거쳐야 합니다. 실행이 완료되고 P0=0이어도 남은 후보와 추가 확인 항목은 리뷰해야 합니다. 입력이 없거나 소스 무결성 검사 또는 분석에 실패하면 INCOMPLETE와 종료 코드 2를 반환합니다. 해결되지 않은 분석 때문에 CI가 멈추지 않게 하려면 `--allow-incomplete`를 추가하세요. 이때 종료 코드는 분석된 결과에만 정책을 적용하고, 보고서는 분석하지 못해 검사되지 않은 파일과 위치의 수를 알려줍니다. 입력 누락과 소스 무결성 실패는 여전히 종료 코드 2입니다. 테스트가 workspace package에서 `test`나 `expect`를 가져온다면 `--trust-module <package>=<scan root 안의 소스 entry 경로>`를 추가해 그 import를 따라가게 할 수 있습니다. scanner가 모든 코드의 의미를 검증했다는 뜻은 아닙니다. 코드 실행과 네트워크 접근의 허용 범위는 [SECURITY.md](SECURITY.md)를 참고해주세요.
+`--fail-on`, `--allow-incomplete`, `--trust-module`, 종료 코드와 검사 범위의 한계는 [scanner 가이드](docs/scanner-cli.md)를, 실행 허용 범위는 [SECURITY.md](SECURITY.md)를 참고해주세요.
 
 </details>
 
@@ -460,7 +424,6 @@ plugin은 사용자가 명시적으로 실행을 허용했을 때 사용하며, 
 
 assertion mutation과 앱 fault probe는 저장소를 신뢰하고 환경 변수와 플래그를 포함한 정확한 명령을 승인한 뒤에만 대상 프로젝트에서 불러오는 코드를 실행합니다. generator는 reviewer scanner로 검사한 뒤 승인된 프로젝트 테스트 명령으로 자신이 작성한 spec만 실행합니다.
 
-비공개 벤치마크 실행에서는 `--isolation-wrapper`가 필수 hook이지만, 그 자체로 실제 격리를 보장하지는 않습니다. CI는 wrapper 계약을 검증하지만 파일시스템, 프로세스, 네트워크 격리를 입증하지는 않습니다.
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
 
 </details>

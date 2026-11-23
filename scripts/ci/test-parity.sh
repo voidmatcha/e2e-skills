@@ -453,10 +453,10 @@ assert_fails \
 restore "$file"
 
 # Case 2n: translated visible prose must not drift while its badge stays
-# correct. Both localized merged-fix claims are part of the public count surface.
+# correct. The localized merged-fix claim is part of the public count surface.
 file="README.ko.md"
 backup "$file"
-mutate "$file" "PR 15건이" "PR 16건이"
+mutate "$file" "PR **15건이" "PR **16건이"
 assert_fails \
   "Check 1e — localized merged prose matches roadmap" \
   "README.ko.md merged prose counts"
@@ -1305,12 +1305,16 @@ restore "$file"
 # requires an explicit review.sh snapshot update.
 for file in README.ko.md README.ja.md README.zh-cn.md; do
   backup "$file"
+  case "$file" in
+    README.zh-cn.md) scanner_phrase="\`e2e-skills scan\` 扫描器" ;;
+    *) scanner_phrase="\`e2e-skills scan\` scanner" ;;
+  esac
   mutate \
     "$file" \
-    "\`--isolation-wrapper\`" \
-    "\`--isolation-hook\`"
+    "$scanner_phrase" \
+    "${scanner_phrase/scan/probe}"
   assert_fails \
-    "README i18n semantic contract — $file isolation claim drift" \
+    "README i18n semantic contract — $file scanner claim drift" \
     "$file protected semantic contract"
   restore "$file"
 done

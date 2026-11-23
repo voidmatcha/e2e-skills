@@ -19,13 +19,13 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=009961c6b008a7bb51a1e216275927d8eec02ef5d2bfc9bac4baf2b737a75fe4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=bbee1ffb2cf1e2805115723f817ea4928bedfd1029746102041f6be69bb6df11; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
-**E2E 测试通过了，功能真的正常吗？** 在 200 个热门 React 仓库中，有 34 个存在这样的测试：它所命名的功能已经损坏，测试却仍可能通过。[范围与局限](#证据与限制) · [数据](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
+**E2E 测试通过了，功能真的正常吗？** 在 200 个热门 React 仓库中，有 34 个存在这样的测试：它所命名的功能已经损坏，测试却仍可能通过。[范围与局限](#evidence-and-limits) · [数据](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/770f2de79848c65b80116219ce2d03747a3ae370/raw/oss-prevalence-and-reviewer-20261106/oss-cases/summary.md)
 
-`e2e-skills` 帮助检查测试是否真正验证了名称所描述的行为。请先从[安装并试用](#安装并试用)开始：添加免费备忘录，安装 skill，然后运行 30 秒扫描。
+`e2e-skills` 帮助检查测试是否真正验证了名称所描述的行为。请先从[安装并试用](#install-and-try-it)开始：添加免费备忘录，安装 skill，然后运行 30 秒扫描。
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
@@ -35,9 +35,7 @@
   <sub><a href="https://www.kimi.ai/resources/software-testing-skills">已收录于 Kimi 官方网站的《AI Software Testing Skills for Smarter QA Automation》。</a></sub>
 </p>
 
-`e2e-reviewer` 用代码扫描器查找候选问题，再阅读测试和周边代码，判断是否确实存在问题。需要时，它还会建议修改断言条件或在与原应用分开的副本中加入缺陷，检查测试是否失败。审查者可以主动提出这些额外验证；执行需要可信的本地环境和命令批准。同一范围内已有的批准继续有效。
-
-`e2e-reviewer` 发现的问题促成了 [15 个合入上游的 PR](#merged-upstream-fixes)。
+`e2e-reviewer` 用代码扫描器查找候选问题，再阅读测试和周边代码，判断是否确实存在问题。[实验性运行时验证](#experimental-runtime-proof-opt-in)仅在明确请求时可用。
 
 | 需求 | Skill | 结果 |
 | --- | --- | --- |
@@ -162,6 +160,8 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 </tr>
 </table>
 
+<a id="install-and-try-it"></a>
+
 ## 安装并试用
 
 ### 1. 添加免费备忘录
@@ -180,7 +180,7 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --h
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
 
-审查和调试可以直接使用。测试生成还需要 Playwright 官方测试 agents 及其 `playwright-test` MCP 服务器，每个项目用 `npx playwright init-agents` 设置一次；参见[一次性的项目设置](#测试生成一次性的项目设置)。
+审查和调试可以直接使用。测试生成还需要 Playwright 官方测试 agents 及其 `playwright-test` MCP 服务器，每个项目用 `npx playwright init-agents` 设置一次；参见[一次性的项目设置](#test-generation-one-time-project-setup)。
 
 ### 3. 扫描测试
 
@@ -211,6 +211,8 @@ This test is failing, fix it.
 
 审查和修复失败测试可以直接使用。测试生成需要先完成下面一次性的项目设置。
 
+<a id="test-generation-one-time-project-setup"></a>
+
 ### 测试生成：一次性的项目设置
 
 `playwright-test-generator` 通过 `playwright-test` MCP 服务器使用 Playwright 官方测试代理。首次使用时，如果缺少这些代理，它会停止生成，并告诉你在 Playwright 项目根目录中运行一条命令。技能本身从不运行这条命令：
@@ -220,22 +222,11 @@ npx --no-install playwright init-agents --loop=claude   # Claude Code
 npx --no-install playwright init-agents --loop=codex    # Codex
 ```
 
-`--no-install` 使用项目中已安装的 Playwright，不会下载其他版本。在 Playwright 1.62 中，该命令会先加载 `playwright.config.*`，然后写入：
+`--no-install` 使用项目中已安装的 Playwright。该命令可能写入代理定义、MCP 配置和 seed 文件；请先在[安装指南](docs/installation.md#manual-generator-setup)中查看其影响。然后重启代理，批准项目的 `playwright-test` MCP 服务器。Codex 还需要在受信任项目的 `.codex/config.toml` 中添加会话级条目（[设置步骤](docs/installation.md#codex)）。会话中出现 `generator_write_test` 工具后即可开始生成。
 
-- `--loop=claude`：`.claude/agents/playwright-test-planner.md`、`playwright-test-generator.md`、`playwright-test-healer.md`，以及声明 `playwright-test` 服务器（`npx playwright run-test-mcp-server`）的 `.mcp.json`。已有的 `.mcp.json` 会被替换而不是合并，请先备份。
-- `--loop=codex`：`.codex/agents/playwright_test_planner.toml`、`playwright_test_generator.toml`、`playwright_test_healer.toml`，每个代理文件内部都声明了 `playwright-test` 服务器。它不会写入 `.codex/config.toml`。
-- 两者都会：在没有 `specs/` 目录时创建 `specs/README.md`，在项目没有 seed 测试时在测试目录中创建 `seed.spec.ts`。
+指令文件的位置、可选备忘录及其测量限制，请参阅[测试编写备忘](docs/test-authoring-memo.md)和[安装指南](docs/installation.md#optional-memo-and-failure-policy)。
 
-然后在项目中重启代理。在 Claude Code 中，批准项目的 `playwright-test` MCP 服务器。在 Codex 中，由于生成器需要会话级服务器，还要按照[安装指南](docs/installation.md#codex)在受信任项目的 `.codex/config.toml` 中声明 `playwright-test`。会话中出现 `generator_write_test` 工具后即可开始生成。
-
-如果希望代理同时测试失败路径，可以把[测试编写备忘](docs/test-authoring-memo.md)添加到代理加载的指令文件中。Claude Code 使用 E2E 测试目录；Codex 使用仓库根目录，如果在 E2E 测试目录中启动 Codex，则使用该目录。可以先加上 `--dry-run` 预览：
-
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host claude --project path/to/e2e-tests --memo
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project path/to/repository --memo
-```
-
-在我们的开发试验中，影响最大的是备忘文件：没有它时，技能发现的失败路径 fault 更少（Claude 54 个中 42 个，Codex 54 个中 27 个），备忘位于根目录指令文件时分别为 53/54 和 45/54。
+<a id="scan-in-ci-without-installing"></a>
 
 ### 无需安装，在 CI 中扫描
 
@@ -245,9 +236,7 @@ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --h
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
 ```
 
-在真实仓库中，扫描经常以 `INCOMPLETE` 和退出码 2 结束：这表示有些代码无法分析，并不表示测试失败。请让代理对同一批测试运行 `e2e-reviewer` 技能；在 CI 中加上 `--allow-incomplete`，退出码就只取决于已分析的 finding。阅读报告：`P0`（`[P0][CONFIRMED]`）是经机械确认、不检查任何内容也能通过的测试；`LLM-TRIAGE` 标记尚未确认的候选，由 `e2e-reviewer` 技能确认或否定；`P0 candidate`（`[P0?]`）是一经确认即为 P0 的候选。`provenance-unsupported` 表示扫描器无法证明 `page` 等值的来源，因此没有检查那段代码。报告中的其他术语见[术语表](docs/scanner-cli.md#glossary)。
-
-如果 `npx` 因 `ETARGET`（"No matching version found ... with a date before"）失败，说明 `.npmrc` 设置了 `min-release-age`，它会隐藏发布不足该天数的版本。不要修改 `.npmrc`，只对这一条固定版本的命令解除限制：`npm_config_min_release_age=0 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text`
+`INCOMPLETE` 表示部分代码未被分析，并不表示测试失败。退出码、报告术语、CI 选项和安装故障排查见[扫描器指南](docs/scanner-cli.md)。请让 `e2e-reviewer` 审查未解决的候选。
 
 ### 其他安装方式与故障排查
 
@@ -265,7 +254,7 @@ codex plugin add e2e-skills@voidmatcha
 
 第一组用于 Claude Code，第二组用于 Codex。测试生成仍然需要上面的项目设置。
 
-如果技能没有出现，或生成一直未就绪，请运行只读诊断。它会报告已安装的技能副本（包括过期的重复副本，以及已移除的 debugger 技能遗留的副本）、官方代理和 MCP 配置以及后续步骤，不做任何更改：
+如果技能没有出现，或生成一直未就绪，请运行只读诊断，检查已安装的技能、官方代理和 MCP 配置：
 
 ```bash
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills doctor --host claude --project /path/to/playwright-project
@@ -282,15 +271,15 @@ Codex 请使用 `--host codex`。前提条件、可同时完成项目设置的�
 
 随附的 shell 脚本面向常规的 macOS/Linux 布局，使用 `/bin/bash` 以及启动器所需的固定系统可执行文件路径。Windows 用户需要兼容的 WSL 发行版，并把项目放在 WSL 文件系统内；不支持原生 Windows。NixOS，以及仅通过 Nix、pyenv、Conda 或 nvm 安装的工具，并不都能被自动发现。缺少受信任的工具时，相关操作会停止；不要通过环境中的 `PATH` 查找绕过这一边界。请从宿主实际提供的 Skill 位置解析 Skill 资源，包括插件缓存和自定义安装位置，而不是猜测的主目录。
 
-generator 将 `thin-rules.md`、测试编写备忘和安全指令附加到官方 planner 与 generator 后委派，再运行 reviewer scanner 和新测试。它不安装任何内容，不修改 agent 或 MCP 设置，不使用 CLI fallback 或 healer。缺少设置时会提供指南和只读的 `e2e-skills doctor`。doctor 还会报告 monorepo 中 Playwright config 所属的包、未安装的 `e2e-reviewer` 和可选的 lint。
+生成器使用官方 Playwright 代理，然后运行审查器扫描器和新测试。它不安装任何内容，也不修改代理或 MCP 配置。缺少配置时，会提供设置指南和只读的 `e2e-skills doctor`。
 
 生成使用本地开发中常见的 loopback 地址（`localhost`、`127.0.0.1`、`::1`）。复用已获批的开发服务器及其现有测试 backend 或 mock。browser 操作前只确认场景使用的服务。写入需要隔离的测试数据及清理或重置方法；只读场景不需要重置。无需创建新的 mock 服务器或部署环境。未使用的 API 或 database 标为 N/A；共享数据或生产数据仍不适用。实际 navigation 和 request 目的地必须与获批 origin 的 scheme、hostname 和有效 port 一致；允许单独获批的 loopback API 目的地。其他或无法解析的目的地均为 BLOCKED。这些检查不提供 browser 全局 origin 隔离。
 
-仅在证实为生成错误时，父 agent 才能最多修复两次。必须保留要求的结果和预期值，重复写入前安全清理或重置测试数据，并使用相同的获批执行方式重复 origin 和 scanner 检查。产品缺陷、原因不明和剩余失败均保持 BLOCKED。完整流程见 [generator 约定](skills/playwright-test-generator/SKILL.md)。
+[生成器约定](skills/playwright-test-generator/SKILL.md)定义了修复和安全规则。产品缺陷、原因不明和剩余失败均保持 BLOCKED。
 
 probe 执行需要可信项目，以及对包括环境变量和 flag 在内的确切命令的批准。报告注明跳过的检查。mutation 和应用 fault probe 是可选后续操作；未执行的结果不会报告为已测量。
 
-版本历史和旧 generator 流程见 [CHANGELOG.md](CHANGELOG.md)。
+版本历史见 [CHANGELOG.md](CHANGELOG.md)。
 
 </details>
 
@@ -298,18 +287,9 @@ probe 执行需要可信项目，以及对包括环境变量和 flag 在内的�
 
 生成由官方 Playwright agent 负责。之后，generator skill 会在安装了 `e2e-reviewer` 时运行扫描器，最多三轮修复 P0/P1 项。如果仍有问题或扫描未完成，则停止；通过后，仅用已获批准的项目测试命令，在已批准的项目或确认唯一的项目中运行新 spec，并报告测试运行原生的 passed/failed/skipped 数量。没有已批准的测试命令时，报告测试未运行。缺失或跳过的检查会报告为未完成。需要审查生成测试是否真正验证了预期行为时，请另行请求 `e2e-reviewer`。
 
-先用常规的 `e2e-reviewer` 审查确认测试是否检查了预期行为。如果某个问题需要运行证据，再只针对该断言或行为添加 probe。你可以选择在哪里投入额外的 token 和执行时间；mutation 与应用 fault probe 不会在每次审查中自动运行。
+生成器运行审查器扫描器和获批的新 spec；仅凭扫描结果不能证明行为覆盖。请让 `e2e-reviewer` 进行语义审查。如果明确需要某项行为的运行时证据，请参阅[实验性运行时验证](#experimental-runtime-proof-opt-in)。编写失败路径测试时，可参考可选的[备忘录](docs/test-authoring-memo.md)和[失败策略](docs/test-failure-policy.md)。
 
-- **断言 mutation：** 在测试副本中反转断言条件，检查它是否真的失败。这只确认断言能否失败，并不证明原测试能发现应用缺陷。
-- **应用缺陷注入：** 在应用副本中加入一个特定缺陷，检查未经修改的原测试能否发现它。
-
-例如：“检查保存功能出错时，这个测试能否发现。”reviewer 会查看本地项目并提出检查方案。执行需要可信且准备好的本地环境，以及你对命令的批准。结果仅适用于选定的断言或缺陷，不代表能发现所有缺陷。
-
-如果审查后仍有多个待确认的问题，reviewer 会把它们作为一批提出。你对列出的 probe 只需批准一次：第一个 probe 先确认执行环境正常工作，其余的逐个运行，直到达到数量或时间上限。结果汇总为一张表，每个 probe 各自给出判定。
-
-详情请参阅[执行步骤和准备条件](skills/e2e-reviewer/references/runtime-probes.md)及[两个 OSS 工作流程验证案例](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)。
-
-可选：如果希望代理编写测试时也覆盖失败路径，请将[测试编写备忘](docs/test-authoring-memo.md)原样粘贴到项目的 `CLAUDE.md` 或 `AGENTS.md` 中。始终加载的这个文件是备忘的放置位置。在某些宿主上子代理不会继承该文件，因此 generator 技能也会把备忘传给它委派的官方代理；文件中缺少备忘时，它会提示下方的 `guidance` 命令，未经你同意不会写入任何内容。其他技能不会加载它；请先阅读其测量结果和局限。可选的[测试失败策略](docs/test-failure-policy.md)是放入同一文件的另一段片段，要求代理在说不出依据的需求时不要改写失败的测试。也可以不手动粘贴，运行 `e2e-skills guidance --host claude|codex --project PATH --memo --policy`：仅在明确指定时，才会将其中一项或两项原样写入 HTML 注释标记之间。详见[安装说明](docs/installation.md#optional-memo-and-failure-policy)。
+<a id="evidence-and-limits"></a>
 
 ## 证据与限制
 
@@ -328,7 +308,7 @@ probe 执行需要可信项目，以及对包括环境变量和 flag 在内的�
 
 [10 月 20 日的验证](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#october-20-successor)检查了隔离环境中的安装、Claude Code 和 Codex 通过官方 agent/MCP 生成并运行测试的流程，以及选定的 Cypress 断言 mutation 和应用故障注入。generator 的原始测量与后续重跑结果继续分别报告。
 
-reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开开发案例上，每个 arm 重复五次，`gpt-6-sol` 通过了 [v22](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v22/README.md)，`gpt-6.1-sol` 通过了 [v24](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v24/README.md)，而 `gpt-6-luna` 未通过 [v23](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v23/README.md)。每次运行均完成了全部 540 次调用。这些禁用工具的测量评估了提供的指令，不能说明扫描器的效果或在未见项目上的准确率。分数仅适用于各报告指定的 snapshot。模型分数、协议、负面发现和主张边界见[基准状态](benchmarks/STATUS.md)，行为变更见 [CHANGELOG.md](CHANGELOG.md)。
+审查器的开发阶段结果因模型而异，不能证明扫描器的效果或在未见项目上的准确率。各模型的结果与限制见[基准状态](benchmarks/STATUS.md)。
 
 包含协议、输入资料、摘要和原始运行资料的完整历史基准冻结 snapshot 由[证据 manifest](benchmarks/external-evidence.json)固定，可从 [Hugging Face 数据集](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)获取。审计旧分数前，使用 `scripts/dev/fetch-benchmark-evidence.sh --dry-run` 查看恢复计划。
 
@@ -338,7 +318,7 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 
 该目录包含 24 个稳定的 Playwright/Cypress 测试异味。最常见的 false-green 形态包括 Locator 真值判断、缺失断言、吞掉错误、focused tests、缺失认证，以及没有网络调用证明的乐观 UI 检查。参见 [完整分类与依据](docs/e2e-test-smells.md)。
 
-有些模式需要应用代码在审查范围内，而不仅仅是测试。`#22` 乐观 UI 是最明显的例子：点击是否真的发出 mutation，无法仅从 spec 判断，因此在只有测试的仓库中，审查不会猜测，而是不报告。即使组件在审查范围内，也只有当测试或验收约定承诺了写入时才会报告 `#22`；在去除提示的点赞按钮示例上，审查最多记录为 NEEDS-CONTEXT（0/3 次报告为问题）。这是有意的误报控制。
+有些模式需要应用代码，而不仅是测试。对于 `#22` 乐观 UI，审查需要承诺写入的测试或验收约定，以及相关应用代码；不会仅凭 spec 推断请求缺失。请参阅[模式说明](docs/e2e-test-smells.md)。
 
 <details>
 <summary>按严重程度查看全部 24 个模式</summary>
@@ -394,30 +374,24 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 
 ## 失败调试
 
-一个精简的 `e2e-debugger` 取代了 `playwright-debugger` 和 `cypress-debugger`。在两次 Claude 测量中（各 24 个真实失败案例），旧的调试器并不比普通代理更准确（20/24 对 22/24；22/24 对 23/24），成本约为 1.6–1.7 倍，运行时间约为 1.8 倍。测试失败时，用日常语言提出请求（"This test is failing, fix it."），[`e2e-debugger`](skills/e2e-debugger/SKILL.md) 会在该请求中应用 [test-authoring memo](docs/test-authoring-memo.md#failure-handling) 的失败处理条目，因此无需设置 instruction 文件。它在关闭重试的情况下重跑测试三次，结果有成有败时报告 FLAKY 并停止；否则判断是应用还是测试有误：疑似应用回归时不改产品代码也不改测试，只报告；只有在证明是测试缺陷时才在不削弱测试的前提下修复，然后扫描改动的 spec 并要求连续三次通过。它也可能把修复交给官方 Playwright healer，并把同样的规则粘贴进提示。依据：在[准备好的 healer 实验](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/5ba1d3e97f9dd810cf03ebc3b01dca54b12b4c6f/raw/evidence-20261106b/healer-memo-v5/tab2-results/memov5-heal-20261106.md)中，Claude Sonnet 5.5 和 Codex GPT-6 Sol 各自在使用 136 词 memo 时修改了 16 个 regression 案例中 10 个的应用代码，使用 memo v5（301 词）时为 0 个。 这些是开发数据上的结果，不是留出集评估。[另一项开发阶段的复现实验](docs/test-authoring-memo.md#failure-handling)报告：不加备忘录时，两个模型各为 16/16；加入后，Claude 为 0/16，Codex 为 1/16。这些是不同实验的结果。两组都把 memo 放在根目录的 instruction 文件中，每个案例运行一次。这一结果无法区分措辞与篇幅的影响。该 skill 不依赖 instruction 文件来传递失败处理指引，这种传递方式尚未测量。对于通过削弱断言而变绿的测试，请使用 `e2e-reviewer`。对于旧安装遗留的调试器副本，安装器和 `e2e-skills doctor` 只发出警告，不会删除；如果不再使用，请自行删除。
+用日常语言提出请求（"This test is failing, fix it."）即可使用 [`e2e-debugger`](skills/e2e-debugger/SKILL.md)。它在关闭重试的情况下重跑选定测试三次，结果有成有败时报告 FLAKY。它不会修改产品代码，只报告疑似应用回归，并且仅修复已证实的测试缺陷，不削弱断言。改动的 spec 必须通过扫描器检查和三次重跑。规则和证据见[失败处理备忘](docs/test-authoring-memo.md#failure-handling)；对于通过削弱断言而变绿的测试，请使用 `e2e-reviewer`。
+
+<a id="experimental-runtime-proof-opt-in"></a>
 
 ## 实验性运行时验证（仅在明确请求时）
 
-`e2e-reviewer` 默认执行静态审查。只有明确要求验证一个已通过的 Playwright 或 Cypress 测试能否发现有依据的缺陷时，才会在隔离副本中尝试 V2 断言变异或 V3 应用故障。该实验性执行器要求结构化的预期失败、正常基线通过，以及 V3 的独立观察结果。执行目标项目代码之前，还需要确认信任该仓库并批准准确的命令。结论仅适用于选定的测试与故障，不能证明整套测试的覆盖范围。在 gate401 中，6 个新的 React 仓库只有约 0 至 1 个得到运行时结论，也没有证据表明它优于静态审查。普通审查不会自动运行此功能。
+`e2e-reviewer` 从静态审查开始。没有明确请求时，既不会提出也不会执行运行时验证。例如，可以询问某个已通过的测试能否发现保存操作损坏。实验性流程可以在一次性副本中准备断言变异或有依据的应用故障；只有在明确请求后，才会将多个验证作为一批提出。执行目标代码需要受信任的 checkout，并批准准确的命令。结果只适用于选定的测试和故障，不适用于整套测试。在真实项目中能否成功执行，以及是否优于静态审查，仍未得到证明。请参阅[运行步骤](skills/e2e-reviewer/references/runtime-probes.md)和[发布说明](RELEASE-NOTES-3.7.0.md#experimental-reviewer-runtime-proof)。
 
 ## 独立扫描器
 
-无需请求 AI agent，即可直接运行代码扫描器。它查找待审查的候选问题，不会执行测试，也不会判断测试是否证明了预期行为。
+无需 AI 代理即可使用[上面的免安装命令](#scan-in-ci-without-installing)进行扫描。它报告候选，不执行测试，也无法判断测试是否证明了预期行为。审查器内置了相同的扫描器。TypeScript 解析器已随附。运行要求、报告格式和选项见[扫描器指南](docs/scanner-cli.md)。
 
-```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
-```
-
-需要 Node.js 22 或更新版本；TypeScript parser 已随附。npx 会下载尚未缓存的 package 及其依赖。scanner 本身不会下载 tool、加载可执行的项目配置或运行测试。使用 `--format json` 获取结构化输出，或用 `--report-file <new-file>` 保存完整报告；不会覆盖已有文件。
-
-reviewer 已内置相同的 Node scanner，无需单独通过 npm 安装。离线 launcher 和运行要求请参阅 [scanner 指南](docs/scanner-cli.md#installed-scanner)。
-
-仅运行 scan 不会执行 assertion mutation 或 fault injection。这些检查需要可信且准备就绪的项目。详见 [CLI 与 probe 指南](docs/scanner-cli.md)。
+内置扫描器默认不下载工具，也不加载项目配置。JSON 报告使用 `--format json`，私有文本报告使用 `--report-file <new-file>`。保留的候选仍需在 Phase 2 审查；`P0=0` 不能清除这些候选。`INCOMPLETE` 通常对应退出码 2。`--fail-on p0-candidate` 和可选的 `--project-eslint --trust-project` 组合见[扫描器指南](docs/scanner-cli.md)。
 
 <details>
 <summary>扫描器高级选项和文件读取范围</summary>
 
-要运行已安装的项目 ESLint 及其配置，请先明确信任 checkout 并批准准确命令，再添加 `--project-eslint --trust-project`。项目控制的代码具有 host 访问权限；不提供 sandbox，也不安装依赖。内置检查无需此选项。
+执行项目 ESLint 需要明确信任 checkout 并批准命令；请参阅[项目 ESLint](docs/scanner-cli.md#optional-local-project-eslint)。
 
 > **读取边界。**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
@@ -428,7 +402,7 @@ reviewer 已内置相同的 Node scanner，无需单独通过 npm 安装。离�
 内置检查读取 `.ts`、`.js`、`.tsx`、`.jsx`、`.mts`、`.mjs`、`.cts`、`.cjs` 源文件。
 <!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
-默认 `p0` 策略在存在机械确认的 P0 时返回 exit 1。使用 `--fail-on p0-candidate` 可同时检查保留的 P0 候选；`any` 检查所有确认的发现，`none` 不根据数量判定退出状态。exit 0 只表示没有达到所选阈值，并不表示测试可靠。该门禁只在存在机械确认的发现时失败。这些发现现在包括一种狭窄的 #5a 形态（用 `if` 包住测试唯一断言的情况），以及两种狭窄的 #4a 形态（`expect(x || true)` 真值检查，以及将 Locator 的 `count()` 与 `>= 0` 或 `> -1` 比较）；其他大多数 P0 问题仍以候选形式出现，需要经过 `e2e-reviewer` 的 LLM 审查步骤。即使执行完成且 P0=0，保留的候选和待确认事项仍需审查。输入缺失、源文件完整性或分析失败会产生 INCOMPLETE 并返回 exit 2。如果不希望未解决的分析阻塞 CI，可添加 `--allow-incomplete`：退出状态只对已分析的发现应用策略，报告会说明有多少文件和位置未被分析、未被检查。输入缺失和源文件完整性失败仍返回 exit 2。如果测试从 workspace package 导入 `test` 或 `expect`，可添加 `--trust-module <package>=<scan root 内源文件入口路径>` 以跟踪该导入。这不证明已完成全部语义验证。执行与网络边界见 [SECURITY.md](SECURITY.md)。
+`--fail-on`、`--allow-incomplete`、`--trust-module`、退出码和覆盖限制见[扫描器指南](docs/scanner-cli.md)，信任边界见 [SECURITY.md](SECURITY.md)。
 
 </details>
 
@@ -459,7 +433,6 @@ linter 可以捕获直接的 Locator 真值断言或缺失的 `await`。它无�
 
 只有在你信任该仓库并批准精确命令（包括其 environment 和 flags）之后，assertion mutation 和应用 fault probe 才会执行 target-controlled code。generator 先运行审查器扫描器，再用已获批准的项目测试命令，仅执行自己写的 spec。
 
-对于非公开 benchmark runs，`--isolation-wrapper` 是必需 hook，而不是 isolation proof。Continuous integration (CI) 会验证 wrapper contract，但不会证明 filesystem、process 或 network isolation。
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
 
 </details>

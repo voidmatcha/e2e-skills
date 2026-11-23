@@ -647,13 +647,6 @@ if merged_count is not None:
             re.findall(r'merged_PRs-(\d+)-', readme_text),
         ),
         (
-            'README.md Why try it',
-            re.findall(
-                r'\[(\d+) merged upstream PRs\]\(#merged-upstream-fixes\)',
-                readme_text,
-            ),
-        ),
-        (
             'README.md Merged upstream fixes',
             re.findall(r'\*\*(\d+) merged upstream PRs\*\*', readme_merged_fixes[0])
             if len(readme_merged_fixes) == 1
@@ -697,10 +690,10 @@ if merged_count is not None:
                 f"roadmap {merged_count}"
             )
         prose_counts = re.findall(prose_pattern, translated_text)
-        if prose_counts != [str(merged_count), str(merged_count)]:
+        if prose_counts != [str(merged_count)]:
             errors.append(
                 f"{translated_readme} merged prose counts {prose_counts} do not match "
-                f"roadmap {merged_count} twice"
+                f"roadmap {merged_count} once"
             )
 
 # Check 2: docs P0/P1/P2 section placement must agree with QR severity
@@ -1645,16 +1638,15 @@ contract_re = re.compile(
     re.S,
 )
 contract_hashes = {
-    "README.md": "61978a66c58fb8f3d444a75ac1c49dd65412a80547bcc223a766efc671e4946b",
-    "README.ko.md": "f61b7e49b25ac6566c52f8719ae4627a59836bb4f58fcb393eb3a7e48566aa99",
-    "README.ja.md": "1188e5137da2b04e32b70934aad9d9eda766ed89c5ff398c1d95072ab4bbc8b5",
-    "README.zh-cn.md": "c67aabf1348b859a7ae4953dbd987aca7128cda7ac89b605dc11db37f45b7227"
+    "README.md": "f56bc86348f8fcbef4e3a9be372cef7681230f3fc4f9891254e3bed1b9757b73",
+    "README.ko.md": "503e5f4363e3d0230891370767d673cced693456d7070c7cfcac11a9d6af105f",
+    "README.ja.md": "0627a60ba51b234f9d5b44732f016889d0d2aba9c274a348062fd1c72f501d28",
+    "README.zh-cn.md": "08e9842355fe8ee4c0e88b49b440444a33fafce17aef91d74de689e2fac895dd"
 }
 contract_tokens = (
     "24",
     "P0/P1/P2",
     "e2e-skills scan",
-    "--isolation-wrapper",
 )
 read_scope_start = "<!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->"
 read_scope_end = "<!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->"
