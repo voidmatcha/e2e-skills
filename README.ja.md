@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=e172016040ba3b273865175e3368bdcf2046774857e2eac328c70db4eb7b6e09; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f3348d74f145b6e100a6ee55b16246a3c428514ecbff52e7a8546a9dff2152f7; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
@@ -359,7 +359,7 @@ Codex では `--host codex` を使ってください。前提条件、プロジ�
 
 `eslint-plugin-playwright` と `eslint-plugin-cypress` は、テストコードのよくある誤りを検出するツールです。`e2e-skills` のスキャナーも、これらを任意の検査層として活用します。
 
-このプロジェクトから `eslint-plugin-playwright` に `no-unnecessary-assertions` ルールを貢献し、[PR #470 が merge されました](https://github.com/mskelton/eslint-plugin-playwright/pull/470)。アプリの状態ではなく、Locator オブジェクトの存在だけを確認するアサーションを検出します。同名の Cypress ルールも `eslint-plugin-cypress` 7.2.0 に入りました（[PR #400 merge](https://github.com/cypress-io/eslint-plugin-cypress/pull/400)）。`expect(cy.get('.badge')).to.exist` のように、キューに入った Cypress チェーンに外側から Chai アサーションをかけるコードを検出します。キュー内のコマンドは要素がなければ失敗するため、常に通るテストではなく、アサーションの明確さを扱うルールです。
+このプロジェクトは `eslint-plugin-playwright` に `no-unnecessary-assertions` ルールを貢献しました（[mskelton/eslint-plugin-playwright#470](https://github.com/mskelton/eslint-plugin-playwright/pull/470)、マージ済み）。アプリの状態ではなく、Locator オブジェクトの存在だけを確認するアサーションを検出します。同名の Cypress ルールも貢献し、`eslint-plugin-cypress` 7.2.0 に入りました（[cypress-io/eslint-plugin-cypress#400](https://github.com/cypress-io/eslint-plugin-cypress/pull/400)、マージ済み）。`expect(cy.get('.badge')).to.exist` のように、キューに入った Cypress チェーンに外側から Chai アサーションをかけるコードを検出します。キュー内のコマンドは要素がなければ失敗するため、常に通るテストではなく、アサーションの明確さを扱うルールです。
 
 プラグインの実行にはユーザーの明示的な許可が必要です。許可がなくても同梱の検査は実行できます。既存のプラグインルールに加え、次を提供します。
 
