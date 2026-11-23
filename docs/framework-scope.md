@@ -9,7 +9,7 @@
 
 ## Not In Scope Today
 
-Puppeteer is intentionally not listed as supported automation. The general review ideas still apply, but the repository does not currently ship Puppeteer-specific grep patterns or eval fixtures.
+Puppeteer is intentionally not listed as supported automation. The general review ideas still apply, but the repository does not currently ship Puppeteer-specific scanner checks or eval fixtures.
 
 ## Why Keep The Scope Narrow
 
@@ -17,6 +17,6 @@ E2E failures are framework-specific. A broad checklist that claims to support ev
 
 New framework support should include all of the following before it is advertised:
 
-1. Grep patterns or mechanical checks.
+1. Deterministic scanner checks.
 2. At least one eval file with true positives and false positive guards.
 3. README and marketplace metadata updates.

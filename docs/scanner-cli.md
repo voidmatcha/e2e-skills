@@ -1,8 +1,8 @@
 # e2e-skills scanner: CLI reference
 
-Static Playwright and Cypress test review with configuration context and explicitly approved probes. The scanner finds candidates; an LLM reviews context, selects checks and interprets the evidence. Scanning never starts a probe.
+Static Playwright and Cypress test review with configuration context. The scanner finds candidates; an LLM reviews context and interprets the evidence. Runtime proof is EXPERIMENTAL, requires an explicit user request and approval, and is never offered during an ordinary review. Scanning never starts a probe.
 
-The commands below pin version `3.5.3`.
+The commands below pin the `3.7.0` candidate; they require that version to be published.
 
 Requires Node.js 22+. The scan, check and unified CLIs do not require Python. Probe execution additionally requires a trusted, prepared project.
 
@@ -72,7 +72,7 @@ Explicit relative default imports of `.json` files are validated and hash-pinned
 
 ## LLM and CLI responsibilities
 
-The LLM reads the project instructions and intended behavior, selects a candidate, prepares a source-backed plan, and interprets the evidence. The CLI discovers supported source shapes, checks candidate identity and plan inputs, and runs only an explicitly approved probe. Static scanning never starts a probe.
+After an explicit request for experimental runtime proof, the LLM reads the project instructions and intended behavior, selects a candidate, prepares a source-backed plan, and interprets the evidence. The CLI discovers supported source shapes, checks candidate identity and plan inputs, and runs only an explicitly approved probe. See the [runtime proof contract](../skills/e2e-reviewer/references/runtime-probes.md) for request and batch limits.
 
 | Stage | CLI contract | LLM responsibility |
 | --- | --- | --- |
@@ -144,7 +144,7 @@ A direct awaited state read through `wrapper.page.locator('literal')` can remain
 
 Unresolved state-read and conditional-assertion diagnostics with valid source ranges also populate `review.analysisTasks`: stable task IDs, source SHA-256, UTF-16 ranges and review requirements. These tasks require contextual review even without a retained finding. Verify the source hash before adjudication, retain source citations separately, and rescan changed inputs. Tasks do not remove diagnostics, change finding counts or clear the incomplete status. Exit 2 remains the default unless the documented `--allow-incomplete` exception applies.
 
-**Added in 3.3.0:** the pinned commands above include tasks for unpinned-import Promise receivers and catch propagation. For Promise import tasks, inspect the containing call and its Promise handling: the range may identify only its receiver. For catch propagation tasks, trace the catch body, helper callers and required test outcome before deciding whether an error is swallowed. Other unsupported catch shapes do not create these tasks. A helper catch that only rethrows its identifier-bound error needs no task; immediate finally blocks and generator helpers are excluded from that narrow proof, and enclosing catch/finally diagnostics remain. These tasks also preserve finding counts, diagnostics and incomplete status.
+The pinned commands above include tasks for unpinned-import Promise receivers and catch propagation. For Promise import tasks, inspect the containing call and its Promise handling: the range may identify only its receiver. For catch propagation tasks, trace the catch body, helper callers and required test outcome before deciding whether an error is swallowed. Other unsupported catch shapes do not create these tasks. A helper catch that only rethrows its identifier-bound error needs no task; immediate finally blocks and generator helpers are excluded from that narrow proof, and enclosing catch/finally diagnostics remain. These tasks also preserve finding counts, diagnostics and incomplete status.
 
 Release validation requires source-candidate and negative controls, policy exits, suppressions, inventory, project ESLint, text/JSON consumers, and installed execution on macOS and Linux with the old analyzer unavailable. The 69 authored legacy call variants are regression inputs, not independent defects or a detection-rate benchmark. Real-project location comparisons are separate evidence. This contract does not claim that the final release gates have passed.
 
@@ -259,6 +259,6 @@ Implemented modules:
 - Internal `credentials`: a bounded literal/name-based `#14` P1 candidate sweep for forms, login helpers and authentication payloads. This does not validate secrets or prove authentication intent. Findings contain locations, not source values; public JSON also omits JUSTIFIED reason text. Dynamic strings, literal aliases and multiline payloads remain outside this slice. This is not a general redactor for arbitrary project metadata or paths.
 - `check`: three narrow operators: change one awaited literal `toHaveText` expectation, omit one standalone awaited literal POST, or omit one standalone POST with its one-to-three `.then()` callbacks. Bundled TypeScript 6.0.3 replaces the historical spike's explicit 5.9.3 parser. Candidate discovery is not runtime proof.
 
-Run `npm ci --ignore-scripts` and `npm test` here. Tests use the exact bundled TypeScript version. Static checks do not load a target compiler or configuration; dedicated ESLint tests explicitly execute authored trusted configs in subprocesses. The legacy policy comparisons additionally need this source checkout's existing scanner prerequisites.
+Run `npm ci --ignore-scripts` and `npm test` from `packages/scanner/`. Tests use the exact bundled TypeScript version. Static checks do not load a target compiler or configuration; dedicated ESLint tests explicitly execute authored trusted configs in subprocesses. The legacy policy comparisons additionally need this source checkout's existing scanner prerequisites.
 
 </details>

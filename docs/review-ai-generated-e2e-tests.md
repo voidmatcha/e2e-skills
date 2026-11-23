@@ -10,7 +10,7 @@ AI-generated E2E tests should be reviewed before merge even when they compile an
 2. Review the changed spec, Page Object, fixture, helper, and configuration context with `e2e-reviewer`.
 3. Fix confirmed P0/P1/P2 findings without weakening the test's stated outcome.
 4. Run the project's approved Playwright or Cypress command.
-5. When safe, inject an evidenced fault in a disposable copy and confirm that the test fails at the predicted assertion.
+5. If you explicitly request experimental runtime proof, approve a source-backed fault in a disposable copy and check whether the test fails at the predicted assertion.
 
 For a Playwright change:
 
@@ -60,7 +60,7 @@ Replace the object check with a web-first assertion that observes the page:
 + await expect(page.getByText('Welcome back')).toBeVisible();
 ```
 
-The corrected assertion retries until the message becomes visible and fails if the page never renders it. Run the project test command after the review, then use a safe fault injection when you need stronger proof that the test can fail.
+The corrected assertion retries until the message becomes visible and fails if the page never renders it. Run the approved project test command after the review. For stronger evidence, explicitly request [experimental runtime proof](../skills/e2e-reviewer/references/runtime-probes.md); ordinary reviews do not offer or run it.
 
 ## Read the semantic review result
 
@@ -149,4 +149,4 @@ Review the AI-generated Playwright tests in tests/e2e with e2e-reviewer.
 
 See [supported environments](../README.md#supported-environments) for framework scope and [scanner limits](../README.md#standalone-scanner) for what static checks can prove.
 
-_External sources were last checked on 2026-09-01; CLI links follow the 3.5.3 documentation._
+_External sources were last checked on 2026-09-01; CLI examples pin the 3.7.0 candidate._

@@ -1,12 +1,12 @@
 # Roadmap and Upstream Contributions
 
-## Evidence status at 3.0.0
+## Evidence status
 
 [Benchmark status](../benchmarks/STATUS.md) records measured outcomes and their limits, including the reviewer, generator and debugger comparisons. This roadmap tracks remaining work and upstream contributions. All evaluated corpora are public development evidence; the project has no passing release-grade benchmark for generalized reviewer accuracy.
 
 **Open:** independent clean-case labels with a complete, auditable setup/caller/reverse-user boundary, so that false positives and the full reviewer's added value over no-skill and catalog-only baselines can be measured on a corpus the skill was not tuned on. Frozen specificity v4 remains blocked; the separate development work has not produced a release corpus or a specificity result. The [September planning snapshot](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/a8279e972f2ae5b7628ac9ec8ccfc4cdac380a1d/releases/v3.3.1/docs-archive-20261028/README.md) preserves replay counts, hashes, and verification limits.
 
-**Debuggers:** `playwright-debugger` and `cypress-debugger` were removed after two Claude measurements on 24 real failure cases each found no accuracy gain over a plain agent; 3.5 replaces them with one thin `e2e-debugger`, which delivers the test-authoring memo's failure-handling lines with the request and adds a deterministic three-run flake check. Its measurement (official healer, healer plus memo, and the skill, per model) is pending. Earlier runs had also found no measured lift over a taxonomy-free prompt on real failures.
+**Failure debugging:** `e2e-debugger` handles Playwright and Cypress test failures with a three-run flake check and the [failure-handling rules](test-authoring-memo.md#failure-handling). Historical debugger comparisons and the skill's development results are recorded in [CHANGELOG.md](../CHANGELOG.md); they do not establish accuracy on unseen projects.
 
 ## Upstream contribution track
 

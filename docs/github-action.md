@@ -49,7 +49,7 @@ The Action invokes `npx --yes --ignore-scripts --package=@voidmatcha/e2e-skills-
 
 The scanner receives a clean environment, empty user/global npm configuration and a fresh npm cache. Package retrieval uses `https://registry.npmjs.org`; the Action does not contact model services or call GitHub APIs. npm lifecycle scripts are disabled. The checkout's `.npmrc`, local binaries, ESLint configuration and test configuration are not executed. Configuration files may be read statically. The Action never passes the scanner's `--project-eslint` or `--trust-project` execution flags. This is not an OS network sandbox; ordinary runner and npm trust still apply.
 
-A green job means the configured static policy did not fail on the code it could analyse. With the default `allow-incomplete: 'true'`, it can be green even when some code remains unchecked. It does not mean every test was analysed, every candidate was dismissed, or tests will detect a real fault. Use the [reviewer](../skills/e2e-reviewer/SKILL.md) for contextual review and explicitly prepared probes.
+A green job means the configured static policy did not fail on the code it could analyse. With the default `allow-incomplete: 'true'`, it can be green even when some code remains unchecked. It does not mean every test was analysed, every candidate was dismissed, or tests will detect a real fault. Use the [reviewer](../skills/e2e-reviewer/SKILL.md) for contextual review. Its [experimental runtime proof](../skills/e2e-reviewer/references/runtime-probes.md) requires an explicit request and execution approval.
 
 ## Local verification
 
