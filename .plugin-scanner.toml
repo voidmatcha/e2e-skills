@@ -48,4 +48,13 @@ ignore_paths = [
   "scripts/ci/test-reviewer-usage-capture.py",
   "scripts/ci/test-reviewer-holdout-v15.py",
   "scripts/ci/test-reviewer-auth-retry.py",
+  # 3.7.0 probe tests: Context.eval( appears only in literal Cypress stack-frame strings,
+  # never executed.
+  "packages/scanner/test/probe-cypress.test.mjs",
+  "scripts/ci/test-reviewer-probe.py",
+  # Synthetic 'runtime-token' reachability marker in a test fixture, not a credential.
+  "packages/scanner/test/probe-entry.test.mjs",
+  # Lifecycle tests spawn process.execPath with argv arrays and JSON-serialized
+  # temporary paths, never a shell string or untrusted project input.
+  "packages/scanner/test/probe-lifecycle.test.mjs",
 ]

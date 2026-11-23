@@ -28,6 +28,10 @@ HOL_SCANNER_FALSE_POSITIVE_PATHS = {
     "packages/scanner/test/credentials.test.mjs",
     "packages/scanner/test/config-context.test.mjs",
     "packages/scanner/test/probe-error-linkage.test.mjs",
+    "packages/scanner/test/probe-cypress.test.mjs",
+    "scripts/ci/test-reviewer-probe.py",
+    "packages/scanner/test/probe-entry.test.mjs",
+    "packages/scanner/test/probe-lifecycle.test.mjs",
     # Fixed Node programs receive argv arrays and JSON-serialized fixture paths.
     "scripts/ci/test-all-in-one-install-node.mjs",
     "packages/scanner/test/probe-runtime.test.mjs",
