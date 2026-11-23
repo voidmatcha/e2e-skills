@@ -76,6 +76,22 @@ test('#17 resolves impossible Page call shapes before unknown receiver provenanc
   assert.deepEqual(known.diagnostics, []);
 });
 
+test('#17 spread arguments preserve selector gaps while one-value calls remain impossible', () => {
+  const methods = ['fill', 'type', 'press', 'setChecked', 'selectOption',
+    'setInputFiles', 'dispatchEvent', 'dragAndDrop'];
+  const spread = run(body(methods.map(name => `await page.${name}(...args);`).join('\n')));
+  assert.deepEqual(spread.findings, []);
+  assert.equal(spread.diagnostics.length, methods.length,
+    'a spread can supply both required Page arguments and must retain uncertainty');
+  assert.ok(spread.diagnostics.every(item =>
+    item.message === '#17 selector expression is outside the literal or identifier candidate slice'));
+
+  const impossible = run("import {screen} from './missing';\n" +
+    methods.map(name => `screen.${name}('value');`).join('\n'));
+  assert.deepEqual(impossible, { findings: [], diagnostics: [] },
+    'a nonspread single value cannot supply both required Page arguments');
+});
+
 test('foreign/shadowed Page and expect, wrappers, optional calls and inert text stay excluded', () => {
   for (const text of [
     "import {test,expect} from 'vitest';test('x',async({page})=>{page.click('x');expect(page.url()).toBe('x');});",

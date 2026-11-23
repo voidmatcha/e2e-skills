@@ -68,14 +68,26 @@ export function validateReport(report, exitCode) {
 
 const gitEnv = { PATH: '/usr/bin:/bin', HOME: '/dev/null', LANG: 'C',
   GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_OPTIONAL_LOCKS: '0',
-  GIT_NO_REPLACE_OBJECTS: '1', GIT_TERMINAL_PROMPT: '0' };
+  GIT_NO_REPLACE_OBJECTS: '1', GIT_NO_LAZY_FETCH: '1', GIT_TERMINAL_PROMPT: '0' };
 
-function git(root, args, execute) {
+function git(root, args, execute, options = {}) {
   const result = execute('/usr/bin/git', ['-C', root, '-c', 'core.hooksPath=/dev/null',
-    '-c', 'core.fsmonitor=false', '-c', 'core.attributesFile=/dev/null',
-    '-c', 'diff.external=', ...args], { encoding: 'buffer', timeout: 30_000,
-    maxBuffer: 32 * 1024 * 1024, env: gitEnv });
-  return result.error ? { status: 2, stdout: Buffer.alloc(0) } : result;
+    '-c', `safe.directory=${root}`, '-c', 'core.fsmonitor=false', '-c', 'core.attributesFile=/dev/null',
+    '-c', 'diff.external=', ...args], { encoding: null, timeout: 30_000,
+    maxBuffer: 32 * 1024 * 1024, env: gitEnv, ...options });
+  return result;
+}
+
+function commitAvailable(root, sha, name, execute) {
+  const query = `${sha}^{commit}`;
+  const result = git(root, ['cat-file', '--batch-check'], execute, { input: `${query}\n` });
+  if (result.error || result.status !== 0 || !Buffer.isBuffer(result.stdout))
+    throw new Error(`Git failed checking ${name} commit locally`);
+  const answer = result.stdout.toString('ascii').trimEnd();
+  if (answer === `${query} missing`) return false;
+  if (!new RegExp(`^[0-9a-f]{${sha.length}} commit [0-9]+$`).test(answer))
+    throw new Error(`Git returned an invalid ${name} commit check`);
+  return true;
 }
 
 export function changedFiles(settings, env, execute = spawnSync) {
@@ -95,15 +107,22 @@ export function changedFiles(settings, env, execute = spawnSync) {
       typeof head !== 'string' || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(head)) {
     throw new Error('pull_request base/head SHA must be a full lowercase Git object ID');
   }
-  if (git(settings.root, ['cat-file', '-e', `${base}^{commit}`], execute).status !== 0) {
+  if (!commitAvailable(settings.root, base, 'base', execute)) {
     return { available: false, reason: 'Base commit unavailable locally; full report shown. Fetch full history (fetch-depth: 0).' };
   }
-  if (git(settings.root, ['cat-file', '-e', `${head}^{commit}`], execute).status !== 0) {
+  if (!commitAvailable(settings.root, head, 'head', execute)) {
     return { available: false, reason: 'Head commit unavailable locally; full report shown. Fetch full history (fetch-depth: 0).' };
   }
+  const ancestor = git(settings.root, ['merge-base', base, head], execute);
+  if (ancestor.error || ancestor.status !== 0 || !Buffer.isBuffer(ancestor.stdout))
+    throw new Error(ancestor.status === 1 ? 'No local merge base for pull_request commits; fetch full history (fetch-depth: 0)' :
+      'Git failed finding the pull_request merge base locally');
+  const mergeBase = ancestor.stdout.toString('ascii').trim();
+  if (!new RegExp(`^[0-9a-f]{${base.length}}$`).test(mergeBase))
+    throw new Error('Git returned an invalid pull_request merge base');
   const diff = git(settings.root, ['diff', '--no-ext-diff', '--no-textconv', '--find-renames',
-    '--name-status', '-z', base, head, '--'], execute);
-  if (diff.status !== 0 || !Buffer.isBuffer(diff.stdout)) throw new Error('Cannot compare pull_request commits locally');
+    '--name-status', '-z', mergeBase, head, '--'], execute);
+  if (diff.error || diff.status !== 0 || !Buffer.isBuffer(diff.stdout)) throw new Error('Git failed comparing pull_request commits locally');
   const entries = diff.stdout.toString('utf8').split('\0');
   const paths = new Set(), counterparts = new Map();
   for (let i = 0; i < entries.length - 1;) {
@@ -114,32 +133,65 @@ export function changedFiles(settings, env, execute = spawnSync) {
     paths.add(after);
     counterparts.set(after, status === 'A' ? null : before);
   }
-  return { available: true, paths, counterparts, base, head };
+  return { available: true, paths, counterparts, base: mergeBase, baseTip: base, head };
 }
 
 // Git blobs are copied as data. This never checks out a worktree, follows a
 // symlink, initializes a submodule, runs a filter, or executes project code.
 function materializeBase(settings, base, directory, execute) {
-  const listing = git(settings.root, ['ls-tree', '-r', '-z', base, '--'], execute);
-  if (listing.status !== 0 || !Buffer.isBuffer(listing.stdout)) throw new Error('Cannot list base commit');
+  const listing = git(settings.root, ['ls-tree', '-r', '-l', '-z', base, '--'], execute);
+  if (listing.error || listing.status !== 0 || !Buffer.isBuffer(listing.stdout)) throw new Error('Git failed listing base commit');
   const root = path.join(directory, 'base');
   fs.mkdirSync(root);
   let bytes = 0;
+  const selected = [];
+  const source = /\.(?:ts|js|tsx|jsx|mts|mjs|cts|cjs)$/i;
+  const spec = /\.(?:spec|test|cy)\.(?:ts|js|tsx|jsx|mts|mjs|cts|cjs)$/i;
+  const metadata = /(?:\.json|\.ya?ml)$/i;
+  const secretPart = /(?:^|[._-])(?:secrets?|credentials?|tokens?)(?:$|[._-])/i;
+  const forbiddenPart = /(?:^\.env(?:\..*)?$|\.env$)|^\.(?:npmrc|pypirc)$/i;
   for (const entry of listing.stdout.toString('utf8').split('\0').filter(Boolean)) {
-    const match = /^(100644|100755) blob ([0-9a-f]{40}|[0-9a-f]{64})\t(.+)$/s.exec(entry);
+    const match = /^(100644|100755) blob ([0-9a-f]{40}|[0-9a-f]{64}) +([0-9]+)\t(.+)$/s.exec(entry);
     if (!match) continue; // symlinks, submodules and trees are never restored
-    const relative = match[3];
+    const size = Number(match[3]), relative = match[4];
     if (path.isAbsolute(relative) || relative.split('/').some(part => part === '..' || part === '.' || !part))
       throw new Error('Unsafe base tree path');
-    if (relative.split('/').some(part => /(?:^|[._-])(?:secrets?|credentials?|tokens?)(?:$|[._-])|(?:^\.env(?:\..*)?$|\.env$)|^\.(?:npmrc|pypirc)$/i.test(part))) continue;
+    const parts = relative.split('/');
+    if (parts.some(part => forbiddenPart.test(part)) ||
+        (!spec.test(relative) && parts.some(part => secretPart.test(part)))) continue;
+    if (!source.test(relative) && !metadata.test(relative)) continue;
+    if (!Number.isSafeInteger(size) || size > 16 * 1024 * 1024) continue;
     const destination = path.resolve(root, relative);
     if (!inside(root, destination)) throw new Error('Unsafe base tree path');
-    const blob = git(settings.root, ['cat-file', 'blob', match[2]], execute);
-    if (blob.status !== 0 || !Buffer.isBuffer(blob.stdout)) throw new Error('Cannot read base blob');
-    bytes += blob.stdout.length;
+    bytes += size;
     if (bytes > 512 * 1024 * 1024) throw new Error('Base snapshot exceeds 512 MiB');
-    fs.mkdirSync(path.dirname(destination), { recursive: true });
-    fs.writeFileSync(destination, blob.stdout, { mode: 0o600 });
+    selected.push({ oid: match[2], size, destination });
+  }
+  for (let offset = 0; offset < selected.length;) {
+    const batch = [];
+    let batchBytes = 0;
+    while (offset < selected.length && batch.length < 128 &&
+        (!batch.length || batchBytes + selected[offset].size <= 16 * 1024 * 1024)) {
+      const item = selected[offset++];
+      batch.push(item);
+      batchBytes += item.size;
+    }
+    const result = git(settings.root, ['cat-file', '--batch'], execute,
+      { input: batch.map(item => item.oid).join('\n') + '\n' });
+    if (result.error || result.status !== 0 || !Buffer.isBuffer(result.stdout)) throw new Error('Git failed reading base blobs');
+    let cursor = 0;
+    for (const item of batch) {
+      const end = result.stdout.indexOf(10, cursor);
+      if (end < 0) throw new Error('Invalid base blob batch response');
+      const header = result.stdout.toString('ascii', cursor, end);
+      if (header !== `${item.oid} blob ${item.size}`) throw new Error('Invalid base blob batch response');
+      const start = end + 1, finish = start + item.size;
+      if (finish >= result.stdout.length || result.stdout[finish] !== 10) throw new Error('Invalid base blob batch response');
+      fs.mkdirSync(path.dirname(item.destination), { recursive: true });
+      fs.writeFileSync(item.destination, result.stdout.subarray(start, finish), { mode: 0o600 });
+      cursor = finish + 1;
+    }
+    if (cursor !== result.stdout.length) throw new Error('Invalid base blob batch response');
   }
   const relativeTarget = path.relative(settings.root, settings.target);
   const target = path.join(root, relativeTarget);
@@ -232,19 +284,25 @@ export function compareFiles(head, base, settings, baseTree, changed, probe) {
   const reasons = new Map(), comparable = new Set(), newHits = [];
   const headPath = hit => relativeFinding(settings.root, hit);
   const basePath = hit => relativeFinding(baseTree.root, hit);
-  const files = new Set([...changed.paths, ...head.findings.map(headPath)]);
   const global = [...headHealth.global.map(reason => `Head: ${reason}`), ...baseHealth.global.map(reason => `Base: ${reason}`)];
   const intentionalFixture = /(?:^|\/)evals\/files(?:\/|$)|(?:^|\/)scripts\/evals\/skills\/(?:e2e-reviewer|playwright-test-generator)\/files(?:\/|$)|(?:^|\/)scripts\/ci\/fixtures(?:\/|$)/;
+  const targetSource = (root, target, file) => {
+    const absolute = path.join(root, file);
+    if (!inside(target, absolute) || !/\.(?:ts|js|tsx|jsx|mts|mjs|cts|cjs)$/.test(file)) return false;
+    try { return fs.lstatSync(absolute).isFile() && fs.realpathSync(absolute) === absolute; } catch { return false; }
+  };
   const usable = (root, target, file, report) => {
     const absolute = path.join(root, file);
-    if (!inside(target, absolute) || !/\.(?:ts|js|tsx|jsx|mts|mjs|cts|cjs)$/.test(file) ||
+    if (!targetSource(root, target, file) ||
         file.split('/').some(part => ['node_modules', '.git', 'playwright-report', 'test-results', 'dist', 'build', '.next', 'out', 'coverage', '.yarn', '.pnp.cjs', '.pnp.loader.mjs'].includes(part) || /\.min\.(?:js|ts)$/.test(part)) ||
         /(?:^|\/)cypress\/reports(?:\/|$)|\.min\.(?:js|ts)$/.test(file) ||
         (report.project?.selfRepositoryScope && !intentionalFixture.test(target) && intentionalFixture.test(absolute)) ||
         file === 'skills/e2e-reviewer/scripts/scanner/vendor/typescript/typescript.cjs' ||
         report.outOfScope?.some(item => relativeFinding(root, item) === file)) return false;
-    try { return fs.lstatSync(absolute).isFile() && fs.realpathSync(absolute) === absolute; } catch { return false; }
+    return true;
   };
+  const eligibleChanged = new Set([...changed.paths].filter(file => targetSource(settings.root, settings.target, file)));
+  const files = new Set([...eligibleChanged, ...head.findings.map(headPath)]);
   for (const file of files) {
     const counterpart = changed.counterparts?.has(file) ? changed.counterparts.get(file) : file;
     let reason = global.length ? 'Global scan uncertainty' :
@@ -260,8 +318,9 @@ export function compareFiles(head, base, settings, baseTree, changed, probe) {
   }
   const fallbackHits = head.findings.filter(hit => reasons.has(headPath(hit)));
   return { newHits, fallbackHits, comparable, reasons, global, baseComplete: base.execution.complete,
-    comparableChanged: [...changed.paths].filter(file => comparable.has(file)).length,
-    notComparableChanged: [...changed.paths].filter(file => !comparable.has(file)).length };
+    eligibleChanged: eligibleChanged.size,
+    comparableChanged: [...eligibleChanged].filter(file => comparable.has(file)).length,
+    notComparableChanged: [...eligibleChanged].filter(file => !comparable.has(file)).length };
 }
 
 function comparisonLabel(hit, root, comparison) {
@@ -324,7 +383,7 @@ export function render(report, settings, changed = null, limit = Infinity, compa
       `Base execution complete: ${comparison.baseComplete}`,
       ...comparison.global,
       ...[...comparison.reasons].slice(0, limit).map(([file, reason]) => `Not comparable: ${file}: ${reason}`));
-    lines.push('Comparison fallback: all findings in non-comparable files are subject to the chosen failure policy and scope. No comparable changed file with a non-none policy produces exit 2 (unless no files changed).');
+    lines.push('Comparison fallback: all findings in non-comparable files are subject to the chosen failure policy and scope. If target source files changed but none can be compared, a non-none policy produces exit 2.');
   }
   lines.push(`Failure policy: ${settings.policy} on ${settings.compareBase ? 'new findings in comparable files plus all findings in non-comparable files' : 'all findings'}${settings.failScope === 'changed' ? ' in PR-changed files' : ''}.`);
   if (Array.isArray(report.aliased) && report.aliased.length) lines.push(`Linked: ${report.aliased.length} symbolic link(s) to already scanned paths; not followed.`);
@@ -413,7 +472,7 @@ export function main(env = process.env, execute = spawnSync) {
     }
     let selected = comparison ? [...comparison.newHits, ...comparison.fallbackHits] : report.findings;
     if (settings.failScope === 'changed') selected = selected.filter(hit => changed.paths.has(relativeFinding(settings.root, hit)));
-    const comparisonUnavailable = comparison && changed.paths.size > 0 && !comparison.comparableChanged && settings.policy !== 'none';
+    const comparisonUnavailable = comparison && comparison.eligibleChanged > 0 && !comparison.comparableChanged && settings.policy !== 'none';
     const exitCode = result.status === 2 || comparisonUnavailable ? 2 :
       settings.compareBase || settings.failScope === 'changed' ? (policyFails(selected, settings.policy) ? 1 : 0) : result.status;
     const jsonFile = path.join(directory, 'scan.json');
@@ -444,6 +503,7 @@ export function main(env = process.env, execute = spawnSync) {
   } catch (error) {
     const message = clean(error.message).replace(/[\r\n]/g, ' ');
     console.error(`E2E Skills Action: ${message}`);
+    if (env.GITHUB_OUTPUT) fs.appendFileSync(env.GITHUB_OUTPUT, 'exit-code=2\n');
     if (env.GITHUB_STEP_SUMMARY) fs.appendFileSync(env.GITHUB_STEP_SUMMARY,
       `## E2E Skills static scan\n\n    INCOMPLETE: ${message}\n`);
     return 2;

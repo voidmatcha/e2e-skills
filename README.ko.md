@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=f3348d74f145b6e100a6ee55b16246a3c428514ecbff52e7a8546a9dff2152f7; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=a8d123ceddea92fa8d622d50f1f724a1dc28b56d6f8911709995bba73da1747e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -345,7 +345,7 @@ Playwright/Cypress `test smell` 24개를 정리한 목록이며, 각 항목의 I
 
 ## 실험적 런타임 검증(명시적 요청 시에만)
 
-`e2e-reviewer`는 정적 리뷰로 시작합니다. 명시적으로 요청하지 않으면 런타임 검증을 제안하거나 실행하지 않습니다. 예를 들어 통과하는 특정 테스트가 저장 기능의 버그를 잡는지 요청할 수 있습니다. 이 실험적 절차는 버릴 수 있는 복사본에서 assertion mutation이나 근거가 있는 프로젝트 fault를 준비할 수 있습니다. 여러 probe도 명시적인 요청이 있어야 한 묶음으로 제안합니다. 대상 코드를 실행하려면 체크아웃을 신뢰하고 정확한 명령을 승인해야 합니다. 결과는 선택한 테스트와 fault에만 적용되며, 전체 테스트 모음에 적용되지 않습니다. 실제 프로젝트에서 어디까지 실행할 수 있는지와 정적 리뷰 대비 효과는 아직 입증하지 못했습니다. [런타임 절차](skills/e2e-reviewer/references/runtime-probes.md)와 [Release 안내](RELEASE-NOTES-3.7.0.md#experimental-reviewer-runtime-proof)를 참고해주세요.
+`e2e-reviewer`는 정적 리뷰로 시작합니다. 명시적으로 요청하지 않으면 런타임 검증을 제안하거나 실행하지 않습니다. 예를 들어 통과하는 특정 테스트가 저장 기능의 버그를 잡는지 요청할 수 있습니다. 이 실험적 절차는 버릴 수 있는 복사본에서 assertion mutation이나 근거가 있는 프로젝트 fault를 준비할 수 있습니다. 여러 probe도 명시적인 요청이 있어야 한 묶음으로 제안합니다. 대상 코드를 실행하려면 체크아웃을 신뢰하고 정확한 명령을 승인해야 합니다. 결과는 선택한 테스트와 fault에만 적용되며, 전체 테스트 모음에 적용되지 않습니다. 실제 프로젝트에서 어디까지 실행할 수 있는지와 정적 리뷰 대비 효과는 아직 입증하지 못했습니다. [런타임 절차](skills/e2e-reviewer/references/runtime-probes.md)와 [Release 안내](CHANGELOG.md#experimental-reviewer-runtime-proof)를 참고해주세요.
 
 ## ESLint plugin과의 차이
 
@@ -420,6 +420,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

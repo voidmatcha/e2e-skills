@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=f3348d74f145b6e100a6ee55b16246a3c428514ecbff52e7a8546a9dff2152f7; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=a8d123ceddea92fa8d622d50f1f724a1dc28b56d6f8911709995bba73da1747e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
@@ -352,7 +352,7 @@ Codex 请使用 `--host codex`。前提条件、可同时完成项目设置的�
 
 ## 实验性运行时验证（仅在明确请求时）
 
-`e2e-reviewer` 从静态审查开始。没有明确请求时，既不会提出也不会执行运行时验证。例如，可以询问某个已通过的测试能否发现保存操作损坏。实验性流程可以在一次性副本中准备断言变异或有依据的应用故障；只有在明确请求后，才会将多个验证作为一批提出。执行目标代码需要受信任的 checkout，并批准准确的命令。结果只适用于选定的测试和故障，不适用于整套测试。在真实项目中能否成功执行，以及是否优于静态审查，仍未得到证明。请参阅[运行步骤](skills/e2e-reviewer/references/runtime-probes.md)和[发布说明](RELEASE-NOTES-3.7.0.md#experimental-reviewer-runtime-proof)。
+`e2e-reviewer` 从静态审查开始。没有明确请求时，既不会提出也不会执行运行时验证。例如，可以询问某个已通过的测试能否发现保存操作损坏。实验性流程可以在一次性副本中准备断言变异或有依据的应用故障；只有在明确请求后，才会将多个验证作为一批提出。执行目标代码需要受信任的 checkout，并批准准确的命令。结果只适用于选定的测试和故障，不适用于整套测试。在真实项目中能否成功执行，以及是否优于静态审查，仍未得到证明。请参阅[运行步骤](skills/e2e-reviewer/references/runtime-probes.md)和[发布说明](CHANGELOG.md#experimental-reviewer-runtime-proof)。
 
 ## 它与 ESLint plugins 有何不同
 
@@ -428,6 +428,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

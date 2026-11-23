@@ -106,8 +106,8 @@
       "sha256": "f7f067d6c8a2090a740862348bba9969b92cd2f9b91d44279b065c65e8494e51"
     },
     "src/page-reads.mjs": {
-      "bytes": 14632,
-      "sha256": "ca05885e9ce7398c10742651e76563c5a8b3c5ddc312d3c99cca0faa8fe0f465"
+      "bytes": 14764,
+      "sha256": "7233c07baddbb4b6722347cb132bc8bdca47697f16d4bdb4bd2baaf1e14baad0"
     },
     "src/parameter-gates.mjs": {
       "bytes": 8772,
@@ -938,10 +938,10 @@
     },
     {
       "output": "src/page-reads.mjs",
-      "output_sha256": "ca05885e9ce7398c10742651e76563c5a8b3c5ddc312d3c99cca0faa8fe0f465",
+      "output_sha256": "7233c07baddbb4b6722347cb132bc8bdca47697f16d4bdb4bd2baaf1e14baad0",
       "rewrite": null,
       "source": "src/page-reads.mjs",
-      "source_sha256": "ca05885e9ce7398c10742651e76563c5a8b3c5ddc312d3c99cca0faa8fe0f465"
+      "source_sha256": "7233c07baddbb4b6722347cb132bc8bdca47697f16d4bdb4bd2baaf1e14baad0"
     },
     {
       "output": "src/parameter-gates.mjs",

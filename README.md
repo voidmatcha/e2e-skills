@@ -343,7 +343,7 @@ Ask in plain language ("This test is failing, fix it.") to use [`e2e-debugger`](
 
 ## Experimental runtime proof (opt in)
 
-`e2e-reviewer` starts with static review. It never offers or runs runtime proof unless you explicitly ask. For example, ask whether a selected green test catches a broken save operation. The experimental workflow can prepare an assertion mutation or a sourced app fault in disposable copies; multiple probes are offered as a batch only after an explicit request. Running target code requires a trusted checkout and approval of the exact commands. A result applies only to the selected test and fault, not the whole suite. Real-project reach and benefit over static review remain unproven. See the [runtime procedure](skills/e2e-reviewer/references/runtime-probes.md) and [release notes](RELEASE-NOTES-3.7.0.md#experimental-reviewer-runtime-proof).
+`e2e-reviewer` starts with static review. It never offers or runs runtime proof unless you explicitly ask. For example, ask whether a selected green test catches a broken save operation. The experimental workflow can prepare an assertion mutation or a sourced app fault in disposable copies; multiple probes are offered as a batch only after an explicit request. Running target code requires a trusted checkout and approval of the exact commands. A result applies only to the selected test and fault, not the whole suite. Real-project reach and benefit over static review remain unproven. See the [runtime procedure](skills/e2e-reviewer/references/runtime-probes.md) and [release notes](CHANGELOG.md#experimental-reviewer-runtime-proof).
 
 ## How this differs from ESLint plugins
 
@@ -417,6 +417,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

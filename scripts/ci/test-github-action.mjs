@@ -148,6 +148,22 @@ test('missing base commit falls back to full report; invalid event and SHA fail 
   assert.throws(() => changedFiles(inputs(prEnv), { ...prEnv, GITHUB_EVENT_PATH: 'relative.json' }), /GITHUB_EVENT_PATH/);
 });
 
+test('Git ownership check is scoped to the checkout and Git failures are not missing commits', t => {
+  const { prEnv } = gitFixture(t);
+  let calls = 0;
+  const execute = (command, args, options) => {
+    calls++;
+    assert.equal(command, '/usr/bin/git');
+    assert.ok(args.some(arg => arg.startsWith('safe.directory=')));
+    assert.equal(options.env.GIT_NO_LAZY_FETCH, '1');
+    return spawnSync(command, args, { ...options, env: { ...options.env, GIT_TEST_ASSUME_DIFFERENT_OWNER: '1' } });
+  };
+  assert.equal(changedFiles(inputs(prEnv), prEnv, execute).available, true);
+  assert.ok(calls >= 4);
+  assert.throws(() => changedFiles(inputs(prEnv), prEnv, () => ({ status: 128, stdout: Buffer.alloc(0) })),
+    /Git failed checking base commit locally/);
+});
+
 test('strict policy exits 1 for P0 candidates while default and none pass them', t => {
   const { env, workspace } = fixture(t);
   const candidate = { severity: 'P0', disposition: 'justified-review', patternId: '#5a',
@@ -235,7 +251,7 @@ test('compare-base scans local base blobs and marks only new findings', t => {
   };
   // The base has "before" and the head has "after": same pattern, new snippet.
   assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true', SCAN_FAIL_SCOPE: 'changed',
-    SCAN_FAIL_ON: 'p0-candidate' }, scan), 1);
+    SCAN_FAIL_ON: 'p0-candidate' }, scan), 1, fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8'));
   const summary = fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8');
   assert.match(summary, /Base comparison: 1 new finding/);
   assert.match(summary, /\[new in this PR\]/);
@@ -250,6 +266,81 @@ test('compare-base scans local base blobs and marks only new findings', t => {
   event('0'.repeat(40));
   assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true' }, scan), 2);
   event(baseSha);
+});
+
+test('comparison uses the merge base when the base branch advanced', t => {
+  const { workspace, prEnv, git, baseSha, headSha, event } = gitFixture(t);
+  git('checkout', '-b', 'feature', headSha);
+  git('checkout', 'master');
+  git('reset', '--hard', baseSha);
+  fs.writeFileSync(path.join(workspace, 'changed.spec.ts'), 'after\n');
+  fs.writeFileSync(path.join(workspace, 'base-only.spec.ts'), 'base only\n');
+  git('add', '.'); git('commit', '-m', 'advance base');
+  const advancedBase = git('rev-parse', 'HEAD');
+  git('checkout', 'feature'); event(advancedBase, headSha);
+  const changed = changedFiles(inputs(prEnv), prEnv);
+  assert.equal(changed.base, baseSha);
+  assert.deepEqual([...changed.paths], ['changed.spec.ts']);
+  const scan = (_command, argv) => {
+    const target = argv[argv.indexOf('--scan') + 1];
+    const isBase = target.includes('/base');
+    if (isBase) {
+      assert.equal(fs.readFileSync(path.join(target, 'changed.spec.ts'), 'utf8'), 'before\n');
+      assert.equal(fs.existsSync(path.join(target, 'base-only.spec.ts')), false);
+    }
+    return { status: 0, stdout: JSON.stringify({ schema: 'e2e-skills-node-scan-v1',
+      findings: [{ file: path.join(target, 'changed.spec.ts'), line: 1, severity: 'P0',
+        disposition: 'candidate', patternId: '#5a' }],
+      execution: { complete: true, incomplete: [], exitCode: 0 } }), stderr: '' };
+  };
+  assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true', SCAN_FAIL_ON: 'p0-candidate' }, scan), 1);
+});
+
+test('comparison skips docs, deleted source, and changes outside the target', t => {
+  const data = gitFixture(t);
+  const { workspace, git, event, prEnv, headSha } = data;
+  const clean = (_command, _argv) => ({ status: 0, stdout: JSON.stringify({ schema: 'e2e-skills-node-scan-v1',
+    findings: [], execution: { complete: true, incomplete: [], exitCode: 0 } }), stderr: '' });
+  fs.writeFileSync(path.join(workspace, 'notes.md'), 'docs\n');
+  git('add', '.'); git('commit', '-m', 'docs');
+  const docsHead = git('rev-parse', 'HEAD'); event(headSha, docsHead);
+  assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true' }, clean), 0);
+  assert.match(fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8'), /0 changed files not comparable/);
+  fs.unlinkSync(path.join(workspace, 'changed.spec.ts'));
+  git('add', '.'); git('commit', '-m', 'delete source');
+  const deleteHead = git('rev-parse', 'HEAD'); event(docsHead, deleteHead);
+  assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true' }, clean), 0);
+  fs.mkdirSync(path.join(workspace, 'tests'));
+  fs.writeFileSync(path.join(workspace, 'tests', 'kept.spec.ts'), 'same\n');
+  git('add', '.'); git('commit', '-m', 'target setup');
+  const targetBase = git('rev-parse', 'HEAD');
+  fs.writeFileSync(path.join(workspace, 'app.ts'), 'outside\n');
+  git('add', '.'); git('commit', '-m', 'outside target');
+  event(targetBase, git('rev-parse', 'HEAD'));
+  assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true', SCAN_PATH: 'tests' }, clean), 0);
+});
+
+test('base snapshot skips oversized binary and keeps source spec with token in its name', t => {
+  const { workspace, prEnv, git, event } = gitFixture(t);
+  fs.writeFileSync(path.join(workspace, 'reset-token.spec.ts'), 'before\n');
+  fs.writeFileSync(path.join(workspace, 'asset.bin'), Buffer.alloc(33 * 1024 * 1024));
+  git('add', '.'); git('commit', '-m', 'snapshot base');
+  const baseSha = git('rev-parse', 'HEAD');
+  fs.writeFileSync(path.join(workspace, 'reset-token.spec.ts'), 'after\n');
+  git('add', '.'); git('commit', '-m', 'snapshot head');
+  event(baseSha, git('rev-parse', 'HEAD'));
+  const scan = (_command, argv) => {
+    const target = argv[argv.indexOf('--scan') + 1], isBase = target.includes('/base');
+    if (isBase) {
+      assert.equal(fs.existsSync(path.join(target, 'asset.bin')), false);
+      assert.equal(fs.readFileSync(path.join(target, 'reset-token.spec.ts'), 'utf8'), 'before\n');
+    }
+    return { status: 0, stdout: JSON.stringify({ schema: 'e2e-skills-node-scan-v1',
+      findings: [{ file: path.join(target, 'reset-token.spec.ts'), line: 1, severity: 'P0',
+        disposition: 'candidate', patternId: '#5a' }],
+      execution: { complete: true, incomplete: [], exitCode: 0 } }), stderr: '' };
+  };
+  assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true', SCAN_FAIL_ON: 'p0-candidate' }, scan), 1);
 });
 
 // Full wrapper fixtures keep real Git histories; only scanner output is injected.
@@ -388,7 +479,8 @@ test('comparison counts exclude unscanned paths and preserve canonical files wit
   const result = compareFiles(report, { ...report, aliased: [] }, settings, { root: oldRoot, target: oldRoot },
     { paths: new Set(files) }, () => { throw new Error('No dependency probe needed'); });
   assert.equal(result.comparableChanged, 1);
-  assert.equal(result.notComparableChanged, 5);
+  assert.equal(result.eligibleChanged, 4);
+  assert.equal(result.notComparableChanged, 3);
   assert.deepEqual([...result.comparable], ['good.spec.ts']);
 });
 
@@ -419,6 +511,7 @@ test('malformed output, missing executable and scanner errors cannot become a gr
     execution: { complete: true, incomplete: [], exitCode: 0 },
     findings: [{ severity: 'P0', disposition: 'confirmed', patternId: '#7', file: base, line: 1 }] };
   assert.equal(main(env, () => ({ status: 0, stdout: JSON.stringify(outOfRoot), stderr: '' })), 2);
+  assert.match(fs.readFileSync(env.GITHUB_OUTPUT, 'utf8'), /(?:^|\n)exit-code=2\n/);
 });
 
 test('summary treats repository text as literal; candidates do not fail and JSON is retained', t => {

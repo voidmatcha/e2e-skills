@@ -1,19 +1,31 @@
 # Changelog
 
-## Unreleased
+## [3.7.0] - 2026-11-24
 
-- Add `fail-scope: changed` for P0 policies on PR-changed files, with exit 2 when the local PR diff is unavailable.
-- Annotate changed-file P0 findings through escaped workflow commands, capped at 10 errors and 10 warnings per step.
-- Add opt-in `compare-base` to mark new findings after a complete base scan from a temporary Git blob snapshot and report its extra wall time.
+### Reviewer and scanner
 
-## [Unreleased]
+- Reviewer reports list each confirmed occurrence in `Location`, including repeated #10a occurrences. Known limit: after ten locations, the format elides the rest as `and N more`; it does not print every remaining line.
+- Scanner skips receiver-provenance analysis for calls whose argument shapes cannot be a Playwright Page selector call. This removes unresolved diagnostics for impossible Page calls without changing findings. Spread arguments retain uncertainty because they can expand to a valid call shape.
 
-## [3.7.0] - local candidate
+### GitHub Action
 
-- The GitHub Action now highlights findings and P0 candidates in PR-changed files using local base/head Git commits. Missing commits produce an explicit full-report fallback. An opt-in `fail-on: p0-candidate` gates on P0 candidates; the default remains `p0`. The summary also exposes inventory and unresolved-diagnostic coverage counts without implying per-file complete analysis.
-- Keep all three skills and static reviewer behavior. The reviewer adds an explicit, opt-in EXPERIMENTAL runtime proof path for Playwright/Cypress tests. It previews a source-backed V2 assertion mutation or V3 app fault, requires exact execution approval, and reports a bounded verdict for one selected test and fault.
-- The portable probe executor now binds structured `expected_failure` to the selected spec, title, assertion location or matcher, failure kind, and expected/actual values. Unrelated failures and legacy vague text do not count as detection. Executor lifecycle and native report checks are bundled with the installed reviewer and npm package.
-- Gate401 did not establish superiority: roughly 0–1 of 6 fresh React repositories reached a runtime verdict, with about 2.2× tokens in the experimental arm. Runtime proof remains opt in; no auto proof is added to ordinary reviews.
+- Highlight findings in PR-changed files using the merge base of the PR base and head commits, so changes made only on an advancing base branch are excluded. File membership alone does not prove a finding was introduced by the PR.
+- Add `fail-on: p0-candidate`; the default remains confirmed P0 only (`p0`). Strict candidate gating needs review: a read-only adjudication of 64 P0 candidates in five open-source suites found 8 real P0 problems (12.5%; #3b 6/8, #5a 2/25, #3 0/31). This is a measured development sample, not a general precision guarantee.
+- Add `fail-scope: changed` and opt-in `compare-base`. Base comparison uses a temporary data-only snapshot at the merge base, compares eligible files individually, and retains all findings in non-comparable files as a conservative fallback. Files outside the target, non-source files and deleted files create no comparison obligation; a non-`none` policy exits 2 when target source files changed and none can be compared.
+- Emit escaped workflow annotations for changed-file P0 findings: at most 10 errors and 10 warnings per step. With base comparison, annotate new findings in comparable files and fallback findings in non-comparable files.
+- Limit the summary to 50 unique diagnostics and 50 findings, prioritizing changed files and P0 findings. Saved reports retain the full output. Show inventoried files, diagnostic file paths, unresolved locations and out-of-scope files without implying per-file complete coverage.
+- Bound base snapshots, skip oversized/non-source blobs, batch Git blob reads, preserve source specs with authentication-related names, disable Git lazy fetches, and distinguish Git execution errors from missing history. Error paths expose `exit-code=2`.
+
+### Experimental reviewer runtime proof
+
+- Keep all three skills and static review by default. An explicit request can prepare a V2 assertion mutation or a sourced V3 app fault in disposable copies; execution requires approval of the exact command and checkout trust. A separately requested strengthening loop follows the same bounded approval process.
+- Bind structured `expected_failure` to the selected spec, exact title, assertion location or matcher, failure kind and expected/actual values. Unrelated failures and vague text do not count as detection. Executor lifecycle and native-report checks ship with the reviewer and npm package.
+- Real-project reach and benefit over static review remain unproven. A paired static/proof comparison was inconclusive (8 vs 9 confirmed findings). On six fresh React repositories, the proof arm executed in 0/6 preregistered cells; a repaired rerun reached 1/6 and ended `CANNOT_VERIFY`, at about 2.2 times the tokens. That comparison is invalid as an effectiveness test. Plain review requests on 16 specs from eight public projects executed no proof; explicit opt-in on two specs completed one `SURVIVED` proof and one `CANNOT_VERIFY`. Each result covers only its selected test and fault.
+
+### Documentation and upstream tooling
+
+- Streamline public guides and all README translations, clarify incomplete analysis and runtime-proof limits, add safe checkout flags to Action examples, and document the Action's Git/snapshot trust boundary and self-hosted proxy limitation. Public release history lives here; maintainer publication steps are kept outside the shipped repository.
+- Document the merged `no-unnecessary-assertions` contributions: [mskelton/eslint-plugin-playwright#470](https://github.com/mskelton/eslint-plugin-playwright/pull/470) catches assertions on Locator objects; [cypress-io/eslint-plugin-cypress#400](https://github.com/cypress-io/eslint-plugin-cypress/pull/400), released in 7.2.0, clarifies outer Chai assertions on queued Cypress chains. The Cypress command can still fail, so that rule does not establish an always-passing test.
 
 ## [3.6.0] - 2026-11-18
 

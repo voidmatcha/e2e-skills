@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=f3348d74f145b6e100a6ee55b16246a3c428514ecbff52e7a8546a9dff2152f7; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=a8d123ceddea92fa8d622d50f1f724a1dc28b56d6f8911709995bba73da1747e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
@@ -353,7 +353,7 @@ Codex では `--host codex` を使ってください。前提条件、プロジ�
 
 ## 実験的なランタイム検証（明示的な依頼が必要）
 
-`e2e-reviewer` は静的レビューから始めます。明示的な依頼がなければランタイム検証を提案も実行もしません。たとえば、成功している特定のテストが保存処理の不具合を検出できるか依頼できます。実験的な手順では、使い捨てのコピーにアサーション変更や根拠のあるアプリの欠陥を準備できます。複数の検証をまとめて提案するのも明示的な依頼があった場合だけです。対象コードの実行には、信頼済みの checkout と正確なコマンドの承認が必要です。結果は選んだテストと欠陥だけに適用され、suite 全体には適用されません。実際のプロジェクトで実行に至れるか、静的レビューより有益かは未証明です。[実行手順](skills/e2e-reviewer/references/runtime-probes.md)と[リリースノート](RELEASE-NOTES-3.7.0.md#experimental-reviewer-runtime-proof)を参照してください。
+`e2e-reviewer` は静的レビューから始めます。明示的な依頼がなければランタイム検証を提案も実行もしません。たとえば、成功している特定のテストが保存処理の不具合を検出できるか依頼できます。実験的な手順では、使い捨てのコピーにアサーション変更や根拠のあるアプリの欠陥を準備できます。複数の検証をまとめて提案するのも明示的な依頼があった場合だけです。対象コードの実行には、信頼済みの checkout と正確なコマンドの承認が必要です。結果は選んだテストと欠陥だけに適用され、suite 全体には適用されません。実際のプロジェクトで実行に至れるか、静的レビューより有益かは未証明です。[実行手順](skills/e2e-reviewer/references/runtime-probes.md)と[リリースノート](CHANGELOG.md#experimental-reviewer-runtime-proof)を参照してください。
 
 ## ESLint plugin との違い
 
@@ -429,6 +429,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
