@@ -1966,6 +1966,25 @@
         "True positive: page-selector-call-shapes.spec.ts:5 is a direct Page click with a selector and remains #17 P1.",
         "False-positive guard: page-selector-call-shapes.spec.ts:6 and :7 are widget operations, not Page selector APIs; neither is #17."
       ]
+    },
+    {
+      "id": 131,
+      "prompt": "Review files/fp-shapes.cy.ts and files/fp-assertion-dispatch.spec.ts for #3, #3b and #5a. Use the current pattern contracts and scanner candidate tiers. Do not execute the fixtures.",
+      "expected_output": "Keep the real silent-pass candidates at P0 and retain the bounded recovery, registration and allowlist cases as lower-severity review candidates. Do not silently discard any uncertain path.",
+      "files": [
+        "files/fp-shapes.cy.ts",
+        "files/fp-assertion-dispatch.spec.ts"
+      ],
+      "assertions": [
+        "True positive #5a: fp-shapes.cy.ts:9 is an in-test GOV_CLOUD gate with no assertion when false and remains a P0 candidate.",
+        "False-positive guard #5a: fp-shapes.cy.ts:2 only gates test registration and remains a P1 coverage candidate, not a P0 silent-pass candidate.",
+        "True positive #5a dispatch: fp-shapes.cy.ts:13 can return without an assertion and remains a P0 candidate.",
+        "False-positive guard #5a dispatch: fp-assertion-dispatch.spec.ts:6 has an unconditional returned matcher fallback and remains a P1 candidate.",
+        "True positive #3: fp-shapes.cy.ts:22 swallows a hard assertion failure and remains a P0 candidate.",
+        "False-positive guard #3: fp-shapes.cy.ts:17 uses a conservative false fallback for a retry guard and remains a P1 candidate pending caller review.",
+        "True positive #3b: fp-shapes.cy.ts:29 returns false for every uncaught exception and remains a P0 candidate.",
+        "False-positive guard #3b: fp-shapes.cy.ts:25 returns false only for a named error and otherwise falls through; retain a P1 candidate, not a P0 blanket-suppression claim."
+      ]
     }
   ]
 }

@@ -1268,6 +1268,96 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
       if (indices && [...indices].some(index => !staticCallArgument(call, index, true))) { record(call, 'helper-parameter-gate'); return; }
     }
   }
+  // Registration-time gates cannot make an executed test pass without its
+  // assertions. Keep a P1 coverage candidate: static code cannot prove that
+  // CI actually registers the gated tests. Only proven framework calls count.
+  function registration(call) {
+    if (!ts.isCallExpression(call) || call.questionDotToken) return false;
+    let callee = unwrap(call.expression);
+    const modifiers = [];
+    while (ts.isPropertyAccessExpression(callee) && !callee.questionDotToken) {
+      modifiers.push(callee.name.text); callee = unwrap(callee.expression);
+    }
+    if (!ts.isIdentifier(callee)) return false;
+    if (testRoot(callee)) return modifiers.every(name => ['describe', 'only', 'skip', 'serial', 'parallel'].includes(name));
+    const value = scope.cypressGlobal(filename, callee);
+    return value.complete && value.kind === 'cypress-test' &&
+      ['it', 'test', 'specify', 'describe', 'context'].includes(callee.text) &&
+      modifiers.every(name => ['only', 'skip'].includes(name));
+  }
+  function declarationBranch(node) {
+    if (!node) return true;
+    if (ts.isBlock(node)) return node.statements.length > 0 && node.statements.every(declarationBranch);
+    if (ts.isIfStatement(node)) return declarationBranch(node.thenStatement) && declarationBranch(node.elseStatement);
+    return ts.isExpressionStatement(node) && registration(unwrap(node.expression));
+  }
+  function declarationContext(statement) {
+    for (let node = statement.parent; node; node = node.parent) {
+      if (!ts.isFunctionLike(node)) continue;
+      const call = node.parent;
+      if (!registration(call) || call.arguments.at(-1) !== node) return false;
+      let callee = unwrap(call.expression), suite = false;
+      while (ts.isPropertyAccessExpression(callee)) {
+        if (callee.name.text === 'describe') suite = true;
+        callee = unwrap(callee.expression);
+      }
+      if (!suite && !['describe', 'context'].includes(callee.text)) return false;
+    }
+    return true;
+  }
+  // A returned assertion dispatch with a final unconditional returned matcher
+  // has no assertion-free fallthrough. Do not generalize to arbitrary later
+  // assertions: they may check an unrelated outcome.
+  function returnedMatcher(node) {
+    if (ts.isBlock(node) && node.statements.length === 1) node = node.statements[0];
+    if (!ts.isReturnStatement(node) || !node.expression) return false;
+    let expression = unwrap(node.expression);
+    if (ts.isAwaitExpression(expression)) expression = unwrap(expression.expression);
+    return ts.isCallExpression(expression) && Boolean(dot(expression.expression)) && directExpect(expression);
+  }
+  function assertionDispatch(statement) {
+    const block = statement.parent;
+    if (!ts.isBlock(block) || !ts.isFunctionLike(block.parent) || block.parent.body !== block || statement.elseStatement ||
+        !returnedMatcher(statement.thenStatement)) return false;
+    const rest = block.statements.slice(block.statements.indexOf(statement) + 1);
+    return rest.length > 0 && returnedMatcher(rest.at(-1)) && rest.slice(0, -1).every(item =>
+      ts.isIfStatement(item) && !item.elseStatement && returnedMatcher(item.thenStatement));
+  }
+  function inputOptionGate(statement) {
+    let input = false, safe = true;
+    walk(statement.expression, node => {
+      if (ts.isCallExpression(node) || ts.isAwaitExpression(node) || ts.isElementAccessExpression(node)) safe = false;
+      if (!ts.isIdentifier(node) || ts.isPropertyAccessExpression(node.parent) && node.parent.name === node) return;
+      const declaration = checker.getSymbolAtLocation(node)?.declarations?.[0];
+      if (ts.isIdentifier(node) && node.text === 'undefined' && !declaration) return;
+      if (!declaration || !ts.isParameter(declaration) || !ts.isIdentifier(declaration.name) ||
+          !ts.isPropertyAccessExpression(node.parent) || node.parent.expression !== node ||
+          isWritten(source, checker, checker.getSymbolAtLocation(node), { properties: true })) { safe = false; return; }
+      // Runtime test fixtures and callback subjects are not input options.
+      const fn = declaration.parent;
+      if (!(ts.isFunctionDeclaration(fn) || ts.isMethodDeclaration(fn) ||
+          (ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) && ts.isVariableDeclaration(fn.parent))) safe = false;
+      input = true;
+    });
+    const block = statement.parent;
+    return safe && input && ts.isBlock(block) && block.statements.some(item =>
+      item !== statement && ts.isExpressionStatement(item) && unconditionalAssertion(item.expression));
+  }
+  function unconditionalAssertion(expression) {
+    let node = unwrap(expression);
+    if (ts.isAwaitExpression(node)) node = unwrap(node.expression);
+    if (!ts.isCallExpression(node)) return false;
+    if (dot(node.expression) && directExpect(node)) return true;
+    // Only a matcher on the executing Cypress chain. A matcher hidden in a
+    // callback, argument, logical expression or another if is not independent.
+    while (ts.isCallExpression(node)) {
+      const access = dot(node.expression);
+      if (!access || node.questionDotToken) return false;
+      if (access.name === 'should' && cyChain(access.object)) return true;
+      node = unwrap(access.object);
+    }
+    return false;
+  }
   walk(source, node => {
     if (ts.isIfStatement(node)) {
       const before = diagnostics.length, pending = [];
@@ -1317,6 +1407,14 @@ export function conditionalAssertions(bytes, filename, { scope } = {}) {
       if (gated?.variant === 'conditional-assertion' && gated.start === node.getStart(source) && gated.disposition === 'candidate' &&
           configurationCondition(node.expression))
         for (const finding of findings.slice(recorded)) demoteToReviewHint(finding, 'run-configuration-gate');
+      if (gated?.variant === 'conditional-assertion' && gated.start === node.getStart(source) && gated.disposition === 'candidate') {
+        const reason = declarationContext(node) && declarationBranch(node.thenStatement) && declarationBranch(node.elseStatement) ? 'conditional-test-registration' :
+          assertionDispatch(node) ? 'assertion-dispatch-fallthrough' : inputOptionGate(node) ? 'input-option-with-independent-assertion' : null;
+        if (reason) for (const finding of findings.slice(recorded)) {
+          finding.severity = 'P1';
+          finding.evidence = { kind: reason, requirements: ['verify-required-outcome-coverage'] };
+        }
+      }
       // A recorded IfStatement spans both branches, so its existing review
       // candidate already covers a proven else assertion. Retain diagnostics
       // for deferred analysis within either branch and for else-only gaps.
