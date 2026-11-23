@@ -53,11 +53,27 @@ test('retry aliases/reexports are proven while shadowed retry helpers cannot sup
 test('#17 direct selector API set preserves P1 confirmed and excludes Locator actions', () => {
   const names = ['click', 'dblclick', 'tap', 'fill', 'type', 'press', 'check', 'uncheck',
     'setChecked', 'selectOption', 'setInputFiles', 'hover', 'focus', 'dispatchEvent', 'dragAndDrop'];
-  const result = run(body(names.map(name => `await page.${name}('#target');`).join('\n') +
+  const twoArguments = new Set(['fill', 'type', 'press', 'setChecked', 'selectOption',
+    'setInputFiles', 'dispatchEvent', 'dragAndDrop']);
+  const result = run(body(names.map(name => `await page.${name}('#target'${twoArguments.has(name) ? ", 'value'" : ''});`).join('\n') +
     "\nawait page.getByRole('button').click();await page.goto('/');"));
   assert.deepEqual(result.diagnostics, []);
   assert.deepEqual(result.findings.map(f => [f.patternId, f.severity, f.disposition]),
     names.map(() => ['#17', 'P1', 'confirmed']));
+});
+
+test('#17 resolves impossible Page call shapes before unknown receiver provenance', () => {
+  const result = run("import {screen} from './missing';\n" +
+    "screen.type('value');screen.fill('value');screen.press('Enter');" +
+    "screen.click({force:true});screen.check({force:true});");
+  assert.deepEqual(result, { findings: [], diagnostics: [] });
+  const possible = run("import {screen} from './missing';\n" +
+    "screen.type(selector,'value');screen.click(selector);");
+  assert.deepEqual(possible.findings, []);
+  assert.equal(possible.diagnostics.length, 2, 'possible Page calls retain unknown provenance');
+  const known = run(body("page.click('#button');page.fill('#input','value');"));
+  assert.deepEqual(known.findings.map(hit => hit.patternId), ['#17', '#17']);
+  assert.deepEqual(known.diagnostics, []);
 });
 
 test('foreign/shadowed Page and expect, wrappers, optional calls and inert text stay excluded', () => {

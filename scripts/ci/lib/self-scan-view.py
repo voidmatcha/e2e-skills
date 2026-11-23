@@ -243,16 +243,18 @@ def verify_original_candidates(source: Path, result: subprocess.CompletedProcess
                       "requirements": ["verify-runtime-binding", "verify-required-test-outcome"]}}
         for pattern, line, column, start, end in (("#5a", 25, 5, 1655, 2185), ("#3", 35, 34, 2233, 2270))
     ]
-    # The pinned original has these six analyzer gaps. Any new or displaced
+    # The pinned original has these five analyzer gaps. The prior pageReads
+    # gap at editor.fill(payload) was an impossible one-argument Page.fill
+    # shape, so the selector-call prefilter now analyzes it without a gap.
+    # Any new or displaced
     # diagnostic needs source review; parse/drift/tool failures never qualify.
     diagnostic_specs = (("actions", "import-unpinned", None),
-                        ("pageReads", "import-unpinned", 1517),
                         ("accessibleNames", "import-unpinned", 543),
                         ("conditionalAssertions", "provenance-unsupported", 1801),
                         ("conditionalAssertions", "import-unpinned", 1920),
                         ("conditionalAssertions", "import-unpinned", 2115))
     # Source positions and ranges are frozen independently of scanner output.
-    locations = {1517: (21, 11, 1523), 543: (9, 18, 547),
+    locations = {543: (9, 18, 547),
                  1801: (26, 99, 1826), 1920: (29, 13, 1926), 2115: (32, 13, 2121)}
     diagnostics = [{"code": code, "detector": detector, "file": file,
                     **({"start": start, "line": locations[start][0],

@@ -1954,6 +1954,18 @@
         "False-positive guard: the batch is an unexecuted offer; do not report a runtime verdict, a filled batch result table or an overall test-suite adequacy score, and do not merge both faults into one run",
         "False-positive guard: a V3 question whose behavior promise has no source (for example a persistence claim without the app or contract in scope) must not be listed as a batch probe; name the missing source instead"
       ]
+    },
+    {
+      "id": 130,
+      "prompt": "Review files/page-selector-call-shapes.spec.ts for #17 direct Page selector APIs. Do not execute the fixture.",
+      "expected_output": "Flag the direct Page click with a string selector at line 5 as #17 P1. Do not classify the widget's option-object click or one-argument type call as direct Page selector APIs.",
+      "files": [
+        "files/page-selector-call-shapes.spec.ts"
+      ],
+      "assertions": [
+        "True positive: page-selector-call-shapes.spec.ts:5 is a direct Page click with a selector and remains #17 P1.",
+        "False-positive guard: page-selector-call-shapes.spec.ts:6 and :7 are widget operations, not Page selector APIs; neither is #17."
+      ]
     }
   ]
 }

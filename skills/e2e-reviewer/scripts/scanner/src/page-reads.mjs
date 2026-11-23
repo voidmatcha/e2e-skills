@@ -9,6 +9,10 @@ import { unwrap, walk, isWritten, ts, PLAYWRIGHT_TEST_MODULES } from './source.m
 const SELECTOR_APIS = new Set(['click', 'dblclick', 'tap', 'fill', 'type', 'press',
   'check', 'uncheck', 'setChecked', 'selectOption', 'setInputFiles', 'hover',
   'focus', 'dispatchEvent', 'dragAndDrop']);
+// These Page methods need a selector and a second required value. A one-arg
+// call may be a Locator/Cypress action, but cannot be this direct Page API.
+const TWO_ARGUMENT_PAGE_APIS = new Set(['fill', 'type', 'press', 'setChecked',
+  'selectOption', 'setInputFiles', 'dispatchEvent', 'dragAndDrop']);
 
 function dot(node) {
   node = unwrap(node);
@@ -154,6 +158,10 @@ export function pageReads(bytes, filename, { scope } = {}) {
     if (!ts.isCallExpression(node) || node.questionDotToken || !node.arguments.length) return;
     const access = dot(node.expression);
     if (!access || !SELECTOR_APIS.has(access.name)) return;
+    // Inspect an impossible Page-selector shape before asking for receiver
+    // provenance. The unknown receiver still belongs to other detectors.
+    if (TWO_ARGUMENT_PAGE_APIS.has(access.name) && node.arguments.length < 2) return;
+    if (ts.isObjectLiteralExpression(unwrap(node.arguments[0]))) return;
     const cypress = chains.expression(access.object);
     if (!cypress.complete) { diagnostic(access.object, cypress.reasons.join('; ')); return; }
     if (cypress.kind === 'cypress-runtime') return;

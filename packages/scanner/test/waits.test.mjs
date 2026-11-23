@@ -54,6 +54,15 @@ test('invalid source and absent pinned scope remain incomplete', () => {
   assert.match(waits(Buffer.from('cy.wait(1)'), 'example.cy.ts').diagnostics[0].message, /scope is required/);
 });
 
+test('unresolved wait receiver retains its exact source location for review', () => {
+  const source = "import {page} from './missing';\npage.waitForTimeout(250);";
+  const result = run(source);
+  assert.deepEqual(result.findings, []);
+  assert.equal(result.diagnostics.length, 1);
+  assert.equal(result.diagnostics[0].start, source.indexOf('page.waitForTimeout'));
+  assert.equal(result.diagnostics[0].length, 'page'.length);
+});
+
 test('Cypress global writes invalidate numeric waits through shared scope', () => {
   for(const write of ['cy=custom;', 'cy.wait=custom;', '({cy}=custom);', 'globalThis.cy=custom;']) {
     const result=run(write+'\ncy.wait(100);','example.cy.ts');
