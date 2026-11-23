@@ -101,7 +101,9 @@ export function changedFiles(settings, env, execute = spawnSync) {
   return { available: true, paths };
 }
 
-export function render(report, settings, changed = null) {
+export const SUMMARY_LIMIT = 50;
+
+export function render(report, settings, changed = null, limit = Infinity) {
   const locationOf = hit => {
     let file;
     try { file = fs.realpathSync(hit.file); } catch { file = path.resolve(hit.file); }
@@ -123,11 +125,20 @@ export function render(report, settings, changed = null) {
     `Execution complete: ${report.execution.complete}`, `Exit code: ${report.execution.exitCode}`,
     'Static checks only. Candidates need review; a passing scan does not prove fault detection.'];
   if (Array.isArray(report.aliased) && report.aliased.length) lines.push(`Linked: ${report.aliased.length} symbolic link(s) to already scanned paths; not followed.`);
-  if (!report.execution.complete) lines.push('INCOMPLETE: some code was not analysed.', ...report.execution.incomplete);
-  for (const hit of report.findings) {
+  const more = (shown, total, what) => total > shown ? [`... ${total - shown} more ${what}; see the report output.`] : [];
+  if (!report.execution.complete) {
+    const rootPrefix = settings.root + path.sep;
+    const unique = [...new Set(report.execution.incomplete.map(item => String(item).split(rootPrefix).join('')))];
+    lines.push('INCOMPLETE: some code was not analysed.', ...unique.slice(0, limit), ...more(Math.min(limit, unique.length), unique.length, 'unresolved diagnostic(s)'));
+  }
+  const rank = hit => (changed?.available && changed.paths.has(locationOf(hit)) ? 0 : 4) +
+    (hit.severity === 'P0' ? (hit.disposition === 'confirmed' ? 0 : 1) : 2);
+  const ordered = Number.isFinite(limit) ? [...report.findings].sort((a, b) => rank(a) - rank(b)) : report.findings;
+  for (const hit of ordered.slice(0, limit)) {
     const location = locationOf(hit);
     lines.push(`${changed?.available && changed.paths.has(location) ? '[in changed file] ' : ''}${hit.severity} ${hit.disposition} ${hit.patternId} ${location}:${hit.line}`);
   }
+  lines.push(...more(Math.min(limit, ordered.length), ordered.length, 'finding(s)'));
   return lines.map(clean).join('\n') + '\n';
 }
 
@@ -162,8 +173,9 @@ export function main(env = process.env, execute = spawnSync) {
       `report=${reportFile}\njson-report=${jsonFile}\nexit-code=${result.status}\n`);
     if (env.GITHUB_STEP_SUMMARY) {
       // Indented literal text cannot break out via fences, HTML or annotations.
+      const summaryText = render(report, settings, changed, SUMMARY_LIMIT);
       const budget = 500_000;
-      const clipped = text.length > budget ? text.slice(0, budget) + '\n[Summary truncated; full report is in the report output.]\n' : text;
+      const clipped = summaryText.length > budget ? summaryText.slice(0, budget) + '\n[Summary truncated; full report is in the report output.]\n' : summaryText;
       fs.appendFileSync(env.GITHUB_STEP_SUMMARY, '## E2E Skills static scan\n\n' +
         clipped.split('\n').map(line => '    ' + line).join('\n') + '\n');
     }

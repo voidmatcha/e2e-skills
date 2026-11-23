@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { changedFiles, inputs, invocation, main, PACKAGE } from '../actions/scan.mjs';
+import { changedFiles, inputs, invocation, main, PACKAGE, SUMMARY_LIMIT } from '../actions/scan.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -105,6 +105,28 @@ test('pull request highlights findings and P0 candidates in changed files withou
   assert.match(summary, /not proven introduced by this PR/);
   assert.match(summary, /Coverage: 3 inventoried file\(s\); 1 file path\(s\) with unresolved diagnostics; 2 unresolved location\(s\); 1 out-of-scope file\(s\)\. Per-file complete count unavailable\./);
   assert.match(summary, /Execution complete: false/);
+});
+
+test('summary caps long lists, dedupes diagnostics and ranks changed-file P0 first; report keeps everything', t => {
+  const { workspace, prEnv } = gitFixture(t);
+  const real = fs.realpathSync(workspace); // the scanner receives and reports resolved paths
+  const noisy = Array.from({ length: SUMMARY_LIMIT + 30 }, (_, i) => `analysis incomplete: ${path.join(real, 'untouched.spec.ts')}: rule ${i}`);
+  const findings = Array.from({ length: SUMMARY_LIMIT + 20 }, (_, i) =>
+    ({ severity: 'P1', disposition: 'candidate', patternId: '#9', file: path.join(workspace, 'untouched.spec.ts'), line: i + 1 }));
+  findings.push({ severity: 'P0', disposition: 'candidate', patternId: '#5a', file: path.join(workspace, 'changed.spec.ts'), line: 7 });
+  const report = { schema: 'e2e-skills-node-scan-v1', files: 2,
+    execution: { complete: false, incomplete: [...noisy, ...noisy], exitCode: 0 }, findings };
+  assert.equal(main({ ...prEnv, SCAN_FORMAT: 'text' }, () => ({ status: 0, stdout: JSON.stringify(report), stderr: '' })), 0);
+  const summary = fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8');
+  assert.match(summary, /\.\.\. 30 more unresolved diagnostic\(s\); see the report output\./);
+  assert.match(summary, /\.\.\. 21 more finding\(s\); see the report output\./);
+  assert.ok(summary.indexOf('[in changed file] P0 candidate #5a changed.spec.ts:7') < summary.indexOf('P1 candidate #9'));
+  assert.ok(!summary.includes(real + path.sep), 'summary diagnostics are relative to the checkout');
+  const output = fs.readFileSync(prEnv.GITHUB_OUTPUT, 'utf8');
+  const reportFile = output.match(/^report=(.*)$/m)[1];
+  const full = fs.readFileSync(reportFile, 'utf8');
+  assert.equal((full.match(/P1 candidate #9/g) || []).length, SUMMARY_LIMIT + 20);
+  assert.equal((full.match(/analysis incomplete:/g) || []).length, SUMMARY_LIMIT + 30);
 });
 
 test('missing base commit falls back to full report; invalid event and SHA fail before scan', t => {
