@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { inputs, invocation, main, PACKAGE } from '../actions/scan.mjs';
+import { changedFiles, inputs, invocation, main, PACKAGE } from '../actions/scan.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -48,14 +48,93 @@ function fixture(t) {
     GITHUB_OUTPUT: path.join(base, 'outputs'), GITHUB_STEP_SUMMARY: path.join(base, 'summary') } };
 }
 
-test('input boundary rejects path escape, candidate gating, invalid booleans and formats', t => {
+test('input boundary rejects path escape, invalid policy, booleans and formats', t => {
   const { base, workspace, env } = fixture(t);
-  for (const values of [{ SCAN_PATH: '..' }, { SCAN_PATH: 'x\ny' }, { SCAN_FAIL_ON: 'p0-candidate' },
+  for (const values of [{ SCAN_PATH: '..' }, { SCAN_PATH: 'x\ny' },
     { SCAN_FAIL_ON: 'any' }, { SCAN_ALLOW_INCOMPLETE: 'yes' }, { SCAN_FORMAT: 'html' }]) {
     assert.throws(() => inputs({ ...env, ...values }));
   }
   fs.symlinkSync(base, path.join(workspace, 'outside'));
   assert.throws(() => inputs({ ...env, SCAN_PATH: 'outside' }));
+  assert.equal(inputs({ ...env, SCAN_FAIL_ON: 'p0-candidate' }).policy, 'p0-candidate');
+});
+
+function gitFixture(t) {
+  const fixtureData = fixture(t);
+  const { workspace, base, env } = fixtureData;
+  const git = (...args) => {
+    const result = spawnSync('/usr/bin/git', ['-C', workspace, '-c', 'core.hooksPath=/dev/null',
+      '-c', 'user.name=Action Test', '-c', 'user.email=action@example.invalid', ...args],
+    { encoding: 'utf8', env: { PATH: '/usr/bin:/bin', HOME: base, GIT_CONFIG_NOSYSTEM: '1',
+      GIT_CONFIG_GLOBAL: '/dev/null', GIT_OPTIONAL_LOCKS: '0' } });
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.trim();
+  };
+  git('init');
+  fs.writeFileSync(path.join(workspace, 'changed.spec.ts'), 'before\n');
+  fs.writeFileSync(path.join(workspace, 'untouched.spec.ts'), 'same\n');
+  git('add', '.'); git('commit', '-m', 'base');
+  const baseSha = git('rev-parse', 'HEAD');
+  fs.writeFileSync(path.join(workspace, 'changed.spec.ts'), 'after\n');
+  git('add', '.'); git('commit', '-m', 'head');
+  const headSha = git('rev-parse', 'HEAD');
+  const eventPath = path.join(base, 'event.json');
+  const event = (baseCommit = baseSha, headCommit = headSha) => fs.writeFileSync(eventPath,
+    JSON.stringify({ pull_request: { base: { sha: baseCommit }, head: { sha: headCommit } } }));
+  event();
+  return { ...fixtureData, baseSha, headSha, eventPath, event,
+    prEnv: { ...env, GITHUB_EVENT_NAME: 'pull_request', GITHUB_EVENT_PATH: eventPath } };
+}
+
+test('pull request highlights findings and P0 candidates in changed files without claiming introduction', t => {
+  const { workspace, prEnv } = gitFixture(t);
+  const report = { schema: 'e2e-skills-node-scan-v1', files: 3,
+    outOfScope: [{ file: path.join(workspace, 'other.js'), framework: 'other' }],
+    execution: { complete: false, incomplete: ['analysis incomplete'], exitCode: 0,
+      allowIncomplete: { applied: true, unanalyzed: { files: 1, locations: 2 } } },
+    findings: [
+      { severity: 'P0', disposition: 'candidate', patternId: '#5a', file: path.join(workspace, 'changed.spec.ts'), line: 1 },
+      { severity: 'P1', disposition: 'candidate', patternId: '#9', file: path.join(workspace, 'changed.spec.ts'), line: 2 },
+      { severity: 'P0', disposition: 'confirmed', patternId: '#7', file: path.join(workspace, 'untouched.spec.ts'), line: 1 },
+    ] };
+  assert.equal(main(prEnv, () => ({ status: 0, stdout: JSON.stringify(report), stderr: '' })), 0);
+  const summary = fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8');
+  assert.ok(summary.indexOf('Findings in changed files: 2 (P0 candidates: 1)') < summary.indexOf('Scanner:'));
+  assert.match(summary, /\[in changed file\] P0 candidate #5a changed\.spec\.ts:1/);
+  assert.doesNotMatch(summary, /\[in changed file\] P0 confirmed/);
+  assert.match(summary, /not proven introduced by this PR/);
+  assert.match(summary, /Coverage: 3 inventoried file\(s\); 1 file path\(s\) with unresolved diagnostics; 2 unresolved location\(s\); 1 out-of-scope file\(s\)\. Per-file complete count unavailable\./);
+  assert.match(summary, /Execution complete: false/);
+});
+
+test('missing base commit falls back to full report; invalid event and SHA fail before scan', t => {
+  const { prEnv, event, eventPath } = gitFixture(t);
+  const report = { schema: 'e2e-skills-node-scan-v1', execution: { complete: true, incomplete: [], exitCode: 0 }, findings: [] };
+  event('0'.repeat(40));
+  assert.equal(changedFiles(inputs(prEnv), prEnv).available, false);
+  assert.equal(main(prEnv, () => ({ status: 0, stdout: JSON.stringify(report), stderr: '' })), 0);
+  assert.match(fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8'), /Base commit unavailable locally; full report shown/);
+  event('bad-sha');
+  assert.throws(() => changedFiles(inputs(prEnv), prEnv), /base\/head SHA/);
+  fs.writeFileSync(eventPath, '{');
+  assert.throws(() => changedFiles(inputs(prEnv), prEnv), /valid JSON/);
+  assert.throws(() => changedFiles(inputs(prEnv), { ...prEnv, GITHUB_EVENT_PATH: 'relative.json' }), /GITHUB_EVENT_PATH/);
+});
+
+test('strict policy exits 1 for P0 candidates while default and none pass them', t => {
+  const { env, workspace } = fixture(t);
+  const candidate = { severity: 'P0', disposition: 'justified-review', patternId: '#5a',
+    file: path.join(workspace, 'test.spec.ts'), line: 1 };
+  for (const [policy, status] of [['p0', 0], ['none', 0], ['p0-candidate', 1]]) {
+    const report = { schema: 'e2e-skills-node-scan-v1', execution: { complete: true, incomplete: [], exitCode: status },
+      findings: [candidate] };
+    const runEnv = { ...env, SCAN_FAIL_ON: policy };
+    assert.equal(main(runEnv, (_command, argv) => {
+      assert.equal(argv[argv.indexOf('--fail-on') + 1], policy);
+      return { status, stdout: JSON.stringify(report), stderr: '' };
+    }), status);
+  }
+  assert.match(fs.readFileSync(env.GITHUB_STEP_SUMMARY, 'utf8'), /P0 candidates: 1/);
 });
 
 test('npx invocation isolates npm, disables lifecycle scripts and passes path as one argument', t => {

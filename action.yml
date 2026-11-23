@@ -9,7 +9,7 @@
       "default": "."
     },
     "fail-on": {
-      "description": "p0 fails on confirmed P0 findings; none reports only.",
+      "description": "p0 fails on confirmed P0; p0-candidate also fails on P0 candidates; none reports only.",
       "required": false,
       "default": "p0"
     },
@@ -34,7 +34,7 @@
       "value": "${{ steps.scan.outputs.json-report }}"
     },
     "exit-code": {
-      "description": "Scanner exit code: 0 policy clear, 1 confirmed P0, 2 incomplete or error.",
+      "description": "Scanner exit code: 0 policy clear, 1 selected finding policy failed, 2 incomplete or error.",
       "value": "${{ steps.scan.outputs.exit-code }}"
     }
   },

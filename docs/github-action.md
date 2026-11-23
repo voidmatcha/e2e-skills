@@ -1,6 +1,6 @@
 # GitHub Action
 
-Run the static Playwright/Cypress scanner on a pull request without a model, a browser, project dependencies or test execution. Confirmed P0 findings fail the default policy. Candidates appear in the job summary for review; they do not fail the job.
+Run the static Playwright/Cypress scanner on a pull request without a model, a browser, project dependencies or test execution. Confirmed P0 findings fail the default policy. Candidates appear in the job summary for review. Set `fail-on: p0-candidate` to make P0 candidates fail the job too.
 
 ## Usage
 
@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0 # Needed to show findings in files changed by the PR.
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -30,18 +31,20 @@ jobs:
           format: text
 ```
 
-The composite Action requires Node.js 22+ with npm/npx on a Linux or macOS runner. It does not install Node itself. `contents: read` is sufficient for checkout; the Action makes no GitHub API calls and requests no PR write permission. Candidates go to the job summary, not a bot comment.
+The composite Action requires Node.js 22+ with npm/npx on a Linux or macOS runner. It does not install Node itself. `contents: read` is sufficient for checkout; the Action makes no GitHub API calls and requests no PR write permission. Candidates go to the job summary, not a bot comment. For `pull_request`, it compares the payload's base and head commits locally and highlights findings in changed files. This is file membership, not proof a finding was introduced by the PR. If either commit is missing locally, it says so and shows the full report.
 
 ## Inputs and outputs
 
 | Input | Default | Meaning |
 | --- | --- | --- |
 | `path` | `.` | Existing file or directory inside `GITHUB_WORKSPACE`; paths escaping the checkout are rejected. |
-| `fail-on` | `p0` | `p0`: fail on confirmed P0 findings. `none`: report findings without failing on them. Candidate-failure and P1/P2 policies are deliberately not exposed. |
+| `fail-on` | `p0` | `p0`: fail on confirmed P0 findings. `p0-candidate`: also fail on P0 candidates, including justified-review findings. `none`: report findings without failing on them. P1/P2 failure policies are not exposed. |
 | `allow-incomplete` | `true` | Permit unresolved analysis while reporting the unchecked code. Set `false` to fail when analysis is incomplete. Inventory, source-integrity and other scanner execution errors still fail either way. |
 | `format` | `text` | `text` or `json` for the saved `report` output. A readable summary and full JSON are always produced. |
 
-Outputs `report` and `json-report` are absolute file paths on the runner, available to later steps for an optional artifact upload. `exit-code` is `0` when the chosen policy is clear, `1` for a confirmed P0 policy failure, or `2` for incomplete analysis or an execution error. Setup failures can occur before outputs are written. Use `if: always()` on a following upload step if you need reports from failed scans. Full report files remain on the runner; this Action does not publish them externally. Large job summaries are truncated with an explicit notice, while the report files retain the full output.
+Outputs `report` and `json-report` are absolute file paths on the runner, available to later steps for an optional artifact upload. `exit-code` is `0` when the chosen policy is clear, `1` when the chosen finding policy fails, or `2` for incomplete analysis or an execution error. Setup failures can occur before outputs are written. Use `if: always()` on a following upload step if you need reports from failed scans. Full report files remain on the runner; this Action does not publish them externally. Large job summaries are truncated with an explicit notice, while the report files retain the full output. The policy applies to the full scan, even when the summary highlights changed files.
+
+The coverage line reports scanner inventory files, file paths with unresolved diagnostics, unresolved locations, and out-of-scope files. The scanner does not expose a per-file completed count: diagnostic paths can be outside the inventoried test set, so subtracting those counts would be misleading. `Execution complete: false` remains visible even when `allow-incomplete: 'true'` permits exit 0.
 
 ## Execution boundary
 

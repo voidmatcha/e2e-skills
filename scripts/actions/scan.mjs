@@ -13,7 +13,7 @@ export function inputs(env) {
   const policy = env.SCAN_FAIL_ON ?? 'p0';
   const incomplete = env.SCAN_ALLOW_INCOMPLETE ?? 'true';
   const format = env.SCAN_FORMAT ?? 'text';
-  if (!['p0', 'none'].includes(policy)) throw new Error('fail-on must be p0 or none; candidates never fail this Action');
+  if (!['p0', 'p0-candidate', 'none'].includes(policy)) throw new Error('fail-on must be p0, p0-candidate or none');
   if (!['true', 'false'].includes(incomplete)) throw new Error('allow-incomplete must be true or false');
   if (!['json', 'text'].includes(format)) throw new Error('format must be json or text');
   const root = fs.realpathSync(env.GITHUB_WORKSPACE || process.cwd());
@@ -59,17 +59,74 @@ export function validateReport(report, exitCode) {
   }
 }
 
-export function render(report, settings) {
+const gitEnv = { PATH: '/usr/bin:/bin', HOME: '/dev/null', LANG: 'C',
+  GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_OPTIONAL_LOCKS: '0',
+  GIT_NO_REPLACE_OBJECTS: '1', GIT_TERMINAL_PROMPT: '0' };
+
+function git(root, args, execute) {
+  const result = execute('/usr/bin/git', ['-C', root, '-c', 'core.hooksPath=/dev/null',
+    '-c', 'core.fsmonitor=false', '-c', 'core.attributesFile=/dev/null',
+    '-c', 'diff.external=', ...args], { encoding: 'buffer', timeout: 30_000,
+    maxBuffer: 32 * 1024 * 1024, env: gitEnv });
+  return result.error ? { status: 2, stdout: Buffer.alloc(0) } : result;
+}
+
+export function changedFiles(settings, env, execute = spawnSync) {
+  if (env.GITHUB_EVENT_NAME !== 'pull_request') return null;
+  const eventPath = env.GITHUB_EVENT_PATH;
+  if (typeof eventPath !== 'string' || !path.isAbsolute(eventPath) ||
+      !fs.statSync(eventPath).isFile() || fs.statSync(eventPath).size > 1_000_000 ||
+      inside(settings.root, fs.realpathSync(eventPath))) {
+    throw new Error('GITHUB_EVENT_PATH must be a regular runner event file outside GITHUB_WORKSPACE');
+  }
+  let event;
+  try { event = JSON.parse(fs.readFileSync(eventPath, 'utf8')); }
+  catch { throw new Error('GITHUB_EVENT_PATH must contain valid JSON'); }
+  const base = event?.pull_request?.base?.sha;
+  const head = event?.pull_request?.head?.sha;
+  if (typeof base !== 'string' || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base) ||
+      typeof head !== 'string' || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(head)) {
+    throw new Error('pull_request base/head SHA must be a full lowercase Git object ID');
+  }
+  if (git(settings.root, ['cat-file', '-e', `${base}^{commit}`], execute).status !== 0) {
+    return { available: false, reason: 'Base commit unavailable locally; full report shown. Fetch full history (fetch-depth: 0).' };
+  }
+  if (git(settings.root, ['cat-file', '-e', `${head}^{commit}`], execute).status !== 0) {
+    return { available: false, reason: 'Head commit unavailable locally; full report shown. Fetch full history (fetch-depth: 0).' };
+  }
+  const diff = git(settings.root, ['diff', '--no-ext-diff', '--no-textconv', '--no-renames',
+    '--name-only', '-z', base, head, '--'], execute);
+  if (diff.status !== 0 || !Buffer.isBuffer(diff.stdout)) throw new Error('Cannot compare pull_request commits locally');
+  const paths = new Set(diff.stdout.toString('utf8').split('\0').filter(Boolean));
+  return { available: true, paths };
+}
+
+export function render(report, settings, changed = null) {
+  const locationOf = hit => {
+    let file;
+    try { file = fs.realpathSync(hit.file); } catch { file = path.resolve(hit.file); }
+    return path.relative(settings.root, file) || path.basename(file);
+  };
   const confirmed = report.findings.filter(hit => hit.disposition === 'confirmed' && hit.severity === 'P0').length;
   const candidates = report.findings.filter(hit => hit.disposition !== 'confirmed').length;
-  const lines = [`Scanner: ${PACKAGE}`, `Confirmed P0: ${confirmed}`, `Review candidates: ${candidates}`,
+  const p0Candidates = report.findings.filter(hit => hit.severity === 'P0' && hit.disposition !== 'confirmed').length;
+  const inChanged = changed?.available ? report.findings.filter(hit => changed.paths.has(locationOf(hit))) : [];
+  const changedLines = changed?.available
+    ? [`Findings in changed files: ${inChanged.length} (P0 candidates: ${inChanged.filter(hit => hit.severity === 'P0' && hit.disposition !== 'confirmed').length})`,
+      `Changed files: ${changed.paths.size}. These findings are in changed files; they are not proven introduced by this PR.`]
+    : changed ? [changed.reason] : [];
+  const inventory = Number.isSafeInteger(report.files) && report.files >= 0 ? report.files : 'unavailable';
+  const diagnosticFiles = report.execution?.allowIncomplete?.unanalyzed?.files;
+  const diagnosticLocations = report.execution?.allowIncomplete?.unanalyzed?.locations;
+  const coverageLine = `Coverage: ${inventory} inventoried file(s); ${Number.isSafeInteger(diagnosticFiles) ? diagnosticFiles : 'unavailable'} file path(s) with unresolved diagnostics; ${Number.isSafeInteger(diagnosticLocations) ? diagnosticLocations : 'unavailable'} unresolved location(s); ${report.outOfScope?.length || 0} out-of-scope file(s). Per-file complete count unavailable.`;
+  const lines = [...changedLines, `Scanner: ${PACKAGE}`, `Confirmed P0: ${confirmed}`, `P0 candidates: ${p0Candidates}`, `Review candidates: ${candidates}`, coverageLine,
     `Execution complete: ${report.execution.complete}`, `Exit code: ${report.execution.exitCode}`,
     'Static checks only. Candidates need review; a passing scan does not prove fault detection.'];
   if (Array.isArray(report.aliased) && report.aliased.length) lines.push(`Linked: ${report.aliased.length} symbolic link(s) to already scanned paths; not followed.`);
   if (!report.execution.complete) lines.push('INCOMPLETE: some code was not analysed.', ...report.execution.incomplete);
   for (const hit of report.findings) {
-    const location = path.relative(settings.root, hit.file) || path.basename(hit.file);
-    lines.push(`${hit.severity} ${hit.disposition} ${hit.patternId} ${location}:${hit.line}`);
+    const location = locationOf(hit);
+    lines.push(`${changed?.available && changed.paths.has(location) ? '[in changed file] ' : ''}${hit.severity} ${hit.disposition} ${hit.patternId} ${location}:${hit.line}`);
   }
   return lines.map(clean).join('\n') + '\n';
 }
@@ -84,6 +141,7 @@ export function main(env = process.env, execute = spawnSync) {
     if (inside(settings.root, temp)) throw new Error('RUNNER_TEMP must be outside the checkout');
     directory = fs.mkdtempSync(path.join(temp, 'e2e-skills-action-'));
     for (const name of ['user.npmrc', 'global.npmrc']) fs.writeFileSync(path.join(directory, name), '');
+    const changed = changedFiles(settings, env);
     const call = invocation(settings, directory);
     if (inside(settings.root, fs.realpathSync(call.command))) throw new Error('npx must come from the runner, not the checkout');
     const result = execute(call.command, call.argv, call.options);
@@ -97,7 +155,7 @@ export function main(env = process.env, execute = spawnSync) {
     validateReport(report, result.status);
     const jsonFile = path.join(directory, 'scan.json');
     fs.writeFileSync(jsonFile, JSON.stringify(report, null, 2) + '\n');
-    const text = render(report, settings);
+    const text = render(report, settings, changed);
     const reportFile = settings.format === 'json' ? jsonFile : path.join(directory, 'scan.txt');
     if (settings.format === 'text') fs.writeFileSync(reportFile, text);
     if (env.GITHUB_OUTPUT) fs.appendFileSync(env.GITHUB_OUTPUT,
