@@ -13,6 +13,16 @@
       "required": false,
       "default": "p0"
     },
+    "fail-scope": {
+      "description": "all applies the selected policy to all findings; changed restricts it to PR-changed files.",
+      "required": false,
+      "default": "all"
+    },
+    "compare-base": {
+      "description": "Compare against a local PR base commit; selected policy applies only to new findings.",
+      "required": false,
+      "default": "false"
+    },
     "allow-incomplete": {
       "description": "Allow unresolved analysis, visibly reported; scanner errors still fail.",
       "required": false,
@@ -48,6 +58,8 @@
           "ACTION_ROOT": "${{ github.action_path }}",
           "SCAN_PATH": "${{ inputs.path }}",
           "SCAN_FAIL_ON": "${{ inputs.fail-on }}",
+          "SCAN_FAIL_SCOPE": "${{ inputs.fail-scope }}",
+          "SCAN_COMPARE_BASE": "${{ inputs.compare-base }}",
           "SCAN_ALLOW_INCOMPLETE": "${{ inputs.allow-incomplete }}",
           "SCAN_FORMAT": "${{ inputs.format }}"
         },

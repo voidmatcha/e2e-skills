@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { changedFiles, inputs, invocation, main, PACKAGE, SUMMARY_LIMIT } from '../actions/scan.mjs';
+import { annotations, changedFiles, inputs, invocation, main, newFindings, PACKAGE, SUMMARY_LIMIT } from '../actions/scan.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -17,13 +17,15 @@ test('action metadata: composite schema, explicit input wiring and declared outp
   assert.equal(typeof action.name, 'string');
   assert.equal(typeof action.description, 'string');
   assert.equal(action.runs.using, 'composite');
-  assert.deepEqual(Object.keys(action.inputs).sort(), ['allow-incomplete', 'fail-on', 'format', 'path']);
+  assert.deepEqual(Object.keys(action.inputs).sort(), ['allow-incomplete', 'compare-base', 'fail-on', 'fail-scope', 'format', 'path']);
   for (const spec of Object.values(action.inputs)) {
     assert.equal(typeof spec.description, 'string');
     assert.equal(typeof spec.required, 'boolean');
     assert.equal(typeof spec.default, 'string');
   }
   assert.equal(action.inputs['fail-on'].default, 'p0');
+  assert.equal(action.inputs['fail-scope'].default, 'all');
+  assert.equal(action.inputs['compare-base'].default, 'false');
   assert.equal(action.inputs['allow-incomplete'].default, 'true');
   assert.equal(action.runs.steps.length, 1);
   const step = action.runs.steps[0];
@@ -31,7 +33,9 @@ test('action metadata: composite schema, explicit input wiring and declared outp
   assert.equal(step.shell, 'bash');
   assert.equal(step.run, 'node "$ACTION_ROOT/scripts/actions/scan.mjs"');
   assert.deepEqual(step.env, { ACTION_ROOT: '${{ github.action_path }}', SCAN_PATH: '${{ inputs.path }}',
-    SCAN_FAIL_ON: '${{ inputs.fail-on }}', SCAN_ALLOW_INCOMPLETE: '${{ inputs.allow-incomplete }}', SCAN_FORMAT: '${{ inputs.format }}' });
+    SCAN_FAIL_ON: '${{ inputs.fail-on }}', SCAN_FAIL_SCOPE: '${{ inputs.fail-scope }}',
+    SCAN_COMPARE_BASE: '${{ inputs.compare-base }}',
+    SCAN_ALLOW_INCOMPLETE: '${{ inputs.allow-incomplete }}', SCAN_FORMAT: '${{ inputs.format }}' });
   assert.equal(action.permissions, undefined); // Permissions belong to the caller workflow.
   for (const [name, output] of Object.entries(action.outputs)) {
     assert.equal(typeof output.description, 'string');
@@ -51,7 +55,8 @@ function fixture(t) {
 test('input boundary rejects path escape, invalid policy, booleans and formats', t => {
   const { base, workspace, env } = fixture(t);
   for (const values of [{ SCAN_PATH: '..' }, { SCAN_PATH: 'x\ny' },
-    { SCAN_FAIL_ON: 'any' }, { SCAN_ALLOW_INCOMPLETE: 'yes' }, { SCAN_FORMAT: 'html' }]) {
+    { SCAN_FAIL_ON: 'any' }, { SCAN_FAIL_SCOPE: 'else' }, { SCAN_COMPARE_BASE: 'yes' },
+    { SCAN_ALLOW_INCOMPLETE: 'yes' }, { SCAN_FORMAT: 'html' }]) {
     assert.throws(() => inputs({ ...env, ...values }));
   }
   fs.symlinkSync(base, path.join(workspace, 'outside'));
@@ -159,6 +164,94 @@ test('strict policy exits 1 for P0 candidates while default and none pass them',
   assert.match(fs.readFileSync(env.GITHUB_STEP_SUMMARY, 'utf8'), /P0 candidates: 1/);
 });
 
+test('changed strict scope fails only for changed P0 and fails closed without a diff', t => {
+  const { workspace, prEnv, event } = gitFixture(t);
+  const findings = [
+    { severity: 'P0', disposition: 'confirmed', patternId: '#7', file: path.join(workspace, 'untouched.spec.ts'), line: 1 },
+    { severity: 'P0', disposition: 'candidate', patternId: '#5a', file: path.join(workspace, 'changed.spec.ts'), line: 1 },
+  ];
+  const report = { schema: 'e2e-skills-node-scan-v1', execution: { complete: true, incomplete: [], exitCode: 0 }, findings };
+  const run = values => main({ ...prEnv, SCAN_FAIL_SCOPE: 'changed', ...values }, (_command, argv) => {
+    assert.equal(argv[argv.indexOf('--fail-on') + 1], 'none');
+    return { status: 0, stdout: JSON.stringify(report), stderr: '' };
+  });
+  assert.equal(run({ SCAN_FAIL_ON: 'p0' }), 0);
+  assert.equal(run({ SCAN_FAIL_ON: 'p0-candidate' }), 1);
+  assert.match(fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8'), /Action exit code: 1/);
+  assert.equal(main({ ...prEnv, SCAN_FAIL_SCOPE: 'changed' }, () => ({ status: 1,
+    stdout: JSON.stringify({ ...report, execution: { ...report.execution, exitCode: 1 } }), stderr: '' })), 2);
+  event('0'.repeat(40));
+  assert.equal(run({ SCAN_FAIL_ON: 'p0-candidate' }), 2);
+  assert.equal(main({ ...prEnv, GITHUB_EVENT_NAME: 'push', SCAN_FAIL_SCOPE: 'changed' }, () => {
+    throw new Error('scanner must not run');
+  }), 2);
+});
+
+test('annotations escape path, title and message, cap each type, and cannot inject commands', t => {
+  const { workspace } = fixture(t);
+  const name = 'evil::\n::error::forged.spec.ts';
+  const file = path.join(workspace, name);
+  fs.writeFileSync(file, 'test\n');
+  const changed = { available: true, paths: new Set([name]) };
+  const hit = { severity: 'P0', disposition: 'candidate', patternId: '#5a::\nerror',
+    file, line: 1, message: 'bad%\r\n::error file=x,line=1::forged' };
+  const output = annotations(Array.from({ length: 12 }, () => hit), workspace, changed);
+  assert.equal(output.lines.length, 10);
+  assert.equal(output.warningsOmitted, 2);
+  assert.equal(output.errorsOmitted, 0);
+  assert.ok(output.lines.every(line => line.startsWith('::warning file=')));
+  assert.ok(output.lines.every(line => !line.includes('\n') && !line.includes('\r')));
+  assert.match(output.lines[0], /evil%3A%3A%0A%3A%3Aerror/);
+  assert.match(output.lines[0], /bad%25%0D%0A%3A%3Aerror/);
+  assert.ok(!output.lines[0].includes('::error file='));
+  const confirmed = annotations([{ ...hit, disposition: 'confirmed' }], workspace, changed);
+  assert.match(confirmed.lines[0], /^::error file=/);
+});
+
+test('base comparison matches line shifts, renames and moves, but counts new duplicates', t => {
+  const { base, workspace } = fixture(t);
+  const oldRoot = path.join(base, 'old'); fs.mkdirSync(oldRoot);
+  fs.writeFileSync(path.join(oldRoot, 'old.spec.ts'), 'before\n  test.only("same")\n');
+  fs.writeFileSync(path.join(workspace, 'moved.spec.ts'), '\n\n  test.only("same")\n  test.only("same")\n');
+  const finding = (file, line) => ({ severity: 'P0', disposition: 'confirmed', patternId: '#7', file, line });
+  const old = { findings: [finding(path.join(oldRoot, 'old.spec.ts'), 2)] };
+  const head = { findings: [finding(path.join(workspace, 'moved.spec.ts'), 3),
+    finding(path.join(workspace, 'moved.spec.ts'), 4)] };
+  assert.deepEqual(newFindings(head, old, workspace, oldRoot), [head.findings[1]]);
+  assert.throws(() => newFindings(head, { findings: [finding(path.join(oldRoot, 'missing.spec.ts'), 1)] },
+    workspace, oldRoot), /base finding without source text/);
+});
+
+test('compare-base scans local base blobs and marks only new findings', t => {
+  const { workspace, prEnv, baseSha, event } = gitFixture(t);
+  const scan = (_command, argv) => {
+    const target = argv[argv.indexOf('--scan') + 1];
+    const isBase = target.includes('/base/');
+    const file = path.join(target, isBase ? 'changed.spec.ts' : 'changed.spec.ts');
+    const finding = { severity: 'P0', disposition: 'candidate', patternId: '#5a', file, line: 1 };
+    const report = { schema: 'e2e-skills-node-scan-v1', execution: { complete: true, incomplete: [], exitCode: 0 },
+      findings: [finding] };
+    return { status: 0, stdout: JSON.stringify(report), stderr: '' };
+  };
+  // The base has "before" and the head has "after": same pattern, new snippet.
+  assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true', SCAN_FAIL_SCOPE: 'changed',
+    SCAN_FAIL_ON: 'p0-candidate' }, scan), 1);
+  const summary = fs.readFileSync(prEnv.GITHUB_STEP_SUMMARY, 'utf8');
+  assert.match(summary, /Base comparison: 1 new finding/);
+  assert.match(summary, /\[new in this PR\]/);
+  assert.match(summary, /extra wall time [0-9.]+s/);
+  assert.match(summary, /Action exit code: 1/);
+  assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true' }, (_command, argv) => {
+    const target = argv[argv.indexOf('--scan') + 1];
+    const baseScan = target.includes('/base');
+    return { status: 0, stdout: JSON.stringify({ schema: 'e2e-skills-node-scan-v1', findings: [],
+      execution: { complete: !baseScan, incomplete: baseScan ? ['unresolved'] : [], exitCode: 0 } }), stderr: '' };
+  }), 2);
+  event('0'.repeat(40));
+  assert.equal(main({ ...prEnv, SCAN_COMPARE_BASE: 'true' }, scan), 2);
+  event(baseSha);
+});
+
 test('npx invocation isolates npm, disables lifecycle scripts and passes path as one argument', t => {
   const { base, workspace, env } = fixture(t);
   const name = 'tests; echo owned'; fs.mkdirSync(path.join(workspace, name));
@@ -178,10 +271,14 @@ test('npx invocation isolates npm, disables lifecycle scripts and passes path as
 });
 
 test('malformed output, missing executable and scanner errors cannot become a green scan', t => {
-  const { env } = fixture(t);
+  const { env, base } = fixture(t);
   assert.equal(main(env, () => ({ status: 0, stdout: 'not JSON', stderr: '' })), 2);
   assert.equal(main(env, () => ({ status: 0, stdout: '{}', stderr: '' })), 2);
   assert.equal(main(env, () => ({ error: { code: 'ENOENT' }, stdout: '', stderr: '' })), 2);
+  const outOfRoot = { schema: 'e2e-skills-node-scan-v1',
+    execution: { complete: true, incomplete: [], exitCode: 0 },
+    findings: [{ severity: 'P0', disposition: 'confirmed', patternId: '#7', file: base, line: 1 }] };
+  assert.equal(main(env, () => ({ status: 0, stdout: JSON.stringify(outOfRoot), stderr: '' })), 2);
 });
 
 test('summary treats repository text as literal; candidates do not fail and JSON is retained', t => {

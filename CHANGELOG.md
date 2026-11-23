@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add `fail-scope: changed` for P0 policies on PR-changed files, with exit 2 when the local PR diff is unavailable.
+- Annotate changed-file P0 findings through escaped workflow commands, capped at 10 errors and 10 warnings per step.
+- Add opt-in `compare-base` to mark new findings after a complete base scan from a temporary Git blob snapshot and report its extra wall time.
+
 ## [Unreleased]
 
 ## [3.7.0] - local candidate
