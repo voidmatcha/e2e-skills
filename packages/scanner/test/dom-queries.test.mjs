@@ -75,6 +75,28 @@ function f(cy){cy.get('x').first();}`, 'case.cy.ts');
   assert.deepEqual(ids(scan("cy.get=custom;cy.get('x').first();", 'case.cy.ts')), []);
 });
 
+test('Cypress positional options and fresh get after wait are analyzed without broadening Playwright', () => {
+  const result = scan(`cy.get('.row').first({ timeout: 10000 });
+cy.contains('Save').last({ log: false });
+cy.wait(1000).get('.weekday').first();
+cy.get('.row').first();`, 'case.cy.ts');
+  assert.deepEqual(ids(result), ['#10a', '#10a', '#10a', '#10a']);
+  assert.deepEqual(result.diagnostics, []);
+  assert.ok(result.findings.every(item => item.disposition === 'candidate'));
+
+  const guards = scan(`cy.wait(1000).first();
+cy.wrap({}).get('.row').first();
+cy.get('.row').first({ timeout: runtimeTimeout });
+cy.get('.row').last({ log: false, unknown: true });
+cy.get('.row').first({ get timeout() { return 10; } });`, 'case.cy.ts');
+  assert.deepEqual(guards.findings, []);
+  assert.ok(guards.diagnostics.length >= 4);
+  const playwright = scan(wrap(`page.locator('.row').first({ timeout: 10000 });
+page.locator('.row').first();`));
+  assert.deepEqual(ids(playwright), ['#10a']);
+  assert.ok(playwright.diagnostics.length);
+});
+
 test('optional/computed calls and document-property provenance are explicitly outside this slice', () => {
   const result = scan(wrap(`document?.querySelector('x'); document['querySelector']('x');
 window.document.querySelector('x');

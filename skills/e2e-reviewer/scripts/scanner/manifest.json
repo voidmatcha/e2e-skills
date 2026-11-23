@@ -78,8 +78,8 @@
       "sha256": "e5a8661908792594e5b13b5e432a3658377da1c6d5386a2bd18438db34741b78"
     },
     "src/dom-queries.mjs": {
-      "bytes": 6576,
-      "sha256": "f2946daee08298b38547abd4315805720c0b7f295efbcef88e311ef2088813ba"
+      "bytes": 7927,
+      "sha256": "e83dd36198db758974bf6554bf5ea21a9015c0c091048d6d56554c45b7202a94"
     },
     "src/eslint-rule-map.mjs": {
       "bytes": 1327,
@@ -889,10 +889,10 @@
     },
     {
       "output": "src/dom-queries.mjs",
-      "output_sha256": "f2946daee08298b38547abd4315805720c0b7f295efbcef88e311ef2088813ba",
+      "output_sha256": "e83dd36198db758974bf6554bf5ea21a9015c0c091048d6d56554c45b7202a94",
       "rewrite": null,
       "source": "src/dom-queries.mjs",
-      "source_sha256": "f2946daee08298b38547abd4315805720c0b7f295efbcef88e311ef2088813ba"
+      "source_sha256": "e83dd36198db758974bf6554bf5ea21a9015c0c091048d6d56554c45b7202a94"
     },
     {
       "output": "src/eslint-rule-map.mjs",

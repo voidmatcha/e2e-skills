@@ -15,6 +15,24 @@ const CY_STEPS = new Set(['find', 'filter', 'first', 'last', 'eq']);
 const CY_UNPROVEN_ORIGINS = new Set(['wrap', 'task', 'then', 'invoke', 'its', 'request',
   'wait', 'fixture', 'readFile', 'exec', 'window', 'document', 'location', 'url', 'title']);
 
+// Cypress first/last accept only Loggable/Timeoutable options. Keep dynamic
+// option values unresolved: a getter or spread can change the call at runtime.
+function cypressPositionOptions(call) {
+  if (call.arguments.length !== 1) return false;
+  const options = unwrap(call.arguments[0]);
+  if (!ts.isObjectLiteralExpression(options)) return false;
+  const seen = new Set();
+  for (const entry of options.properties) {
+    if (!ts.isPropertyAssignment(entry) ||
+        !(ts.isIdentifier(entry.name) || ts.isStringLiteral(entry.name))) return false;
+    const name = entry.name.text, value = unwrap(entry.initializer);
+    if (seen.has(name) || name === 'log' && value.kind !== ts.SyntaxKind.TrueKeyword && value.kind !== ts.SyntaxKind.FalseKeyword ||
+        name === 'timeout' && !ts.isNumericLiteral(value) || !['log', 'timeout'].includes(name)) return false;
+    seen.add(name);
+  }
+  return true;
+}
+
 export function domQueries(bytes, filename, { scope } = {}) {
   const receivers = createReceivers(bytes, filename, { scope });
   const { source, checker } = receivers;
@@ -62,10 +80,14 @@ export function domQueries(bytes, filename, { scope } = {}) {
         !ts.isPropertyAccessExpression(unwrap(call.expression)) || call.arguments.some(ts.isSpreadElement))) {
       diagnostic(node, 'optional, computed or spread Cypress subject is outside this slice'); return 'unsupported';
     }
-    if (calls.some(({ access: item }) => CY_UNPROVEN_ORIGINS.has(item.name))) {
+    // `get` starts a fresh DOM query after `cy.wait(...)`; its subject does
+    // not come from the wait result. Other prior producers remain unresolved.
+    const subjectCalls = calls.length > 1 && calls[0].access.name === 'wait' &&
+      CY_ROOTS.has(calls[1].access.name) ? calls.slice(1) : calls;
+    if (subjectCalls.some(({ access: item }) => CY_UNPROVEN_ORIGINS.has(item.name))) {
       diagnostic(node, 'Cypress subject producer is outside the bounded DOM chain'); return 'unsupported';
     }
-    return calls.every(({ access: item }, index) => (index === 0 ? CY_ROOTS : CY_STEPS).has(item.name))
+    return subjectCalls.every(({ access: item }, index) => (index === 0 ? CY_ROOTS : CY_STEPS).has(item.name))
       ? 'locator' : 'unresolved';
   }
   walk(source, node => {
@@ -87,16 +109,17 @@ export function domQueries(bytes, filename, { scope } = {}) {
       }
       record('#6', node);
     } else if (POSITIONAL.has(access.name)) {
-      // Locator first/last take no arguments. Array helpers such as
-      // lodash.last(values) cannot match this operation's source shape.
-      if (access.name !== 'nth' && node.arguments.length !== 0) {
-        const cypress = cypressSubject(access.object);
+      // Playwright Locator first/last take no arguments. Cypress accepts a
+      // bounded literal options object; unrelated `.first(value)` stays out.
+      const cypress = cypressSubject(access.object);
+      const cypressOptions = access.name !== 'nth' && cypress && cypress !== 'unsupported' &&
+        cypressPositionOptions(node);
+      if (access.name !== 'nth' && node.arguments.length !== 0 && !cypressOptions) {
         const value = receivers.expression(access.object);
         if (cypress && cypress !== 'unsupported' || value.complete && ['locator', 'locator-type'].includes(value.kind))
           diagnostic(node, 'optional, computed or unsupported positional call shape');
         return;
       }
-      const cypress = cypressSubject(access.object);
       if (cypress === 'unsupported') return;
       if (!cypress) {
         const value = receivers.expression(access.object);
@@ -106,7 +129,7 @@ export function domQueries(bytes, filename, { scope } = {}) {
       if (node.questionDotToken || node.expression.questionDotToken ||
           !ts.isPropertyAccessExpression(unwrap(node.expression)) ||
           node.arguments.some(ts.isSpreadElement) ||
-          (access.name !== 'nth' && node.arguments.length !== 0)) {
+          (access.name !== 'nth' && node.arguments.length !== 0 && !cypressOptions)) {
         diagnostic(node, 'optional, computed or unsupported positional call shape'); return;
       }
       record('#10a', node, cypress === 'unresolved' ? {
