@@ -7525,12 +7525,17 @@ def assert_node_action_vocabulary() -> None:
                'scrollIntoViewIfNeeded selectText screenshot').split()
     page_actions = ('click dblclick tap fill type press check uncheck setChecked selectOption '
                     'setInputFiles hover focus dispatchEvent dragAndDrop').split()
+    two_argument_page_actions = {'fill', 'type', 'press', 'setChecked', 'selectOption',
+                                 'setInputFiles', 'dispatchEvent', 'dragAndDrop'}
+    def page_call(method: str) -> str:
+        second = ', true' if method == 'setChecked' else ", 'value'" if method in two_argument_page_actions else ''
+        return f"await page.{method}('#x'{second});"
     with tempfile.TemporaryDirectory(prefix='e2e-node-action-vocabulary-') as temp:
         target = Path(temp) / 'vocabulary.spec.ts'
         source = ["import {test} from '@playwright/test';", "test('vocabulary',async({page})=>{"]
         source += [f"page.locator('#x').{method}();" for method in actions]
         source += [f"await page.locator('#x').{method}();" for method in actions]
-        source += [f"await page.{method}('#x');" for method in page_actions]
+        source += [page_call(method) for method in page_actions]
         target.write_text('\n'.join([*source, '});']) + '\n', encoding='utf-8')
         result = node_scan(target)
         assert result.returncode == 0, result.stdout

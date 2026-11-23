@@ -39,11 +39,11 @@ test('Cypress applicability does not suppress Playwright or unknown receiver dia
     'cy=custom;', 'cy.getBySel=custom;', 'Object.assign(cy,{getBySel:custom});',
     'const alias=cy;alias.getBySel=custom;', 'globalThis.cy=custom;',
   ]) {
-    const result = scan(prefix+"cy.getBySel('x').type('value');", pageReads);
+    const result = scan(prefix+"cy.getBySel('x').type(selector,'value');", pageReads);
     assert.deepEqual(result.findings, [], prefix);
     assert.ok(result.diagnostics.length, prefix);
   }
-  const unknown = scan("import {screen} from './missing';screen.get('x').type('value');", pageReads);
+  const unknown = scan("import {screen} from './missing';screen.get('x').type(selector,'value');", pageReads);
   assert.ok(unknown.diagnostics.length);
 });
 

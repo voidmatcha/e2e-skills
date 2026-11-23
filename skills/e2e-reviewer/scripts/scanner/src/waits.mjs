@@ -10,9 +10,13 @@ export function waits(bytes, filename, { scope } = {}) {
   if (!scope) return { findings: [], diagnostics: [{ message: 'pinned project scope is required for wait provenance' }] };
   const { source, checker } = receivers;
   const findings = [], diagnostics = [];
+  function diagnostic(node, message) {
+    const start = node.getStart(source);
+    diagnostics.push({ start, length: node.end - start, message });
+  }
   function fixturePage(node) {
     const value = receivers.expression(node);
-    if (!value.complete) diagnostics.push({ message: value.reasons.join('; ') });
+    if (!value.complete) diagnostic(node, value.reasons.join('; '));
     return value.complete ? value.kind : null;
   }
   function declaredPageType(node) {
@@ -47,7 +51,7 @@ export function waits(bytes, filename, { scope } = {}) {
     else if (access.name === 'wait' && ts.isIdentifier(unwrap(access.object)) &&
       unwrap(access.object).text === 'cy' && node.arguments.length) {
       const provenance = scope.cypressGlobal(filename, access.object);
-      if (!provenance.complete) diagnostics.push({ message: provenance.reasons.join('; ') });
+      if (!provenance.complete) diagnostic(access.object, provenance.reasons.join('; '));
       if (provenance.kind !== 'cypress-runtime' || !provenance.complete) return;
       const value = unwrap(node.arguments[0]);
       if (ts.isNumericLiteral(value)) patternId = '#9b';

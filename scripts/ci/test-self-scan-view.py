@@ -145,12 +145,11 @@ class ViewTests(unittest.TestCase):
 
     def control_report(self):
         file = str(self.fixture)
-        gaps = [("actions", "import-unpinned", None), ("pageReads", "import-unpinned", 1517),
-                ("accessibleNames", "import-unpinned", 543),
+        gaps = [("actions", "import-unpinned", None), ("accessibleNames", "import-unpinned", 543),
                 ("conditionalAssertions", "provenance-unsupported", 1801),
                 ("conditionalAssertions", "import-unpinned", 1920),
                 ("conditionalAssertions", "import-unpinned", 2115)]
-        locations = {1517: (21, 11, 1523), 543: (9, 18, 547),
+        locations = {543: (9, 18, 547),
                      1801: (26, 99, 1826), 1920: (29, 13, 1926), 2115: (32, 13, 2121)}
         identity = [HELPER.FROZEN_SHA256, file, "conditionalAssertions", "provenance-unsupported", 1801, 1826]
         digest = hashlib.sha256(json.dumps(identity, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
