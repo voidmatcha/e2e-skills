@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { summarize } from './report.mjs';
+import { incompleteSummary, publicCause } from './incomplete-summary.mjs';
 
 const COUNT_FIELDS = ['total', 'p0', 'p1p2', 'triage', 'p0Candidate', 'ast', 'confirmed'];
 
@@ -94,6 +95,24 @@ function location(file, root) {
     throw new TypeError('display root must be absolute');
   }
   return escaped(root && path.isAbsolute(file) ? path.relative(root, file) || path.basename(file) : file);
+}
+
+function whyIncompleteLines(report, root) {
+  if (report.schema !== 'e2e-skills-node-scan-v1') return [];
+  const { total, groups } = incompleteSummary(report.execution.diagnostics ?? []);
+  if (!total) return [];
+  const shown = groups.slice(0, 7);
+  const hidden = groups.slice(shown.length);
+  const lines = ['', `Why incomplete: ${total} unresolved location(s) in ${groups.length} cause group(s); this code was not checked.`];
+  for (const group of shown) {
+    const cause = publicCause(group.detector, group.code);
+    lines.push(`  ${cause.detector}/${cause.code}: ${group.count}. ${group.hint}`);
+    if (cause.showFiles) for (const file of group.topFiles) lines.push(`    ${location(file.file, root)}: ${file.count}`);
+    else lines.push('    File paths withheld for this unrecognized or inventory cause; see JSON execution.diagnostics in a trusted context.');
+  }
+  if (hidden.length) lines.push(`  Other ${hidden.length} cause group(s): ${hidden.reduce((sum, group) => sum + group.count, 0)} location(s); see JSON incompleteSummary and execution.diagnostics.`);
+  lines.push('  --allow-incomplete changes only the exit policy for tolerated gaps; unresolved code remains unchecked.');
+  return lines;
 }
 
 /** Format a validated canonical report. No source snippets, titles, or reasons are copied. */
@@ -213,6 +232,9 @@ export function formatLegacyReport(report, { root, verbose = false, unresolvedIm
       if (typeof finding.triage?.hint === 'string') full.push(`    hint: ${escaped(finding.triage.hint)}`, `    probe: ${escaped(finding.triage.probe)}`);
     }
   }
+  const whyIncomplete = whyIncompleteLines(report, root);
+  full.push(...whyIncomplete);
+  digest.push(...whyIncomplete);
   // This counts retained AST-origin findings; no ast-grep backend invocation is implied.
   const ast = `AST-origin total: ${summary.counts.ast} hit(s); retained findings, not ast-grep execution.`;
   const label = complete ? 'Summary:' : report.schema === 'e2e-skills-node-scan-v1' ? 'Summary [INCOMPLETE]:' : 'Summary [PARTIAL COVERAGE]:';

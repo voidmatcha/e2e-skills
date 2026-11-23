@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Scanner and GitHub Action
+
+- Group unresolved scan diagnostics by detector and reason in a capped text "Why incomplete" section and an additive JSON `incompleteSummary`. Counts and top affected files help locate unchecked code; hints do not imply that code is safe. Full diagnostics, findings, and exit policy remain available.
+- Show the grouped causes in the Action job summary while retaining its display caps and full report artifacts.
+
 ## [3.7.0] - 2026-11-24
 
 ### Reviewer and scanner

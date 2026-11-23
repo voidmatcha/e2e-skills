@@ -32,6 +32,7 @@ import { accessibleNames } from './accessible-names.mjs';
 import { conditionalAssertions } from './conditional-assertions.mjs';
 import { credentials } from './credentials.mjs';
 import { analysisDiagnostic, inventoryDiagnostic, analysisReviewTasks } from './diagnostics.mjs';
+import { incompleteSummary } from './incomplete-summary.mjs';
 import { formatLegacyReport, incompleteWarning, writeLegacyReportFile } from './compat-report.mjs';
 import { reviewCandidates } from './review-candidates.mjs';
 import { handoffDiagnostics } from './review-obligations.mjs';
@@ -340,6 +341,7 @@ if (process.argv.slice(2).includes('--check-report')) {
     const analysisTasks = scan ? analysisReviewTasks(diagnostics, sources) : [];
     const report = { ...(bounded ? {
       schema: scan ? 'e2e-skills-node-scan-v1' : 'e2e-skills-node-bounded-v1', status: scan ? summary.complete ? 'COMPLETE' : 'INCOMPLETE' : 'PARTIAL',
+      ...(scan ? { incompleteSummary: incompleteSummary(diagnostics) } : {}),
       scope: scan ? 'static-review' : 'bounded-static',
       ...(scan ? { compatibility: { contract: 'source-review-v1', status: 'development', referenceLegacyCallVariants: 69 },
         review: { required: summary.counts.triage > 0 || analysisTasks.length > 0, candidates: summary.counts.triage,

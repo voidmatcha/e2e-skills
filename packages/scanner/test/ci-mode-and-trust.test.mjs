@@ -37,11 +37,14 @@ test('--allow-incomplete exits by the policy on analyzed findings and reports wh
   assert.equal(allowed.report.status, 'INCOMPLETE');
   assert.equal(allowed.report.execution.complete, false);
   assert.equal(allowed.report.execution.exitCode, 0);
+  assert.equal(allowed.report.incompleteSummary.total, allowed.report.execution.diagnostics.length);
+  assert.equal(allowed.report.incompleteSummary.groups.reduce((total, group) => total + group.count, 0), allowed.report.incompleteSummary.total);
   assert.deepEqual(allowed.report.execution.allowIncomplete, { applied: true, unanalyzed: { files: 1, locations: allowed.report.execution.diagnostics.length } });
   const text = scan(clean, '--format', 'text', '--allow-incomplete');
   assert.equal(text.status, 0);
   assert.match(text.stdout, /^ALLOW-INCOMPLETE: 1 file\(s\) with \d+ unresolved location\(s\) were NOT fully analyzed; that code is NOT checked\.$/m);
   assert.match(text.stdout, /^Summary \[INCOMPLETE\]:/m);
+  assert.match(text.stdout, /^Why incomplete: \d+ unresolved location\(s\)/m);
   // The same one-line warning goes to stderr in either format, and tops the text report.
   const warning = /^INCOMPLETE: \d+ locations? in 1 file (?:was|were) not analysed \u2014 this is not a clean result\.\n$/;
   assert.match(text.stderr, warning);

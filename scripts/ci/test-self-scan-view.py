@@ -312,6 +312,34 @@ class ViewTests(unittest.TestCase):
             with self.subTest(output=output), self.assertRaises(HELPER.ViewError):
                 HELPER.verify_original_candidates(self.source, subprocess.CompletedProcess([], 2, output))
 
+    def test_additive_incomplete_summary_must_account_for_frozen_diagnostics(self):
+        report = self.control_report()
+        file = str(self.fixture)
+        report["incompleteSummary"] = {"total": 5, "groups": [
+            {"detector": detector, "code": code, "count": count,
+             "topFiles": [{"file": file, "count": count}],
+             "hint": "This code was not checked.", "specificHint": True}
+            for detector, code, count in (
+                ("actions", "import-unpinned", 1),
+                ("accessibleNames", "import-unpinned", 1),
+                ("conditionalAssertions", "import-unpinned", 2),
+                ("conditionalAssertions", "provenance-unsupported", 1),
+            )
+        ]}
+        verify = lambda value: HELPER.verify_original_candidates(
+            self.source, subprocess.CompletedProcess([], 2, json.dumps(value)))
+        verify(report)
+        for change in ("total", "count", "file", "hint", "specific", "missing"):
+            changed = copy.deepcopy(report)
+            if change == "total": changed["incompleteSummary"]["total"] = 4
+            elif change == "count": changed["incompleteSummary"]["groups"][0]["count"] = 2
+            elif change == "file": changed["incompleteSummary"]["groups"][0]["topFiles"][0]["file"] = "/other"
+            elif change == "hint": changed["incompleteSummary"]["groups"][0]["hint"] = "Safe."
+            elif change == "specific": changed["incompleteSummary"]["groups"][0]["specificHint"] = False
+            else: changed["incompleteSummary"]["groups"].pop()
+            with self.subTest(change=change), self.assertRaises(HELPER.ViewError):
+                verify(changed)
+
     def test_negative_control_rechecks_original_bytes_mode_and_exact_path(self):
         report = subprocess.CompletedProcess([], 2, json.dumps(self.control_report()))
         original = self.fixture.read_bytes()

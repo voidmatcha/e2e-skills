@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { annotations, changedFiles, compareFiles, inputs, invocation, main, newFindings, PACKAGE, SUMMARY_LIMIT } from '../actions/scan.mjs';
+import { annotations, changedFiles, compareFiles, groupedIncompleteSummary, inputs, invocation, main, newFindings, PACKAGE, renderJobSummary, SUMMARY_LIMIT } from '../actions/scan.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -132,6 +132,114 @@ test('summary caps long lists, dedupes diagnostics and ranks changed-file P0 fir
   const full = fs.readFileSync(reportFile, 'utf8');
   assert.equal((full.match(/P1 candidate #9/g) || []).length, SUMMARY_LIMIT + 20);
   assert.equal((full.match(/analysis incomplete:/g) || []).length, SUMMARY_LIMIT + 30);
+});
+
+test('grouped summary caps causes and top files, accounts for omitted counts and retains full raw reports', t => {
+  const { workspace, env } = fixture(t);
+  const groups = Array.from({ length: SUMMARY_LIMIT + 2 }, (_, i) => ({
+    detector: 'promises', code: i === 0 ? 'provenance-unsupported' : `reason-${i}`, count: 4,
+    topFiles: Array.from({ length: 4 }, (_, j) => ({ file: path.join(workspace, `file-${j}.spec.ts`), count: 1 })),
+    hint: 'Use a directly imported helper; this code was not checked.', specificHint: true,
+  }));
+  const incomplete = groups.flatMap(group => Array.from({ length: group.count }, (_, i) => `raw ${group.code} location ${i}`));
+  const report = { schema: 'e2e-skills-node-scan-v1', findings: [],
+    execution: { complete: false, incomplete, exitCode: 0 },
+    incompleteSummary: { total: incomplete.length, groups } };
+  assert.equal(main({ ...env, SCAN_FORMAT: 'text' }, () => ({ status: 0, stdout: JSON.stringify(report), stderr: '' })), 0);
+  const summary = fs.readFileSync(env.GITHUB_STEP_SUMMARY, 'utf8');
+  assert.equal((summary.match(/promises \/ unrecognized-reason/g) || []).length, SUMMARY_LIMIT - 1);
+  assert.match(summary, /promises \/ provenance-unsupported \| 4 \| file-0\.spec\.ts \(1\); file-1\.spec\.ts \(1\); file-2\.spec\.ts \(1\)/);
+  assert.match(summary, /2 more cause group\(s\), 8 unresolved diagnostic\(s\)/);
+  assert.match(summary, new RegExp(`Total unresolved diagnostics: ${incomplete.length}`));
+  assert.ok(!summary.includes('file-3.spec.ts'));
+  assert.ok(!summary.includes('raw reason-'));
+  assert.ok(!summary.includes(workspace + path.sep));
+  const outputs = Object.fromEntries(fs.readFileSync(env.GITHUB_OUTPUT, 'utf8').trim().split('\n').map(line => line.split('=')));
+  const full = fs.readFileSync(outputs.report, 'utf8');
+  for (const diagnostic of incomplete) assert.ok(full.includes(diagnostic));
+  assert.deepEqual(JSON.parse(fs.readFileSync(outputs['json-report'], 'utf8')), report);
+});
+
+test('grouped summary hides untrusted cause labels and keeps paths and hints in literal cells', t => {
+  const { workspace, env } = fixture(t);
+  const settings = inputs(env);
+  const report = { findings: [], execution: { complete: false, incomplete: ['raw'], exitCode: 0 },
+    incompleteSummary: { total: 1, groups: [{ detector: 'promises', code: 'provenance-unsupported', count: 1,
+      topFiles: [{ file: path.join(workspace, '```\n::error::forged\n<img>|[link](bad).spec.ts'), count: 1 }],
+      hint: '```\n# heading\n<script>bad</script>|extra', specificHint: false }] } };
+  const summary = renderJobSummary(report, settings);
+  assert.match(summary, /promises \/ provenance-unsupported/);
+  assert.ok(summary.includes('```\\n::error::forged\\n<img>\\|[link](bad).spec.ts (1)'));
+  assert.ok(summary.includes('```\\n# heading\\n<script>bad</script>\\|extra'));
+  assert.ok(!summary.includes(workspace + path.sep));
+  for (const line of summary.split('\n').slice(2).filter(Boolean)) assert.ok(line.startsWith('    '));
+  assert.ok(!summary.includes('\n::error::'));
+  assert.ok(!summary.includes('\n# heading'));
+  report.incompleteSummary.groups[0].detector = 'promises|injected';
+  report.incompleteSummary.groups[0].code = 'reason\nnew row';
+  const hidden = renderJobSummary(report, settings);
+  assert.match(hidden, /unrecognized-detector \/ unrecognized-reason/);
+  assert.match(hidden, /\(file paths withheld\)/);
+  assert.ok(!hidden.includes('promises|injected') && !hidden.includes('reason\\nnew row'));
+  assert.ok(!hidden.includes('::error::forged'));
+});
+
+test('pinned scanner diagnostics produce grouped job output without changing full reports', t => {
+  const { workspace, env } = fixture(t);
+  const file = path.join(workspace, 'legacy.spec.ts');
+  const report = { schema: 'e2e-skills-node-scan-v1', findings: [], execution: {
+    complete: false, exitCode: 0, incomplete: ['legacy raw diagnostic one', 'legacy raw diagnostic two'],
+    diagnostics: [
+      { detector: 'promises', code: 'provenance-unsupported', file, line: 2 },
+      { detector: 'promises', code: 'provenance-unsupported', file, line: 3 },
+    ],
+  } };
+  assert.equal(main({ ...env, SCAN_FORMAT: 'text' }, () => ({ status: 0, stdout: JSON.stringify(report), stderr: '' })), 0);
+  const summary = fs.readFileSync(env.GITHUB_STEP_SUMMARY, 'utf8');
+  assert.match(summary, /Total unresolved diagnostics: 2/);
+  assert.match(summary, /promises \/ provenance-unsupported \| 2 \| legacy\.spec\.ts \(2\)/);
+  assert.match(summary, /source-visible, immutable helper return/);
+  assert.match(summary, /This code was not checked/);
+  assert.doesNotMatch(summary, /legacy raw diagnostic/);
+  const outputs = Object.fromEntries(fs.readFileSync(env.GITHUB_OUTPUT, 'utf8').trim().split('\n').map(line => line.split('=')));
+  const full = fs.readFileSync(outputs.report, 'utf8');
+  for (const diagnostic of report.execution.incomplete) assert.ok(full.includes(diagnostic));
+  assert.deepEqual(JSON.parse(fs.readFileSync(outputs['json-report'], 'utf8')), report);
+  assert.equal(Object.hasOwn(report, 'incompleteSummary'), false);
+  report.incompleteSummary = { total: 3, groups: [] };
+  assert.equal(groupedIncompleteSummary(report, inputs(env)), null);
+  assert.match(renderJobSummary(report, inputs(env)), /legacy raw diagnostic one/);
+});
+
+test('grouped summary has no section for zero unresolved diagnostics and rejects inconsistent totals', t => {
+  const { env } = fixture(t);
+  const settings = inputs(env);
+  const report = { findings: [], execution: { complete: true, incomplete: [], exitCode: 0 },
+    incompleteSummary: { total: 0, groups: [] } };
+  assert.deepEqual(groupedIncompleteSummary(report, settings), []);
+  assert.doesNotMatch(renderJobSummary(report, settings), /INCOMPLETE:|Total unresolved|Detector \/ reason/);
+  report.execution = { complete: false, incomplete: ['original unresolved diagnostic'], exitCode: 0 };
+  report.incompleteSummary = { total: 7, groups: [
+    { detector: 'promises', code: 'one', count: 2, topFiles: [], hint: 'Not checked.' },
+    { detector: 'waits', code: 'two', count: 5, topFiles: [], hint: 'Not checked.' },
+  ] };
+  const lines = groupedIncompleteSummary(report, settings);
+  const renderedCounts = lines.filter(line => /^(promises|waits) \/ /.test(line)).map(line => Number(line.split(' | ')[1]));
+  assert.equal(renderedCounts.reduce((sum, count) => sum + count, 0), report.incompleteSummary.total);
+  report.incompleteSummary.total++;
+  assert.equal(groupedIncompleteSummary(report, settings), null);
+  assert.match(renderJobSummary(report, settings), /original unresolved diagnostic/);
+  assert.doesNotMatch(renderJobSummary(report, settings), /Total unresolved diagnostics/);
+});
+
+test('grouped job summary keeps the existing character budget', t => {
+  const { env } = fixture(t);
+  const report = { findings: [], execution: { complete: false, incomplete: ['raw'], exitCode: 0 },
+    incompleteSummary: { total: 1, groups: [{ detector: 'promises', code: 'one', count: 1,
+      topFiles: [], hint: 'x'.repeat(600_000), specificHint: false }] } };
+  const summary = renderJobSummary(report, inputs(env));
+  assert.match(summary, /\[Summary truncated; full report is in the report output\.\]/);
+  assert.ok(summary.length < 501_000);
 });
 
 test('missing base commit falls back to full report; invalid event and SHA fail before scan', t => {

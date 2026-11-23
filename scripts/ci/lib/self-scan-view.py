@@ -282,10 +282,38 @@ def verify_original_candidates(source: Path, result: subprocess.CompletedProcess
         "findings": expected_findings, "suppressed": [], "duplicates": [],
         "projectEslint": {"requested": False, "executed": False},
     }
+    # The current scanner adds a display-only summary. Keep the frozen
+    # findings/diagnostics comparison exact and check that this addition
+    # accounts for those same five unresolved locations.
+    if "incompleteSummary" in report:
+        grouped = report["incompleteSummary"]
+        if (not isinstance(grouped, dict) or type(grouped.get("total")) is not int or
+                grouped["total"] != len(diagnostics) or not isinstance(grouped.get("groups"), list)):
+            raise ViewError("frozen-control incomplete summary is inconsistent")
+        expected_groups = {
+            ("actions", "import-unpinned"): 1,
+            ("accessibleNames", "import-unpinned"): 1,
+            ("conditionalAssertions", "import-unpinned"): 2,
+            ("conditionalAssertions", "provenance-unsupported"): 1,
+        }
+        actual_groups = {}
+        for group in grouped["groups"]:
+            if not isinstance(group, dict):
+                raise ViewError("frozen-control incomplete summary is inconsistent")
+            key = (group.get("detector"), group.get("code"))
+            count = group.get("count")
+            if (key in actual_groups or key not in expected_groups or type(count) is not int or
+                    count != expected_groups[key] or group.get("topFiles") != [{"file": file, "count": count}] or
+                    group.get("specificHint") is not True or
+                    not isinstance(group.get("hint"), str) or "not checked" not in group["hint"].lower()):
+                raise ViewError("frozen-control incomplete summary is inconsistent")
+            actual_groups[key] = count
+        if actual_groups != expected_groups:
+            raise ViewError("frozen-control incomplete summary is inconsistent")
     # JSON equality is type-exact (unlike Python's True == 1).
     if (json.dumps({key: report.get(key) for key in expected}, sort_keys=True) !=
             json.dumps(expected, sort_keys=True) or
-            set(report) - set(expected) - {"coverage", "project", "configurationAnalysis"} or
+            set(report) - set(expected) - {"coverage", "project", "configurationAnalysis", "incompleteSummary"} or
             not isinstance(report.get("coverage"), dict) or report["coverage"].get("complete") is not False):
         raise ViewError("frozen-control candidates, diagnostics or incomplete accounting changed")
     if describe_file(target) != identity:

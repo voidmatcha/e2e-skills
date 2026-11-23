@@ -5,6 +5,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { performance } from 'node:perf_hooks';
+import { incompleteSummary, publicCause } from '../../packages/scanner/src/incomplete-summary.mjs';
 
 export const PACKAGE = '@voidmatcha/e2e-skills-scanner@3.7.0';
 const inside = (root, target) => target === root || target.startsWith(root + path.sep);
@@ -359,6 +360,48 @@ export function annotations(hits, root, changed, limit = ANNOTATION_LIMIT, compa
 
 export const SUMMARY_LIMIT = 50;
 
+// Keep table cells on one line. The job summary wraps this text in an indented
+// literal block, so repository paths cannot become Markdown or workflow commands.
+const summaryCell = value => clean(value).replace(/\\/g, '\\\\').replace(/\|/g, '\\|')
+  .replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t');
+
+export function groupedIncompleteSummary(report, settings, limit = SUMMARY_LIMIT) {
+  // The pinned scanner predates the additive summary, but already returns the
+  // same diagnostic records. Reuse the scanner's pure grouping and hint policy.
+  const summary = Object.hasOwn(report, 'incompleteSummary') ? report.incompleteSummary :
+    Array.isArray(report.execution?.diagnostics) && report.execution.diagnostics.length
+      ? incompleteSummary(report.execution.diagnostics) : null;
+  if (!summary || !Number.isSafeInteger(summary.total) || summary.total < 0 ||
+      !Array.isArray(summary.groups)) return null;
+  let total = 0;
+  for (const group of summary.groups) {
+    if (typeof group?.detector !== 'string' || typeof group.code !== 'string' ||
+        !Number.isSafeInteger(group.count) || group.count < 1 || typeof group.hint !== 'string' ||
+        !Array.isArray(group.topFiles) || group.topFiles.some(item =>
+          typeof item?.file !== 'string' || !Number.isSafeInteger(item.count) || item.count < 1)) return null;
+    total += group.count;
+  }
+  // An inconsistent additive summary must never hide the original diagnostics.
+  if (!Number.isSafeInteger(total) || total !== summary.total) return null;
+  if (!total) return [];
+  const shown = summary.groups.slice(0, limit);
+  const lines = ['INCOMPLETE: unresolved code was not checked.',
+    `Total unresolved diagnostics: ${total}`,
+    'Detector / reason | Count | Top files (count) | What to change',
+    '--- | ---: | --- | ---'];
+  for (const group of shown) {
+    const cause = publicCause(group.detector, group.code);
+    const files = (cause.showFiles ? group.topFiles : []).slice(0, 3).map(item =>
+      `${summaryCell(relativeFinding(settings.root, item) || '[outside workspace]')} (${item.count})`).join('; ');
+    lines.push(`${summaryCell(cause.detector)} / ${summaryCell(cause.code)} | ${group.count} | ${files || (cause.showFiles ? '(no file path)' : '(file paths withheld)')} | ${summaryCell(group.hint)}`);
+  }
+  if (shown.length < summary.groups.length) {
+    const omitted = summary.groups.slice(shown.length).reduce((sum, group) => sum + group.count, 0);
+    lines.push(`... ${summary.groups.length - shown.length} more cause group(s), ${omitted} unresolved diagnostic(s); see the JSON report output.`);
+  }
+  return lines;
+}
+
 export function render(report, settings, changed = null, limit = Infinity, comparison = null, actionExit = report.execution.exitCode) {
   const locationOf = hit => relativeFinding(settings.root, hit) || '[outside workspace]';
   const confirmed = report.findings.filter(hit => hit.disposition === 'confirmed' && hit.severity === 'P0').length;
@@ -389,9 +432,13 @@ export function render(report, settings, changed = null, limit = Infinity, compa
   if (Array.isArray(report.aliased) && report.aliased.length) lines.push(`Linked: ${report.aliased.length} symbolic link(s) to already scanned paths; not followed.`);
   const more = (shown, total, what) => total > shown ? [`... ${total - shown} more ${what}; see the report output.`] : [];
   if (!report.execution.complete) {
-    const rootPrefix = settings.root + path.sep;
-    const unique = [...new Set(report.execution.incomplete.map(item => String(item).split(rootPrefix).join('')))];
-    lines.push('INCOMPLETE: some code was not analysed.', ...unique.slice(0, limit), ...more(Math.min(limit, unique.length), unique.length, 'unresolved diagnostic(s)'));
+    const grouped = Number.isFinite(limit) ? groupedIncompleteSummary(report, settings, limit) : null;
+    if (grouped !== null) lines.push(...grouped);
+    else {
+      const rootPrefix = settings.root + path.sep;
+      const unique = [...new Set(report.execution.incomplete.map(item => String(item).split(rootPrefix).join('')))];
+      lines.push('INCOMPLETE: some code was not analysed.', ...unique.slice(0, limit), ...more(Math.min(limit, unique.length), unique.length, 'unresolved diagnostic(s)'));
+    }
   }
   const rank = hit => (changed?.available && changed.paths.has(locationOf(hit)) ? 0 : 4) +
     (hit.severity === 'P0' ? (hit.disposition === 'confirmed' ? 0 : 1) : 2);
@@ -402,6 +449,13 @@ export function render(report, settings, changed = null, limit = Infinity, compa
   }
   lines.push(...more(Math.min(limit, ordered.length), ordered.length, 'finding(s)'));
   return lines.map(clean).join('\n') + '\n';
+}
+
+export function renderJobSummary(report, settings, changed = null, comparison = null, actionExit = report.execution.exitCode) {
+  const text = render(report, settings, changed, SUMMARY_LIMIT, comparison, actionExit);
+  const budget = 500_000;
+  const clipped = text.length > budget ? text.slice(0, budget) + '\n[Summary truncated; full report is in the report output.]\n' : text;
+  return '## E2E Skills static scan\n\n' + clipped.split('\n').map(line => '    ' + line).join('\n') + '\n';
 }
 
 export function main(env = process.env, execute = spawnSync) {
@@ -484,11 +538,7 @@ export function main(env = process.env, execute = spawnSync) {
       `report=${reportFile}\njson-report=${jsonFile}\nexit-code=${exitCode}\n`);
     if (env.GITHUB_STEP_SUMMARY) {
       // Indented literal text cannot break out via fences, HTML or annotations.
-      const summaryText = render(report, settings, changed, SUMMARY_LIMIT, comparison, exitCode);
-      const budget = 500_000;
-      const clipped = summaryText.length > budget ? summaryText.slice(0, budget) + '\n[Summary truncated; full report is in the report output.]\n' : summaryText;
-      fs.appendFileSync(env.GITHUB_STEP_SUMMARY, '## E2E Skills static scan\n\n' +
-        clipped.split('\n').map(line => '    ' + line).join('\n') + '\n');
+      fs.appendFileSync(env.GITHUB_STEP_SUMMARY, renderJobSummary(report, settings, changed, comparison, exitCode));
     }
     const annotationHits = comparison ? [...comparison.newHits, ...comparison.fallbackHits] : report.findings;
     const emitted = annotations(annotationHits, settings.root, changed, ANNOTATION_LIMIT, comparison);
