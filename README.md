@@ -435,7 +435,7 @@ The default `p0` policy exits 1 for confirmed mechanical P0 findings. Choose `--
 
 `eslint-plugin-playwright` and `eslint-plugin-cypress` catch common test-code mistakes. The `e2e-skills` scanner also uses these plugins as an optional checking layer.
 
-This project also contributed the `no-unnecessary-assertions` rule to `eslint-plugin-playwright` ([merged PR #470](https://github.com/mskelton/eslint-plugin-playwright/pull/470)). It catches assertions that check only whether a Locator object exists, rather than application state.
+This project also contributed the `no-unnecessary-assertions` rule to `eslint-plugin-playwright` ([merged PR #470](https://github.com/mskelton/eslint-plugin-playwright/pull/470)). It catches assertions that check only whether a Locator object exists, rather than application state. A Cypress rule with the same name followed in `eslint-plugin-cypress` 7.2.0 ([merged PR #400](https://github.com/cypress-io/eslint-plugin-cypress/pull/400)). It flags an outer Chai assertion on a queued Cypress chain, such as `expect(cy.get('.badge')).to.exist`. This is an assertion-clarity rule: the queued command still fails when the element is missing, so the test does not always pass.
 
 Plugin execution requires your explicit permission; the bundled checks run without it. On top of the plugin rules, `e2e-skills` provides:
 

@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=751810671e3ff01f61e5de3c3cbc3b2c60df3e22512f94cf97ecaa6a3bf80b2d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=009961c6b008a7bb51a1e216275927d8eec02ef5d2bfc9bac4baf2b737a75fe4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
@@ -436,7 +436,7 @@ reviewer 已内置相同的 Node scanner，无需单独通过 npm 安装。离�
 
 `eslint-plugin-playwright` 和 `eslint-plugin-cypress` 用于发现测试代码中的常见错误。`e2e-skills` 扫描器也将这两个插件用作可选检查层。
 
-本项目还向 `eslint-plugin-playwright` 贡献了 `no-unnecessary-assertions` 规则，[PR #470 已合并](https://github.com/mskelton/eslint-plugin-playwright/pull/470)。该规则检测仅检查 Locator 对象是否存在、而非应用状态的断言。
+本项目还向 `eslint-plugin-playwright` 贡献了 `no-unnecessary-assertions` 规则，[PR #470 已合并](https://github.com/mskelton/eslint-plugin-playwright/pull/470)。该规则检测仅检查 Locator 对象是否存在、而非应用状态的断言。同名的 Cypress 规则也已进入 `eslint-plugin-cypress` 7.2.0（[PR #400 已合并](https://github.com/cypress-io/eslint-plugin-cypress/pull/400)）。它检测对已排队的 Cypress 命令链施加外层 Chai 断言的代码，例如 `expect(cy.get('.badge')).to.exist`。排队的命令在元素不存在时仍会失败，因此这不是总能通过的测试，而是断言清晰度问题。
 
 执行插件需要用户明确许可；未获许可时仍运行内置检查。在现有插件规则之外，`e2e-skills` 还提供：
 

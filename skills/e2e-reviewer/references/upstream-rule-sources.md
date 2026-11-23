@@ -14,7 +14,7 @@ Correctness families map to existing taxonomy: awaited Playwright calls (#15/#16
 
 Source: [eslint-plugin-cypress](https://github.com/cypress-io/eslint-plugin-cypress), MIT.
 
-Correctness families map to focused tests (#7), arbitrary waits (#9), forced interactions (#5b), conditional or discarded verification (#5/#8), brittle selector and chain behavior (#10), and screenshot-without-outcome review (#2). Rules mandating one selector convention (`require-data-selectors`, XPath bans) or one chaining style are project conventions unless the concrete usage creates an existing P0/P1 smell.
+Correctness families map to focused tests (#7), arbitrary waits (#9), forced interactions (#5b), conditional or discarded verification (#5/#8), brittle selector and chain behavior (#10), and screenshot-without-outcome review (#2). `no-unnecessary-assertions` (7.2.0+) flags an outer Chai assertion on a queued chain as assertion clarity, matching the Cypress boundary in `pattern-reference.md`, not an always-pass smell. Rules mandating one selector convention (`require-data-selectors`, XPath bans) or one chaining style are project conventions unless the concrete usage creates an existing P0/P1 smell.
 
 ## Runtime falsification precedent
 

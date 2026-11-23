@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=751810671e3ff01f61e5de3c3cbc3b2c60df3e22512f94cf97ecaa6a3bf80b2d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=009961c6b008a7bb51a1e216275927d8eec02ef5d2bfc9bac4baf2b737a75fe4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -437,7 +437,7 @@ scan만으로 assertion mutation이나 fault injection을 실행하지는 않습
 
 `eslint-plugin-playwright`와 `eslint-plugin-cypress`는 테스트 코드의 흔한 실수를 찾는 tool입니다. `e2e-skills` scanner도 두 plugin을 optional 검사 계층으로 활용합니다.
 
-`eslint-plugin-playwright`의 `no-unnecessary-assertions` 규칙도 이 프로젝트에서 직접 기여해 [PR #470이 merge되었습니다](https://github.com/mskelton/eslint-plugin-playwright/pull/470). 프로젝트 상태 대신 Locator 객체가 존재하는지만 확인하는 assertion을 찾는 규칙입니다.
+`eslint-plugin-playwright`의 `no-unnecessary-assertions` 규칙도 이 프로젝트에서 직접 기여해 [PR #470이 merge되었습니다](https://github.com/mskelton/eslint-plugin-playwright/pull/470). 프로젝트 상태 대신 Locator 객체가 존재하는지만 확인하는 assertion을 찾는 규칙입니다. 같은 이름의 Cypress 규칙도 `eslint-plugin-cypress` 7.2.0에 들어갔습니다([PR #400 merge](https://github.com/cypress-io/eslint-plugin-cypress/pull/400)). `expect(cy.get('.badge')).to.exist`처럼 실행 대기 중인 Cypress 체인에 바깥 Chai assertion을 거는 코드를 찾습니다. 대기 중인 명령은 요소가 없으면 여전히 실패하므로, 항상 통과하는 테스트가 아니라 assertion 명확성 문제를 다루는 규칙입니다.
 
 plugin은 사용자가 명시적으로 실행을 허용했을 때 사용하며, 기본 설정에서는 자체 검사를 실행합니다. 기존 plugin 규칙에 더해 `e2e-skills`는 다음을 제공합니다.
 
