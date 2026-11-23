@@ -1243,6 +1243,75 @@ export function catchHandlers(bytes, filename, { scope, waitTimeouts } = {}) {
     if (matcher === 'toBeGreaterThan' && !negated) return typeof V === 'number' && (typeof F !== 'number' || F <= V);
     return false;
   }
+  // These shapes need a caller/outcome review, but do not by themselves
+  // establish a silently passing assertion. Keep them visible at P1.
+  function recoveryReview(call) {
+    const receiver = receiverCall(call), fallback = literalFallback(call);
+    if (receiver && !receiver.optional && fallback) {
+      const expected = { isVisible: false, isEnabled: false, isChecked: false, isDisabled: true, count: 0 };
+      if (Object.hasOwn(expected, receiver.name) && Object.is(expected[receiver.name], fallback.value)) {
+        let value = skipParens(call);
+        if (ts.isAwaitExpression(value.parent)) value = skipParens(value.parent);
+        if (ts.isPrefixUnaryExpression(value.parent) && value.parent.operator === ts.SyntaxKind.ExclamationToken)
+          value = skipParens(value.parent);
+        if (ts.isBinaryExpression(value.parent) && value.parent.left === value &&
+            [ts.SyntaxKind.GreaterThanToken, ts.SyntaxKind.EqualsEqualsEqualsToken].includes(value.parent.operatorToken.kind) &&
+            primitiveLiteral(value.parent.right)?.value === 0) value = skipParens(value.parent);
+        if (ts.isIfStatement(value.parent) && value.parent.expression === value && !value.parent.elseStatement) {
+          const branch = value.parent.thenStatement;
+          const statements = ts.isBlock(branch) ? branch.statements : [branch];
+          if (statements.length === 1 &&
+              (ts.isReturnStatement(statements[0]) || ts.isContinueStatement(statements[0])))
+            return 'conservative-observation-fallback';
+        }
+      }
+    }
+    // A network-idle heuristic followed by a hard awaited operation in the
+    // same helper has an unresolved outcome dependency. A different locator
+    // is not proof of the same outcome, so this is a demotion, not an exemption.
+    if (receiver?.name === 'waitForLoadState' && receiver.call.arguments.length >= 1 &&
+        ts.isStringLiteral(unwrap(receiver.call.arguments[0])) && unwrap(receiver.call.arguments[0]).text === 'networkidle') {
+      let line = skipParens(call);
+      if (ts.isAwaitExpression(line.parent)) line = skipParens(line.parent);
+      const statement = line.parent, fn = statement?.parent?.parent;
+      if (ts.isExpressionStatement(statement) && ts.isBlock(statement.parent) && fn && ts.isFunctionLike(fn) &&
+          fn.body === statement.parent && !registeredTest(fn, false)) {
+        const rest = statement.parent.statements.slice(statement.parent.statements.indexOf(statement) + 1);
+        if (rest.some(next => {
+          if (!ts.isExpressionStatement(next)) return false;
+          const awaited = unwrap(next.expression);
+          const operation = ts.isAwaitExpression(awaited) && unwrap(awaited.expression);
+          const access = operation && ts.isCallExpression(operation) && dot(operation.expression);
+          return access && !operation.questionDotToken && ['waitFor', 'click', 'dispatchEvent', 'toBeVisible', 'toHaveText'].includes(access.name.text);
+        })) return 'helper-settle-before-outcome';
+      }
+    }
+    // Forwarding to a Promise executor's reject parameter does not swallow
+    // that promise's failure. Its caller still needs review, so retain P1.
+    const callback = unwrap(call.arguments[0]);
+    let body = callback.body;
+    if (ts.isBlock(body)) {
+      if (body.statements.length !== 1 || !ts.isExpressionStatement(body.statements[0])) return null;
+      body = unwrap(body.statements[0].expression);
+    }
+    if (!ts.isCallExpression(body) || body.questionDotToken || !ts.isIdentifier(unwrap(body.expression))) return null;
+    const symbol = receivers.checker.getSymbolAtLocation(unwrap(body.expression));
+    const parameter = symbol?.declarations?.length === 1 && symbol.declarations[0];
+    if (!parameter || !ts.isParameter(parameter) || parameter.initializer || parameter.dotDotDotToken ||
+        isWritten(source, receivers.checker, symbol, { properties: true })) return null;
+    const executor = parameter.parent, construction = executor.parent;
+    if (!(ts.isArrowFunction(executor) || ts.isFunctionExpression(executor)) || executor.parameters[1] !== parameter ||
+        !ts.isNewExpression(construction) || construction.arguments?.[0] !== executor) return null;
+    let owner = callback.parent;
+    while (owner && owner !== executor) owner = owner.parent;
+    if (!owner) return null;
+    const ctor = unwrap(construction.expression), access = dot(ctor);
+    const cypress = access?.name.text === 'Promise' && ts.isIdentifier(unwrap(access.expression)) &&
+      unwrap(access.expression).text === 'Cypress' && scope.cypressGlobal(filename, access.expression);
+    if (ambientPromise(ctor) && !modifiedPromise() || cypress?.complete && cypress.kind === 'cypress-runtime')
+      return 'executor-rejection-forwarding';
+    return null;
+  }
   function abruptFinally(block) {
     let abrupt = false;
     (function visit(node) {
@@ -1376,6 +1445,12 @@ export function catchHandlers(bytes, filename, { scope, waitTimeouts } = {}) {
     findings.push({ patternId: '#3', severity: triage?.timeout.inert ? 'P2' : 'P0', disposition: 'candidate', origin: 'ast', variant,
       file: filename, line: position.line + 1, column: position.character + 1, start, end: node.end, ...(triage ? { triage } : {}) });
     if (variant === 'fallback' && !triage && discardedFallback(node)) demoteToReviewHint(findings.at(-1), 'discarded-fallback');
+    const recovery = recoveryReview(node);
+    if (recovery && findings.at(-1).severity === 'P0') {
+      findings.at(-1).severity = 'P1';
+      findings.at(-1).evidence = { kind: recovery,
+        requirements: ['verify-helper-callers', 'verify-required-test-outcome', 'verify-failure-propagation'] };
+    }
   });
   return { findings, diagnostics };
 }

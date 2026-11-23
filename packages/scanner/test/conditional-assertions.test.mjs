@@ -105,17 +105,17 @@ test('mutated receiver and Cypress runtime identity fail closed with diagnostics
   }
 });
 
-test('Cypress inline then and conditional registration retain review candidates', () => {
-  for (const code of [
-    "if(!isMobile()){cy.get('balance').invoke('text').then(x=>expect(startBalance).to.match(/balance/));}",
-    "if(isMobile()){it('mobile',()=>{cy.get('row').should('be.visible');});}",
-    "if(flag){cy.get('row').should(row=>expect(row).to.exist);}",
-    "if(flag){describe('group',()=>{it('case',()=>{expect(value).to.equal(1);});});}",
-    "if(flag){cy.get('row').then(function(row){expect(row).to.exist;});}",
+test('Cypress inline then retains P0 and conditional registration retains P1 review candidates', () => {
+  for (const [code, severity] of [
+    ["if(!isMobile()){cy.get('balance').invoke('text').then(x=>expect(startBalance).to.match(/balance/));}", 'P0'],
+    ["if(isMobile()){it('mobile',()=>{cy.get('row').should('be.visible');});}", 'P1'],
+    ["if(flag){cy.get('row').should(row=>expect(row).to.exist);}", 'P0'],
+    ["if(flag){describe('group',()=>{it('case',()=>{expect(value).to.equal(1);});});}", 'P1'],
+    ["if(flag){cy.get('row').then(function(row){expect(row).to.exist;});}", 'P0'],
   ]) {
     const result=run(code,'case.cy.ts');
     assert.deepEqual(result.diagnostics, [],code);
-    assert.deepEqual(result.findings.map(f=>[f.patternId,f.severity,f.disposition,f.variant]), [['#5a','P0','candidate','conditional-assertion']],code);
+    assert.deepEqual(result.findings.map(f=>[f.patternId,f.severity,f.disposition,f.variant]), [['#5a',severity,'candidate','conditional-assertion']],code);
   }
 });
 test('Cypress callbacks and ambient Chai cannot borrow local or foreign provenance', () => {
