@@ -361,8 +361,11 @@ export function annotations(hits, root, changed, limit = ANNOTATION_LIMIT, compa
 export const SUMMARY_LIMIT = 50;
 
 // Encode Markdown punctuation and HTML before exposing table cells outside the
-// literal report block. Entities render as text without creating links or tags.
-const summaryCell = value => clean(value).replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t')
+// literal report block. Invisible separators in paths and hints also prevent
+// rendered email, mention and issue-reference linkification after entity decoding.
+const summaryCell = (value, references = false) => clean(references
+  ? String(value).replace(/@/g, '\u200b@').replace(/#/g, '#\u200b') : value)
+  .replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t')
   .replace(/[&<>\\|`\[\]*_~:@#]/g, character => `&#${character.codePointAt(0)};`)
   .replace(/www\./gi, match => `${match.slice(0, -1)}&#46;`);
 
@@ -393,8 +396,8 @@ export function groupedIncompleteSummary(report, settings, limit = SUMMARY_LIMIT
   for (const group of shown) {
     const cause = publicCause(group.detector, group.code);
     const files = (cause.showFiles ? group.topFiles : []).slice(0, 3).map(item =>
-      `${summaryCell(relativeFinding(settings.root, item) || '[outside workspace]')} (${item.count})`).join('; ');
-    lines.push(`${summaryCell(cause.detector)} / ${summaryCell(cause.code)} | ${group.count} | ${files || (cause.showFiles ? '(no file path)' : '(file paths withheld)')} | ${summaryCell(group.hint)}`);
+      `${summaryCell(relativeFinding(settings.root, item) || '[outside workspace]', true)} (${item.count})`).join('; ');
+    lines.push(`${summaryCell(cause.detector)} / ${summaryCell(cause.code)} | ${group.count} | ${files || (cause.showFiles ? '(no file path)' : '(file paths withheld)')} | ${summaryCell(group.hint, true)}`);
   }
   if (shown.length < summary.groups.length) {
     const omitted = summary.groups.slice(shown.length).reduce((sum, group) => sum + group.count, 0);

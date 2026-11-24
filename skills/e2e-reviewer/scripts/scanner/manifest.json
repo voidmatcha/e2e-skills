@@ -98,8 +98,8 @@
       "sha256": "90b2c56f693c37a68b1b5fc560253accb2d95260bc06e881fabb444eeae6f3f5"
     },
     "src/incomplete-summary.mjs": {
-      "bytes": 7183,
-      "sha256": "ca0a6dac8f661a273de89b74c82be58223821f331851a577b489eeddfc9cf099"
+      "bytes": 7163,
+      "sha256": "045f9a2e6ec2a1bfa32ac1a4873bd487754cd2f24768e04ad1c4739672cf7797"
     },
     "src/inventory.mjs": {
       "bytes": 13081,
@@ -952,10 +952,10 @@
     },
     {
       "output": "src/incomplete-summary.mjs",
-      "output_sha256": "ca0a6dac8f661a273de89b74c82be58223821f331851a577b489eeddfc9cf099",
+      "output_sha256": "045f9a2e6ec2a1bfa32ac1a4873bd487754cd2f24768e04ad1c4739672cf7797",
       "rewrite": null,
       "source": "src/incomplete-summary.mjs",
-      "source_sha256": "ca0a6dac8f661a273de89b74c82be58223821f331851a577b489eeddfc9cf099"
+      "source_sha256": "045f9a2e6ec2a1bfa32ac1a4873bd487754cd2f24768e04ad1c4739672cf7797"
     },
     {
       "output": "src/inventory.mjs",

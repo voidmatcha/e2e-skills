@@ -43,7 +43,7 @@ const PUBLIC_DETECTORS = new Set([...Object.keys(RECEIVER_HINTS), 'controlFlow',
   'cypressAssignment', 'cypressCallbacks', 'reviewCandidates', 'scope', 'readCandidate', 'analysis']);
 const PUBLIC_CODES = new Set([...Object.keys(CODE_HINTS), ...IMPORT_DIAGNOSTIC_CODES,
   ...PROJECT_ESLINT_DIAGNOSTIC_CODES, 'analysis-unknown', 'provenance-unsupported',
-  'import-ambiguous', 'import-out-of-scope', 'inventory-unknown', 'unsupported-filename-encoding',
+  'import-out-of-scope', 'inventory-unknown', 'unsupported-filename-encoding',
   'unsupported-entry', 'project-context-unavailable', 'unsupported-filename', 'fingerprint-unavailable',
   'project-context-drift', 'inventory-unavailable', 'invalid-baseline', 'root-drift', 'removed', 'added',
   'identity-drift', 'unanalyzed-drift', 'aliased-drift', 'scope-incomplete',

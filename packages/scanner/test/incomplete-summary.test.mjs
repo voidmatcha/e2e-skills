@@ -5,6 +5,7 @@ import { incompleteSummary, publicCause } from '../src/incomplete-summary.mjs';
 import { formatLegacyReport } from '../src/compat-report.mjs';
 import { summarize } from '../src/report.mjs';
 import fs from 'node:fs';
+import { ts } from '../src/source.mjs';
 import { IMPORT_DIAGNOSTIC_CODES, PROJECT_ESLINT_DIAGNOSTIC_CODES, PROJECT_ESLINT_WORKER_CODES } from '../src/diagnostic-codes.mjs';
 
 test('groups every unresolved location deterministically and caps top files', () => {
@@ -66,13 +67,37 @@ test('all analyzer-owned cause labels stay public while unknown and inventory pa
     { detector: 'inventory', code: 'inventory-unavailable', showFiles: false });
 });
 
-test('scanner diagnostic emitters expose every reportable literal code', () => {
+test('scanner diagnostic emitters expose every reportable code', () => {
   const source = name => fs.readFileSync(new URL(`../src/${name}.mjs`, import.meta.url), 'utf8');
   const emitted = (text, pattern) => [...text.matchAll(pattern)].map(match => match[1]);
   const importSource = source('import-snapshot');
-  const importCodes = new Set([
-    ...emitted(importSource, /'(import-[a-z-]+)'/g),
-  ]);
+  const importTree = ts.createSourceFile('import-snapshot.mjs', importSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const importCodes = new Set();
+  const recordCode = expression => {
+    if (ts.isStringLiteral(expression)) { importCodes.add(expression.text); return; }
+    if (ts.isConditionalExpression(expression)) {
+      recordCode(expression.whenTrue);
+      recordCode(expression.whenFalse);
+      return;
+    }
+    assert.fail(`nonliteral import diagnostic at ${importTree.getLineAndCharacterOfPosition(expression.pos).line + 1}`);
+  };
+  const visit = node => {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'add') {
+      assert.ok(node.arguments.length > 0, 'import diagnostic code is required');
+      recordCode(node.arguments[0]);
+    }
+    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) &&
+        node.expression.expression.getText(importTree) === 'result' && node.expression.name.text === 'push') {
+      const value = node.arguments[0];
+      assert.ok(ts.isObjectLiteralExpression(value), 'revalidation diagnostic must be an object');
+      const code = value.properties.find(property => ts.isPropertyAssignment(property) &&
+        property.name.getText(importTree) === 'code');
+      if (code) recordCode(code.initializer);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(importTree);
   assert.deepEqual([...importCodes].sort(), [...IMPORT_DIAGNOSTIC_CODES].sort());
   const eslintSource = source('project-eslint');
   const eslintCodes = new Set([

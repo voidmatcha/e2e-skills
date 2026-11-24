@@ -171,7 +171,7 @@ test('grouped summary hides untrusted cause labels and keeps paths and hints in 
   const summary = renderJobSummary(report, settings);
   assert.match(summary, /promises \/ provenance-unsupported/);
   assert.ok(summary.includes('&#96;&#96;&#96;&#92;n&#58;&#58;error&#58;&#58;forged&#92;n&#60;img&#62;&#124;&#91;link&#93;(bad).spec.ts (1)'));
-  assert.ok(summary.includes('&#96;&#96;&#96;&#92;n&#35; heading&#92;n&#60;script&#62;bad&#60;/script&#62;&#124;extra'));
+  assert.ok(summary.includes('&#96;&#96;&#96;&#92;n&#35;\u200b heading&#92;n&#60;script&#62;bad&#60;/script&#62;&#124;extra'));
   assert.ok(!summary.includes(workspace + path.sep));
   assert.match(summary, /^Detector \/ reason \| Count \| Top files \(count\) \| What to change$/m);
   assert.match(summary, /^--- \| ---: \| --- \| ---$/m);
@@ -708,10 +708,31 @@ test('Markdown table paths cannot autolink bare domains or issue references', t 
       topFiles: [{ file: path.join(workspace, 'www.evil.example', '#123.cy.js'), count: 1 }],
       hint: 'Review www.evil.example/#123 manually.' }] } };
   const row = renderJobSummary(report, inputs(env)).split('\n').find(line => line.startsWith('promises /'));
-  assert.ok(row.includes('www&#46;evil.example/&#35;123.cy.js'));
-  assert.ok(row.includes('www&#46;evil.example/&#35;123'));
+  assert.ok(row.includes('www&#46;evil.example/&#35;\u200b123.cy.js'));
+  assert.ok(row.includes('www&#46;evil.example/&#35;\u200b123'));
   assert.doesNotMatch(row, /www\.|#123|\[|<a\b/i);
   assert.equal(row.split(' | ').length, 4);
+});
+
+test('Markdown path and hint cells keep address and reference triggers inert', t => {
+  const { workspace, env } = fixture(t);
+  for (const [file, hint, expectedFile, expectedHint] of [
+    ['b/user@example.com.cy.js', 'Review user@evil.example', 'b/user\u200b&#64;example.com.cy.js', 'user\u200b&#64;evil.example'],
+    ['@octocat/x.cy.js', 'Review @octocat', '\u200b&#64;octocat/x.cy.js', '\u200b&#64;octocat'],
+    ['#123.cy.js', 'Review #123', '&#35;\u200b123.cy.js', '&#35;\u200b123'],
+    ['www.evil.example/p.cy.js', 'Review www.evil.example/p.cy.js', 'www&#46;evil.example/p.cy.js', 'www&#46;evil.example/p.cy.js'],
+    ['normal/path.cy.js', 'mailto:me@ex.com', 'normal/path.cy.js', 'mailto&#58;me\u200b&#64;ex.com'],
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(workspace, file)), { recursive: true });
+    fs.writeFileSync(path.join(workspace, file), '');
+    const report = { findings: [], execution: { complete: false, incomplete: ['raw'], exitCode: 2 },
+      incompleteSummary: { total: 1, groups: [{ detector: 'promises', code: 'shape-unsupported', count: 1,
+        topFiles: [{ file: path.join(workspace, file), count: 1 }], hint }] } };
+    const row = renderJobSummary(report, inputs(env)).split('\n').find(line => line.startsWith('promises /'));
+    assert.ok(row.includes(expectedFile), row);
+    assert.ok(row.includes(expectedHint), row);
+    assert.equal(row.split(' | ').length, 4);
+  }
 });
 
 test('scanner-owned import causes retain their file path in the Action table', t => {
