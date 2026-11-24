@@ -363,8 +363,9 @@ export const SUMMARY_LIMIT = 50;
 // Encode Markdown punctuation and HTML before exposing table cells outside the
 // literal report block. Invisible separators in paths and hints also prevent
 // rendered email, mention and issue-reference linkification after entity decoding.
+// Place U+200B after @ so the handle itself is broken for mention matching.
 const summaryCell = (value, references = false) => clean(references
-  ? String(value).replace(/@/g, '\u200b@').replace(/#/g, '#\u200b') : value)
+  ? String(value).replace(/@/g, '@\u200b').replace(/#/g, '#\u200b') : value)
   .replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t')
   .replace(/[&<>\\|`\[\]*_~:@#]/g, character => `&#${character.codePointAt(0)};`)
   .replace(/www\./gi, match => `${match.slice(0, -1)}&#46;`);

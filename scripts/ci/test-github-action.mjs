@@ -717,11 +717,13 @@ test('Markdown table paths cannot autolink bare domains or issue references', t 
 test('Markdown path and hint cells keep address and reference triggers inert', t => {
   const { workspace, env } = fixture(t);
   for (const [file, hint, expectedFile, expectedHint] of [
-    ['b/user@example.com.cy.js', 'Review user@evil.example', 'b/user\u200b&#64;example.com.cy.js', 'user\u200b&#64;evil.example'],
-    ['@octocat/x.cy.js', 'Review @octocat', '\u200b&#64;octocat/x.cy.js', '\u200b&#64;octocat'],
+    ['b/user@example.com.cy.js', 'Review user@evil.example', 'b/user&#64;\u200bexample.com.cy.js', 'user&#64;\u200bevil.example'],
+    ['@octocat/x.cy.js', 'Review @octocat', '&#64;\u200boctocat/x.cy.js', '&#64;\u200boctocat'],
+    ['@org/team/x.cy.js', 'Review @org/team', '&#64;\u200borg/team/x.cy.js', '&#64;\u200borg/team'],
+    ['node_modules/@scope/pkg/x.cy.js', 'Review node_modules/@scope/pkg', 'node&#95;modules/&#64;\u200bscope/pkg/x.cy.js', 'node&#95;modules/&#64;\u200bscope/pkg'],
     ['#123.cy.js', 'Review #123', '&#35;\u200b123.cy.js', '&#35;\u200b123'],
     ['www.evil.example/p.cy.js', 'Review www.evil.example/p.cy.js', 'www&#46;evil.example/p.cy.js', 'www&#46;evil.example/p.cy.js'],
-    ['normal/path.cy.js', 'mailto:me@ex.com', 'normal/path.cy.js', 'mailto&#58;me\u200b&#64;ex.com'],
+    ['normal/path.cy.js', 'mailto:me@ex.com', 'normal/path.cy.js', 'mailto&#58;me&#64;\u200bex.com'],
   ]) {
     fs.mkdirSync(path.dirname(path.join(workspace, file)), { recursive: true });
     fs.writeFileSync(path.join(workspace, file), '');
