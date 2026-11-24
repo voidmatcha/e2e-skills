@@ -3,35 +3,6 @@
 // handlers remain candidates: their semantic adjudication belongs to review.
 import { sourceModel, unwrap, literalString, walk, ts } from './source.mjs';
 
-// A Cypress uncaught-exception callback suppresses only when it returns false.
-// This deliberately small proof accepts a single error-message allowlist gate;
-// any other callback shape remains a P0 review candidate.
-function namedExceptionAllowlist(callback) {
-  if (!ts.isArrowFunction(callback) && !ts.isFunctionExpression(callback)) return false;
-  if (!callback.parameters.length || !ts.isIdentifier(callback.parameters[0].name) || !ts.isBlock(callback.body)) return false;
-  const errorName = callback.parameters[0].name.text;
-  const statements = callback.body.statements;
-  if (statements.length !== 1 || !ts.isIfStatement(statements[0]) || statements[0].elseStatement) return false;
-  const gate = statements[0];
-  const allowedTerm = expression => {
-    expression = unwrap(expression);
-    if (ts.isBinaryExpression(expression) && expression.operatorToken.kind === ts.SyntaxKind.BarBarToken)
-      return allowedTerm(expression.left) && allowedTerm(expression.right);
-    if (!ts.isCallExpression(expression) || expression.arguments.length !== 1 ||
-        literalString(expression.arguments[0]) === null) return false;
-    const includes = unwrap(expression.expression);
-    if (!ts.isPropertyAccessExpression(includes) || includes.name.text !== 'includes') return false;
-    const property = unwrap(includes.expression);
-    return ts.isPropertyAccessExpression(property) && ['message', 'error'].includes(property.name.text) &&
-      ts.isIdentifier(unwrap(property.expression)) && unwrap(property.expression).text === errorName;
-  };
-  if (!allowedTerm(gate.expression)) return false;
-  const body = gate.thenStatement;
-  const returns = ts.isBlock(body) ? body.statements : [body];
-  return returns.length === 1 && ts.isReturnStatement(returns[0]) &&
-    returns[0].expression?.kind === ts.SyntaxKind.FalseKeyword;
-}
-
 export function controlFlow(bytes, filename, { scope } = {}) {
   const { source, diagnostics: parseErrors } = sourceModel(bytes, filename);
   const findings = [], diagnostics = [...parseErrors];
@@ -77,7 +48,7 @@ export function controlFlow(bytes, filename, { scope } = {}) {
       // known false positives explicitly; a dynamic name stays unresolved.
       if (event !== 'uncaught:exception') return;
       if (node.arguments.length < 2) { diagnostic(node, 'Cypress exception handler is missing'); return; }
-      record('#3b', namedExceptionAllowlist(node.arguments[1]) ? 'P1' : 'P0', node);
+      record('#3b', 'P0', node);
     } else if (['skip', 'fixme'].includes(method)) {
       if (testRoot(receiver) || (ts.isIdentifier(receiver) && receiver.text === 'suite' && cypressGlobal(receiver))) {
         record('#11c', 'P2', node);

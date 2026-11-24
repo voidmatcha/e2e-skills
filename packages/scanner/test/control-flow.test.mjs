@@ -29,22 +29,6 @@ test('#3b keeps blanket, scoped, asserting and referenced handlers as P0 candida
     [1, 2, 3, 4].map(line => ['#3b', 'P0', 'candidate', line]));
 });
 
-test('#3b retains a named exception allowlist as P1 and blanket or unknown suppression as P0', () => {
-  const result = run([
-    "Cypress.on('uncaught:exception', err => { if (err.message?.includes('known') || err.error?.includes('known')) return false; });",
-    "Cypress.on('uncaught:exception', err => { if (err.message?.includes('known')) return false; return false; });",
-    "Cypress.on('uncaught:exception', err => { if (err.message?.includes('known') || flag) return false; });",
-    "Cypress.on('uncaught:exception', err => { if (err.message?.includes('known')) return false; else return false; });",
-  ].join('\n'), 'support.ts');
-  assert.deepEqual(result.diagnostics, []);
-  assert.deepEqual(result.findings.map(f => [f.patternId, f.severity, f.disposition, f.line]), [
-    ['#3b', 'P1', 'candidate', 1],
-    ['#3b', 'P0', 'candidate', 2],
-    ['#3b', 'P0', 'candidate', 3],
-    ['#3b', 'P0', 'candidate', 4],
-  ]);
-});
-
 test('#11c retains reasoned and conditional skip candidates without semantic promotion', () => {
   const result = run("import {test} from '@playwright/test';\n" + [
     "test.skip('unexplained',async()=>{});",

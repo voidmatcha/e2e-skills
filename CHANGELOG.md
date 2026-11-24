@@ -5,7 +5,6 @@
 ### Scanner and reviewer
 
 - Group unresolved scan diagnostics by detector and reason in a capped text "Why incomplete" section and an additive JSON `incompleteSummary`. Counts, affected files and hints help locate unchecked code; hints do not imply safety. Findings, full diagnostics and exit codes are unchanged by this summary.
-- Narrow selected `#3`, `#3b` and `#5a` P0-candidate shapes to review-level candidates when source structure rules out a silently passing test. In a labeled development sample, P0-candidate precision moved from 8/64 (12.5%) to 8/44 (18.2%); in a separate three-suite sample, from 11/25 (44.0%) to 11/23 (47.8%). These modest, sample-specific gains do not establish general precision or complete coverage.
 - Recognize bounded Cypress positional-selector options and a new DOM-query boundary after `cy.wait(...)`. Two previously unresolved locations can now produce `#10a` review candidates; no new confirmed findings are claimed.
 
 ### GitHub Action
