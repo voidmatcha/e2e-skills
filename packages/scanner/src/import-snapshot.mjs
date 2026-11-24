@@ -9,6 +9,7 @@ import { readCandidate } from './read-candidate.mjs';
 import { revalidateProjectContext } from './project-context.mjs';
 import { createScope } from './scope.mjs';
 import { sourceModel, walk, ts } from './source.mjs';
+import { IMPORT_DIAGNOSTIC_CODES } from './diagnostic-codes.mjs';
 
 const EXTENSIONS = ['ts', 'tsx', 'js', 'jsx', 'mts', 'mjs', 'cts', 'cjs'];
 const BUILTINS = new Set(builtinModules);
@@ -47,7 +48,10 @@ export function prepareImportSnapshot({ manifest, sources } = {}) {
   let aliasPolicy, configCount = 0, configBytes = 0;
   const original = manifest ? structuredClone(manifest) : null;
   let expanded = original, root, rootIdentity, helperBytes = 0;
-  const add = (code, file, start) => diagnostics.push({ code, ...(file ? { file } : {}), ...(Number.isInteger(start) ? { start } : {}) });
+  const add = (code, file, start) => {
+    if (!IMPORT_DIAGNOSTIC_CODES.has(code)) throw new Error('undeclared import diagnostic');
+    diagnostics.push({ code, ...(file ? { file } : {}), ...(Number.isInteger(start) ? { start } : {}) });
+  };
   // Every component is checked with lstat, including absent resolution choices.
   // Directory identities exclude mtime: unrelated sibling edits are permitted.
   function observe(file) {

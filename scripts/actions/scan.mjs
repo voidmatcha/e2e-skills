@@ -363,7 +363,8 @@ export const SUMMARY_LIMIT = 50;
 // Encode Markdown punctuation and HTML before exposing table cells outside the
 // literal report block. Entities render as text without creating links or tags.
 const summaryCell = value => clean(value).replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t')
-  .replace(/[&<>\\|`\[\]*_~:@]/g, character => `&#${character.codePointAt(0)};`);
+  .replace(/[&<>\\|`\[\]*_~:@#]/g, character => `&#${character.codePointAt(0)};`)
+  .replace(/www\./gi, match => `${match.slice(0, -1)}&#46;`);
 
 export function groupedIncompleteSummary(report, settings, limit = SUMMARY_LIMIT) {
   // Older valid scanner reports still have the diagnostic records needed for

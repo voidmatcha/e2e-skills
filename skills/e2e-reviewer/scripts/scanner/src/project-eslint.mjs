@@ -9,15 +9,19 @@ import {createRequire} from 'node:module';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {MAPPED_ESLINT_RULES, effectiveRuleStates} from './eslint-rule-map.mjs';
+import {PROJECT_ESLINT_DIAGNOSTIC_CODES, PROJECT_ESLINT_WORKER_CODES} from './diagnostic-codes.mjs';
 
 const SELF = fileURLToPath(import.meta.url);
 const MAX_OUTPUT = 16 * 1024 * 1024;
 const RULES = new Map(MAPPED_ESLINT_RULES.map(({ruleId, patternId, severity}) => [ruleId, [patternId, severity]]));
 const ENV_KEYS = ['PATH', 'USER', 'LOGNAME', 'LANG', 'LC_ALL', 'SystemRoot'];
-const DIAGNOSTICS = new Set(['eslint-local-dependency-missing', 'eslint-local-dependency-invalid', 'eslint-version-unsupported', 'eslint-config-drift', 'eslint-config-unavailable', 'eslint-config-missing', 'eslint-nested-config-unsupported', 'eslint-api-unsupported', 'eslint-file-ignored', 'eslint-result-invalid', 'eslint-file-not-linted', 'eslint-rule-unmapped', 'eslint-execution-failed', 'eslint-worker-failed', 'eslint-effective-config-unavailable']);
+const DIAGNOSTICS = PROJECT_ESLINT_WORKER_CODES;
 const inside = (root, file) => file !== root && !path.relative(root, file).startsWith(`..${path.sep}`) && path.relative(root, file) !== '..' && !path.isAbsolute(path.relative(root, file));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
-const result = (code, extra = {}) => ({schema: 'node-project-eslint-v1', executed: false, complete: false, findings: [], diagnostics: [{code}], ...extra});
+const result = (code, extra = {}) => {
+  if (!PROJECT_ESLINT_DIAGNOSTIC_CODES.has(code)) throw new Error('undeclared project ESLint diagnostic');
+  return {schema: 'node-project-eslint-v1', executed: false, complete: false, findings: [], diagnostics: [{code}], ...extra};
+};
 
 function safeWorkerResult(value, files) {
   if (value?.schema !== 'node-project-eslint-v1' || typeof value.complete !== 'boolean' || typeof value.executed !== 'boolean' || !Array.isArray(value.findings) || !Array.isArray(value.diagnostics)) throw new Error();

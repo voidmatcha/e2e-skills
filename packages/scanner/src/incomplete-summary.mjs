@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // A deterministic view of unresolved diagnostics. It does not change their
 // disposition, the scanner exit policy, or the canonical diagnostic list.
+import { IMPORT_DIAGNOSTIC_CODES, PROJECT_ESLINT_DIAGNOSTIC_CODES } from './diagnostic-codes.mjs';
 
 const RECEIVER_HINTS = {
   promises: 'Use a direct framework Promise/chain or a source-visible, immutable helper return; verify that the awaited operation is observed.',
@@ -40,13 +41,13 @@ const GENERIC_HINT = 'No specific remediation is known for this reason; inspect 
 const PUBLIC_DETECTORS = new Set([...Object.keys(RECEIVER_HINTS), 'controlFlow', 'credentials',
   'importSnapshot', 'inventory', 'projectEslint', 'revalidate', 'suiteData',
   'cypressAssignment', 'cypressCallbacks', 'reviewCandidates', 'scope', 'readCandidate', 'analysis']);
-const PUBLIC_CODES = new Set([...Object.keys(CODE_HINTS), 'analysis-unknown', 'provenance-unsupported',
+const PUBLIC_CODES = new Set([...Object.keys(CODE_HINTS), ...IMPORT_DIAGNOSTIC_CODES,
+  ...PROJECT_ESLINT_DIAGNOSTIC_CODES, 'analysis-unknown', 'provenance-unsupported',
   'import-ambiguous', 'import-out-of-scope', 'inventory-unknown', 'unsupported-filename-encoding',
   'unsupported-entry', 'project-context-unavailable', 'unsupported-filename', 'fingerprint-unavailable',
   'project-context-drift', 'inventory-unavailable', 'invalid-baseline', 'root-drift', 'removed', 'added',
-  'identity-drift', 'unanalyzed-drift', 'aliased-drift', 'import-snapshot-drift', 'scope-incomplete',
-  'unsupported-whitespace', 'unterminated-lexical-context', 'eslint-effective-config-unavailable',
-  'eslint-file-ignored', 'eslint-file-not-linted', 'eslint-rule-unmapped', 'eslint-scope-incomplete',
+  'identity-drift', 'unanalyzed-drift', 'aliased-drift', 'scope-incomplete',
+  'unsupported-whitespace', 'unterminated-lexical-context',
   'candidate-unavailable']);
 
 export function publicCause(detector, code) {
@@ -54,7 +55,9 @@ export function publicCause(detector, code) {
     detector: PUBLIC_DETECTORS.has(detector) ? detector : 'unrecognized-detector',
     code: PUBLIC_CODES.has(code) ? code : 'unrecognized-reason',
     showFiles: PUBLIC_DETECTORS.has(detector) &&
-      (Object.hasOwn(CODE_HINTS, code) || code === 'analysis-unknown' || code === 'provenance-unsupported'),
+      (Object.hasOwn(CODE_HINTS, code) || code === 'analysis-unknown' || code === 'provenance-unsupported' ||
+        detector === 'importSnapshot' && IMPORT_DIAGNOSTIC_CODES.has(code) ||
+        detector === 'projectEslint' && PROJECT_ESLINT_DIAGNOSTIC_CODES.has(code)),
   };
 }
 

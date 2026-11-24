@@ -171,7 +171,7 @@ test('grouped summary hides untrusted cause labels and keeps paths and hints in 
   const summary = renderJobSummary(report, settings);
   assert.match(summary, /promises \/ provenance-unsupported/);
   assert.ok(summary.includes('&#96;&#96;&#96;&#92;n&#58;&#58;error&#58;&#58;forged&#92;n&#60;img&#62;&#124;&#91;link&#93;(bad).spec.ts (1)'));
-  assert.ok(summary.includes('&#96;&#96;&#96;&#92;n# heading&#92;n&#60;script&#62;bad&#60;/script&#62;&#124;extra'));
+  assert.ok(summary.includes('&#96;&#96;&#96;&#92;n&#35; heading&#92;n&#60;script&#62;bad&#60;/script&#62;&#124;extra'));
   assert.ok(!summary.includes(workspace + path.sep));
   assert.match(summary, /^Detector \/ reason \| Count \| Top files \(count\) \| What to change$/m);
   assert.match(summary, /^--- \| ---: \| --- \| ---$/m);
@@ -697,4 +697,31 @@ test('Markdown table cells cannot create links, images, HTML, table columns or e
   assert.ok(row.includes('&#124;'));
   assert.ok(row.includes('&#92;n&#58;&#58;error&#58;&#58;forged'));
   assert.doesNotMatch(summary, /^::error::/m);
+});
+
+test('Markdown table paths cannot autolink bare domains or issue references', t => {
+  const { workspace, env } = fixture(t);
+  fs.mkdirSync(path.join(workspace, 'www.evil.example'));
+  fs.writeFileSync(path.join(workspace, 'www.evil.example', '#123.cy.js'), '');
+  const report = { findings: [], execution: { complete: false, incomplete: ['raw'], exitCode: 2 },
+    incompleteSummary: { total: 1, groups: [{ detector: 'promises', code: 'shape-unsupported', count: 1,
+      topFiles: [{ file: path.join(workspace, 'www.evil.example', '#123.cy.js'), count: 1 }],
+      hint: 'Review www.evil.example/#123 manually.' }] } };
+  const row = renderJobSummary(report, inputs(env)).split('\n').find(line => line.startsWith('promises /'));
+  assert.ok(row.includes('www&#46;evil.example/&#35;123.cy.js'));
+  assert.ok(row.includes('www&#46;evil.example/&#35;123'));
+  assert.doesNotMatch(row, /www\.|#123|\[|<a\b/i);
+  assert.equal(row.split(' | ').length, 4);
+});
+
+test('scanner-owned import causes retain their file path in the Action table', t => {
+  const { workspace, env } = fixture(t);
+  const file = path.join(workspace, 'helper.ts');
+  fs.writeFileSync(file, '');
+  const report = { findings: [], execution: { complete: false, incomplete: ['raw'], exitCode: 2 },
+    incompleteSummary: { total: 1, groups: [{ detector: 'importSnapshot', code: 'import-parse-invalid', count: 1,
+      topFiles: [{ file, count: 1 }], hint: 'Inspect the imported helper.' }] } };
+  const summary = renderJobSummary(report, inputs(env));
+  assert.match(summary, /^importSnapshot \/ import-parse-invalid \| 1 \| helper\.ts \(1\) \|/m);
+  assert.doesNotMatch(summary, /unrecognized-reason|file paths withheld/);
 });

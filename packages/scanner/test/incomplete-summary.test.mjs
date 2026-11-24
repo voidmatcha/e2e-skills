@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import { incompleteSummary, publicCause } from '../src/incomplete-summary.mjs';
 import { formatLegacyReport } from '../src/compat-report.mjs';
 import { summarize } from '../src/report.mjs';
+import fs from 'node:fs';
+import { IMPORT_DIAGNOSTIC_CODES, PROJECT_ESLINT_DIAGNOSTIC_CODES, PROJECT_ESLINT_WORKER_CODES } from '../src/diagnostic-codes.mjs';
 
 test('groups every unresolved location deterministically and caps top files', () => {
   const diagnostics = [
@@ -62,6 +64,39 @@ test('all analyzer-owned cause labels stay public while unknown and inventory pa
     { detector: 'unrecognized-detector', code: 'shape-unsupported', showFiles: false });
   assert.deepEqual(publicCause('inventory', 'inventory-unavailable'),
     { detector: 'inventory', code: 'inventory-unavailable', showFiles: false });
+});
+
+test('scanner diagnostic emitters expose every reportable literal code', () => {
+  const source = name => fs.readFileSync(new URL(`../src/${name}.mjs`, import.meta.url), 'utf8');
+  const emitted = (text, pattern) => [...text.matchAll(pattern)].map(match => match[1]);
+  const importSource = source('import-snapshot');
+  const importCodes = new Set([
+    ...emitted(importSource, /'(import-[a-z-]+)'/g),
+  ]);
+  assert.deepEqual([...importCodes].sort(), [...IMPORT_DIAGNOSTIC_CODES].sort());
+  const eslintSource = source('project-eslint');
+  const eslintCodes = new Set([
+    ...emitted(eslintSource, /\bresult\('([^']+)'/g),
+    ...emitted(eslintSource, /\bstop\('([^']+)'/g),
+    ...emitted(eslintSource, /\bcode:\s*'([^']+)'/g),
+    ...emitted(eslintSource, /\b(?:error|failure):\s*'([^']+)'/g),
+    ...emitted(source('cli'), /\bcode:\s*'(eslint-[^']+)'/g),
+  ]);
+  // The declared set also covers the worker's validated diagnostic strings.
+  for (const code of eslintCodes) assert.ok(PROJECT_ESLINT_DIAGNOSTIC_CODES.has(code), code);
+  for (const code of [...IMPORT_DIAGNOSTIC_CODES, ...PROJECT_ESLINT_DIAGNOSTIC_CODES]) {
+    assert.equal(publicCause('importSnapshot', code).code, code);
+  }
+  assert.equal(PROJECT_ESLINT_WORKER_CODES.has('project-eslint-not-enabled'), false);
+  // JUSTIFIED's internal invalid-finding-context becomes analysis-unknown in
+  // analysisDiagnostic, so that implementation-only code is deliberately private.
+  assert.equal(publicCause('analysis', 'invalid-finding-context').code, 'unrecognized-reason');
+  assert.equal(publicCause('inventory', 'inventory-unknown').code, 'inventory-unknown');
+  assert.equal(publicCause('projectEslint', 'eslint-scope-incomplete').code, 'eslint-scope-incomplete');
+  assert.deepEqual(publicCause('importSnapshot', 'import-parse-invalid'),
+    { detector: 'importSnapshot', code: 'import-parse-invalid', showFiles: true });
+  assert.deepEqual(publicCause('projectEslint', 'eslint-file-not-linted'),
+    { detector: 'projectEslint', code: 'eslint-file-not-linted', showFiles: true });
 });
 
 test('known Cypress unresolved assignment retains its detector and file in canonical text', () => {
