@@ -62,6 +62,31 @@ test('a retained candidate never hides a parser failure under any policy', t => 
   assert.doesNotMatch(text.stdout, /^Summary:/m);
 });
 
+test('bounded Cypress positional options can complete a scan under p0 and any policies', t => {
+  const root = fixture(t);
+  const file = path.join(root, 'case.cy.js');
+  fs.writeFileSync(file, "it('x', () => { cy.get('.row').first({ timeout: 10000 }).should('be.visible'); });\n");
+  for (const policy of ['p0', 'any']) {
+    const result = run(root, '--fail-on', policy);
+    assert.equal(result.status, 0, result.stderr + result.stdout);
+    const report = JSON.parse(result.stdout);
+    assert.equal(report.status, 'COMPLETE');
+    assert.equal(report.execution.complete, true);
+    assert.deepEqual(report.execution.diagnostics, []);
+    assert.deepEqual(report.findings.map(hit => hit.patternId), ['#10a']);
+  }
+
+  fs.writeFileSync(file, "it('x', () => { cy.get('.row').first({ timeout: runtimeTimeout }).should('be.visible'); });\n");
+  for (const policy of ['p0', 'any']) {
+    const result = run(root, '--fail-on', policy);
+    assert.equal(result.status, 2, result.stderr + result.stdout);
+    const report = JSON.parse(result.stdout);
+    assert.equal(report.status, 'INCOMPLETE');
+    assert.ok(report.execution.diagnostics.some(item => item.detector === 'domQueries'));
+    assert.ok(!report.findings.some(hit => hit.patternId === '#10a'));
+  }
+});
+
 test('file scope pins sibling fixture imports without scanning helper tests or executing config', t => {
   const root = fixture(t), tests = path.join(root, 'tests'), fixtures = path.join(root, 'fixtures');
   fs.mkdirSync(tests); fs.mkdirSync(fixtures);

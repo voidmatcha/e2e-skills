@@ -50,3 +50,32 @@ test('text summary follows findings, counts hidden groups, and stays below 40 li
   assert.match(section, /remains unchecked/);
   assert.ok(text.indexOf('Why incomplete:') > text.indexOf('Project ESLint effective rule states:'));
 });
+
+test('all analyzer-owned cause labels stay public while unknown and inventory paths stay withheld', () => {
+  for (const detector of ['cypressAssignment', 'cypressCallbacks', 'reviewCandidates', 'scope', 'readCandidate', 'analysis']) {
+    assert.deepEqual(publicCause(detector, 'shape-unsupported'),
+      { detector, code: 'shape-unsupported', showFiles: true });
+    assert.deepEqual(publicCause(detector, 'candidate-unavailable'),
+      { detector, code: 'candidate-unavailable', showFiles: false });
+  }
+  assert.deepEqual(publicCause('injected|detector', 'shape-unsupported'),
+    { detector: 'unrecognized-detector', code: 'shape-unsupported', showFiles: false });
+  assert.deepEqual(publicCause('inventory', 'inventory-unavailable'),
+    { detector: 'inventory', code: 'inventory-unavailable', showFiles: false });
+});
+
+test('known Cypress unresolved assignment retains its detector and file in canonical text', () => {
+  const diagnostics = [{ detector: 'cypressAssignment', code: 'shape-unsupported', file: '/root/fixture.cy.js', line: 1 }];
+  const incomplete = ['analysis incomplete: assignment shape'];
+  const summary = summarize([], { incomplete, diagnostics });
+  const report = {
+    schema: 'e2e-skills-node-scan-v1', status: 'INCOMPLETE', compatibility: { contract: 'source-review-v1', status: 'development' },
+    review: { required: false, candidates: 0, obligations: [], analysisTasks: [] },
+    execution: { complete: false, incomplete, diagnostics, exitCode: summary.exitCode },
+    coverage: { complete: false }, failOn: 'p0', counts: summary.counts, findings: [],
+  };
+  const text = formatLegacyReport(report, { root: '/root' }).text;
+  assert.match(text, /cypressAssignment\/shape-unsupported: 1/);
+  assert.match(text, /fixture\.cy\.js.*: 1/);
+  assert.doesNotMatch(text, /unrecognized-detector|File paths withheld/);
+});

@@ -5,7 +5,7 @@
 ### Scanner and reviewer
 
 - Group unresolved scan diagnostics by detector and reason in a capped text "Why incomplete" section and an additive JSON `incompleteSummary`. Counts, affected files and hints help locate unchecked code; hints do not imply safety. Findings, full diagnostics and exit codes are unchanged by this summary.
-- Recognize bounded Cypress positional-selector options and a new DOM-query boundary after `cy.wait(...)`. Two previously unresolved locations can now produce `#10a` review candidates; no new confirmed findings are claimed.
+- Recognize bounded Cypress positional-selector options and a new DOM query after a literal numeric `cy.wait(...)`; alias waits retain their existing subject. These two previously unresolved call shapes can now produce `#10a` review candidates at any number of locations; no new confirmed findings are claimed. Scans incomplete only because of these shapes may now be COMPLETE and exit 0 under the same finding policy.
 
 ### GitHub Action
 

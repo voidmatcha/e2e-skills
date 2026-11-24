@@ -38,14 +38,16 @@ const GENERIC_HINT = 'No specific remediation is known for this reason; inspect 
 // Action summaries only echo analyzer-owned labels: a supplied diagnostic can
 // carry arbitrary strings, which the existing text report never printed.
 const PUBLIC_DETECTORS = new Set([...Object.keys(RECEIVER_HINTS), 'controlFlow', 'credentials',
-  'importSnapshot', 'inventory', 'projectEslint', 'revalidate', 'suiteData']);
+  'importSnapshot', 'inventory', 'projectEslint', 'revalidate', 'suiteData',
+  'cypressAssignment', 'cypressCallbacks', 'reviewCandidates', 'scope', 'readCandidate', 'analysis']);
 const PUBLIC_CODES = new Set([...Object.keys(CODE_HINTS), 'analysis-unknown', 'provenance-unsupported',
   'import-ambiguous', 'import-out-of-scope', 'inventory-unknown', 'unsupported-filename-encoding',
   'unsupported-entry', 'project-context-unavailable', 'unsupported-filename', 'fingerprint-unavailable',
   'project-context-drift', 'inventory-unavailable', 'invalid-baseline', 'root-drift', 'removed', 'added',
   'identity-drift', 'unanalyzed-drift', 'aliased-drift', 'import-snapshot-drift', 'scope-incomplete',
   'unsupported-whitespace', 'unterminated-lexical-context', 'eslint-effective-config-unavailable',
-  'eslint-file-ignored', 'eslint-file-not-linted', 'eslint-rule-unmapped', 'eslint-scope-incomplete']);
+  'eslint-file-ignored', 'eslint-file-not-linted', 'eslint-rule-unmapped', 'eslint-scope-incomplete',
+  'candidate-unavailable']);
 
 export function publicCause(detector, code) {
   return {

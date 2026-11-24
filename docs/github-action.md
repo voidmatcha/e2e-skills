@@ -75,7 +75,7 @@ When unresolved diagnostics exist, the job summary says that code was not checke
 
 ## Execution boundary
 
-The Action invokes `npx --yes --ignore-scripts --package=@voidmatcha/e2e-skills-scanner@3.8.0` from a fresh directory outside the checkout. The Action pins the 3.8.0 release package; it does not build or run scanner sources from the checkout.
+The Action invokes `npx --yes --ignore-scripts --package=@voidmatcha/e2e-skills-scanner@3.8.0` from a fresh directory outside the checkout. It pins the 3.8.0 release package for scanning. Its job-summary formatter imports `packages/scanner/src/incomplete-summary.mjs` from the Action checkout to display the scanner report's incomplete causes; that formatter does not scan project source.
 
 The scanner receives a clean environment, empty user/global npm configuration and a fresh npm cache. Package retrieval uses `https://registry.npmjs.org`; the Action does not contact model services or call GitHub APIs. npm lifecycle scripts are disabled. The checkout's `.npmrc`, local binaries, ESLint configuration and test configuration are not executed. Configuration files may be read statically. The Action never passes the scanner's `--project-eslint` or `--trust-project` execution flags. On self-hosted runners, npm retrieval needs direct HTTPS access to the registry: ambient proxy variables are not forwarded to the isolated scanner/npm process. This is not an OS network sandbox; ordinary runner and npm trust still apply.
 

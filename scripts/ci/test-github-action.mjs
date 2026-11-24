@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { annotations, changedFiles, compareFiles, groupedIncompleteSummary, inputs, invocation, main, newFindings, PACKAGE, renderJobSummary, SUMMARY_LIMIT } from '../actions/scan.mjs';
+import { incompleteSummary } from '../../packages/scanner/src/incomplete-summary.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -169,10 +170,12 @@ test('grouped summary hides untrusted cause labels and keeps paths and hints in 
       hint: '```\n# heading\n<script>bad</script>|extra', specificHint: false }] } };
   const summary = renderJobSummary(report, settings);
   assert.match(summary, /promises \/ provenance-unsupported/);
-  assert.ok(summary.includes('```\\n::error::forged\\n<img>\\|[link](bad).spec.ts (1)'));
-  assert.ok(summary.includes('```\\n# heading\\n<script>bad</script>\\|extra'));
+  assert.ok(summary.includes('&#96;&#96;&#96;&#92;n&#58;&#58;error&#58;&#58;forged&#92;n&#60;img&#62;&#124;&#91;link&#93;(bad).spec.ts (1)'));
+  assert.ok(summary.includes('&#96;&#96;&#96;&#92;n# heading&#92;n&#60;script&#62;bad&#60;/script&#62;&#124;extra'));
   assert.ok(!summary.includes(workspace + path.sep));
-  for (const line of summary.split('\n').slice(2).filter(Boolean)) assert.ok(line.startsWith('    '));
+  assert.match(summary, /^Detector \/ reason \| Count \| Top files \(count\) \| What to change$/m);
+  assert.match(summary, /^--- \| ---: \| --- \| ---$/m);
+  assert.doesNotMatch(summary, /<img>|<script>|\[link\]\(bad\)/);
   assert.ok(!summary.includes('\n::error::'));
   assert.ok(!summary.includes('\n# heading'));
   report.incompleteSummary.groups[0].detector = 'promises|injected';
@@ -206,6 +209,9 @@ test('pinned scanner diagnostics produce grouped job output without changing ful
   for (const diagnostic of report.execution.incomplete) assert.ok(full.includes(diagnostic));
   assert.deepEqual(JSON.parse(fs.readFileSync(outputs['json-report'], 'utf8')), report);
   assert.equal(Object.hasOwn(report, 'incompleteSummary'), false);
+  assert.deepEqual(groupedIncompleteSummary(report, inputs(env)), groupedIncompleteSummary(
+    { ...report, incompleteSummary: incompleteSummary(report.execution.diagnostics) }, inputs(env)),
+  'legacy pinned npm JSON uses the checkout summary implementation without changing the report');
   report.incompleteSummary = { total: 3, groups: [] };
   assert.equal(groupedIncompleteSummary(report, inputs(env)), null);
   assert.match(renderJobSummary(report, inputs(env)), /legacy raw diagnostic one/);
@@ -219,6 +225,12 @@ test('grouped summary has no section for zero unresolved diagnostics and rejects
   assert.deepEqual(groupedIncompleteSummary(report, settings), []);
   assert.doesNotMatch(renderJobSummary(report, settings), /INCOMPLETE:|Total unresolved|Detector \/ reason/);
   report.execution = { complete: false, incomplete: ['original unresolved diagnostic'], exitCode: 0 };
+  assert.equal(groupedIncompleteSummary(report, settings), null);
+  assert.match(renderJobSummary(report, settings), /INCOMPLETE: some code was not analysed/);
+  assert.match(renderJobSummary(report, settings), /original unresolved diagnostic/);
+  report.execution.incomplete = [];
+  assert.match(renderJobSummary(report, settings), /INCOMPLETE: some code was not analysed/);
+  report.execution.incomplete = ['original unresolved diagnostic'];
   report.incompleteSummary = { total: 7, groups: [
     { detector: 'promises', code: 'one', count: 2, topFiles: [], hint: 'Not checked.' },
     { detector: 'waits', code: 'two', count: 5, topFiles: [], hint: 'Not checked.' },
@@ -656,4 +668,33 @@ test('real bundled scanner: P0 failure, clean pass, unresolved opt-in and read-o
   assert.equal(main(env, scan), 0);
   assert.equal(fs.readFileSync(spec, 'utf8'), before);
   assert.equal(fs.existsSync(path.join(workspace, 'node_modules')), false);
+});
+
+test('known Cypress diagnostics produce a real Markdown table and preserve file paths', t => {
+  const { workspace, env } = fixture(t);
+  const report = { findings: [], execution: { complete: false, incomplete: ['raw'], exitCode: 2 },
+    incompleteSummary: { total: 1, groups: [{ detector: 'cypressAssignment', code: 'shape-unsupported', count: 1,
+      topFiles: [{ file: path.join(workspace, 'fixture.cy.js'), count: 1 }], hint: 'Inspect the original call.' }] } };
+  const summary = renderJobSummary(report, inputs(env));
+  assert.match(summary, /^Detector \/ reason \| Count \| Top files \(count\) \| What to change$/m);
+  assert.match(summary, /^cypressAssignment \/ shape-unsupported \| 1 \| fixture\.cy\.js \(1\) \| Inspect the original call\.$/m);
+  assert.match(summary, /^    Scanner:/m);
+  assert.doesNotMatch(summary, /unrecognized-detector|file paths withheld/);
+});
+
+test('Markdown table cells cannot create links, images, HTML, table columns or extra rows', t => {
+  const { workspace, env } = fixture(t);
+  const hostile = '&lt;script&gt;![image](https://bad.invalid) **bold** _italic_ ~strike~ `code` | cell\\\n::error::forged';
+  const report = { findings: [], execution: { complete: false, incomplete: ['raw'], exitCode: 2 },
+    incompleteSummary: { total: 1, groups: [{ detector: 'promises', code: 'shape-unsupported', count: 1,
+      topFiles: [{ file: path.join(workspace, hostile + '.spec.ts'), count: 1 }], hint: hostile }] } };
+  const summary = renderJobSummary(report, inputs(env));
+  const row = summary.split('\n').find(line => line.startsWith('promises /'));
+  assert.equal(row.split(' | ').length, 4);
+  for (const syntax of ['&lt;', '![image]', '**bold**', '_italic_', '~strike~', '`code`', '| cell', 'https://'])
+    assert.ok(!row.includes(syntax), syntax);
+  assert.ok(row.includes('&#38;lt;script&#38;gt;'));
+  assert.ok(row.includes('&#124;'));
+  assert.ok(row.includes('&#92;n&#58;&#58;error&#58;&#58;forged'));
+  assert.doesNotMatch(summary, /^::error::/m);
 });

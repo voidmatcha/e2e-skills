@@ -360,10 +360,10 @@ export function annotations(hits, root, changed, limit = ANNOTATION_LIMIT, compa
 
 export const SUMMARY_LIMIT = 50;
 
-// Keep table cells on one line. The job summary wraps this text in an indented
-// literal block, so repository paths cannot become Markdown or workflow commands.
-const summaryCell = value => clean(value).replace(/\\/g, '\\\\').replace(/\|/g, '\\|')
-  .replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t');
+// Encode Markdown punctuation and HTML before exposing table cells outside the
+// literal report block. Entities render as text without creating links or tags.
+const summaryCell = value => clean(value).replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t')
+  .replace(/[&<>\\|`\[\]*_~:@]/g, character => `&#${character.codePointAt(0)};`);
 
 export function groupedIncompleteSummary(report, settings, limit = SUMMARY_LIMIT) {
   // Older valid scanner reports still have the diagnostic records needed for
@@ -383,7 +383,7 @@ export function groupedIncompleteSummary(report, settings, limit = SUMMARY_LIMIT
   }
   // An inconsistent additive summary must never hide the original diagnostics.
   if (!Number.isSafeInteger(total) || total !== summary.total) return null;
-  if (!total) return [];
+  if (!total) return report.execution?.complete === false ? null : [];
   const shown = summary.groups.slice(0, limit);
   const lines = ['INCOMPLETE: unresolved code was not checked.',
     `Total unresolved diagnostics: ${total}`,
@@ -455,7 +455,18 @@ export function renderJobSummary(report, settings, changed = null, comparison = 
   const text = render(report, settings, changed, SUMMARY_LIMIT, comparison, actionExit);
   const budget = 500_000;
   const clipped = text.length > budget ? text.slice(0, budget) + '\n[Summary truncated; full report is in the report output.]\n' : text;
-  return '## E2E Skills static scan\n\n' + clipped.split('\n').map(line => '    ' + line).join('\n') + '\n';
+  let body = clipped.split('\n').map(line => '    ' + line).join('\n');
+  if (!report.execution.complete) {
+    const grouped = groupedIncompleteSummary(report, settings, SUMMARY_LIMIT);
+    if (grouped?.length) {
+      // Only this validated, escaped table leaves the literal block. All other
+      // report lines can include repository-controlled paths or diagnostics.
+      const table = grouped.slice(2, grouped.at(-1).startsWith('... ') ? -1 : undefined);
+      const literal = table.map(line => '    ' + line).join('\n');
+      body = body.replace(literal, () => '\n' + table.join('\n') + '\n');
+    }
+  }
+  return '## E2E Skills static scan\n\n' + body + '\n';
 }
 
 export function main(env = process.env, execute = spawnSync) {

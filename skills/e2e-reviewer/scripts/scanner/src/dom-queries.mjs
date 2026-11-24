@@ -80,9 +80,10 @@ export function domQueries(bytes, filename, { scope } = {}) {
         !ts.isPropertyAccessExpression(unwrap(call.expression)) || call.arguments.some(ts.isSpreadElement))) {
       diagnostic(node, 'optional, computed or spread Cypress subject is outside this slice'); return 'unsupported';
     }
-    // `get` starts a fresh DOM query after `cy.wait(...)`; its subject does
-    // not come from the wait result. Other prior producers remain unresolved.
+    // Only a literal numeric wait proves a delay rather than an alias subject.
+    // Alias and dynamic waits remain unresolved before a subsequent query.
     const subjectCalls = calls.length > 1 && calls[0].access.name === 'wait' &&
+      calls[0].node.arguments.length > 0 && ts.isNumericLiteral(unwrap(calls[0].node.arguments[0])) &&
       CY_ROOTS.has(calls[1].access.name) ? calls.slice(1) : calls;
     if (subjectCalls.some(({ access: item }) => CY_UNPROVEN_ORIGINS.has(item.name))) {
       diagnostic(node, 'Cypress subject producer is outside the bounded DOM chain'); return 'unsupported';
