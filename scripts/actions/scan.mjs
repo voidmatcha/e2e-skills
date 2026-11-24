@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { performance } from 'node:perf_hooks';
 import { incompleteSummary, publicCause } from '../../packages/scanner/src/incomplete-summary.mjs';
 
-export const PACKAGE = '@voidmatcha/e2e-skills-scanner@3.7.0';
+export const PACKAGE = '@voidmatcha/e2e-skills-scanner@3.8.0';
 const inside = (root, target) => target === root || target.startsWith(root + path.sep);
 const clean = value => String(value).replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '?');
 
@@ -366,8 +366,8 @@ const summaryCell = value => clean(value).replace(/\\/g, '\\\\').replace(/\|/g, 
   .replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t');
 
 export function groupedIncompleteSummary(report, settings, limit = SUMMARY_LIMIT) {
-  // The pinned scanner predates the additive summary, but already returns the
-  // same diagnostic records. Reuse the scanner's pure grouping and hint policy.
+  // Older valid scanner reports still have the diagnostic records needed for
+  // this display. Keep the fallback when the additive summary is absent.
   const summary = Object.hasOwn(report, 'incompleteSummary') ? report.incompleteSummary :
     Array.isArray(report.execution?.diagnostics) && report.execution.diagnostics.length
       ? incompleteSummary(report.execution.diagnostics) : null;

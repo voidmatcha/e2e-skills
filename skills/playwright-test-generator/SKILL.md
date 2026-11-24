@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright
   testing-types: e2e
   languages: typescript,javascript
-  version: "3.7.0"
+  version: "3.8.0"
 ---
 
 Never use the healer or weaken required checks.

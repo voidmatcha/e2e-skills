@@ -71,9 +71,11 @@ Scanner execution failures (including scanner exit 2), unavailable commits, abse
 
 The coverage line reports scanner inventory files, file paths with unresolved diagnostics, unresolved locations, and out-of-scope files. The scanner does not expose a per-file completed count: diagnostic paths can be outside the inventoried test set, so subtracting those counts would be misleading. `Execution complete: false` remains visible even when `allow-incomplete: 'true'` permits exit 0.
 
+When unresolved diagnostics exist, the job summary says that code was not checked and groups the causes by detector and reason. It shows each group's count, up to three affected files for recognized analysis causes, and a remediation hint; excess groups are counted in an omitted-groups row. Unknown labels and file paths for unknown or inventory causes are withheld from the job summary. The full JSON report retains `execution.diagnostics` and adds `incompleteSummary` with `total` and all groups, including each group's `detector`, `code`, `count`, `topFiles`, `hint` and `specificHint`. Group counts sum to `total`. This summary does not change findings or exit codes.
+
 ## Execution boundary
 
-The Action invokes `npx --yes --ignore-scripts --package=@voidmatcha/e2e-skills-scanner@3.7.0` from a fresh directory outside the checkout. The Action pins the 3.7.0 release package; it does not build or run scanner sources from the checkout.
+The Action invokes `npx --yes --ignore-scripts --package=@voidmatcha/e2e-skills-scanner@3.8.0` from a fresh directory outside the checkout. The Action pins the 3.8.0 release package; it does not build or run scanner sources from the checkout.
 
 The scanner receives a clean environment, empty user/global npm configuration and a fresh npm cache. Package retrieval uses `https://registry.npmjs.org`; the Action does not contact model services or call GitHub APIs. npm lifecycle scripts are disabled. The checkout's `.npmrc`, local binaries, ESLint configuration and test configuration are not executed. Configuration files may be read statically. The Action never passes the scanner's `--project-eslint` or `--trust-project` execution flags. On self-hosted runners, npm retrieval needs direct HTTPS access to the registry: ambient proxy variables are not forwarded to the isolated scanner/npm process. This is not an OS network sandbox; ordinary runner and npm trust still apply.
 

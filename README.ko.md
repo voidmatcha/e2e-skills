@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=a8d123ceddea92fa8d622d50f1f724a1dc28b56d6f8911709995bba73da1747e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=d75286aed92d41bb0f80cf58885c60c249f596a4cc424fda547efda6d212603f; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -108,7 +108,7 @@ test('shows the welcome message', async ({ page }) => {
 함께 제공되는 scanner는 별도 설정 없이, 실제 결과를 확인하지 않고도 통과하는 테스트 코드를 찾아냅니다. 아래는 텍스트 보고서입니다(`--format text`를 빼면 같은 결과를 JSON으로 출력합니다).
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan tests/ --format text
 Node source scan (canonical report view)
 Status: COMPLETE; confirmed P0: 2, P0 candidates: 0, unresolved locations: 0.
 Next:
@@ -162,7 +162,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 [메모 본문](docs/test-authoring-memo.md#the-memo)을 프로젝트의 `AGENTS.md`(Codex)나 `CLAUDE.md`(Claude Code)에 복사하되 기존 지침은 유지해주세요. 프로젝트 디렉터리에서 CLI로 넣을 수도 있습니다(Node.js 22+ 필요). `CLAUDE.md`에 넣으려면 `--host claude`를, 미리 보려면 `--dry-run`을 쓰세요. 이 명령은 skill 설치 없이 메모만 넣습니다:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project . --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills guidance --host codex --project . --memo
 ```
 
 ### 2. skill 설치하기
@@ -180,7 +180,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 일반적인 테스트 디렉터리라면 정적 검사에 약 30초가 걸립니다(Node.js 22+ 필요):
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
 ```
 
 종료 코드 0을 깨끗한 결과로 받아들이기 전에 [scanner 결과와 CI 옵션](#독립-실행-scanner)을 확인해주세요.
@@ -236,7 +236,7 @@ codex plugin add e2e-skills@voidmatcha
 skill이 보이지 않거나 생성이 계속 준비되지 않으면 설치된 skill, 공식 agent와 MCP 설정을 확인하는 읽기 전용 진단을 실행해주세요.
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills doctor --host claude --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills doctor --host claude --project /path/to/playwright-project
 ```
 
 Codex에서는 `--host codex`를 사용해주세요. 사전 요구 사항, 프로젝트 설정까지 준비하는 installer, 수동 설정은 [설치 가이드](docs/installation.md)를 참고해주세요.
@@ -390,12 +390,14 @@ assertion mutation과 앱 fault probe는 저장소를 신뢰하고 환경 변수
 skill을 설치하지 않고 로컬이나 CI에서 scanner를 실행할 수 있습니다(Node.js 22+ 필요).
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan path/to/tests --format text
 ```
 
 reviewer에도 같은 scanner가 포함되어 있습니다. 후보를 보고하며, 테스트를 실행하거나 의도한 동작을 검증하는지 판단하지는 않습니다. TypeScript 파서는 함께 제공됩니다. 기본 설정에서 번들 scanner는 tool을 내려받거나 프로젝트 설정을 불러오지 않습니다.
 
 `INCOMPLETE`는 일부 코드를 분석하지 못했다는 뜻이며, 테스트가 실패했다는 뜻은 아닙니다. 기본 종료 코드는 2입니다. `--allow-incomplete`를 사용해도 종료 코드 0이 깨끗한 결과를 입증하지는 않습니다. 남은 후보는 Phase 2에서 리뷰해야 하며, `P0=0`만으로 검사가 끝나지 않습니다. JSON 보고서는 `--format json`, 비공개 텍스트 보고서는 `--report-file <new-file>`을 사용하세요.
+
+분석이 완료되지 않으면 텍스트 출력의 **Why incomplete**에서 미해결 원인을 건수, 관련 파일, 확인할 항목과 함께 묶어 보여줍니다. JSON은 전체 `execution.diagnostics`를 유지하고 `incompleteSummary`(`total`, `groups`)를 추가합니다. 이 안내는 확인할 코드를 가리킬 뿐, 해당 코드를 검사했다는 뜻은 아닙니다. Action 작업 요약에도 같은 원인이 표시되며 표시 건수에는 상한이 있습니다.
 
 `--project-eslint --trust-project`로 프로젝트 ESLint를 실행하려면 체크아웃에 대한 명시적 신뢰와 정확한 명령에 대한 승인이 필요합니다. `--fail-on p0-candidate`, `--allow-incomplete`, `--trust-module`, 종료 코드, 검사 범위의 한계와 설치 문제 해결은 [scanner 가이드](docs/scanner-cli.md)를, 실행 허용 범위는 [SECURITY.md](SECURITY.md)를 참고해주세요.
 

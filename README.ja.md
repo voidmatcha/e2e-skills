@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=a8d123ceddea92fa8d622d50f1f724a1dc28b56d6f8911709995bba73da1747e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=d75286aed92d41bb0f80cf58885c60c249f596a4cc424fda547efda6d212603f; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
@@ -108,7 +108,7 @@ test('shows the welcome message', async ({ page }) => {
 同梱スキャナーは、プロジェクト設定なしで false-green assertion を検出します。以下はテキストレポートです（`--format text` を付けない場合、同じ結果を JSON で出力します）。
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan tests/ --format text
 Node source scan (canonical report view)
 Status: COMPLETE; confirmed P0: 2, P0 candidates: 0, unresolved locations: 0.
 Next:
@@ -164,7 +164,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 [メモの本文](docs/test-authoring-memo.md#the-memo)をプロジェクトの `AGENTS.md`（Codex）または `CLAUDE.md`（Claude Code）へコピーします。既存の指示は残してください。プロジェクトのディレクトリから CLI で追加することもできます（Node.js 22+ が必要）。`CLAUDE.md` には `--host claude`、プレビューには `--dry-run` を使います。このコマンドは skill をインストールせず、メモだけを書き込みます：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project . --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills guidance --host codex --project . --memo
 ```
 
 ### 2. skill をインストールする
@@ -182,7 +182,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 一般的なテストディレクトリなら、静的スキャンは約 30 秒で終わります（Node.js 22+ が必要）：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
 ```
 
 終了コード 0 をクリーンな結果と判断する前に、[スキャン結果と CI オプション](#standalone-scanner)を確認してください。
@@ -240,7 +240,7 @@ codex plugin add e2e-skills@voidmatcha
 スキルが表示されない、または生成の準備が整わない場合は、インストール済みスキル、公式エージェント、MCP 設定を調べる読み取り専用の診断を実行してください。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills doctor --host claude --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills doctor --host claude --project /path/to/playwright-project
 ```
 
 Codex では `--host codex` を使ってください。前提条件、プロジェクト設定まで行うインストーラー、手動設定については[インストールガイド](docs/installation.md)を参照してください。
@@ -399,12 +399,14 @@ assertion mutation とアプリの fault probe は、repository を信頼し、e
 スキルをインストールせず、ローカルや CI でスキャナーを実行できます（Node.js 22+ が必要）。
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan path/to/tests --format text
 ```
 
 レビュアーには同じスキャナーを同梱しています。候補を報告しますが、テストを実行せず、意図した動作を証明するかも判断できません。TypeScript パーサーは同梱されており、同梱スキャナーはデフォルトではツールをダウンロードせず、プロジェクト設定も読み込みません。
 
 `INCOMPLETE` は一部のコードを解析できなかったことを示し、テストの失敗を意味しません。通常は終了コード 2 です。`--allow-incomplete` を使っても、終了コード 0 はクリーンな結果を証明しません。残った候補には引き続き Phase 2 のレビューが必要で、`P0=0` でも解決済みにはなりません。JSON には `--format json`、非公開のテキストレポートには `--report-file <new-file>` を使います。
+
+解析が未完了の場合、テキスト出力の **Why incomplete** に未解決の原因を件数、対象ファイル、確認のヒントとともにまとめます。JSON は完全な `execution.diagnostics` を保持し、`incompleteSummary`（`total` と `groups`）を追加します。ヒントは確認すべきコードを示すものであり、そのコードを検査済みとするものではありません。Action のジョブ概要にも同じ原因を表示しますが、表示件数には上限があります。
 
 `--project-eslint --trust-project` でプロジェクトの ESLint を実行するには、checkout への明示的な信頼と正確なコマンドの承認が必要です。`--fail-on p0-candidate`、`--allow-incomplete`、`--trust-module`、終了コード、網羅性の限界、インストール時の問題は[スキャナーガイド](docs/scanner-cli.md)、信頼の境界は [SECURITY.md](SECURITY.md)を参照してください。
 

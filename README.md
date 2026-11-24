@@ -106,7 +106,7 @@ test('shows the welcome message', async ({ page }) => {
 The bundled scanner catches the false-green assertions without project configuration. Here is the text report (without `--format text` the scanner prints the same result as JSON):
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan tests/ --format text
 Node source scan (canonical report view)
 Status: COMPLETE; confirmed P0: 2, P0 candidates: 0, unresolved locations: 0.
 Next:
@@ -160,7 +160,7 @@ Because this run reports P0 findings, `e2e-skills scan` exits 1.
 Copy the [memo block](docs/test-authoring-memo.md#the-memo) into your project’s `AGENTS.md` (Codex) or `CLAUDE.md` (Claude Code), keeping existing instructions, or insert it from the project directory (Node.js 22+). Use `--host claude` for `CLAUDE.md` and `--dry-run` to preview; the command writes the memo, not skills:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project . --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills guidance --host codex --project . --memo
 ```
 
 ### 2. Install the skills
@@ -178,7 +178,7 @@ Review and debugging work right away. Test generation also needs Playwright's of
 A static scan takes about 30 seconds on a typical test directory (Node.js 22+):
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
 ```
 
 See [scanner results and CI options](#standalone-scanner) before treating exit 0 as a clean result.
@@ -234,7 +234,7 @@ The first pair is for Claude Code, the second for Codex. Test generation still n
 If a skill does not appear or generation stays not ready, run the read-only diagnostic for installed skills, official agents and MCP configuration:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills doctor --host claude --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills doctor --host claude --project /path/to/playwright-project
 ```
 
 Use `--host codex` for Codex. See the [installation guide](docs/installation.md) for prerequisites, an installer that also prepares the project setup, and manual setup.
@@ -387,12 +387,14 @@ No. This bundle reviews test quality, generates Playwright coverage and fixes a 
 Run the scanner locally or in CI without installing the skills (Node.js 22+):
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan path/to/tests --format text
 ```
 
 The reviewer includes the same scanner. It reports candidates, does not execute tests, and cannot decide whether they prove the intended behavior. The TypeScript parser is bundled; the bundled scanner does not download tools or load project configuration by default.
 
 `INCOMPLETE` means some code was not analysed, not that tests failed, and normally means exit 2. With `--allow-incomplete`, exit 0 still does not establish a clean result. Retained candidates still need review in Phase 2; `P0=0` does not clear them. Use `--format json` for JSON or `--report-file <new-file>` for a private text report.
+
+When analysis is incomplete, text output groups unresolved causes under **Why incomplete** with counts, affected files and hints. JSON adds `incompleteSummary` (`total` and `groups`) while retaining the full `execution.diagnostics` list. These hints identify code to inspect; they do not mean it was checked. The Action job summary shows the same causes with a display cap.
 
 Executing project ESLint with `--project-eslint --trust-project` requires explicit checkout trust and approval of the exact command. See the [scanner guide](docs/scanner-cli.md) for `--fail-on p0-candidate`, `--allow-incomplete`, `--trust-module`, exit codes, coverage limits and installation troubleshooting, and [SECURITY.md](SECURITY.md) for trust boundaries.
 

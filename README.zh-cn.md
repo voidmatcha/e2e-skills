@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=a8d123ceddea92fa8d622d50f1f724a1dc28b56d6f8911709995bba73da1747e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=d75286aed92d41bb0f80cf58885c60c249f596a4cc424fda547efda6d212603f; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
@@ -107,7 +107,7 @@ test('shows the welcome message', async ({ page }) => {
 内置扫描器无需项目配置即可捕获这些 false-green 断言。下面是文本报告（不加 `--format text` 时，扫描器以 JSON 输出相同结果）：
 
 ```console
-$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text
+$ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan tests/ --format text
 Node source scan (canonical report view)
 Status: COMPLETE; confirmed P0: 2, P0 candidates: 0, unresolved locations: 0.
 Next:
@@ -163,7 +163,7 @@ Summary: 2 total hit(s), 2 P0, 0 P1/P2 heuristic, 0 LLM-triage, 0 P0 candidate; 
 将[备忘录正文](docs/test-authoring-memo.md#the-memo)复制到项目的 `AGENTS.md`（Codex）或 `CLAUDE.md`（Claude Code），并保留现有指令；也可以在项目目录中用 CLI 写入（需要 Node.js 22+）。写入 `CLAUDE.md` 时使用 `--host claude`，添加 `--dry-run` 可预览。此命令只写入备忘录，不安装 skill：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project . --memo
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills guidance --host codex --project . --memo
 ```
 
 ### 2. 安装 skill
@@ -181,7 +181,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 对典型的测试目录，静态扫描约需 30 秒（需要 Node.js 22+）：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan tests/ --format text --fail-on p0 --allow-incomplete
 ```
 
 将退出码 0 视为干净结果之前，请先查看[扫描结果和 CI 选项](#standalone-scanner)。
@@ -239,7 +239,7 @@ codex plugin add e2e-skills@voidmatcha
 如果技能没有出现，或生成一直未就绪，请运行只读诊断，检查已安装的技能、官方代理和 MCP 配置：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills doctor --host claude --project /path/to/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills doctor --host claude --project /path/to/playwright-project
 ```
 
 Codex 请使用 `--host codex`。前提条件、可同时完成项目设置的安装器以及手动设置，请参阅[安装指南](docs/installation.md)。
@@ -398,12 +398,14 @@ linter 可以捕获直接的 Locator 真值断言或缺失的 `await`。它无�
 无需安装 skill，即可在本地或 CI 中运行扫描器（需要 Node.js 22+）：
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan path/to/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan path/to/tests --format text
 ```
 
 审查器内置了相同的扫描器。它报告候选，不执行测试，也无法判断测试是否证明了预期行为。TypeScript 解析器已随附；内置扫描器默认不下载工具，也不加载项目配置。
 
 `INCOMPLETE` 表示部分代码未被分析，并不表示测试失败，通常对应退出码 2。即使使用 `--allow-incomplete`，退出码 0 仍不能证明结果干净。保留的候选仍需在 Phase 2 审查；`P0=0` 不能清除这些候选。JSON 报告使用 `--format json`，私有文本报告使用 `--report-file <new-file>`。
+
+分析未完成时，文本输出会在 **Why incomplete** 中按原因汇总未解决的诊断，并显示数量、涉及文件和检查提示。JSON 保留完整的 `execution.diagnostics`，并新增 `incompleteSummary`（`total` 和 `groups`）。提示只指出需要检查的代码，不代表该代码已经检查。Action 作业摘要也显示这些原因，但会限制显示数量。
 
 使用 `--project-eslint --trust-project` 执行项目 ESLint 需要明确信任 checkout，并批准准确的命令。`--fail-on p0-candidate`、`--allow-incomplete`、`--trust-module`、退出码、覆盖限制和安装故障排查见[扫描器指南](docs/scanner-cli.md)，信任边界见 [SECURITY.md](SECURITY.md)。
 

@@ -2,21 +2,21 @@
 
 Static Playwright and Cypress test review with configuration context. The scanner finds candidates; an LLM reviews context and interprets the evidence. Runtime proof is EXPERIMENTAL, requires an explicit user request and approval, and is never offered during an ordinary review. Scanning never starts a probe.
 
-The commands below pin the `3.7.0` candidate; they require that version to be published.
+The commands below pin `3.8.0` and work after that version is published.
 
 Requires Node.js 22+. The scan, check and unified CLIs do not require Python. Probe execution additionally requires a trusted, prepared project.
 
 ## Run with npx
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills-scan --scan /absolute/project/tests --format text
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills-scan --scan /absolute/project/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
 ```
 
 Or install locally:
 
 ```bash
-npm install --save-dev @voidmatcha/e2e-skills-scanner@3.7.0
+npm install --save-dev @voidmatcha/e2e-skills-scanner@3.8.0
 npx e2e-skills-scan --scan ./tests --format json
 npx e2e-skills-check --help
 ```
@@ -32,12 +32,12 @@ The reviewer skill includes its own scanner, so reviewing an existing project do
 The unified CLI provides `e2e-skills install`, `doctor`, `guidance`, `scan` and `check`:
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills install --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills doctor --host codex --project /absolute/playwright-project
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills guidance --host codex --project /absolute/playwright-project --memo --policy --dry-run
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills scan /absolute/playwright-project/tests --format json
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.7.0 e2e-skills check --help
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills install --host codex --project /absolute/playwright-project --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills install --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills doctor --host codex --project /absolute/playwright-project
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills guidance --host codex --project /absolute/playwright-project --memo --policy --dry-run
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan /absolute/playwright-project/tests --format json
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills check --help
 ```
 
 Command and option parsing for `install`, `doctor` and `guidance` uses the pinned MIT-licensed [Commander.js](https://github.com/tj/commander.js) package. Scanner and check arguments are passed through to their existing CLIs.
@@ -66,7 +66,7 @@ From the repository root, or using the corresponding installed skill path:
 
 The launcher defaults to the current directory and text output. `--format json` selects the canonical report; `--report-file /absolute/new-file` writes a private text report without overwriting an existing path. Confirmed findings and candidates remain separate. Candidates require contextual review and do not become confirmed defects through formatting or policy selection. By default, exit 0 means the selected policy found no violation within completed analysis, exit 1 means that policy found a violation, and exit 2 means required analysis or execution evidence remains incomplete. With `--allow-incomplete`, unresolved source analysis can instead return the policy exit while the report remains incomplete; see the flag below. None of these outcomes establishes full JavaScript coverage or general test quality.
 
-For `--scan`, text output adds a capped **Why incomplete** section after findings. It groups unresolved locations by detector and existing reason code, shows counts and up to three affected files per displayed analysis cause, and gives a source-shape or manual-review hint. Unrecognized labels are replaced and file paths for unrecognized or inventory causes are withheld from text; the structured JSON retains the original diagnostics. An `Other` row counts causes beyond the display cap. The code at those locations was **not checked**; a hint does not establish safety. JSON adds `incompleteSummary` with `total` and every cause group (`detector`, `code`, `count`, `topFiles`, `hint`, `specificHint`) alongside the unchanged `execution.diagnostics` list. `--verbose` and saved reports retain the existing detail.
+For `--scan`, text output adds a capped **Why incomplete** section after findings when unresolved diagnostics exist. It displays up to seven detector/reason groups, their counts, up to three affected files per displayed known analysis cause, and a source-shape or manual-review hint. An `Other` row counts omitted groups. Unrecognized labels are replaced, and file paths for unrecognized or inventory causes are withheld from text; the structured JSON retains the original diagnostics. The code at those locations was **not checked**; a hint does not establish safety. JSON adds `incompleteSummary` with `total` and every cause in `groups` (`detector`, `code`, `count`, `topFiles`, `hint`, `specificHint`) alongside the unchanged `execution.diagnostics` list. Group counts sum to `total`, which counts diagnostic records, not distinct files. When there are no diagnostics, JSON contains `{ "total": 0, "groups": [] }` and text omits the section. `--verbose` and saved reports retain the existing detail.
 
 Limits are fixed: each parsed source file is limited to 16 MiB; relative-import expansion adds at most 128 helper files, 16 MiB of helper bytes and 32 import levels. These helper budgets do not cap already inventoried test files. Symlinks, excluded trees, ambiguous resolution and imports outside the pinned project boundary are not followed. A symbolic link under the scan root whose real path is a directory or file the scan already inventories (such as `.claude/skills -> ../agents/skills`) is listed under `aliased` and as `Linked:` in text output; it is not followed and does not make the run incomplete. Any other link (outside the scan root, dangling, into an excluded tree such as `node_modules`, or to anything not inventoried) and any other special entry is listed as not analysed and keeps the run INCOMPLETE (exit 2, which `--allow-incomplete` does not cover); the regular files beside it are still scanned. Unsupported imports, syntax, provenance and drift remain explicit uncertainty. Retired backend, executable and limit environment overrides are rejected; `E2E_SMELL_FAIL_ON` remains supported.
 

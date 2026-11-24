@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright,cypress
   testing-types: e2e
   languages: typescript,javascript
-  version: "3.7.0"
+  version: "3.8.0"
 ---
 
 Classify inline. Never change product code; never weaken a test. First read this skill's `failure-rules.md`; follow it throughout.
