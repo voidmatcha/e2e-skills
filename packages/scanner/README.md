@@ -13,7 +13,7 @@
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan path/to/tests --format text --fail-on p0 --allow-incomplete
 ```
 
-`INCOMPLETE` means some code was not analysed: exit 0 with `INCOMPLETE` is not a clean result. The top of the report says how many locations were skipped and lists them under "Unresolved analysis"; `--format json` lists all of them under `execution.diagnostics`. Terms are explained in the [glossary](https://github.com/voidmatcha/e2e-skills/blob/main/docs/scanner-cli.md#glossary).
+`INCOMPLETE` means some code was not analysed: exit 0 with `INCOMPLETE` is not a clean result. The text report groups causes under **Why incomplete** and lists locations under "Unresolved analysis"; `--format json` adds `incompleteSummary` and retains all locations under `execution.diagnostics`. Terms are explained in the [glossary](https://github.com/voidmatcha/e2e-skills/blob/main/docs/scanner-cli.md#glossary).
 
 If `npx` fails with `ETARGET` ("with a date before"), your `.npmrc` sets `min-release-age`; prefix the command with `npm_config_min_release_age=0`.
 
@@ -34,7 +34,7 @@ A spec with `expect(page.getByRole("status")).toBeTruthy()` passes whatever the 
 Summary: 3 total hit(s), 1 P0, 0 P1/P2 heuristic, 2 LLM-triage, 0 P0 candidate; 3 AST-origin hit(s), canonical retained findings.
 ```
 
-`[P0][CONFIRMED]` is a mechanically confirmed test that can pass without checking anything. `LLM-TRIAGE` marks an unconfirmed candidate to confirm or reject with the `e2e-reviewer` skill or by hand.
+`[P0][CONFIRMED]` marks a mechanically confirmed code pattern, such as a vacuous assertion; review the rest of the test before concluding that the whole test checks nothing. `LLM-TRIAGE` marks an unconfirmed candidate to confirm or reject with the `e2e-reviewer` skill or by hand.
 
 ## Exit codes
 
@@ -55,7 +55,7 @@ Run `e2e-skills scan --help` for the rest.
 
 - `e2e-skills install --host codex|claude`: install the e2e-skills Agent Skills for a host.
 - `e2e-skills doctor --host codex|claude`: read-only check of registrations and MCP configuration.
-- `e2e-skills guidance --host codex|claude --project PATH`: opt-in test-authoring memo and failure policy.
+- `e2e-skills guidance --host codex|claude --project PATH --memo --policy`: opt-in test-authoring memo and failure policy; `--memo`, `--policy`, or both are required.
 - `e2e-skills check`: evidence-backed assertion and POST probes on a trusted project.
 
 ## Links

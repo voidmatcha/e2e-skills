@@ -2,7 +2,7 @@
 
 AI-generated E2E tests should be reviewed before merge even when they compile and pass. The key question is not only whether a test is green, but whether it would turn red when the behavior named by the test is broken.
 
-`e2e-reviewer` provides an independent quality gate for Playwright and Cypress specs written or repaired by people, coding agents, Playwright Test Agents, or Cypress AI Skills. It combines deterministic candidates with semantic review, assigns stable pattern IDs and P0/P1/P2 severity, and reports concrete fixes without treating a scanner match as a verdict.
+`e2e-reviewer` provides an independent quality gate for Playwright and Cypress specs written or repaired by people, coding agents, Playwright Test Agents, or Cypress AI Skills. The scanner reports mechanically confirmed findings and unconfirmed candidates; the reviewer checks intent and context before its final semantic verdict. It assigns stable pattern IDs and P0/P1/P2 severity and reports concrete fixes.
 
 ## Quick workflow
 
@@ -41,7 +41,7 @@ test('shows the welcome message', async ({ page }) => {
 });
 ```
 
-The deterministic scanner reports the load-bearing line:
+The deterministic scanner reports the load-bearing line (text-output excerpt):
 
 ```console
 $ npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan tests/ --format text
@@ -64,7 +64,7 @@ The corrected assertion retries until the message becomes visible and fails if t
 
 ## Read the semantic review result
 
-The scanner reports candidates. A semantic review verifies each candidate against the test title and surrounding project context. This excerpt shows the review contract's load-bearing evidence fields:
+The scanner reports mechanically confirmed findings and unconfirmed candidates. A semantic review checks intent and context before its final verdict. This excerpt shows the review contract's load-bearing evidence fields:
 
 ```markdown
 ## Review Scope and Evidence
@@ -73,7 +73,7 @@ The scanner reports candidates. A semantic review verifies each candidate agains
 - **Diff base/range:** supplied patch
 - **Changed E2E artifacts:** tests/login.spec.ts
 - **Context-only files consulted:** none
-- **Static evidence:** scanner #4f candidate; semantic check confirmed
+- **Static evidence:** scanner #4f mechanically confirmed finding; semantic review checked the test intent and confirmed the issue
 - **Runtime evidence:** not executed; run the approved Playwright command
 - **Independent verification:** V1 recommended; not executed
 - **Limitations/exclusions:** application runtime unavailable
@@ -126,7 +126,7 @@ Sources: [Cypress AI Skills](https://docs.cypress.io/app/tooling/ai-skills), the
 
 ## Run the deterministic scanner
 
-Use the [standalone Node scanner](../README.md#standalone-scanner) for mechanical candidates, then review the test intent and surrounding code. Scanning does not execute tests or fault probes.
+Use the [standalone Node scanner](../README.md#standalone-scanner) for mechanically confirmed findings and unconfirmed candidates, then review the test intent and surrounding code. Scanning does not execute tests or fault probes.
 
 ## Evidence and claim boundary
 

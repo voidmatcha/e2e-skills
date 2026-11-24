@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=d75286aed92d41bb0f80cf58885c60c249f596a4cc424fda547efda6d212603f; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=526b1b0fa525be1b2c77e3dbb6f09a3c86e63df74dca169b4296bdd800f26bf8; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 Claude Code, Codex 등 AI coding agent에서 사용하는 Playwright와 Cypress E2E 테스트용 오픈소스 skill 모음입니다. 세 skill로 Playwright 테스트를 생성하고, Playwright/Cypress 테스트와 PR을 리뷰하고, 실패하는 테스트를 제품 코드를 바꾸지 않고 고칩니다.
 
@@ -370,7 +370,7 @@ plugin은 사용자가 명시적으로 실행을 허용했을 때 사용하며, 
 <summary>리뷰 범위와 실행 안전 조건 자세히 보기</summary>
 
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
-`e2e-reviewer`는 목록에 있는 패턴 24개를 모두 리뷰합니다. 각 패턴에는 고정 ID와 P0/P1/P2 문제 등급이 지정돼 있습니다. 독립 실행 `e2e-skills scan` scanner는 규칙만으로 판별할 수 있는 일부 항목만 다룹니다. scanner가 찾은 항목은 실제 문제인지 추가로 확인해야 합니다. 테스트 의도와 연관된 코드까지 확인한 뒤 실제 문제인지 판단합니다.
+`e2e-reviewer`는 목록에 있는 패턴 24개를 모두 리뷰합니다. 각 패턴에는 고정 ID와 P0/P1/P2 문제 등급이 지정돼 있습니다. 독립 실행 `e2e-skills scan` scanner는 규칙만으로 판별할 수 있는 일부 항목만 다룹니다. scanner는 코드 형태가 규칙과 일치한다고 확인한 항목과 아직 확인이 필요한 후보를 구분해 보고합니다. reviewer는 테스트 의도와 주변 코드를 확인한 뒤 최종 판단을 내립니다.
 
 assertion mutation과 앱 fault probe는 저장소를 신뢰하고 환경 변수와 플래그를 포함한 정확한 명령을 승인한 뒤에만 대상 프로젝트에서 불러오는 코드를 실행합니다. generator는 reviewer scanner로 검사한 뒤 승인된 프로젝트 테스트 명령으로 자신이 작성한 spec만 실행합니다.
 
@@ -393,7 +393,7 @@ skill을 설치하지 않고 로컬이나 CI에서 scanner를 실행할 수 있�
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan path/to/tests --format text
 ```
 
-reviewer에도 같은 scanner가 포함되어 있습니다. 후보를 보고하며, 테스트를 실행하거나 의도한 동작을 검증하는지 판단하지는 않습니다. TypeScript 파서는 함께 제공됩니다. 기본 설정에서 번들 scanner는 tool을 내려받거나 프로젝트 설정을 불러오지 않습니다.
+reviewer에도 같은 scanner가 포함되어 있습니다. scanner는 코드 형태가 규칙과 일치한다고 확인한 항목과 아직 확인이 필요한 후보를 구분해 보고합니다. 테스트를 실행하거나 테스트가 의도한 동작을 검증하는지 판단하지는 않습니다. TypeScript 파서는 함께 제공됩니다. 기본 설정에서 번들 scanner는 tool을 내려받거나 프로젝트 설정을 불러오지 않습니다.
 
 `INCOMPLETE`는 일부 코드를 분석하지 못했다는 뜻이며, 테스트가 실패했다는 뜻은 아닙니다. 기본 종료 코드는 2입니다. `--allow-incomplete`를 사용해도 종료 코드 0이 깨끗한 결과를 입증하지는 않습니다. 남은 후보는 Phase 2에서 리뷰해야 하며, `P0=0`만으로 검사가 끝나지 않습니다. JSON 보고서는 `--format json`, 비공개 텍스트 보고서는 `--report-file <new-file>`을 사용하세요.
 

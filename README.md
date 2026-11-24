@@ -368,7 +368,7 @@ Point `e2e-reviewer` at the relevant spec directory. It combines deterministic c
 <summary>Review coverage and execution safety details</summary>
 
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
-The `e2e-reviewer` skill reviews all 24 catalog patterns with stable IDs and P0/P1/P2 severity. Its standalone `e2e-skills scan` scanner covers only a deterministic mechanical subset. Scanner matches are candidates, not final findings; the skill checks intent and surrounding code before reporting a verdict.
+The `e2e-reviewer` skill reviews all 24 catalog patterns with stable IDs and P0/P1/P2 severity. Its standalone `e2e-skills scan` scanner covers only a deterministic mechanical subset. The scanner reports mechanically confirmed findings and unconfirmed candidates; the reviewer checks intent and context before its final semantic verdict.
 
 Assertion-mutation and app-fault probes execute target-controlled code only after you trust the repository and approve the exact command, including its environment and flags. The generator runs the reviewer scanner, then executes only the specs it wrote with the approved project test command.
 
@@ -390,7 +390,7 @@ Run the scanner locally or in CI without installing the skills (Node.js 22+):
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan path/to/tests --format text
 ```
 
-The reviewer includes the same scanner. It reports candidates, does not execute tests, and cannot decide whether they prove the intended behavior. The TypeScript parser is bundled; the bundled scanner does not download tools or load project configuration by default.
+The reviewer includes the same scanner. It reports mechanically confirmed findings and unconfirmed candidates, does not execute tests, and cannot decide whether they prove the intended behavior. The TypeScript parser is bundled; the bundled scanner does not download tools or load project configuration by default.
 
 `INCOMPLETE` means some code was not analysed, not that tests failed, and normally means exit 2. With `--allow-incomplete`, exit 0 still does not establish a clean result. Retained candidates still need review in Phase 2; `P0=0` does not clear them. Use `--format json` for JSON or `--report-file <new-file>` for a private text report.
 

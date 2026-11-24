@@ -16,9 +16,9 @@ The standalone scanner only fails CI on P0 findings by default. P1/P2 findings a
 
 ### Self-repository fixture exclusion (matters if you fork or vendor this repository)
 
-This repository stores deliberate anti-patterns under `evals/files/` and `scripts/ci/fixtures/`, so scanning it would otherwise report its own fixtures as findings. The scanner therefore skips those two path patterns — but only when the **scanned project** is an `e2e-skills` checkout, identified by `AGENTS.md`, `skills/e2e-reviewer/SKILL.md`, and `scripts/ci/test-reviewer-scanner.py` at its root. The decision never depends on where the scanner itself was installed, so a real copy, a symlink, and an in-repository run all agree.
+This repository stores deliberate anti-patterns under `evals/files/`, `scripts/ci/fixtures/`, and `scripts/evals/skills/{e2e-reviewer,playwright-test-generator}/files/`, so scanning it would otherwise report its own fixtures as findings. A root scan silently skips all three path patterns — but only when the **scanned project** is an `e2e-skills` checkout, identified by `AGENTS.md`, `skills/e2e-reviewer/SKILL.md`, and `scripts/ci/test-reviewer-scanner.py` at its root. A directly requested fixture root or file is scanned. The decision never depends on where the scanner itself was installed, so a real copy, a symlink, and an in-repository run all agree.
 
-A fork or vendored copy carries the same three files and is therefore treated as this repository. **If you add your own real tests under `evals/files/` or `scripts/ci/fixtures/` in a fork, the scanner will skip them without printing anything.** Put such tests on any other path. Every other directory is scanned normally, and projects that merely happen to use those names without the fingerprint files are unaffected.
+A fork or vendored copy carries the same three files and is therefore treated as this repository. **If you add your own real tests under `evals/files/`, `scripts/ci/fixtures/`, or `scripts/evals/skills/{e2e-reviewer,playwright-test-generator}/files/` in a fork, a root scan will skip them without printing anything.** Put such tests on any other path or scan the fixture root or file directly. Every other directory is scanned normally, and projects that merely happen to use those names without the fingerprint files are unaffected.
 
 ## P0: Must Fix
 

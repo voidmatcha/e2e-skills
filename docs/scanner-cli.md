@@ -1,6 +1,6 @@
 # e2e-skills scanner: CLI reference
 
-Static Playwright and Cypress test review with configuration context. The scanner finds candidates; an LLM reviews context and interprets the evidence. Runtime proof is EXPERIMENTAL, requires an explicit user request and approval, and is never offered during an ordinary review. Scanning never starts a probe.
+Static Playwright and Cypress test review with configuration context. The scanner reports mechanically confirmed findings and unconfirmed candidates; an LLM checks intent and context before its final semantic verdict. Runtime proof is EXPERIMENTAL, requires an explicit user request and approval, and is never offered during an ordinary review. Scanning never starts a probe.
 
 The commands below pin `3.8.0` and work after that version is published.
 

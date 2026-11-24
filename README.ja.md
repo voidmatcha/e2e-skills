@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=d75286aed92d41bb0f80cf58885c60c249f596a4cc424fda547efda6d212603f; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=526b1b0fa525be1b2c77e3dbb6f09a3c86e63df74dca169b4296bdd800f26bf8; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、Claude Code、Codex などの対応 AI コーディング agent で使える、Playwright と Cypress の E2E テスト向けオープンソース skill 集です。3 つの skill で Playwright テストの生成、既存の Playwright/Cypress テストや PR のレビュー、そして製品コードを変えずに失敗中のテストを修正します。
 
@@ -378,7 +378,7 @@ linter は直接的な Locator truthiness assertion や missing `await` を検�
 <summary>レビュー範囲と実行安全条件の詳細</summary>
 
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
-`e2e-reviewer` skill は、安定した ID と P0/P1/P2 severity を持つ 24 個すべての catalog patterns をレビューします。standalone の `e2e-skills scan` scanner が扱うのは、決定論的で機械的な subset のみです。scanner matches は候補であり、final findings ではありません。skill は verdict を報告する前に intent と surrounding code を確認します。
+`e2e-reviewer` skill は、安定した ID と P0/P1/P2 severity を持つ 24 個すべての catalog patterns をレビューします。standalone の `e2e-skills scan` scanner が扱うのは、決定論的で機械的な subset のみです。scanner は機械的に確認された findings と未確認の候補を区別して報告します。reviewer はテストの意図と周辺コードを確認してから、最終的な意味的判断を下します。
 
 assertion mutation とアプリの fault probe は、repository を信頼し、environment と flags を含む exact command を承認した後にのみ target-controlled code を実行します。generator はレビュアーのスキャナーで確認した後、承認済みのプロジェクトのテストコマンドで、自身が書いた spec のみ実行します。
 
@@ -402,7 +402,7 @@ assertion mutation とアプリの fault probe は、repository を信頼し、e
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan path/to/tests --format text
 ```
 
-レビュアーには同じスキャナーを同梱しています。候補を報告しますが、テストを実行せず、意図した動作を証明するかも判断できません。TypeScript パーサーは同梱されており、同梱スキャナーはデフォルトではツールをダウンロードせず、プロジェクト設定も読み込みません。
+レビュアーには同じスキャナーを同梱しています。スキャナーは機械的に確認された findings と未確認の候補を区別して報告します。テストを実行せず、意図した動作を証明するかも判断できません。TypeScript パーサーは同梱されており、同梱スキャナーはデフォルトではツールをダウンロードせず、プロジェクト設定も読み込みません。
 
 `INCOMPLETE` は一部のコードを解析できなかったことを示し、テストの失敗を意味しません。通常は終了コード 2 です。`--allow-incomplete` を使っても、終了コード 0 はクリーンな結果を証明しません。残った候補には引き続き Phase 2 のレビューが必要で、`P0=0` でも解決済みにはなりません。JSON には `--format json`、非公開のテキストレポートには `--report-file <new-file>` を使います。
 

@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=d75286aed92d41bb0f80cf58885c60c249f596a4cc424fda547efda6d212603f; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=526b1b0fa525be1b2c77e3dbb6f09a3c86e63df74dca169b4296bdd800f26bf8; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 是面向 Claude Code、Codex 等兼容 AI 编程 agent 的开源 Playwright 和 Cypress E2E 测试 skill 集。三个 skill 分别用于生成 Playwright 测试、审查已有的 Playwright/Cypress 测试与 PR，以及在不改产品代码的前提下修复失败的测试。
 
@@ -377,7 +377,7 @@ linter 可以捕获直接的 Locator 真值断言或缺失的 `await`。它无�
 <summary>审查范围和执行安全条件详情</summary>
 
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
-`e2e-reviewer` Skill 会用稳定 IDs 和 P0/P1/P2 severity 审查目录中的全部 24 个模式。它的独立 `e2e-skills scan` 扫描器只覆盖确定性的机械子集。扫描器命中是候选项，不是最终发现；该 Skill 会先检查意图和周边代码，再报告 verdict。
+`e2e-reviewer` Skill 会用稳定 IDs 和 P0/P1/P2 severity 审查目录中的全部 24 个模式。它的独立 `e2e-skills scan` 扫描器只覆盖确定性的机械子集。扫描器会区分报告机械确认的发现和未经确认的候选项；reviewer 检查测试意图和上下文后，才给出最终的语义判断。
 
 只有在你信任该仓库并批准精确命令（包括其 environment 和 flags）之后，assertion mutation 和应用 fault probe 才会执行 target-controlled code。generator 先运行审查器扫描器，再用已获批准的项目测试命令，仅执行自己写的 spec。
 
@@ -401,7 +401,7 @@ linter 可以捕获直接的 Locator 真值断言或缺失的 `await`。它无�
 npx --yes --package=@voidmatcha/e2e-skills-scanner@3.8.0 e2e-skills scan path/to/tests --format text
 ```
 
-审查器内置了相同的扫描器。它报告候选，不执行测试，也无法判断测试是否证明了预期行为。TypeScript 解析器已随附；内置扫描器默认不下载工具，也不加载项目配置。
+审查器内置了相同的扫描器。扫描器会区分报告机械确认的发现和未经确认的候选项，不执行测试，也无法判断测试是否证明了预期行为。TypeScript 解析器已随附；内置扫描器默认不下载工具，也不加载项目配置。
 
 `INCOMPLETE` 表示部分代码未被分析，并不表示测试失败，通常对应退出码 2。即使使用 `--allow-incomplete`，退出码 0 仍不能证明结果干净。保留的候选仍需在 Phase 2 审查；`P0=0` 不能清除这些候选。JSON 报告使用 `--format json`，私有文本报告使用 `--report-file <new-file>`。
 

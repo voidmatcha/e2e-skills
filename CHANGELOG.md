@@ -11,6 +11,10 @@
 
 - Show grouped incomplete causes in the job summary while retaining display caps and full report artifacts.
 
+### Documentation
+
+- Clarify self-repository fixture exclusions, scanner evidence labels, Action policy exits and guidance file statuses; correct CLI examples and synchronize the README translations.
+
 ## [3.7.0] - 2026-11-24
 
 ### Reviewer and scanner

@@ -44,7 +44,7 @@
       "value": "${{ steps.scan.outputs.json-report }}"
     },
     "exit-code": {
-      "description": "Scanner exit code: 0 policy clear, 1 selected finding policy failed, 2 incomplete or error.",
+      "description": "Action policy exit code: 0 selected policy clear, 1 selected finding policy failed, 2 incomplete or execution error. It can differ from the full-scan exit code in json-report for changed-file or base comparison.",
       "value": "${{ steps.scan.outputs.exit-code }}"
     }
   },

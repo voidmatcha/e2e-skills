@@ -1638,10 +1638,10 @@ contract_re = re.compile(
     re.S,
 )
 contract_hashes = {
-    "README.md": "f56bc86348f8fcbef4e3a9be372cef7681230f3fc4f9891254e3bed1b9757b73",
-    "README.ko.md": "503e5f4363e3d0230891370767d673cced693456d7070c7cfcac11a9d6af105f",
-    "README.ja.md": "0627a60ba51b234f9d5b44732f016889d0d2aba9c274a348062fd1c72f501d28",
-    "README.zh-cn.md": "08e9842355fe8ee4c0e88b49b440444a33fafce17aef91d74de689e2fac895dd"
+    "README.md": "90eed70abe0d628f2b27f6f611eda3c8cc1f70a2b6885c49de6aa9c176eab657",
+    "README.ko.md": "2314308c0798a7254c6ac1a4a5521faa499318ac6d242bc2335a926b75542865",
+    "README.ja.md": "7a04fa9195473a0206228d03763d6dee40a20762093ea8fd4c4727829dcc7d84",
+    "README.zh-cn.md": "ce975f38284beadf7d0a469664219b19e8e02e2d04e7f7f9da2640c0093c740c"
 }
 contract_tokens = (
     "24",
